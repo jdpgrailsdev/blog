@@ -29,6 +29,16 @@
   </head>
   <body>
     <div id="wrap">
+    <script>(function(d, s, id) {
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) return;
+          js = d.createElement(s); js.id = id;
+          js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+          fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+    <script src="//platform.linkedin.com/in.js" type="text/javascript">
+         lang: en_US
+    </script>
 
     <!-- Fixed navbar -->
       <div class="navbar navbar-fixed-top">
@@ -40,27 +50,23 @@
               <span class="icon-bar"></span>
             </button>
             <a class="brand" href="/blog/index.html">Jonathan Pearlin's Blog</a>
-            <div class="nav-collapse collapse">
-              <ul class="nav">
-                <li><a href="/blog/index.html">Home</a></li>
+            </div>
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
                 <li><a href="/blog/about.html">About</a></li>
-                <li><a href="/blog/feed.xml">Subscribe</a></li>
-                <!--<li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#">Action</a></li>
-                    <li><a href="#">Another action</a></li>
-                    <li><a href="#">Something else here</a></li>
-                    <li class="divider"></li>
-                    <li class="nav-header">Nav header</li>
-                    <li><a href="#">Separated link</a></li>
-                    <li><a href="#">One more separated link</a></li>
-                  </ul>
-                </li>-->
+                <li class="dropdown">
+                       <a data-toggle="dropdown" href="#">Topics<b class="caret"></b></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <!--<li><a href="/blog/tags/groovy.html">Groovy</a></li>-->
+                    </ul>
+                </li>
+                <li><a href="/blog/feed.xml">Feed</a></li>
               </ul>
-            </div><!--/.nav-collapse -->
+              <ul class="nav navbar-nav navbar-right">
+                <li><a href="https://github.com/jdpgrailsdev"><i class="fa fa-github"></i></a></li>
+              </ul>
+            </div>
           </div>
-        </div>
       </div>
       <div class="container">	
 	<div class="page-header">
