@@ -1,6 +1,6 @@
 title=Relocation
 date=2012-12-08
-type=page
+type=post
 tags=blog
 status=published
 ~~~~~~

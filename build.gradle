@@ -1,6 +1,7 @@
 buildscript {
   repositories {
       mavenLocal() // needed to use the local JBake 2.3.0 build
+      mavenCentral()
       jcenter()
   }
 
@@ -13,6 +14,12 @@ buildscript {
 }
 
 apply plugin: 'jbake'
+
+jbake {
+   input = file('src/jbake')
+   output = file('build/jbake')
+   clearCache = true
+}
 
 task publish(type: GradleBuild) {
     buildFile = 'publish.gradle'
