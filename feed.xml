@@ -6,9 +6,18 @@
     <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
     <description>JBake Bootstrap Template</description>
     <language>en-gb</language>
-    <pubDate>Wed, 5 Feb 2014 13:17:21 -0500</pubDate>
-    <lastBuildDate>Wed, 5 Feb 2014 13:17:21 -0500</lastBuildDate>
+    <pubDate>Wed, 5 Feb 2014 15:14:26 -0500</pubDate>
+    <lastBuildDate>Wed, 5 Feb 2014 15:14:26 -0500</lastBuildDate>
 
+    <item>
+      <title>Relocation</title>
+      <link>http://jdpgrailsdev.github.io/blog//2012/12/08/relocation.html</link>
+      <pubDate>Sat, 8 Dec 2012 00:00:00 -0500</pubDate>
+      <guid isPermaLink="false">/2012/12/08/relocation.html</guid>
+      	<description>
+	&lt;h2&gt;Relocation&lt;/h2&gt;&lt;p&gt;I have decided to relocate my blog from &lt;a href=&quot;http://jonathan-whywecanthavenicethings.blogspot.com&quot;&gt;Blog Spot&lt;/a&gt; to &lt;a href=&quot;http://jdpgrailsdev.github.io/blog&quot;&gt;GitHub&lt;/a&gt;. I have not actively posted anything in a while, but I am going to start&lt;br/&gt;up again and felt that hosting it on Github was a better choice. I will leave the old blog up with a pointer over to the new blog.&lt;/p&gt;
+	</description>
+    </item>
 
   </channel> 
 </rss>
