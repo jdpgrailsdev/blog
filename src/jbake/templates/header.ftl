@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
-        <title><#if (content.title)??><#escape x as x?xml>${content.title}</#escape><#else>Why We Can't Have Nice Things</#if></title>
+        <title>Why We Can't Have Nice Things<#if content??> :: ${content.title}</#if></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -10,10 +10,10 @@
         <meta name="generator" content="JBake" />
 
         <!-- Le styles -->
-        <link href="/blog/css/bootstrap.min.css" rel="stylesheet" />
-        <link href="/blog/css/asciidoctor.css" rel="stylesheet" />
-        <link href="/blog/css/base.css" rel="stylesheet" />
-        <link href="/blog/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="/blog/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/blog/css/asciidoctor.css" rel="stylesheet">
+        <link href="/blog/css/base.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
