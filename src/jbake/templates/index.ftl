@@ -3,9 +3,9 @@
 <#include "menu.ftl">
 
                 <div class="page-header">
-                    <h1>Why We Cant Have Nice Things</h1>
+                    <h1>Why We Can't Have Nice Things</h1>
                 </div>
-<#assign lastposts = posts[0..0]>
+<#assign lastposts = posts[0..3]>
 <#list lastposts as post>
        <#if (post.status == "published")>
                    <a href="/blog${post.uri}"><h1>${post.title}</h1></a>
