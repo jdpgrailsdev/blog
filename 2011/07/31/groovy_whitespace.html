@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
-        <title>Why We Can't Have Nice Things</title>
+        <title>Why We Can't Have Nice Things :: Keep Your Hands Off of My Whitespace!</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -60,18 +60,59 @@
                     </div>
                 </div>
             </div>
-            <div class="container">	
-	<div class="page-header">
-		<h1>Tag: blog</h1>
-	</div>
-	
-	<!--<ul>-->
-			<h4>December 2012</h4>
-			<ul>
-		
-		<li>08 - <a href="/2012/12/08/relocation.html">Relocation</a></li>
-	</ul>
-	
+            <div class="container">
+    <div class="page-header">
+        <h1>Keep Your Hands Off of My Whitespace!</h1>
+    </div>
+
+    <p><em>31 July 2011</em></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog//2011/07/31/groovy_whitespace.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2011/07/31/groovy_whitespace.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2011/07/31/groovy_whitespace.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <p><h1>We Can Put a Man on the Moon...</h1><p>Groovy has some awesome XML reading and parsing features that make it a breeze for developers to create new XML strings or to parse existing XML strings. The <code>XMLSlurper</code> and associated <code>GPathResult</code> classes make it easy to traverse and manipulate the DOM of an XML document/string. On top of that, the builder support in Groovy (<code>MarkupBuilder</code>, <code>StreamingMarkupBuilder</code>) make it much easier for developers to create structured documents and get essentially built-in commenting for free (since the builder syntax essentially describes the hierarchical document by itself). With all of these improvements and modern conveniences provided by Groovy regarding XML, you would think that it would be easy to perform the following task:</p>
+<ol>
+  <li>Read in a file containing XML</li>
+  <li>Parse the file and find a particular element</li>
+  <li>Edit the value of said element</li>
+  <li>Update the file with the changes, preserving the original formatting and namespace(s) of the file.</li>
+</ol><p>Good luck. The builders are great for creating new documents. While you can use the <code>StreamingMarkupBuilder</code> to handle data read from a file, it does NOT preserve the white-space (and you have to know what additional calls need to be made to preserve any namespaces in the original XML document). This was a choice made by the implementer, which certainly makes sense for the normal use case of the <code>StreamingMarkupBuilder</code> (creating XML on the fly as a response to a request), where white-space is irrelevant (and takes up precious bytes ;) ). So, are we just doomed to lose are pretty, human readable formatting when editing XML? The answer is no. Luckily, there are some other classes provided by Groovy that will let you do things similar to the normal Groovy XML manipulation approach (slurper, markup builders and GPath).</p><h2>DOMination</h2><p>The solution to the problem above is to use the <code>groovy.xml.DOMBuilder</code> and <code>groovy.xml.dom.DOMCategory</code> classes to manipulate XML, while still preserving the formatting/white-space. Assume that you already have a <code>java.io.File</code> object pointing to an XML file. You can do the following to manipulate the contents of that file:</p>
+<pre><code>def xml = file.text
+def document = groovy.xml.DOMBuilder.parse(new StringReader(xml)))
+def root = document.documentElement
+
+use(groovy.xml.dom.DOMCategory) {
+    // manipulate the XML here, i.e. root.someElement?.each { it.value = &#39;new value&#39;}
+}
+
+def result = groovy.xml.dom.DOMUtil.serialize(root)
+
+file.withWriter { w -&gt;
+    w.write(result)
+}
+</code></pre><p>With 10-15 lines of Groovy code, we have just loaded XML from a file, manipulated its contents, and written it back out to file, while preserving all formatting from the original file. I wasted about 4 hours trying to figure this out before I stumbled upon the <code>DOMCategory</code> class. For more information on editing XML using <code>DOMCategory</code>, see the Groovy tutorial on it <a href="http://groovy.codehaus.org/Updating+XML+with+DOMCategory">here</a>.</p></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog/2011/07/31/groovy_whitespace.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2011/07/31/groovy_whitespace.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2011/07/31/groovy_whitespace.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '/2011/07/31/groovy_whitespace.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    <hr>
+
             </div>
             <div id="push"></div>
         </div>

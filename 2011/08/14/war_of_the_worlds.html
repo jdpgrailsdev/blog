@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <title>Why We Can't Have Nice Things :: War of the Worlds</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta name="author" content="Jonathan Pearlin" />
+        <meta name="keywords" content="" />
+        <meta name="generator" content="JBake" />
+
+        <!-- Le styles -->
+        <link href="/blog/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/blog/css/asciidoctor.css" rel="stylesheet">
+        <link href="/blog/css/base.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+              <script src="/blog/js/html5shiv.js"></script>
+        <![endif]-->
+
+        <!-- Fav and touch icons -->
+        <!--
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png" />
+        <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png" />
+        -->
+        <link rel="shortcut icon" href="/blog/favicon.ico" />
+    </head>
+    <body>
+        <div id="wrap">
+            <!-- Fixed navbar -->
+            <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/blog/index.html">Jonathan Pearlin's Blog</a>
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="/blog/about.html">About</a></li>
+                            <li class="dropdown">
+                                <a data-toggle="dropdown" href="#">Tags<b class="caret"></b></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <!--<li><a href="/blog/tags/groovy.html">Groovy</a></li>-->
+                                </ul>
+                            </li>
+                            <li><a href="/blog/feed.xml">Feed</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="https://github.com/jdpgrailsdev"><i class="fa fa-github"></i></a></li>
+                            <li><a href="http://www.linkedin.com/pub/jonathan-pearlin/4/946/9a0" style="text-decoration:none;"><span style="font: 80% Arial,sans-serif; color:#0783B6;"><img src="http://s.c.lnkd.licdn.com/scds/common/u/img/webpromo/btn_in_20x15.png" width="20" height="15" alt="View Jonathan Pearlin's LinkedIn profile" style="vertical-align:middle" border="0"></span></a>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+    <div class="page-header">
+        <h1>War of the Worlds</h1>
+    </div>
+
+    <p><em>14 August 2011</em></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog//2011/08/14/war_of_the_worlds.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2011/08/14/war_of_the_worlds.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2011/08/14/war_of_the_worlds.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <p><h1>Node.JS and IDE Support</h1><p>Node.JS is a new and exciting evented I/O library for V8 JavaScript. While the consensus seems to be to use Cloud9ide.com as the IDE of choice to develop Node.JS applications, this may be impractical for a couple of reasons. First, Cloud9 is an online IDE, which means your source must be hosted on the Internet, either at Cloud9, Bitbucket or Github (I will say that the Github integration @ Cloud9ide.com is pretty nice). Second, it is a rather limited IDE, which means you will have to do your other development elsewhere (if you only develop in JavaScript, than this isn't such a big deal). Finally, the Cloud9ide.com IDE does NOT provide Node.JS code-completion for built-in modules (at least it did not at the time of writing this post). With this in mind, I set out to see how well I could get Node.JS support into Eclipse. Despite these shortcomings, one of the nice things about Cloud9ide.com is that it allows you to run and debug your application in their cloud, making it very easy to test your application. Therefore, my goals for finding desktop IDE support for Node.JS was to make sure that it supported everything that Cloud9ide.com has and more. I settled on the following requirements</p>
+<ul>
+  <li>The ability to run/launch Node.JS applications from Eclipse</li>
+  <li>The ability to debug Node.JS applications from Eclipse</li>
+  <li>Code-completion for Node.JS module</li>
+</ul><p>I set out to do all of the above with Eclipse, as it is my favorite IDE of choice. I was able to achieve all of the goals by following the instructions outlined in this post. Please keep in mind that the instructions that follow assumes version 0.4.10 of Node.JS and version “Indigo” (3.7) of Eclipse. All these instructions were tested on Mac OSX 10.6.8.</p><h2>One IDE to Rule Them All</h2><p>The first piece of the puzzle is to install Node.JS:</p>
+<ul>
+  <li>Download the tarball from <a href="http://nodejs.org/#download">http://nodejs.org/#download</a></li>
+  <li>Untar/unzip the package with tar –xvf</li>
+  <li>Change into the newly created directory</li>
+  <li>Run ./configure</li>
+  <li>Run make</li>
+  <li>Run make install</li>
+  <li>Verify node.js is installed by running node –version</li>
+</ul><p>Once you have installed and verified Node.JS, the next step (assuming that you already have Eclipse installed) is to install the Eclipse Debugger Plugin for V8 (Google):</p>
+<ol>
+  <li>Open Eclipse</li>
+  <li>Select Help &gt; Install New Software…</li>
+  <li>Click on the “Add…” button</li>
+  <li>Enter the following information:
+  <ul>
+    <li>Name: Eclipse Debugger Plugin for V8 Update Site</li>
+    <li>Location: <a href="">http://chromedevtools.googlecode.com/svn/update/dev/</a></li>
+  </ul></li>
+  <li>Click on “OK” to add the update site</li>
+  <li>In the “Work with:” drop-down box, choose “Eclipse Debugger Plugin for V8 Update Site”. The plugin area should now be populated with the plugins offered by the update site.</li>
+  <li>Check the box next to “Google Chrome Developer Tools” and click on “Next” to install.</li>
+  <li>Walk through the wizard and install the plugin. Restart Eclipse when prompted for the changes to take effect.</li>
+</ol><p>The next plugin to install is the VJET Plugin from the good folks over at eBay:</p>
+<ol>
+  <li>In Eclipse, Select Help &gt; Install New Software…</li>
+  <li>Click on the “Add…” button</li>
+  <li>Enter the following information:
+  <ul>
+    <li>Name: VJET Update Site</li>
+    <li>Location: <a href="">https://www.ebayopensource.org/p2/vjet/eclipse</a></li>
+  </ul></li>
+  <li>Click on “OK” to add the update site</li>
+  <li>In the “Work with:” drop-down box, choose “VJET Update Site”. The plugin area should now be populated with the plugins offered by the update site.</li>
+  <li>Check the box next to “VJET” and click on “Next” to install.</li>
+  <li>Walk through the wizard and install the plugin. Restart Eclipse when prompted for the changes to take effect.</li>
+</ol><p>At this point, we have all the support we need to create, run, and debug V8 (and therefore Node.JS) applications. However, this is essentially what Cloud9ide.com provides. The cherry on top is the Node.JS code-completion support provided by the VJET plugin. The support is a separate project that needs to be installed in your Eclipse workspace. The VJET Type Library for Node.JS can be installed by following these steps:</p>
+<ol>
+  <li>Download the VJET Type Library for Node.JS from <a href="">http://www.ebayopensource.org/p2/vjet/typelib/NodejsTL.zip</a></li>
+  <li>In Eclipse, select File &gt; Import…</li>
+  <li>In the Import wizard, select General &gt; Existing Projects into Workspace</li>
+  <li>Select “Next”</li>
+  <li>Select the “Select archive file:” import option and click on the “Browse…” button</li>
+  <li>Navigate to the location where the NodejsTL.zip file is saved and select it for import.</li>
+  <li>Select “Finish” to import the type library.</li>
+  <li>Verify that the NodejsTL project appears in your Eclipse workspace.</li>
+</ol><p>Now we have everything we need to get started creating applications with Node.JS from eclipse. To create a Node.JS project in Eclipse, follow these steps:</p>
+<ol>
+  <li>In Eclipse, select File &gt; New &gt; Project…</li>
+  <li>In the New Project wizard, select VJET &gt; VJET Project and click on the “Next” button.</li>
+  <li>On the “Create a VJET Project” screen of the wizard, enter the project name and location (leave the default selections for all other input fields). Click on the “Next” button.</li>
+  <li>On the “VJET Settings” screen of the wizard, click on the “Projects” tab.
+  <ul>
+    <li>Click on the “Add…” button.</li>
+    <li>Select the NodejsTL project and click on the “OK” button. This will add auto-completion for NodeJS modules/functions.</li>
+  </ul></li>
+  <li>Click on the “Finish” button to create the project</li>
+</ol><p>Assuming that you created a simple Node.JS application, the next step is to try to run your Node.JS application from WITHIN Eclipse:</p>
+<ol>
+  <li>In Eclipse, select Run &gt; External Tools &gt; External Tools Configurations…</li>
+  <li>In the External Tools Configurations window, select the “Program” node in the tree display on the left-hand side of the window.</li>
+  <li>Click on the “New launch configuration” button (appears above the tree as a blank piece of paper with a yellow plus sign in the upper right-hand corner). The right-hand side of the window should populate with the launch configuration screen.</li>
+  <li>Enter the following information:
+  <ul>
+    <li>Name: Debug Node</li>
+    <li>Location: /usr/local/bin/node</li>
+    <li>Working Directory: ${project_loc}</li>
+    <li>Arguments: --debug ${resource_name}</li>
+  </ul></li>
+  <li>Click on “Apply” to save the changes</li>
+  <li>Click on “Close” to exit the “External Tools Configurations” window</li>
+</ol><p>To launch the application, select the “Debug Node” configuration under Run &gt; External Tools. Make sure that the .js file that you would normally pass to Node.JS from the command line is selected in the Script Explorer prior to running. Otherwise, you will get errors when Node.JS runs, as it will not know which file to execute.</p><p>Note that you can create multiple launch configurations, so if you would like to have one for debugging and one for running, simply duplicate the configuration, give it a new name (like “Run Node”) and remove the “—debug” option from the arguments. Assuming that you executed step 7 above, you can now attach the V8 remote debugger to the process so that you can set breakpoints and inspect your application:</p>
+<ol>
+  <li>In Eclipse, select Run &gt; Debug Configurations</li>
+  <li>In the Debug Configurations window, select the “Standalone V8 VM” node in the tree display on the left-hand side of the window.</li>
+  <li>Click on the “New launch configuration” button (appears above the tree as a blank piece of paper with a yellow plus sign in the upper right-hand corner). The right-hand side of the window should populate with the launch configuration screen</li>
+  <li>Enter the following information:
+  <ul>
+    <li>Name: Debug Node 5858</li>
+    <li>Host: localhost</li>
+    <li>Port: 5858</li>
+    <li>Breakpoint sync on launch: Merge local and remote breakpoints</li>
+  </ul></li>
+  <li>Click on “Apply” to save the changes</li>
+  <li>Click on “Close” to exit the “Debug Configurations” window</li>
+  <li>To launch the remote debugger, select the “Debug Node 5858” configuration from the Debug Configurations wizard and click on the “Debug” button. This assumes that the Node.JS process is already running and in debug mode, using the default debug port (5858).</li>
+</ol><p>Assuming that the remote debugging configuration connects successfully to your running application, you can place breakpoints in the code by locating the “virtual project” created by the V8 plugin. To do this, use the following directions (assumes that Eclipse is already open AND the remote debugger configuration created above is currently connected to a running Node.JS application in debug mode):</p>
+<ol>
+  <li>Change to the VJET JS perspective
+  <ul>
+    <li>If the VJET JS perspective is not open, open it by selecting Window &gt; Open Perspective &gt; Other…</li>
+    <li>Select “VJET JS” from the list and click on the “OK” button.</li>
+  </ul></li>
+  <li>Locate the “Debug Node 5858” project that appears in the “Script Explorer” view on the left-hand side of the perspective.</li>
+  <li>Expand the project and double click on the source file that you would like to set a breakpoint in to open it in the viewer.</li>
+  <li>Right-click to the left of the line that you would like to place a breakpoint on in the file viewer and select “Toggle Breakpoint” to set the breakpoint.</li>
+  <li>Interact with the Node.JS application. The application should pause when it hits the breakpoint set in Eclipse.</li>
+</ol><p>Note that the virtual project actually lets you see the code from the running Node.JS instance and NOT the source that you imported into Eclipse. In fact, if you just want to use Eclipse for setting breakpoints, you do not even need to import the source. You simply need to create the remote debugger configuration and set breakpoints in the virtual project once the remote debugger has connected to a running Node.JS instance in debug mode. According to the V8 documentation (links below), you can make Eclipse actually honor the breakpoints set in your project. However, I was not able to get this to work (and since the process is running from your code in the workspace anyways, the Virtual Project is actually already pointing at the same source files). And that's it! You now have the ability to create, run, and debug Node.JS applications from Eclipse with the added benefit of code-completion for the built-in modules in Node.JS. Also, because the code-completion comes from a project imported into Eclipse, you can always modify it to add additional support for internal libraries, etc. Below is a list of resources that I used to figure this all out:</p>
+<ul>
+  <li><a href="http://nodejs.org/">Node.JS</a></li>
+  <li><a href="http://code.google.com/p/chromedevtools/">Using Eclipse as a Node.JS Debugger </a></li>
+  <li><a href="http://code.google.com/p/chromedevtools/wiki/DebuggerTutorial">Eclipse Debugger Plugin for V8 Tutorial</a></li>
+  <li><a href="http://code.google.com/p/chromedevtools/wiki/VirtualProject">Eclipse Virtual Projects</a></li>
+  <li><a href="http://net.tutsplus.com/sessions/node-js-step-by-step/">VJET: Importing VJET JavaScript Type Libraries into Eclipse</a></li>
+</ul></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog/2011/08/14/war_of_the_worlds.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2011/08/14/war_of_the_worlds.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2011/08/14/war_of_the_worlds.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '/2011/08/14/war_of_the_worlds.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    <hr>
+
+            </div>
+            <div id="push"></div>
+        </div>
+
+        <div id="footer">
+              <div class="container">
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.0.3</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a></p>
+              </div>
+        </div>
+
+        <!-- Le javascript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+           <script src="/blog/js/jquery-1.9.1.min.js"></script>
+        <script src="/blog/js/bootstrap.min.js"></script>
+        <script src="/blog/js/run_prettify.js"></script>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'jdpearlin'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+        <script type="text/javascript">
+              window.___gcfg = {lang: 'en'};
+
+              (function() {
+                var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+                po.src = 'https://apis.google.com/js/plusone.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+              })();
+        </script>
+        <script>
+            (function(d, s, id) {
+                  var js, fjs = d.getElementsByTagName(s)[0];
+                  if (d.getElementById(id)) return;
+                  js = d.createElement(s); js.id = id;
+                  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+                  fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+        </script>
+        <script src="//platform.linkedin.com/in.js" type="text/javascript"></script>
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-47885115-1', 'jdpgrailsdev.github.io');
+          ga('send', 'pageview');
+
+        </script>
+    </body>
+</html>

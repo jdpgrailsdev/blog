@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
-        <title>Why We Can't Have Nice Things</title>
+        <title>Why We Can't Have Nice Things :: Grails web.xml Generation Magic</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -60,18 +60,65 @@
                     </div>
                 </div>
             </div>
-            <div class="container">	
-	<div class="page-header">
-		<h1>Tag: blog</h1>
-	</div>
-	
-	<!--<ul>-->
-			<h4>December 2012</h4>
-			<ul>
-		
-		<li>08 - <a href="/2012/12/08/relocation.html">Relocation</a></li>
-	</ul>
-	
+            <div class="container">
+    <div class="page-header">
+        <h1>Grails web.xml Generation Magic</h1>
+    </div>
+
+    <p><em>18 July 2011</em></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog//2011/07/18/grails_web_xml.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2011/07/18/grails_web_xml.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2011/07/18/grails_web_xml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <p><h1>The Problem</h1><p>Grails provides a nice feature in each plugin's descriptor file that allows the plugin to make modifications to the web.xml file created by Grails application that includes the plugin at build time. This can be done by implementing the <code>doWithWebDescriptor</code> closure in the plugin's descriptor file (see the Grails documentation for more information). This works fine if you have a limited number of Grails plugins in your application that want to modify the web.xml file or have plugins whose changes to the <code>web.xml</code> file do not require some sort of order. I recently ran into an issue where we needed to make sure that a custom Grails plugin added a servlet filter to the web.xml that came BEFORE the filters added by the Spring Security plugin. I did not want to modify the Spring Security plugin to make sure its modifications to the web.xml came after the custom plugin's modifications, nor did I want to assume that the plugins would be installed in a particular order by Grails when building the main application. </p><h2>The Solution</h2><p>After realizing that I could not rely on the order that each plugin's <code>doWithWebDescriptor</code> closure would be called, I decided to use the Grails application's <code>BuildConfig.groovy</code> file to make sure that the web.xml file was modified AFTER all plugins had modified the <code>web.xml</code> file. This would allow the build to re-organize the servlet filters in the <code>web.xml</code> file to ensure they were in the right order (and would also cover the case where one or more of the filters was not added to the <code>web.xml</code> file -- i.e. this solution would work if one or both of the filters are missing from the generated web.xml file). The trick is to make use of the grails.war.resources closure in the <code>BuildConfig.groovy</code> file. This closure is called right before the WAR file is created, ensuring that nothing else will modify the web.xml file. This takes care of the timing issue. However, I still needed to write some code to actually modify the order of the servlet filters in the <code>web.xml</code> file. To do this, I made use of the Groovy shell and binding classes:</p>
+<pre><code>grails.war.resources = { stagingDir, args -&gt;
+    ...
+    updateWebXml(&quot;${stagingDir}/WEB-INF/web.xml&quot;)
+}
+
+private def updateWebXml(webXmlPath) {
+    Binding binding = new Binding()
+    binding.indentity {
+        setVariable(&quot;webXmlPath&quot;, webXmlPath)
+    }
+
+    new GroovyShell(binding).evaluate(new File(&quot;ModifyWebXml.groovy&quot;)
+}
+</code></pre><p>The <code>updateWebXml</code> method uses the GroovyShell object to execute a Groovy script file, named <code>ModifyWebXml.groovy</code>. This script uses the <code>XmlSlurper</code> class to read in the existing web.xml file and write out the modified one in its place:</p>
+<pre><code>def webXml = new java.io.File(webXmlPath)
+if(webXml.exists()) {
+    def origWebXml = new XmlSlurper().parse(webXml)
+    def newWebXml = new groovy.xml.StreamingMarkupBuilder().bind { builder -&gt;
+        // Create the new web.xml file from the old one!
+    }
+
+    webXml.withWriter { w -&gt;
+        w.write(groovy.xml.XmlUtil.serialize(newWebXml))
+    }
+}
+</code></pre><p>This solution allowed me to create a script that could re-order the contents of the <code>web.xml</code> file and handle all cases with regards to whether or not the servlet filter entries in question are present or not in the <code>web.xml</code> file used as input. It is also important to note that this solution can be extended to help in any other situation where you need to make last second modifications to files to be included in the WAR file at build time. </p></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog/2011/07/18/grails_web_xml.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2011/07/18/grails_web_xml.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2011/07/18/grails_web_xml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '/2011/07/18/grails_web_xml.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    <hr>
+
             </div>
             <div id="push"></div>
         </div>

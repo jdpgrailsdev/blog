@@ -6,8 +6,8 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Fri, 7 Feb 2014 09:33:56 -0500</pubDate>
-        <lastBuildDate>Fri, 7 Feb 2014 09:33:56 -0500</lastBuildDate>
+        <pubDate>Fri, 7 Feb 2014 20:45:42 -0500</pubDate>
+        <lastBuildDate>Fri, 7 Feb 2014 20:45:42 -0500</lastBuildDate>
 
         <item>
             <title>Relocation</title>
@@ -16,6 +16,447 @@
             <guid isPermaLink="false">/2012/12/08/relocation.html</guid>
             <description>
                     &lt;h2&gt;Relocation&lt;/h2&gt;&lt;p&gt;I have decided to relocate my blog from &lt;a href=&quot;http://jonathan-whywecanthavenicethings.blogspot.com&quot;&gt;Blog Spot&lt;/a&gt; to &lt;a href=&quot;http://jdpgrailsdev.github.io/blog&quot;&gt;GitHub&lt;/a&gt;. I have not actively posted anything in a while, but I am going to start&lt;br/&gt;up again and felt that hosting it on Github was a better choice. I will leave the old blog up with a pointer over to the new blog.&lt;/p&gt;
+            </description>
+        </item>
+        <item>
+            <title>Where&apos;s My Exceptions, Spring Data MongoDB?</title>
+            <link>http://jdpgrailsdev.github.io/blog//2011/11/19/spring_data_mongodb_exceptions.html</link>
+            <pubDate>Sat, 19 Nov 2011 00:00:00 -0500</pubDate>
+            <guid isPermaLink="false">/2011/11/19/spring_data_mongodb_exceptions.html</guid>
+            <description>
+                    &lt;h1&gt;Abstraction For the Win!&lt;/h1&gt;&lt;p&gt;To be fair, the Spring Data MongoDB project is currently only at Milestone releases (as of writing, they are up to M5). Unlike most open source projects, they do have fairly good reference documentation. Recently, we decided to add some unique contraints to a document by adding a compound index. The Spring Data MongoDB project provides a couple mechanisms to be able to do this:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Use the MongoTemplate class&apos;s ensureIndex method to programmatically create an index at runtime.&lt;/li&gt;
+  &lt;li&gt;Use the CompoundIndexes and CompoundIndex annotations to declare the indexes on the document model class.&lt;/li&gt;
+  &lt;li&gt;Manually create the index(es) against the database using the MongoDB command line.&lt;/li&gt;
+&lt;/ol&gt;&lt;p&gt;For a variety of reasons, I decided to go with option #2. Using the annotations is pretty straight forward:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;package test;
+
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection=&amp;quot;people&amp;quot;)
+@CompoundIndexes(value={
+    @CompoundIndex(name=&amp;quot;people_first_name_address_idx&amp;quot;, def=&amp;quot;{&amp;#39;firstName&amp;#39;:1, &amp;#39;address&amp;#39;:1}&amp;quot;, unique=true),
+    @CompoundIndex(name=&amp;quot;people_last_name_address_idx&amp;quot;, def=&amp;quot;{&amp;#39;lastName&amp;#39;:1, &amp;#39;address&amp;#39;:1}&amp;quot;, unique=true)
+})
+public class Person {
+
+    private String address;
+    private String firstName;
+    private String lastName;
+
+    ...
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The example above declares two MongoDB compound indexes. In the first one, it is creating an index on the firstName and address properties of the document. The &quot;:1&quot; tells the index to sort that column in ascending order for the index (see the org.springframework.data.mongodb.core.query.Order class&apos;s Javadoc for more details on sort orders). The &quot;unique=true&quot; property tells MongoDB to reject any inserts/saves that violate this contraint (think a unique contraint in the SQL world). There are other properties on the CompoundIndex annotation, so refer to the Spring Data MongoDB Javadocs for more information. When the application starts up, the Spring Data MongoDB library listens for the application start event via Spring and will create the indexes automatically (if they don&apos;t already exist). This is a benefit over options 1 and 3 above that require manual intervention.&lt;/p&gt;&lt;h2&gt;So Why Didn&apos;t It Work?&lt;/h2&gt;&lt;p&gt;According to the paragraph above, it is pretty easy to set up indexes using Spring Data MongoDB. You annotate your classes, start your application and run some tests to make sure the unique constraint is being honored, right? That&apos;s what I thought too. I started out by annotating my document objects and re-building my application. Before installing and starting my application in Tomcat, I decided to completely drop my database from MongoDB to ensure that everything was being created properly. Once I was sure everything was clean, I installed my application and started Tomcat, causing Spring Data MongoDB to create the database, the collections and the indexes when the web application started. I verified this by running the following command in MongoDB to see the indexes existed:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;MongoDB shell version: 1.8.2
+connecting to: test
+&amp;gt; db.people.getIndexes()
+[
+        {
+                &amp;quot;name&amp;quot; : &amp;quot;_id_&amp;quot;,
+                &amp;quot;ns&amp;quot; : &amp;quot;test.people&amp;quot;,
+                &amp;quot;key&amp;quot; : {
+                     &amp;quot;_id&amp;quot; : 1
+                },
+                &amp;quot;v&amp;quot; : 0
+        },
+        {
+                &amp;quot;name&amp;quot; : &amp;quot;people_first_name_address_idx&amp;quot;,
+                &amp;quot;ns&amp;quot; : &amp;quot;test.people&amp;quot;,
+          &amp;quot;dropDups&amp;quot; : false,
+          &amp;quot;sparse&amp;quot; : false,
+          &amp;quot;unique&amp;quot; : true,
+          &amp;quot;key&amp;quot; : {
+                        &amp;quot;firstName&amp;quot; : 1,
+                        &amp;quot;address&amp;quot; : 1
+                },
+                &amp;quot;v&amp;quot; : 0
+        },
+        {
+                &amp;quot;name&amp;quot; : &amp;quot;people_last_name_address_idx&amp;quot;,
+              &amp;quot;ns&amp;quot; : &amp;quot;test.people&amp;quot;,
+                &amp;quot;dropDups&amp;quot; : false,
+          &amp;quot;sparse&amp;quot; : false,
+          &amp;quot;unique&amp;quot; : true,
+                &amp;quot;key&amp;quot; : {
+                    &amp;quot;lastName&amp;quot; : 1,
+                    &amp;quot;address&amp;quot; : 1
+                },
+                &amp;quot;v&amp;quot; : 0
+        }
+]
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This allowed me to verify that Spring Data MongoDB actually did create the indexes at startup. So far, so good. My next step was to insert some data to the collection via my application. This worked and I was able to verify the document in MongoDB by using the .find({}) operation on the collection from the command line. The next step was to attempt to insert the exact same document, which should fail due to the unique constraints. To my surprise, it did not fail and I did not receive any exceptions from the MongoTemplate class (which executed the insert). Just to make sure I wasn&apos;t crazy, I took the JSON and inserted it directly to the collection using the .save({...}) operation on the collection via the Mongo command line. It did exactly what I expected it to do:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;E11000 duplicate key error index: test-people.$people_first_name_address_idx  dup key: { : &amp;quot;John&amp;quot;, : &amp;quot;123 Fake Street&amp;quot; }
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This meant that index was working. So what was Spring Data MongoDB&apos;s problem? What was happening to the error? After some Google-foo, I stumbled across this JIRA issue: &lt;a href=&quot;https://jira.springsource.org/browse/DATAMONGO-134&quot;&gt;https://jira.springsource.org/browse/DATAMONGO-134&lt;/a&gt;. Hidden in there was the answer to my problem. By default, the MongoTemplate class uses the default WriteConcern from the MongoDB Java Driver library. The default WriteConcern as it turns out does NOT raise exceptions for server errors, only network errors. This means that you will only receive an exception if you lose connection to the database or try to connect to an invalid address/port and will not receive an exception for any errors generated by MongoDB. Lame, but easy to fix. The WriteConcern class comes with some static constants that define the following write concern options:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/** No exceptions are raised, even for network issues */
+public final static WriteConcern NONE = new WriteConcern(-1);
+
+/** Exceptions are raised for network issues, but not server errors */
+public final static WriteConcern NORMAL = new WriteConcern(0);
+
+/** Exceptions are raised for network issues, and server errors; waits on a server for the write operation */
+public final static WriteConcern SAFE = new WriteConcern(1);
+
+/** Exceptions are raised for network issues, and server errors and the write operation waits for the server to flush the data to disk*/
+public final static WriteConcern FSYNC_SAFE = new WriteConcern(true);
+
+/** Exceptions are raised for network issues, and server errors; waits for at least 2 servers for the write operation*/
+public final static WriteConcern REPLICAS_SAFE = new WriteConcern(2);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;So, depending on your needs, you can change the write concern options used by the MongoTemplate class. Since I was using Spring to instantiate the MongoTemplate class, this required a couple of changes to my applicationContext.xml file:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;lt;beans 
+    xmlns:context=&amp;quot;http://www.springframework.org/schema/context&amp;quot;      
+    xmlns:mongo=&amp;quot;http://www.springframework.org/schema/data/mongo&amp;quot; 
+    xmlns:util=&amp;quot;http://www.springframework.org/schema/util&amp;quot;  
+    xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot; 
+    xmlns=&amp;quot;http://www.springframework.org/schema/beans&amp;quot; 
+    xsi:schemalocation=&amp;quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd&amp;quot;&amp;gt;
+
+    ...
+
+    &amp;lt;mongo:db-factory dbname=&amp;quot;${mongodb.database}&amp;quot; host=&amp;quot;${mongodb.host}&amp;quot; id=&amp;quot;databaseFactory&amp;quot; password=&amp;quot;${mongodb.password}&amp;quot; port=&amp;quot;${mongodb.port}&amp;quot; username=&amp;quot;${mongodb.username}&amp;quot; /&amp;gt;
+
+    &amp;lt;bean class=&amp;quot;org.springframework.data.mongodb.core.MongoTemplate&amp;quot; id=&amp;quot;mongoTemplate&amp;quot;&amp;gt;
+        &amp;lt;constructor-arg name=&amp;quot;mongoDbFactory&amp;quot; ref=&amp;quot;databaseFactory&amp;quot; /&amp;gt;
+        &amp;lt;property name=&amp;quot;writeConcern&amp;quot;&amp;gt;
+            &amp;lt;util:constant static-field=&amp;quot;com.mongodb.WriteConcern.SAFE&amp;quot; &amp;gt;&amp;lt;/util:constant&amp;gt;
+        &amp;lt;/property&amp;gt;
+    &amp;lt;/bean&amp;gt;
+    ...  
+&amp;lt;/beans&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;After making this change and restarting the application, I finally go the exception I was expecting to receive from Spring Data MongoDB:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;2011-11-18 15:44:32,913 ERROR - Unable to create or update person &amp;#39;{&amp;quot;firstName&amp;quot; : &amp;quot;John&amp;quot;, &amp;quot;lastName&amp;quot; : &amp;quot;Doe&amp;quot;, &amp;quot;address&amp;quot;: &amp;quot;123 Fake Street&amp;quot;}&amp;#39;.
+org.springframework.dao.DuplicateKeyException: E11000 duplicate key error index: test.people.$people_first_name_address_idx  dup key: { : &amp;quot;John&amp;quot;, : &amp;quot;123 Fake Street&amp;quot;}; nested exception is com.mongodb.MongoException$DuplicateKey: E11000 duplicate key error index: test.people.$people_first_name_address_idx  dup key: { : &amp;quot;John&amp;quot;, : &amp;quot;123 Fake Street&amp;quot;};
+    at org.springframework.data.mongodb.core.MongoExceptionTranslator.translateExceptionIfPossible(MongoExceptionTranslator.java:53)
+    at org.springframework.data.mongodb.core.MongoTemplate.potentiallyConvertRuntimeException(MongoTemplate.java:1373)
+    at org.springframework.data.mongodb.core.MongoTemplate.execute(MongoTemplate.java:333)
+    at org.springframework.data.mongodb.core.MongoTemplate.saveDBObject(MongoTemplate.java:739)
+    at org.springframework.data.mongodb.core.MongoTemplate.doSave(MongoTemplate.java:679)
+    at org.springframework.data.mongodb.core.MongoTemplate.save(MongoTemplate.java:669)
+    at org.springframework.data.mongodb.core.MongoTemplate.save(MongoTemplate.java:665)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+    at java.lang.reflect.Method.invoke(Method.java:597)
+    at com.sun.jersey.spi.container.JavaMethodInvokerFactory$1.invoke(JavaMethodInvokerFactory.java:60)
+    at com.sun.jersey.server.impl.model.method.dispatch.AbstractResourceMethodDispatchProvider$ResponseOutInvoker._dispatch(AbstractResourceMethodDispatchProvider.java:205)
+    at com.sun.jersey.server.impl.model.method.dispatch.ResourceJavaMethodDispatcher.dispatch(ResourceJavaMethodDispatcher.java:75)
+    at com.sun.jersey.server.impl.uri.rules.HttpMethodRule.accept(HttpMethodRule.java:288)
+    at com.sun.jersey.server.impl.uri.rules.ResourceClassRule.accept(ResourceClassRule.java:108)
+    at com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147
+    at com.sun.jersey.server.impl.uri.rules.RootResourceClassesRule.accept(RootResourceClassesRule.java:84)
+    at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1465)
+    at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1396)
+    at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1345)
+    at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1335)
+    at com.sun.jersey.spi.container.servlet.WebComponent.service(WebComponent.java:416)
+    at com.sun.jersey.spi.container.servlet.ServletContainer.service(ServletContainer.java:537)
+    at com.sun.jersey.spi.container.servlet.ServletContainer.service(ServletContainer.java:699)
+    at javax.servlet.http.HttpServlet.service(HttpServlet.java:717)
+    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:290)
+    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:206)
+    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:235)
+    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:206)
+    at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:233)
+    at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:191)
+    at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:128)
+    at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:102)
+    at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:109)
+    at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:293)
+    at org.apache.coyote.http11.Http11Processor.process(Http11Processor.java:849)
+    at org.apache.coyote.http11.Http11Protocol$Http11ConnectionHandler.process(Http11Protocol.java:583)
+    at org.apache.tomcat.util.net.JIoEndpoint$Worker.run(JIoEndpoint.java:454)
+    at java.lang.Thread.run(Thread.java:680)
+Caused by: com.mongodb.MongoException$DuplicateKey: E11000 duplicate key error index: test.people.$people_first_name_address_idx  dup key: { : &amp;quot;John&amp;quot;, : &amp;quot;123 Fake Street&amp;quot;};
+    at com.mongodb.CommandResult.getException(CommandResult.java:80)
+    at com.mongodb.CommandResult.throwOnError(CommandResult.java:116)
+    at com.mongodb.DBTCPConnector._checkWriteError(DBTCPConnector.java:126)
+    at com.mongodb.DBTCPConnector.say(DBTCPConnector.java:148)
+    at com.mongodb.DBTCPConnector.say(DBTCPConnector.java:132)
+    at com.mongodb.DBApiLayer$MyCollection.insert(DBApiLayer.java:262)
+    at com.mongodb.DBApiLayer$MyCollection.insert(DBApiLayer.java:217)
+    at com.mongodb.DBCollection.insert(DBCollection.java:71)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt; at com.mongodb.DBCollection.save(DBCollection.java:633)&lt;br/&gt; at org.springframework.data.mongodb.core.MongoTemplate$13.doInCollection(MongoTemplate.java:745)&lt;br/&gt; at org.springframework.data.mongodb.core.MongoTemplate.execute(MongoTemplate.java:331)&lt;br/&gt; ... 41 more&lt;/p&gt;&lt;p&gt;So, it is really hard to blame the Spring Data MongoDB guys for this issue, as it is really a configuration option of the underlying MongoDB Java Driver. However, the MongoTemplate class does have a setWriteConcern method for this very reason and it would have saved me some time if the reference documentation had mentioned this and/or had some examples on how to change the setting. I guess that will be in the &quot;release&quot; :).&lt;/p&gt;
+            </description>
+        </item>
+        <item>
+            <title>Planes, Trains, and Automobiles</title>
+            <link>http://jdpgrailsdev.github.io/blog//2011/09/26/trains_planes_auto.html</link>
+            <pubDate>Mon, 26 Sep 2011 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">/2011/09/26/trains_planes_auto.html</guid>
+            <description>
+                    &lt;h1&gt;Fun with Airports&lt;/h1&gt;
+&lt;table class=&quot;tr-caption-container&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; style=&quot;float: left; margin-right: 1em; text-align: left;&quot;&gt;
+	&lt;tbody&gt;
+		&lt;tr&gt;
+			&lt;td style=&quot;text-align: center;&quot;&gt;
+				&lt;p&gt;
+					&lt;a style=&quot;margin-left: auto; margin-right: auto;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/planes-trains-automobiles.jpg&quot;&gt;
+						&lt;img width=&quot;320&quot; height=&quot;198&quot; border=&quot;0&quot; src=&quot;/blog/img/planes-trains-automobiles.jpg&quot;&gt;
+					&lt;/a&gt;
+				&lt;/p&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
+				&lt;p&gt;If I had been able to sing &quot;Mess Around&quot; with John Candy,&lt;/p&gt;
+				&lt;p&gt;maybe my trip wouldn&apos;t have been as bad either.&lt;/p&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;&lt;p&gt;At some point, if you fly enough, you go through one of those &quot;trips from hell&quot; thanks to the airline industry. Weather gets in the way of travel or you get delayed just enough that you miss that connection and spend the night sleeping in the airport in Little Rock, Arkansas. Then there are those trips that just highlight the complete breakdown in rational thought and competence. This is the story of my attempt to get from Burlington, VT to Washington-Dulles International Airport. It will make you laugh. It will make you cry. It will make you understand why you should never fly United Airlines. It will also highlight why doing just a little extra to help your customers goes a long way (instead of choosing the tactics United uses to treat its customers like boxes of diapers being shipped from a distribution center to a Walmart -- i.e., it gets there when it gets there).&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;/p&gt;&lt;h2&gt;The Storm on the Horizon&lt;/h2&gt;
+&lt;table class=&quot;tr-caption-container&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; style=&quot;float: right; text-align: center;&quot;&gt;
+	&lt;tbody&gt;
+		&lt;tr&gt;
+			&lt;td style=&quot;text-align: center;&quot;&gt;
+				&lt;p&gt;
+					&lt;a style=&quot;margin-left: auto; margin-right: auto;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/terminal-tom-hanks.jpg&quot;&gt;
+						&lt;img width=&quot;320&quot; height=&quot;207&quot; border=&quot;0&quot; src=&quot;/blog/img/terminal-tom-hanks.jpg&quot;&gt;
+					&lt;/a&gt;
+				&lt;/p&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
+				&lt;p&gt;In retrospect, it would have made more&lt;/p&gt;
+				&lt;p&gt;sense to just rent a car and drive the 10 hours.&lt;/p&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;&lt;p&gt;I finished up at work and headed to the airport a little after 5 PM on Friday. My flight was scheduled to leave Burlington, VT at 7:02 PM (Flight 3912). It was a direct flight to Washington-Dulles International Airport (IAD), which was suppose to hand a little after 9 PM. I got off the rental car, made it through security, and sat down at the gate at around 5:40 PM. At around 6:00 PM, the gate agent got on the PA and informed us that the plane had not yet left IAD due to a &quot;maintenance issue&quot; and that we probably wouldn&apos;t be leaving any time before 7:45 PM. She said that she could help people rebook their trips if this was going to cause them to miss their connections and would try to get hotel rooms for people who would opt to wait for the flight at 6 AM out of Burlington for IAD the next day. However, as she pointed out, there were no hotel rooms available in Burlington, due to a couple of college class reunions and a car show going on (we learned later that what this really meant was that the one hotel that took United vouchers was full and United won&apos;t pay for any other hotel -- or at least that was the message). After a hand-full of people made their way to the gate to get re-booked, the gate attendant came back on the PA at around 6:30 PM to announce that the plane had taken off from IAD and would land in Burlington around 8:00 PM. It would take about 20 minutes to turn the plane around, which would mean we would get into IAD at around 10:00 PM (not bad, since this is only an hour later than originally scheduled, if you overlook the whole &quot;maintenance&quot; issue with the plane that delayed it in the first place). Again, the gate attendant asked if anyone needed to re-book and spent roughly the next hour helping customers (we found out later that she worked for Delta, but had to cover the United gate).&lt;/p&gt;&lt;h2&gt;Take It For a Test Drive&lt;/h2&gt;
+&lt;table class=&quot;tr-caption-container&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; style=&quot;float: left; text-align: center;&quot;&gt;
+	&lt;tbody&gt;
+		&lt;tr&gt;
+			&lt;td style=&quot;text-align: center;&quot;&gt;
+				&lt;p&gt;
+					&lt;a style=&quot;margin-left: auto; margin-right: auto;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/airplane7.jpg&quot;&gt;
+						&lt;img width=&quot;320&quot; height=&quot;181&quot; border=&quot;0&quot; src=&quot;/blog/img/airplane7.jpg&quot;&gt;
+					&lt;/a&gt;
+				&lt;/p&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
+				&lt;p&gt;The funny thing about all of this is that the 2 gate attendants&lt;/p&gt;
+				&lt;p&gt;and the 4 TSA workers couldn&apos;t go home until we took off,&lt;/p&gt;
+				&lt;p&gt;so they were definitely motivated to get us out of there.&lt;/p&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;&lt;p&gt;At 8:00 PM, the plane from IAD landed and the passengers deplaned. There were about 30 of us left still waiting to get on the flight back to IAD. Just as all of the passengers got off the plane, one of the workers from the tarmac came in and took the PA microphone. He announced that there was another &quot;maintenance&quot; problem with the plane and it would take two hours to test. He would get back to us at that time with an update. In retrospect, this was the point where I should have just gone down stairs, rented a car, and drove the 10 hours from Burlington to my house outside of IAD. Needless to say, this news was met with a lot of complaints and comments. Again, a group of people tried to get re-booked and called around to find their own hotels. Luckily for me, Burlington International Airport has free WiFi, so I kicked back, plugged my laptop in and connected to my SlingBox (just to give you a sense of how long the delay was, I was able to watch two episodes of Family Guy and the first National Treasures movie in that time). Also during this time, one of the TSA workers &quot;hit the wrong button&quot; during a test that sounded an alarm that ordered &quot;all TSA personel to secure all exits&quot; to the terminal &quot;immediately&quot; (they quickly told us that this was an accident. At around 10:00 PM the same ground crew member came in to announce that the &quot;tests went well&quot; and they just needed to take the plane &quot;out for a test drive&quot;. Let me stop here and highlight how ridiculous this was. I have never heard of this before. They literally taxied the plane out on to the runway (with no passengers), started the engines up full speed and proceeded to drive around the runway &quot;testing&quot; the aircraft. This went on for about an hour. During this time, I believe that one of the gate attendants ran home to get her dog (or at least take care of her dog), while the other covered for her. At around 11 PM, the plane made its way back to the gate, but ran into another road block. While they were out joyriding in the plane, another plane had landed and pulled up to our gate to deplane. Our plane had to wait on the tarmac for this to unfold. So, at about 11:20, our plane pulled back up to the gate. The ground crew member came back inside an announced that the test drive was a success. They simply had to run on more final test and fill out some paperwork. He would get back to us in 35 minutes. This, obviously, was met with sarcastic comments and groans from the 20 or so of us left in the terminal. At about midnight, we finally lined up to get on the plane.&lt;/p&gt;&lt;h2&gt;The Point of No Return&lt;/h2&gt;
+&lt;table class=&quot;tr-caption-container&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; style=&quot;float: right; margin-left: 1em; text-align: right;&quot;&gt;
+	&lt;tbody&gt;
+		&lt;tr&gt;
+			&lt;td style=&quot;text-align: center;&quot;&gt;
+				&lt;p&gt;
+					&lt;a style=&quot;clear: right; margin-bottom: 1em; margin-left: auto; margin-right: auto;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/airplane.jpg&quot;&gt;
+						&lt;img border=&quot;0&quot; src=&quot;/blog/img/airplane.jpg&quot;&gt;
+					&lt;/a&gt;
+				&lt;/p&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
+				&lt;p&gt;Our first attempt at landing  kind of went like this...&lt;/p&gt;
+			&lt;/td&gt;
+			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
+				&lt;p&gt; &lt;/p&gt;
+			&lt;/td&gt;
+			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
+				&lt;p&gt;
+					&lt;br&gt;
+				&lt;/p&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;&lt;p&gt;I&apos;ve never seen a plane board that quickly. There was a good chuckle from the crowd when the gate attendant announced that &quot;premium&quot; customers were welcome to board first. We got on the plane and settled in about 5 or 10 minutes. I got a look at the pilots, who were both no older than 25 years old each (this will be important later). We pushed back from the terminal, taxied out to the runway and then nothing. We sat. And sat. And sat. After about 30 minutes, the pilot came on the intercom and told us that because it was so late, the air traffic control tower had shut down for the evening. He told us that normally this isn&apos;t a problem, as our plane got transferred to regional air traffic control. However, because the regional air traffic control was now in charge, we had to wait for all inbound planes to land first before being cleared for take off (this is obviously because they are not local to the air field and therefore can&apos;t see what is going on). So we waited. And waited. At a little after 1 AM, we finally took off. It had been delayed by over 5 hours, but we were finally going to get home, even if it was at 3 AM. The flight went smoothly (there were a few turbulence) and at around a little after 3 AM, the pilot notified us that we were starting our decent into the Washington metro area. There were low clouds over the area (we were flying above them) at a couple hundred feet. However, it was not fog: you could see through the clouds in spots and see the lights on the ground. I didn&apos;t think anything of it and assumed that we would be on the ground in minutes.&lt;/p&gt;&lt;h2&gt;Trust Your Instincts, Luke&lt;/h2&gt;
+&lt;table class=&quot;tr-caption-container&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; style=&quot;float: right; text-align: center;&quot;&gt;
+	&lt;tbody&gt;
+		&lt;tr&gt;
+			&lt;td style=&quot;text-align: center;&quot;&gt;
+				&lt;p&gt;
+					&lt;a style=&quot;margin-left: auto; margin-right: auto;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/dontgo.png&quot;&gt;
+						&lt;img width=&quot;320&quot; height=&quot;179&quot; border=&quot;0&quot; src=&quot;/blog/img/dontgo.png&quot;&gt;
+					&lt;/a&gt;
+				&lt;/p&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
+				&lt;p&gt;Do you have anything to declare?  Yeah, don&apos;t fly United.&lt;/p&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;&lt;p&gt;The plane began its descent. The landing gear came down. We started getting closer to the ground. We started to go through the low lying clouds. Just as I thought that we were going to touch down, the engines went into full throttle, the plane pitched steeply up into the air and banked to the left, back towards Washington, D.C. and the DelMarVa peninsula. After a few minutes, the captain came on and stated that they could not see the runway at the required height, so they aborted the landing. They were going to try landing at a different runway (because that runway would magically have no clouds over it). A few minutes later we made attempt number two, with the same result. As we began circling, the pilot came on to say that he was in a conversation with air traffic control at IAD and regional air traffic control to see what the next step would be. I have no doubt that more experienced pilots would have landed that plane. About ten minutes later, the pilot came back on the intercom to say that we could not land at IAD would be diverted to Allentown, PA. He assured us that United would put us in hotels and help us arrange travel to IAD or some other destination. About 25 minutes later, we landed at the airport in Allentown, PA and again sat on another runway. The pilot told us that they were having trouble finding people at the airport to help us get to the gate. He also told us that &quot;things were changing over the last 30 minutes&quot; and that now the gate agent was trying to arrange &quot;transportation&quot; to IAD for us. We got off the plane and made our way inside to the gate area. After standing around for about 5 minutes, one of the ground crew members from outside came in and got on the microphone. He told us that he had arranged for buses to show up &quot;in 5 or 10 minutes&quot; to take us to IAD, if we were interested. The other option was to stay at the airport. This caught a bunch of people off guard and started asking about a hotel. He said that United would not pay for a hotel, because we were diverted &quot;due to weather&quot;. My jaw dropped, as did most of the people standing around the podium. We were diverted &quot;due to weather&quot; because United sent a faulty plane from IAD to Burlington (I wonder how mad the people on that flight would be if they knew the plane they had just gotten off of had 3 hours of maintenance work done on it after they landed). The reason we hit weather was obviously because of United and the issues to the plane. This was a clever trick on their part to get out of having to help their customers. It seems to me, it would have made much more sense to pay $80-90 a person to put the few who wanted to stay in Allentown up for the night and gain a ton of good will. Instead, they pissed off 20+ customers, who will now tell people about this hellish trip and why you shouldn&apos;t fly on United. I couldn&apos;t listen to this nonsense so I headed down stairs to baggage claim where the bus would supposedly meet us.&lt;/p&gt;&lt;h2&gt;Get On the Bus!&lt;/h2&gt;
+&lt;table class=&quot;tr-caption-container&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; style=&quot;float: left; margin-right: 1em; text-align: left;&quot;&gt;
+	&lt;tbody&gt;
+		&lt;tr&gt;
+			&lt;td style=&quot;text-align: center;&quot;&gt;
+				&lt;p&gt;
+					&lt;a style=&quot;clear: left; margin-bottom: 1em; margin-left: auto; margin-right: auto;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/partybus.jpg&quot;&gt;
+						&lt;img width=&quot;320&quot; height=&quot;240&quot; border=&quot;0&quot; src=&quot;/blog/img/partybus.jpg&quot;&gt;
+					&lt;/a&gt;
+				&lt;/p&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
+				&lt;p&gt;Am I in Allentown or Las Vegas?&lt;/p&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;&lt;p&gt;And so we waited. Again. We landed in Allentown at around 3:30 AM. The buses that were suppose to show up in 5-10 minutes finally showed up around 4 AM. I walked out of the baggage claim to find two booze cruise/party buses waiting to take us to IAD (complete with functioning interior LED disco lights and the &quot;Vomit/Destruction will cause you to forfeit your $500 deposit&quot; sign). You couldn&apos;t even sleep on this bus, because the seats are on the side, like in the picture to the left. So, in a darkened party bus, we pulled out of the airport in Allentown, PA for the three hour drive through Harrisburg, Gettysburg, Frederick, and finally Leesburg. In the middle of the trip at 5:43 AM, United called my house and sent me this e-mail:&lt;br/&gt;&lt;p&gt;&lt;br/&gt; &lt;br&gt;&lt;br/&gt;&lt;/p&gt;&lt;br/&gt;&lt;p class=&quot;separator&quot; style=&quot;clear: both; text-align: center;&quot;&gt;&lt;br/&gt; &lt;a style=&quot;margin-left: 1em; margin-right: 1em;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/united.png&quot;&gt;&lt;br/&gt; &lt;img width=&quot;303&quot; height=&quot;320&quot; border=&quot;0&quot; src=&quot;/blog/img/united.png&quot;&gt;&lt;br/&gt; &lt;/a&gt;&lt;br/&gt;&lt;/p&gt;&lt;br/&gt;&lt;p&gt;&lt;br/&gt; &lt;br&gt;&lt;br/&gt;&lt;/p&gt;&lt;br/&gt;I wish I was funny enough to make up that plot twist. Somehow the flight that didn&apos;t get cancelled when it should have been cancelled, got cancelled after I got off it in Allentown, PA. To add insult to injury, United apparently never updated their web site to say that the flight had been diverted, so people were waiting at IAD wondering what happened. I&apos;m sure this was classic CYA by United to make sure that they didn&apos;t have to pay anything out to those who stayed in Burlington, VT, as they are not liable if it is cancelled due to weather. So, at 8 AM, we finally pulled into IAD on our party buses. A little over 13 hours from when I was suppose to leave Burlington, I made it home. There was no snow. There was no rain. There was no hurricane or tornado or typhoon. Or earthquake. There was only United Airlines and its terrible customer service. Not a bad way to spend a Friday night, eh?&lt;/p&gt;
+            </description>
+        </item>
+        <item>
+            <title>I Don&apos;t Need To Read The Manual...Spring Integration and JMX</title>
+            <link>http://jdpgrailsdev.github.io/blog//2011/09/13/spring_integration_jmx.html</link>
+            <pubDate>Tue, 13 Sep 2011 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">/2011/09/13/spring_integration_jmx.html</guid>
+            <description>
+                    &lt;h1&gt;Enabling JMX Monitoring with Spring Integration&lt;/h1&gt;&lt;p&gt;The title pretty much says it all. This seems like a pretty simple task, right? I thought that I would just go to the Spring Integration reference documentation, follow the instructions, and boom, you can see all of your Spring Integration components via JMX from your favorite JMX monitoring client. If only it were that easy. The first hurdle I encountered was that the documentation at Spring&apos;s site fails to mention how to get the JMX schema included in your integration.xml or where the parsers/handlers live in the Spring library so that it can actually load and parse the integration.xml file. The second is that there appears to be some typos in it (it should be &quot;jmx:mbean-export&quot;, not &quot;jmx:mbean-exporter&quot; and the attributes of that tag are also listed incorrectly). Grr (I guess you get what you pay for). So, without further ado, this is how to turn on the MBean Exporter for Spring Integration:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;p&gt;Declare the &quot;jmx&quot; namespace in your integration.xml file:&lt;/p&gt;
+  &lt;pre&gt;&lt;code&gt;xmlns:jmx=&amp;quot;http://www.springframework.org/schema/integration/jmx&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;p&gt;Add the &quot;jmx&quot; schema to the &quot;schemaLocation&quot; attribute:&lt;/p&gt;
+  &lt;pre&gt;&lt;code&gt;xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/integration/jmx http://www.springframework.org/schema/integration/jmx/spring-integration-jmx-2.0.xsd
+http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;p&gt;Declare the MBean server bean: &lt;/p&gt;
+  &lt;pre&gt;&lt;code&gt;&amp;lt;bean class=&amp;quot;org.springframework.jmx.support.MBeanServerFactoryBean&amp;quot; id=&amp;quot;mbeanServer&amp;quot;&amp;gt;
+    &amp;lt;property name=&amp;quot;locateExistingServerIfPossible&amp;quot; value=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/property&amp;gt;
+&amp;lt;/bean&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;p&gt;Declare the Integration MBean Exporter: &lt;/p&gt;
+  &lt;pre&gt;&lt;code&gt;&amp;lt;jmx:mbean-export default-domain=&amp;quot;your.custom.domain&amp;quot; server=&amp;quot;mbeanServer&amp;quot;&amp;gt;&amp;lt;/jmx:mbean-export&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;p&gt;Add the spring-integration-jmx library to your classpath.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+            </description>
+        </item>
+        <item>
+            <title>War of the Worlds</title>
+            <link>http://jdpgrailsdev.github.io/blog//2011/08/14/war_of_the_worlds.html</link>
+            <pubDate>Sun, 14 Aug 2011 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">/2011/08/14/war_of_the_worlds.html</guid>
+            <description>
+                    &lt;h1&gt;Node.JS and IDE Support&lt;/h1&gt;&lt;p&gt;Node.JS is a new and exciting evented I/O library for V8 JavaScript. While the consensus seems to be to use Cloud9ide.com as the IDE of choice to develop Node.JS applications, this may be impractical for a couple of reasons. First, Cloud9 is an online IDE, which means your source must be hosted on the Internet, either at Cloud9, Bitbucket or Github (I will say that the Github integration @ Cloud9ide.com is pretty nice). Second, it is a rather limited IDE, which means you will have to do your other development elsewhere (if you only develop in JavaScript, than this isn&apos;t such a big deal). Finally, the Cloud9ide.com IDE does NOT provide Node.JS code-completion for built-in modules (at least it did not at the time of writing this post). With this in mind, I set out to see how well I could get Node.JS support into Eclipse. Despite these shortcomings, one of the nice things about Cloud9ide.com is that it allows you to run and debug your application in their cloud, making it very easy to test your application. Therefore, my goals for finding desktop IDE support for Node.JS was to make sure that it supported everything that Cloud9ide.com has and more. I settled on the following requirements&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;The ability to run/launch Node.JS applications from Eclipse&lt;/li&gt;
+  &lt;li&gt;The ability to debug Node.JS applications from Eclipse&lt;/li&gt;
+  &lt;li&gt;Code-completion for Node.JS module&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;I set out to do all of the above with Eclipse, as it is my favorite IDE of choice. I was able to achieve all of the goals by following the instructions outlined in this post. Please keep in mind that the instructions that follow assumes version 0.4.10 of Node.JS and version “Indigo” (3.7) of Eclipse. All these instructions were tested on Mac OSX 10.6.8.&lt;/p&gt;&lt;h2&gt;One IDE to Rule Them All&lt;/h2&gt;&lt;p&gt;The first piece of the puzzle is to install Node.JS:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Download the tarball from &lt;a href=&quot;http://nodejs.org/#download&quot;&gt;http://nodejs.org/#download&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Untar/unzip the package with tar –xvf&lt;/li&gt;
+  &lt;li&gt;Change into the newly created directory&lt;/li&gt;
+  &lt;li&gt;Run ./configure&lt;/li&gt;
+  &lt;li&gt;Run make&lt;/li&gt;
+  &lt;li&gt;Run make install&lt;/li&gt;
+  &lt;li&gt;Verify node.js is installed by running node –version&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;Once you have installed and verified Node.JS, the next step (assuming that you already have Eclipse installed) is to install the Eclipse Debugger Plugin for V8 (Google):&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Open Eclipse&lt;/li&gt;
+  &lt;li&gt;Select Help &amp;gt; Install New Software…&lt;/li&gt;
+  &lt;li&gt;Click on the “Add…” button&lt;/li&gt;
+  &lt;li&gt;Enter the following information:
+  &lt;ul&gt;
+    &lt;li&gt;Name: Eclipse Debugger Plugin for V8 Update Site&lt;/li&gt;
+    &lt;li&gt;Location: &lt;a href=&quot;&quot;&gt;http://chromedevtools.googlecode.com/svn/update/dev/&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;&lt;/li&gt;
+  &lt;li&gt;Click on “OK” to add the update site&lt;/li&gt;
+  &lt;li&gt;In the “Work with:” drop-down box, choose “Eclipse Debugger Plugin for V8 Update Site”. The plugin area should now be populated with the plugins offered by the update site.&lt;/li&gt;
+  &lt;li&gt;Check the box next to “Google Chrome Developer Tools” and click on “Next” to install.&lt;/li&gt;
+  &lt;li&gt;Walk through the wizard and install the plugin. Restart Eclipse when prompted for the changes to take effect.&lt;/li&gt;
+&lt;/ol&gt;&lt;p&gt;The next plugin to install is the VJET Plugin from the good folks over at eBay:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;In Eclipse, Select Help &amp;gt; Install New Software…&lt;/li&gt;
+  &lt;li&gt;Click on the “Add…” button&lt;/li&gt;
+  &lt;li&gt;Enter the following information:
+  &lt;ul&gt;
+    &lt;li&gt;Name: VJET Update Site&lt;/li&gt;
+    &lt;li&gt;Location: &lt;a href=&quot;&quot;&gt;https://www.ebayopensource.org/p2/vjet/eclipse&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;&lt;/li&gt;
+  &lt;li&gt;Click on “OK” to add the update site&lt;/li&gt;
+  &lt;li&gt;In the “Work with:” drop-down box, choose “VJET Update Site”. The plugin area should now be populated with the plugins offered by the update site.&lt;/li&gt;
+  &lt;li&gt;Check the box next to “VJET” and click on “Next” to install.&lt;/li&gt;
+  &lt;li&gt;Walk through the wizard and install the plugin. Restart Eclipse when prompted for the changes to take effect.&lt;/li&gt;
+&lt;/ol&gt;&lt;p&gt;At this point, we have all the support we need to create, run, and debug V8 (and therefore Node.JS) applications. However, this is essentially what Cloud9ide.com provides. The cherry on top is the Node.JS code-completion support provided by the VJET plugin. The support is a separate project that needs to be installed in your Eclipse workspace. The VJET Type Library for Node.JS can be installed by following these steps:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Download the VJET Type Library for Node.JS from &lt;a href=&quot;&quot;&gt;http://www.ebayopensource.org/p2/vjet/typelib/NodejsTL.zip&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;In Eclipse, select File &amp;gt; Import…&lt;/li&gt;
+  &lt;li&gt;In the Import wizard, select General &amp;gt; Existing Projects into Workspace&lt;/li&gt;
+  &lt;li&gt;Select “Next”&lt;/li&gt;
+  &lt;li&gt;Select the “Select archive file:” import option and click on the “Browse…” button&lt;/li&gt;
+  &lt;li&gt;Navigate to the location where the NodejsTL.zip file is saved and select it for import.&lt;/li&gt;
+  &lt;li&gt;Select “Finish” to import the type library.&lt;/li&gt;
+  &lt;li&gt;Verify that the NodejsTL project appears in your Eclipse workspace.&lt;/li&gt;
+&lt;/ol&gt;&lt;p&gt;Now we have everything we need to get started creating applications with Node.JS from eclipse. To create a Node.JS project in Eclipse, follow these steps:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;In Eclipse, select File &amp;gt; New &amp;gt; Project…&lt;/li&gt;
+  &lt;li&gt;In the New Project wizard, select VJET &amp;gt; VJET Project and click on the “Next” button.&lt;/li&gt;
+  &lt;li&gt;On the “Create a VJET Project” screen of the wizard, enter the project name and location (leave the default selections for all other input fields). Click on the “Next” button.&lt;/li&gt;
+  &lt;li&gt;On the “VJET Settings” screen of the wizard, click on the “Projects” tab.
+  &lt;ul&gt;
+    &lt;li&gt;Click on the “Add…” button.&lt;/li&gt;
+    &lt;li&gt;Select the NodejsTL project and click on the “OK” button. This will add auto-completion for NodeJS modules/functions.&lt;/li&gt;
+  &lt;/ul&gt;&lt;/li&gt;
+  &lt;li&gt;Click on the “Finish” button to create the project&lt;/li&gt;
+&lt;/ol&gt;&lt;p&gt;Assuming that you created a simple Node.JS application, the next step is to try to run your Node.JS application from WITHIN Eclipse:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;In Eclipse, select Run &amp;gt; External Tools &amp;gt; External Tools Configurations…&lt;/li&gt;
+  &lt;li&gt;In the External Tools Configurations window, select the “Program” node in the tree display on the left-hand side of the window.&lt;/li&gt;
+  &lt;li&gt;Click on the “New launch configuration” button (appears above the tree as a blank piece of paper with a yellow plus sign in the upper right-hand corner). The right-hand side of the window should populate with the launch configuration screen.&lt;/li&gt;
+  &lt;li&gt;Enter the following information:
+  &lt;ul&gt;
+    &lt;li&gt;Name: Debug Node&lt;/li&gt;
+    &lt;li&gt;Location: /usr/local/bin/node&lt;/li&gt;
+    &lt;li&gt;Working Directory: ${project_loc}&lt;/li&gt;
+    &lt;li&gt;Arguments: --debug ${resource_name}&lt;/li&gt;
+  &lt;/ul&gt;&lt;/li&gt;
+  &lt;li&gt;Click on “Apply” to save the changes&lt;/li&gt;
+  &lt;li&gt;Click on “Close” to exit the “External Tools Configurations” window&lt;/li&gt;
+&lt;/ol&gt;&lt;p&gt;To launch the application, select the “Debug Node” configuration under Run &amp;gt; External Tools. Make sure that the .js file that you would normally pass to Node.JS from the command line is selected in the Script Explorer prior to running. Otherwise, you will get errors when Node.JS runs, as it will not know which file to execute.&lt;/p&gt;&lt;p&gt;Note that you can create multiple launch configurations, so if you would like to have one for debugging and one for running, simply duplicate the configuration, give it a new name (like “Run Node”) and remove the “—debug” option from the arguments. Assuming that you executed step 7 above, you can now attach the V8 remote debugger to the process so that you can set breakpoints and inspect your application:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;In Eclipse, select Run &amp;gt; Debug Configurations&lt;/li&gt;
+  &lt;li&gt;In the Debug Configurations window, select the “Standalone V8 VM” node in the tree display on the left-hand side of the window.&lt;/li&gt;
+  &lt;li&gt;Click on the “New launch configuration” button (appears above the tree as a blank piece of paper with a yellow plus sign in the upper right-hand corner). The right-hand side of the window should populate with the launch configuration screen&lt;/li&gt;
+  &lt;li&gt;Enter the following information:
+  &lt;ul&gt;
+    &lt;li&gt;Name: Debug Node 5858&lt;/li&gt;
+    &lt;li&gt;Host: localhost&lt;/li&gt;
+    &lt;li&gt;Port: 5858&lt;/li&gt;
+    &lt;li&gt;Breakpoint sync on launch: Merge local and remote breakpoints&lt;/li&gt;
+  &lt;/ul&gt;&lt;/li&gt;
+  &lt;li&gt;Click on “Apply” to save the changes&lt;/li&gt;
+  &lt;li&gt;Click on “Close” to exit the “Debug Configurations” window&lt;/li&gt;
+  &lt;li&gt;To launch the remote debugger, select the “Debug Node 5858” configuration from the Debug Configurations wizard and click on the “Debug” button. This assumes that the Node.JS process is already running and in debug mode, using the default debug port (5858).&lt;/li&gt;
+&lt;/ol&gt;&lt;p&gt;Assuming that the remote debugging configuration connects successfully to your running application, you can place breakpoints in the code by locating the “virtual project” created by the V8 plugin. To do this, use the following directions (assumes that Eclipse is already open AND the remote debugger configuration created above is currently connected to a running Node.JS application in debug mode):&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Change to the VJET JS perspective
+  &lt;ul&gt;
+    &lt;li&gt;If the VJET JS perspective is not open, open it by selecting Window &amp;gt; Open Perspective &amp;gt; Other…&lt;/li&gt;
+    &lt;li&gt;Select “VJET JS” from the list and click on the “OK” button.&lt;/li&gt;
+  &lt;/ul&gt;&lt;/li&gt;
+  &lt;li&gt;Locate the “Debug Node 5858” project that appears in the “Script Explorer” view on the left-hand side of the perspective.&lt;/li&gt;
+  &lt;li&gt;Expand the project and double click on the source file that you would like to set a breakpoint in to open it in the viewer.&lt;/li&gt;
+  &lt;li&gt;Right-click to the left of the line that you would like to place a breakpoint on in the file viewer and select “Toggle Breakpoint” to set the breakpoint.&lt;/li&gt;
+  &lt;li&gt;Interact with the Node.JS application. The application should pause when it hits the breakpoint set in Eclipse.&lt;/li&gt;
+&lt;/ol&gt;&lt;p&gt;Note that the virtual project actually lets you see the code from the running Node.JS instance and NOT the source that you imported into Eclipse. In fact, if you just want to use Eclipse for setting breakpoints, you do not even need to import the source. You simply need to create the remote debugger configuration and set breakpoints in the virtual project once the remote debugger has connected to a running Node.JS instance in debug mode. According to the V8 documentation (links below), you can make Eclipse actually honor the breakpoints set in your project. However, I was not able to get this to work (and since the process is running from your code in the workspace anyways, the Virtual Project is actually already pointing at the same source files). And that&apos;s it! You now have the ability to create, run, and debug Node.JS applications from Eclipse with the added benefit of code-completion for the built-in modules in Node.JS. Also, because the code-completion comes from a project imported into Eclipse, you can always modify it to add additional support for internal libraries, etc. Below is a list of resources that I used to figure this all out:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://nodejs.org/&quot;&gt;Node.JS&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://code.google.com/p/chromedevtools/&quot;&gt;Using Eclipse as a Node.JS Debugger &lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://code.google.com/p/chromedevtools/wiki/DebuggerTutorial&quot;&gt;Eclipse Debugger Plugin for V8 Tutorial&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://code.google.com/p/chromedevtools/wiki/VirtualProject&quot;&gt;Eclipse Virtual Projects&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://net.tutsplus.com/sessions/node-js-step-by-step/&quot;&gt;VJET: Importing VJET JavaScript Type Libraries into Eclipse&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
             </description>
         </item>
     </channel>
