@@ -6,9 +6,117 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Mon, 10 Feb 2014 08:48:31 -0500</pubDate>
-        <lastBuildDate>Mon, 10 Feb 2014 08:48:31 -0500</lastBuildDate>
+        <pubDate>Mon, 10 Feb 2014 14:17:55 -0500</pubDate>
+        <lastBuildDate>Mon, 10 Feb 2014 14:17:55 -0500</lastBuildDate>
 
+        <item>
+            <title>Grails 2.3, Maven and Local Repositories</title>
+            <link>http://jdpgrailsdev.github.io/blog//2014/02/10/grails_maven_local_repo.html</link>
+            <pubDate>Mon, 10 Feb 2014 00:00:00 -0500</pubDate>
+            <guid isPermaLink="false">/2014/02/10/grails_maven_local_repo.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;One of the great new features in &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; 2.3 is the ability to use &lt;a href=&quot;http://www.eclipse.org/aether/&quot;&gt;Aether&lt;/a&gt; to resolve dependencies in place of Ivy.  This is great news if
+you already use &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; to build other projects, as it now means you can have predictable builds between your &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; and non-http://grails.org[Grails] applications.  However, like
+any new feature, there are a few rough edges.  I ran into one the other day when trying to determine why one of my &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; applications was not picking up dependencies from the local &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt;
+cache  (&lt;code&gt;~/.m2/repository&lt;/code&gt;).  After some digging around, I ran across &lt;a href=&quot;http://jira.grails.org/browse/GRAILS-10921&quot;&gt;this bug&lt;/a&gt;.  According to it, the mavenLocal directive in the
+repositories section of &lt;code&gt;BuildConfig.groovy&lt;/code&gt; is not honored when using the &lt;a href=&quot;http://www.eclipse.org/aether/&quot;&gt;Aether&lt;/a&gt; resolver.  So that stinks.  I quickly realized that we could make the &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; dependency resolver
+DSL pick up the local &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; repository by simply adding a new file-based repository:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;    repositories {
+        inherits true // Whether to inherit repository definitions from plugins
+
+        mavenRepo &quot;file://${System.getProperty(&apos;user.home&apos;)}/.m2/repository&quot;
+
+        ...
+    }&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;This little hack will allow you to continue checking the local &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; repository when using the &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; command line tools and the &lt;a href=&quot;http://grails.org/doc/2.3.x/guide/introduction.html#whatsNew23&quot;&gt;Maven dependency resolution support&lt;/a&gt;
+new to &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; 2.3.  The nice thing about this is that when/if the issue is fixed so that the local &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; repository is honored, this fix should not cause any issues.  Not long after I made this fix,
+I went to build the application on &lt;a href=&quot;http://jenkins-ci.org/&quot;&gt;Jenkins&lt;/a&gt; and notice some more funny business with dependencies.  After some digging, I determined the issue was due to the fact that now that the
+&lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; applications were using &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; for dependency resolution and not Ivy, they were sharing one local dependency cache.  When the Jenkins job is a &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; project, I typically choose
+the option to create a repository per workspace, to avoid collisions between jobs.  With a &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; job, you do not have this option.  The option that you do have is setting the
+&lt;code&gt;grails.dependency.cache.dir&lt;/code&gt; build property to tell &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; where to cache and look for local dependencies.  I decided to conditionally set this based on whether or not the application
+was being built on Jenkins or not (the reason for this is that I already have it set in my local &lt;code&gt;~/.grails/settings.groovy&lt;/code&gt; to have a separate cache per application).  Once again,
+I modified the BuildConfig.groovy file to contain the following logic:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;    final String localMavenRepo = System.getenv(&apos;JENKINS_HOME&apos;) ? &quot;${System.getenv(&apos;WORKSPACE&apos;)}/.m2/repository&quot; :
+                                        &quot;${System.getProperty(&apos;user.home&apos;)}/.m2/repository&quot;
+
+    ...
+
+    /**
+      * If the build is being executed on Jenkins, set up the ivy cache.  This
+      * is important as Grails checks to see if this has been set before allowing
+      * an override of the local Maven repository.
+      */
+    if(System.getenv(&apos;JENKINS_HOME&apos;)) {
+        grails.dependency.cache.dir = localMavenRepo
+    }
+
+    grails.project.dependency.resolver = &quot;maven&quot; // or ivy
+    grails.project.dependency.resolution = {
+        pom true
+
+        // inherit Grails&apos; default dependencies
+        inherits(&quot;global&quot;) {
+        }
+
+        log &quot;error&quot; // log level of Ivy resolver, either &apos;error&apos;, &apos;warn&apos;, &apos;info&apos;, &apos;debug&apos; or &apos;verbose&apos;
+        checksums false // Whether to verify checksums on resolve
+        legacyResolve false // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
+        localRepository = localMavenRepo
+
+        repositories {
+            inherits true // Whether to inherit repository definitions from plugins
+
+            mavenRepo &quot;file://${localMavenRepo}&quot;
+
+            ...
+        }
+    }
+
+    ...&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;It&amp;#8217;s worth noting that in the example above, I not only set the &lt;code&gt;grails.dependency.cache.dir&lt;/code&gt; &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; build property, but
+I also set the &lt;code&gt;localRepository&lt;/code&gt; property of the dependency resolution DSL to ensure that the &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; dependency resolution is using it both as a place to check
+for dependencies AND a place to store the cached dependencies (see the &lt;a href=&quot;https://github.com/grails/grails-core/blob/2.3.x/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy&quot;&gt;AetherDependencyManager.groovy&lt;/a&gt; source
+file in the &lt;code&gt;grails-aether&lt;/code&gt; module for more details).  Now when the application builds on Jenkins, not only does it have a local &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; repository as part of
+the list of repositories, but that repository is stored in the workspace for the Jenkins build job.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
+        <item>
+            <title>Blog Makeover</title>
+            <link>http://jdpgrailsdev.github.io/blog//2014/02/06/redesign.html</link>
+            <pubDate>Sat, 8 Feb 2014 00:00:00 -0500</pubDate>
+            <guid isPermaLink="false">/2014/02/06/redesign.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In an attempt to get myself to start blogging more regularly, I have decided to re-do my blog (which has largely been dormant).  A few days ago,
+I read an interesting blog post by &lt;a href=&quot;http://melix.github.io/blog//2014/02/hosting-jbake-github.html&quot;&gt;Cédric Champeau&lt;/a&gt; about using &lt;a href=&quot;http://www.jbake.org&quot;&gt;JBake&lt;/a&gt; to generate
+blog posts from &lt;a href=&quot;https://daringfireball.net/projects/markdown/&quot;&gt;Markdown&lt;/a&gt;, &lt;a href=&quot;http://www.methods.co.nz/asciidoc/&quot;&gt;AsciiDoc&lt;/a&gt; or HTML and publish them to &lt;a href=&quot;http://github.com&quot;&gt;GitHub&lt;/a&gt;.  The blog post is pretty straight forward and with some minor tweaks
+I was able to give my blog a makeover.  Additionally, its much easier now to author and publish posts.  Over the next few weeks, I am going to continue
+to make tweaks to give the blog my own style.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Relocation</title>
             <link>http://jdpgrailsdev.github.io/blog//2012/12/08/relocation.html</link>
@@ -310,152 +418,6 @@ Caused by: com.mongodb.MongoException$DuplicateKey: E11000 duplicate key error i
 		&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;&lt;p&gt;And so we waited. Again. We landed in Allentown at around 3:30 AM. The buses that were suppose to show up in 5-10 minutes finally showed up around 4 AM. I walked out of the baggage claim to find two booze cruise/party buses waiting to take us to IAD (complete with functioning interior LED disco lights and the &quot;Vomit/Destruction will cause you to forfeit your $500 deposit&quot; sign). You couldn&apos;t even sleep on this bus, because the seats are on the side, like in the picture to the left. So, in a darkened party bus, we pulled out of the airport in Allentown, PA for the three hour drive through Harrisburg, Gettysburg, Frederick, and finally Leesburg. In the middle of the trip at 5:43 AM, United called my house and sent me this e-mail:&lt;br/&gt;&lt;p&gt;&lt;br/&gt; &lt;br&gt;&lt;br/&gt;&lt;/p&gt;&lt;br/&gt;&lt;p class=&quot;separator&quot; style=&quot;clear: both; text-align: center;&quot;&gt;&lt;br/&gt; &lt;a style=&quot;margin-left: 1em; margin-right: 1em;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/united.png&quot;&gt;&lt;br/&gt; &lt;img width=&quot;303&quot; height=&quot;320&quot; border=&quot;0&quot; src=&quot;/blog/img/united.png&quot;&gt;&lt;br/&gt; &lt;/a&gt;&lt;br/&gt;&lt;/p&gt;&lt;br/&gt;&lt;p&gt;&lt;br/&gt; &lt;br&gt;&lt;br/&gt;&lt;/p&gt;&lt;br/&gt;I wish I was funny enough to make up that plot twist. Somehow the flight that didn&apos;t get cancelled when it should have been cancelled, got cancelled after I got off it in Allentown, PA. To add insult to injury, United apparently never updated their web site to say that the flight had been diverted, so people were waiting at IAD wondering what happened. I&apos;m sure this was classic CYA by United to make sure that they didn&apos;t have to pay anything out to those who stayed in Burlington, VT, as they are not liable if it is cancelled due to weather. So, at 8 AM, we finally pulled into IAD on our party buses. A little over 13 hours from when I was suppose to leave Burlington, I made it home. There was no snow. There was no rain. There was no hurricane or tornado or typhoon. Or earthquake. There was only United Airlines and its terrible customer service. Not a bad way to spend a Friday night, eh?&lt;/p&gt;
-            </description>
-        </item>
-        <item>
-            <title>I Don&apos;t Need To Read The Manual...Spring Integration and JMX</title>
-            <link>http://jdpgrailsdev.github.io/blog//2011/09/13/spring_integration_jmx.html</link>
-            <pubDate>Tue, 13 Sep 2011 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">/2011/09/13/spring_integration_jmx.html</guid>
-            <description>
-                    &lt;p&gt;The title pretty much says it all. This seems like a pretty simple task, right? I thought that I would just go to the Spring Integration reference documentation, follow the instructions, and boom, you can see all of your Spring Integration components via JMX from your favorite JMX monitoring client. If only it were that easy. The first hurdle I encountered was that the documentation at Spring&apos;s site fails to mention how to get the JMX schema included in your integration.xml or where the parsers/handlers live in the Spring library so that it can actually load and parse the integration.xml file. The second is that there appears to be some typos in it (it should be &quot;jmx:mbean-export&quot;, not &quot;jmx:mbean-exporter&quot; and the attributes of that tag are also listed incorrectly). Grr (I guess you get what you pay for). So, without further ado, this is how to turn on the MBean Exporter for Spring Integration:&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;&lt;p&gt;Declare the &quot;jmx&quot; namespace in your integration.xml file:&lt;/p&gt;
-  &lt;pre&gt;&lt;code&gt;xmlns:jmx=&amp;quot;http://www.springframework.org/schema/integration/jmx&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;p&gt;Add the &quot;jmx&quot; schema to the &quot;schemaLocation&quot; attribute:&lt;/p&gt;
-  &lt;pre&gt;&lt;code&gt;xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-http://www.springframework.org/schema/integration/jmx http://www.springframework.org/schema/integration/jmx/spring-integration-jmx-2.0.xsd
-http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;p&gt;Declare the MBean server bean: &lt;/p&gt;
-  &lt;pre&gt;&lt;code&gt;&amp;lt;bean class=&amp;quot;org.springframework.jmx.support.MBeanServerFactoryBean&amp;quot; id=&amp;quot;mbeanServer&amp;quot;&amp;gt;
-    &amp;lt;property name=&amp;quot;locateExistingServerIfPossible&amp;quot; value=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;/property&amp;gt;
-&amp;lt;/bean&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;p&gt;Declare the Integration MBean Exporter: &lt;/p&gt;
-  &lt;pre&gt;&lt;code&gt;&amp;lt;jmx:mbean-export default-domain=&amp;quot;your.custom.domain&amp;quot; server=&amp;quot;mbeanServer&amp;quot;&amp;gt;&amp;lt;/jmx:mbean-export&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;p&gt;Add the spring-integration-jmx library to your classpath.&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-            </description>
-        </item>
-        <item>
-            <title>War of the Worlds</title>
-            <link>http://jdpgrailsdev.github.io/blog//2011/08/14/war_of_the_worlds.html</link>
-            <pubDate>Sun, 14 Aug 2011 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">/2011/08/14/war_of_the_worlds.html</guid>
-            <description>
-                    &lt;p&gt;Node.JS is a new and exciting evented I/O library for V8 JavaScript. While the consensus seems to be to use Cloud9ide.com as the IDE of choice to develop Node.JS applications, this may be impractical for a couple of reasons. First, Cloud9 is an online IDE, which means your source must be hosted on the Internet, either at Cloud9, Bitbucket or Github (I will say that the Github integration @ Cloud9ide.com is pretty nice). Second, it is a rather limited IDE, which means you will have to do your other development elsewhere (if you only develop in JavaScript, than this isn&apos;t such a big deal). Finally, the Cloud9ide.com IDE does NOT provide Node.JS code-completion for built-in modules (at least it did not at the time of writing this post). With this in mind, I set out to see how well I could get Node.JS support into Eclipse. Despite these shortcomings, one of the nice things about Cloud9ide.com is that it allows you to run and debug your application in their cloud, making it very easy to test your application. Therefore, my goals for finding desktop IDE support for Node.JS was to make sure that it supported everything that Cloud9ide.com has and more. I settled on the following requirements&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;The ability to run/launch Node.JS applications from Eclipse&lt;/li&gt;
-  &lt;li&gt;The ability to debug Node.JS applications from Eclipse&lt;/li&gt;
-  &lt;li&gt;Code-completion for Node.JS module&lt;/li&gt;
-&lt;/ul&gt;&lt;p&gt;I set out to do all of the above with Eclipse, as it is my favorite IDE of choice. I was able to achieve all of the goals by following the instructions outlined in this post. Please keep in mind that the instructions that follow assumes version 0.4.10 of Node.JS and version “Indigo” (3.7) of Eclipse. All these instructions were tested on Mac OSX 10.6.8.&lt;/p&gt;&lt;h2&gt;One IDE to Rule Them All&lt;/h2&gt;&lt;p&gt;The first piece of the puzzle is to install Node.JS:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Download the tarball from &lt;a href=&quot;http://nodejs.org/#download&quot;&gt;http://nodejs.org/#download&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Untar/unzip the package with tar –xvf&lt;/li&gt;
-  &lt;li&gt;Change into the newly created directory&lt;/li&gt;
-  &lt;li&gt;Run ./configure&lt;/li&gt;
-  &lt;li&gt;Run make&lt;/li&gt;
-  &lt;li&gt;Run make install&lt;/li&gt;
-  &lt;li&gt;Verify node.js is installed by running node –version&lt;/li&gt;
-&lt;/ul&gt;&lt;p&gt;Once you have installed and verified Node.JS, the next step (assuming that you already have Eclipse installed) is to install the Eclipse Debugger Plugin for V8 (Google):&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;Open Eclipse&lt;/li&gt;
-  &lt;li&gt;Select Help &amp;gt; Install New Software…&lt;/li&gt;
-  &lt;li&gt;Click on the “Add…” button&lt;/li&gt;
-  &lt;li&gt;Enter the following information:
-  &lt;ul&gt;
-    &lt;li&gt;Name: Eclipse Debugger Plugin for V8 Update Site&lt;/li&gt;
-    &lt;li&gt;Location: &lt;a href=&quot;&quot;&gt;http://chromedevtools.googlecode.com/svn/update/dev/&lt;/a&gt;&lt;/li&gt;
-  &lt;/ul&gt;&lt;/li&gt;
-  &lt;li&gt;Click on “OK” to add the update site&lt;/li&gt;
-  &lt;li&gt;In the “Work with:” drop-down box, choose “Eclipse Debugger Plugin for V8 Update Site”. The plugin area should now be populated with the plugins offered by the update site.&lt;/li&gt;
-  &lt;li&gt;Check the box next to “Google Chrome Developer Tools” and click on “Next” to install.&lt;/li&gt;
-  &lt;li&gt;Walk through the wizard and install the plugin. Restart Eclipse when prompted for the changes to take effect.&lt;/li&gt;
-&lt;/ol&gt;&lt;p&gt;The next plugin to install is the VJET Plugin from the good folks over at eBay:&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;In Eclipse, Select Help &amp;gt; Install New Software…&lt;/li&gt;
-  &lt;li&gt;Click on the “Add…” button&lt;/li&gt;
-  &lt;li&gt;Enter the following information:
-  &lt;ul&gt;
-    &lt;li&gt;Name: VJET Update Site&lt;/li&gt;
-    &lt;li&gt;Location: &lt;a href=&quot;&quot;&gt;https://www.ebayopensource.org/p2/vjet/eclipse&lt;/a&gt;&lt;/li&gt;
-  &lt;/ul&gt;&lt;/li&gt;
-  &lt;li&gt;Click on “OK” to add the update site&lt;/li&gt;
-  &lt;li&gt;In the “Work with:” drop-down box, choose “VJET Update Site”. The plugin area should now be populated with the plugins offered by the update site.&lt;/li&gt;
-  &lt;li&gt;Check the box next to “VJET” and click on “Next” to install.&lt;/li&gt;
-  &lt;li&gt;Walk through the wizard and install the plugin. Restart Eclipse when prompted for the changes to take effect.&lt;/li&gt;
-&lt;/ol&gt;&lt;p&gt;At this point, we have all the support we need to create, run, and debug V8 (and therefore Node.JS) applications. However, this is essentially what Cloud9ide.com provides. The cherry on top is the Node.JS code-completion support provided by the VJET plugin. The support is a separate project that needs to be installed in your Eclipse workspace. The VJET Type Library for Node.JS can be installed by following these steps:&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;Download the VJET Type Library for Node.JS from &lt;a href=&quot;&quot;&gt;http://www.ebayopensource.org/p2/vjet/typelib/NodejsTL.zip&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;In Eclipse, select File &amp;gt; Import…&lt;/li&gt;
-  &lt;li&gt;In the Import wizard, select General &amp;gt; Existing Projects into Workspace&lt;/li&gt;
-  &lt;li&gt;Select “Next”&lt;/li&gt;
-  &lt;li&gt;Select the “Select archive file:” import option and click on the “Browse…” button&lt;/li&gt;
-  &lt;li&gt;Navigate to the location where the NodejsTL.zip file is saved and select it for import.&lt;/li&gt;
-  &lt;li&gt;Select “Finish” to import the type library.&lt;/li&gt;
-  &lt;li&gt;Verify that the NodejsTL project appears in your Eclipse workspace.&lt;/li&gt;
-&lt;/ol&gt;&lt;p&gt;Now we have everything we need to get started creating applications with Node.JS from eclipse. To create a Node.JS project in Eclipse, follow these steps:&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;In Eclipse, select File &amp;gt; New &amp;gt; Project…&lt;/li&gt;
-  &lt;li&gt;In the New Project wizard, select VJET &amp;gt; VJET Project and click on the “Next” button.&lt;/li&gt;
-  &lt;li&gt;On the “Create a VJET Project” screen of the wizard, enter the project name and location (leave the default selections for all other input fields). Click on the “Next” button.&lt;/li&gt;
-  &lt;li&gt;On the “VJET Settings” screen of the wizard, click on the “Projects” tab.
-  &lt;ul&gt;
-    &lt;li&gt;Click on the “Add…” button.&lt;/li&gt;
-    &lt;li&gt;Select the NodejsTL project and click on the “OK” button. This will add auto-completion for NodeJS modules/functions.&lt;/li&gt;
-  &lt;/ul&gt;&lt;/li&gt;
-  &lt;li&gt;Click on the “Finish” button to create the project&lt;/li&gt;
-&lt;/ol&gt;&lt;p&gt;Assuming that you created a simple Node.JS application, the next step is to try to run your Node.JS application from WITHIN Eclipse:&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;In Eclipse, select Run &amp;gt; External Tools &amp;gt; External Tools Configurations…&lt;/li&gt;
-  &lt;li&gt;In the External Tools Configurations window, select the “Program” node in the tree display on the left-hand side of the window.&lt;/li&gt;
-  &lt;li&gt;Click on the “New launch configuration” button (appears above the tree as a blank piece of paper with a yellow plus sign in the upper right-hand corner). The right-hand side of the window should populate with the launch configuration screen.&lt;/li&gt;
-  &lt;li&gt;Enter the following information:
-  &lt;ul&gt;
-    &lt;li&gt;Name: Debug Node&lt;/li&gt;
-    &lt;li&gt;Location: /usr/local/bin/node&lt;/li&gt;
-    &lt;li&gt;Working Directory: ${project_loc}&lt;/li&gt;
-    &lt;li&gt;Arguments: --debug ${resource_name}&lt;/li&gt;
-  &lt;/ul&gt;&lt;/li&gt;
-  &lt;li&gt;Click on “Apply” to save the changes&lt;/li&gt;
-  &lt;li&gt;Click on “Close” to exit the “External Tools Configurations” window&lt;/li&gt;
-&lt;/ol&gt;&lt;p&gt;To launch the application, select the “Debug Node” configuration under Run &amp;gt; External Tools. Make sure that the .js file that you would normally pass to Node.JS from the command line is selected in the Script Explorer prior to running. Otherwise, you will get errors when Node.JS runs, as it will not know which file to execute.&lt;/p&gt;&lt;p&gt;Note that you can create multiple launch configurations, so if you would like to have one for debugging and one for running, simply duplicate the configuration, give it a new name (like “Run Node”) and remove the “—debug” option from the arguments. Assuming that you executed step 7 above, you can now attach the V8 remote debugger to the process so that you can set breakpoints and inspect your application:&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;In Eclipse, select Run &amp;gt; Debug Configurations&lt;/li&gt;
-  &lt;li&gt;In the Debug Configurations window, select the “Standalone V8 VM” node in the tree display on the left-hand side of the window.&lt;/li&gt;
-  &lt;li&gt;Click on the “New launch configuration” button (appears above the tree as a blank piece of paper with a yellow plus sign in the upper right-hand corner). The right-hand side of the window should populate with the launch configuration screen&lt;/li&gt;
-  &lt;li&gt;Enter the following information:
-  &lt;ul&gt;
-    &lt;li&gt;Name: Debug Node 5858&lt;/li&gt;
-    &lt;li&gt;Host: localhost&lt;/li&gt;
-    &lt;li&gt;Port: 5858&lt;/li&gt;
-    &lt;li&gt;Breakpoint sync on launch: Merge local and remote breakpoints&lt;/li&gt;
-  &lt;/ul&gt;&lt;/li&gt;
-  &lt;li&gt;Click on “Apply” to save the changes&lt;/li&gt;
-  &lt;li&gt;Click on “Close” to exit the “Debug Configurations” window&lt;/li&gt;
-  &lt;li&gt;To launch the remote debugger, select the “Debug Node 5858” configuration from the Debug Configurations wizard and click on the “Debug” button. This assumes that the Node.JS process is already running and in debug mode, using the default debug port (5858).&lt;/li&gt;
-&lt;/ol&gt;&lt;p&gt;Assuming that the remote debugging configuration connects successfully to your running application, you can place breakpoints in the code by locating the “virtual project” created by the V8 plugin. To do this, use the following directions (assumes that Eclipse is already open AND the remote debugger configuration created above is currently connected to a running Node.JS application in debug mode):&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;Change to the VJET JS perspective
-  &lt;ul&gt;
-    &lt;li&gt;If the VJET JS perspective is not open, open it by selecting Window &amp;gt; Open Perspective &amp;gt; Other…&lt;/li&gt;
-    &lt;li&gt;Select “VJET JS” from the list and click on the “OK” button.&lt;/li&gt;
-  &lt;/ul&gt;&lt;/li&gt;
-  &lt;li&gt;Locate the “Debug Node 5858” project that appears in the “Script Explorer” view on the left-hand side of the perspective.&lt;/li&gt;
-  &lt;li&gt;Expand the project and double click on the source file that you would like to set a breakpoint in to open it in the viewer.&lt;/li&gt;
-  &lt;li&gt;Right-click to the left of the line that you would like to place a breakpoint on in the file viewer and select “Toggle Breakpoint” to set the breakpoint.&lt;/li&gt;
-  &lt;li&gt;Interact with the Node.JS application. The application should pause when it hits the breakpoint set in Eclipse.&lt;/li&gt;
-&lt;/ol&gt;&lt;p&gt;Note that the virtual project actually lets you see the code from the running Node.JS instance and NOT the source that you imported into Eclipse. In fact, if you just want to use Eclipse for setting breakpoints, you do not even need to import the source. You simply need to create the remote debugger configuration and set breakpoints in the virtual project once the remote debugger has connected to a running Node.JS instance in debug mode. According to the V8 documentation (links below), you can make Eclipse actually honor the breakpoints set in your project. However, I was not able to get this to work (and since the process is running from your code in the workspace anyways, the Virtual Project is actually already pointing at the same source files). And that&apos;s it! You now have the ability to create, run, and debug Node.JS applications from Eclipse with the added benefit of code-completion for the built-in modules in Node.JS. Also, because the code-completion comes from a project imported into Eclipse, you can always modify it to add additional support for internal libraries, etc. Below is a list of resources that I used to figure this all out:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;http://nodejs.org/&quot;&gt;Node.JS&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://code.google.com/p/chromedevtools/&quot;&gt;Using Eclipse as a Node.JS Debugger &lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://code.google.com/p/chromedevtools/wiki/DebuggerTutorial&quot;&gt;Eclipse Debugger Plugin for V8 Tutorial&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://code.google.com/p/chromedevtools/wiki/VirtualProject&quot;&gt;Eclipse Virtual Projects&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://net.tutsplus.com/sessions/node-js-step-by-step/&quot;&gt;VJET: Importing VJET JavaScript Type Libraries into Eclipse&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
             </description>
         </item>
     </channel>

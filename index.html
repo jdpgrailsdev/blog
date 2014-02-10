@@ -71,6 +71,128 @@
                     <h1>Why We Can't Have Nice Things</h1>
                     <h4>A blog about technical challenges and how to over come them through powers of deduction.</h4>
                 </div>
+                   <a href="/blog/2014/02/10/grails_maven_local_repo.html"><h1>Grails 2.3, Maven and Local Repositories</h1></a>
+                   <p>10 February 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/grails.html">grails</a>
+        
+                <a href="/blog/tags/aether.html">aether</a>
+        
+                <a href="/blog/tags/maven.html">maven</a>
+        
+                <a href="/blog/tags/jenkins.html">jenkins</a>
+        
+                <a href="/blog/tags/blog.html">blog</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/02/10/grails_maven_local_repo.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/02/10/grails_maven_local_repo.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://melix.github.io/blog/2014/02/10/grails_maven_local_repo.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>One of the great new features in <a href="http://grails.org">Grails</a> 2.3 is the ability to use <a href="http://www.eclipse.org/aether/">Aether</a> to resolve dependencies in place of Ivy.  This is great news if
+you already use <a href="http://maven.apache.org/">Maven</a> to build other projects, as it now means you can have predictable builds between your <a href="http://grails.org">Grails</a> and non-http://grails.org[Grails] applications.  However, like
+any new feature, there are a few rough edges.  I ran into one the other day when trying to determine why one of my <a href="http://grails.org">Grails</a> applications was not picking up dependencies from the local <a href="http://maven.apache.org/">Maven</a>
+cache  (<code>~/.m2/repository</code>).  After some digging around, I ran across <a href="http://jira.grails.org/browse/GRAILS-10921">this bug</a>.  According to it, the mavenLocal directive in the
+repositories section of <code>BuildConfig.groovy</code> is not honored when using the <a href="http://www.eclipse.org/aether/">Aether</a> resolver.  So that stinks.  I quickly realized that we could make the <a href="http://grails.org">Grails</a> dependency resolver
+DSL pick up the local <a href="http://maven.apache.org/">Maven</a> repository by simply adding a new file-based repository:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>    repositories {
+        inherits true // Whether to inherit repository definitions from plugins
+
+        mavenRepo "file://${System.getProperty('user.home')}/.m2/repository"
+
+        ...
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This little hack will allow you to continue checking the local <a href="http://maven.apache.org/">Maven</a> repository when using the <a href="http://grails.org">Grails</a> command line tools and the <a href="http://grails.org/doc/2.3.x/guide/introduction.html#whatsNew23">Maven dependency resolution support</a>
+new to <a href="http://grails.org">Grails</a> 2.3.  The nice thing about this is that when/if the issue is fixed so that the local <a href="http://maven.apache.org/">Maven</a> repository is honored, this fix should not cause any issues.  Not long after I made this fix,
+I went to build the application on <a href="http://jenkins-ci.org/">Jenkins</a> and notice some more funny business with dependencies.  After some digging, I determined the issue was due to the fact that now that the
+<a href="http://grails.org">Grails</a> applications were using <a href="http://maven.apache.org/">Maven</a> for dependency resolution and not Ivy, they were sharing one local dependency cache.  When the Jenkins job is a <a href="http://maven.apache.org/">Maven</a> project, I typically choose
+the option to create a repository per workspace, to avoid collisions between jobs.  With a <a href="http://grails.org">Grails</a> job, you do not have this option.  The option that you do have is setting the
+<code>grails.dependency.cache.dir</code> build property to tell <a href="http://grails.org">Grails</a> where to cache and look for local dependencies.  I decided to conditionally set this based on whether or not the application
+was being built on Jenkins or not (the reason for this is that I already have it set in my local <code>~/.grails/settings.groovy</code> to have a separate cache per application).  Once again,
+I modified the BuildConfig.groovy file to contain the following logic:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>    final String localMavenRepo = System.getenv('JENKINS_HOME') ? "${System.getenv('WORKSPACE')}/.m2/repository" :
+                                        "${System.getProperty('user.home')}/.m2/repository"
+
+    ...
+
+    /**
+      * If the build is being executed on Jenkins, set up the ivy cache.  This
+      * is important as Grails checks to see if this has been set before allowing
+      * an override of the local Maven repository.
+      */
+    if(System.getenv('JENKINS_HOME')) {
+        grails.dependency.cache.dir = localMavenRepo
+    }
+
+    grails.project.dependency.resolver = "maven" // or ivy
+    grails.project.dependency.resolution = {
+        pom true
+
+        // inherit Grails' default dependencies
+        inherits("global") {
+        }
+
+        log "error" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+        checksums false // Whether to verify checksums on resolve
+        legacyResolve false // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
+        localRepository = localMavenRepo
+
+        repositories {
+            inherits true // Whether to inherit repository definitions from plugins
+
+            mavenRepo "file://${localMavenRepo}"
+
+            ...
+        }
+    }
+
+    ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It&#8217;s worth noting that in the example above, I not only set the <code>grails.dependency.cache.dir</code> <a href="http://grails.org">Grails</a> build property, but
+I also set the <code>localRepository</code> property of the dependency resolution DSL to ensure that the <a href="http://maven.apache.org/">Maven</a> dependency resolution is using it both as a place to check
+for dependencies AND a place to store the cached dependencies (see the <a href="https://github.com/grails/grails-core/blob/2.3.x/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy">AetherDependencyManager.groovy</a> source
+file in the <code>grails-aether</code> module for more details).  Now when the application builds on Jenkins, not only does it have a local <a href="http://maven.apache.org/">Maven</a> repository as part of
+the list of repositories, but that repository is stored in the workspace for the Jenkins build job.</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog/2014/02/10/grails_maven_local_repo.html#disqus_thread">Comments</a></p>
+                   <a href="/blog/2014/02/06/redesign.html"><h1>Blog Makeover</h1></a>
+                   <p>08 February 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/blog.html">blog</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/02/06/redesign.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/02/06/redesign.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://melix.github.io/blog/2014/02/06/redesign.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In an attempt to get myself to start blogging more regularly, I have decided to re-do my blog (which has largely been dormant).  A few days ago,
+I read an interesting blog post by <a href="http://melix.github.io/blog//2014/02/hosting-jbake-github.html">Cédric Champeau</a> about using <a href="http://www.jbake.org">JBake</a> to generate
+blog posts from <a href="https://daringfireball.net/projects/markdown/">Markdown</a>, <a href="http://www.methods.co.nz/asciidoc/">AsciiDoc</a> or HTML and publish them to <a href="http://github.com">GitHub</a>.  The blog post is pretty straight forward and with some minor tweaks
+I was able to give my blog a makeover.  Additionally, its much easier now to author and publish posts.  Over the next few weeks, I am going to continue
+to make tweaks to give the blog my own style.</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog/2014/02/06/redesign.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2012/12/08/relocation.html"><h1>Relocation</h1></a>
                    <p>08 December 2012</p>
                 <p><em>Tags: </em>
@@ -256,172 +378,6 @@ Caused by: com.mongodb.MongoException$DuplicateKey: E11000 duplicate key error i
     at com.mongodb.DBCollection.insert(DBCollection.java:71)
 </code></pre><p> at com.mongodb.DBCollection.save(DBCollection.java:633)<br/> at org.springframework.data.mongodb.core.MongoTemplate$13.doInCollection(MongoTemplate.java:745)<br/> at org.springframework.data.mongodb.core.MongoTemplate.execute(MongoTemplate.java:331)<br/> ... 41 more</p><p>So, it is really hard to blame the Spring Data MongoDB guys for this issue, as it is really a configuration option of the underlying MongoDB Java Driver. However, the MongoTemplate class does have a setWriteConcern method for this very reason and it would have saved me some time if the reference documentation had mentioned this and/or had some examples on how to change the setting. I guess that will be in the "release" :).</p></p>
                 <p><a href="/blog/2011/11/19/spring_data_mongodb_exceptions.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2011/09/26/trains_planes_auto.html"><h1>Planes, Trains, and Automobiles</h1></a>
-                   <p>26 September 2011</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/travel.html">travel</a>
-        
-                <a href="/blog/tags/united.html"> united</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2011/09/26/trains_planes_auto.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2011/09/26/trains_planes_auto.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2011/09/26/trains_planes_auto.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><table class="tr-caption-container" cellspacing="0" cellpadding="0" style="float: left; margin-right: 1em; text-align: left;">
-	<tbody>
-		<tr>
-			<td style="text-align: center;">
-				<p>
-					<a style="margin-left: auto; margin-right: auto;" imageanchor="1" href="/blog/img/planes-trains-automobiles.jpg">
-						<img width="320" height="198" border="0" src="/blog/img/planes-trains-automobiles.jpg">
-					</a>
-				</p>
-			</td>
-		</tr>
-		<tr>
-			<td class="tr-caption" style="text-align: center;">
-				<p>If I had been able to sing "Mess Around" with John Candy,</p>
-				<p>maybe my trip wouldn't have been as bad either.</p>
-			</td>
-		</tr>
-	</tbody>
-</table><p>At some point, if you fly enough, you go through one of those "trips from hell" thanks to the airline industry. Weather gets in the way of travel or you get delayed just enough that you miss that connection and spend the night sleeping in the airport in Little Rock, Arkansas. Then there are those trips that just highlight the complete breakdown in rational thought and competence. This is the story of my attempt to get from Burlington, VT to Washington-Dulles International Airport. It will make you laugh. It will make you cry. It will make you understand why you should never fly United Airlines. It will also highlight why doing just a little extra to help your customers goes a long way (instead of choosing the tactics United uses to treat its customers like boxes of diapers being shipped from a distribution center to a Walmart -- i.e., it gets there when it gets there).<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/></p><h2>The Storm on the Horizon</h2>
-<table class="tr-caption-container" cellspacing="0" cellpadding="0" style="float: right; text-align: center;">
-	<tbody>
-		<tr>
-			<td style="text-align: center;">
-				<p>
-					<a style="margin-left: auto; margin-right: auto;" imageanchor="1" href="/blog/img/terminal-tom-hanks.jpg">
-						<img width="320" height="207" border="0" src="/blog/img/terminal-tom-hanks.jpg">
-					</a>
-				</p>
-			</td>
-		</tr>
-		<tr>
-			<td class="tr-caption" style="text-align: center;">
-				<p>In retrospect, it would have made more</p>
-				<p>sense to just rent a car and drive the 10 hours.</p>
-			</td>
-		</tr>
-	</tbody>
-</table><p>I finished up at work and headed to the airport a little after 5 PM on Friday. My flight was scheduled to leave Burlington, VT at 7:02 PM (Flight 3912). It was a direct flight to Washington-Dulles International Airport (IAD), which was suppose to hand a little after 9 PM. I got off the rental car, made it through security, and sat down at the gate at around 5:40 PM. At around 6:00 PM, the gate agent got on the PA and informed us that the plane had not yet left IAD due to a "maintenance issue" and that we probably wouldn't be leaving any time before 7:45 PM. She said that she could help people rebook their trips if this was going to cause them to miss their connections and would try to get hotel rooms for people who would opt to wait for the flight at 6 AM out of Burlington for IAD the next day. However, as she pointed out, there were no hotel rooms available in Burlington, due to a couple of college class reunions and a car show going on (we learned later that what this really meant was that the one hotel that took United vouchers was full and United won't pay for any other hotel -- or at least that was the message). After a hand-full of people made their way to the gate to get re-booked, the gate attendant came back on the PA at around 6:30 PM to announce that the plane had taken off from IAD and would land in Burlington around 8:00 PM. It would take about 20 minutes to turn the plane around, which would mean we would get into IAD at around 10:00 PM (not bad, since this is only an hour later than originally scheduled, if you overlook the whole "maintenance" issue with the plane that delayed it in the first place). Again, the gate attendant asked if anyone needed to re-book and spent roughly the next hour helping customers (we found out later that she worked for Delta, but had to cover the United gate).</p><h2>Take It For a Test Drive</h2>
-<table class="tr-caption-container" cellspacing="0" cellpadding="0" style="float: left; text-align: center;">
-	<tbody>
-		<tr>
-			<td style="text-align: center;">
-				<p>
-					<a style="margin-left: auto; margin-right: auto;" imageanchor="1" href="/blog/img/airplane7.jpg">
-						<img width="320" height="181" border="0" src="/blog/img/airplane7.jpg">
-					</a>
-				</p>
-			</td>
-		</tr>
-		<tr>
-			<td class="tr-caption" style="text-align: center;">
-				<p>The funny thing about all of this is that the 2 gate attendants</p>
-				<p>and the 4 TSA workers couldn't go home until we took off,</p>
-				<p>so they were definitely motivated to get us out of there.</p>
-			</td>
-		</tr>
-	</tbody>
-</table><p>At 8:00 PM, the plane from IAD landed and the passengers deplaned. There were about 30 of us left still waiting to get on the flight back to IAD. Just as all of the passengers got off the plane, one of the workers from the tarmac came in and took the PA microphone. He announced that there was another "maintenance" problem with the plane and it would take two hours to test. He would get back to us at that time with an update. In retrospect, this was the point where I should have just gone down stairs, rented a car, and drove the 10 hours from Burlington to my house outside of IAD. Needless to say, this news was met with a lot of complaints and comments. Again, a group of people tried to get re-booked and called around to find their own hotels. Luckily for me, Burlington International Airport has free WiFi, so I kicked back, plugged my laptop in and connected to my SlingBox (just to give you a sense of how long the delay was, I was able to watch two episodes of Family Guy and the first National Treasures movie in that time). Also during this time, one of the TSA workers "hit the wrong button" during a test that sounded an alarm that ordered "all TSA personel to secure all exits" to the terminal "immediately" (they quickly told us that this was an accident. At around 10:00 PM the same ground crew member came in to announce that the "tests went well" and they just needed to take the plane "out for a test drive". Let me stop here and highlight how ridiculous this was. I have never heard of this before. They literally taxied the plane out on to the runway (with no passengers), started the engines up full speed and proceeded to drive around the runway "testing" the aircraft. This went on for about an hour. During this time, I believe that one of the gate attendants ran home to get her dog (or at least take care of her dog), while the other covered for her. At around 11 PM, the plane made its way back to the gate, but ran into another road block. While they were out joyriding in the plane, another plane had landed and pulled up to our gate to deplane. Our plane had to wait on the tarmac for this to unfold. So, at about 11:20, our plane pulled back up to the gate. The ground crew member came back inside an announced that the test drive was a success. They simply had to run on more final test and fill out some paperwork. He would get back to us in 35 minutes. This, obviously, was met with sarcastic comments and groans from the 20 or so of us left in the terminal. At about midnight, we finally lined up to get on the plane.</p><h2>The Point of No Return</h2>
-<table class="tr-caption-container" cellspacing="0" cellpadding="0" style="float: right; margin-left: 1em; text-align: right;">
-	<tbody>
-		<tr>
-			<td style="text-align: center;">
-				<p>
-					<a style="clear: right; margin-bottom: 1em; margin-left: auto; margin-right: auto;" imageanchor="1" href="/blog/img/airplane.jpg">
-						<img border="0" src="/blog/img/airplane.jpg">
-					</a>
-				</p>
-			</td>
-		</tr>
-		<tr>
-			<td class="tr-caption" style="text-align: center;">
-				<p>Our first attempt at landing  kind of went like this...</p>
-			</td>
-			<td class="tr-caption" style="text-align: center;">
-				<p> </p>
-			</td>
-			<td class="tr-caption" style="text-align: center;">
-				<p>
-					<br>
-				</p>
-			</td>
-		</tr>
-	</tbody>
-</table><p>I've never seen a plane board that quickly. There was a good chuckle from the crowd when the gate attendant announced that "premium" customers were welcome to board first. We got on the plane and settled in about 5 or 10 minutes. I got a look at the pilots, who were both no older than 25 years old each (this will be important later). We pushed back from the terminal, taxied out to the runway and then nothing. We sat. And sat. And sat. After about 30 minutes, the pilot came on the intercom and told us that because it was so late, the air traffic control tower had shut down for the evening. He told us that normally this isn't a problem, as our plane got transferred to regional air traffic control. However, because the regional air traffic control was now in charge, we had to wait for all inbound planes to land first before being cleared for take off (this is obviously because they are not local to the air field and therefore can't see what is going on). So we waited. And waited. At a little after 1 AM, we finally took off. It had been delayed by over 5 hours, but we were finally going to get home, even if it was at 3 AM. The flight went smoothly (there were a few turbulence) and at around a little after 3 AM, the pilot notified us that we were starting our decent into the Washington metro area. There were low clouds over the area (we were flying above them) at a couple hundred feet. However, it was not fog: you could see through the clouds in spots and see the lights on the ground. I didn't think anything of it and assumed that we would be on the ground in minutes.</p><h2>Trust Your Instincts, Luke</h2>
-<table class="tr-caption-container" cellspacing="0" cellpadding="0" style="float: right; text-align: center;">
-	<tbody>
-		<tr>
-			<td style="text-align: center;">
-				<p>
-					<a style="margin-left: auto; margin-right: auto;" imageanchor="1" href="/blog/img/dontgo.png">
-						<img width="320" height="179" border="0" src="/blog/img/dontgo.png">
-					</a>
-				</p>
-			</td>
-		</tr>
-		<tr>
-			<td class="tr-caption" style="text-align: center;">
-				<p>Do you have anything to declare?  Yeah, don't fly United.</p>
-			</td>
-		</tr>
-	</tbody>
-</table><p>The plane began its descent. The landing gear came down. We started getting closer to the ground. We started to go through the low lying clouds. Just as I thought that we were going to touch down, the engines went into full throttle, the plane pitched steeply up into the air and banked to the left, back towards Washington, D.C. and the DelMarVa peninsula. After a few minutes, the captain came on and stated that they could not see the runway at the required height, so they aborted the landing. They were going to try landing at a different runway (because that runway would magically have no clouds over it). A few minutes later we made attempt number two, with the same result. As we began circling, the pilot came on to say that he was in a conversation with air traffic control at IAD and regional air traffic control to see what the next step would be. I have no doubt that more experienced pilots would have landed that plane. About ten minutes later, the pilot came back on the intercom to say that we could not land at IAD would be diverted to Allentown, PA. He assured us that United would put us in hotels and help us arrange travel to IAD or some other destination. About 25 minutes later, we landed at the airport in Allentown, PA and again sat on another runway. The pilot told us that they were having trouble finding people at the airport to help us get to the gate. He also told us that "things were changing over the last 30 minutes" and that now the gate agent was trying to arrange "transportation" to IAD for us. We got off the plane and made our way inside to the gate area. After standing around for about 5 minutes, one of the ground crew members from outside came in and got on the microphone. He told us that he had arranged for buses to show up "in 5 or 10 minutes" to take us to IAD, if we were interested. The other option was to stay at the airport. This caught a bunch of people off guard and started asking about a hotel. He said that United would not pay for a hotel, because we were diverted "due to weather". My jaw dropped, as did most of the people standing around the podium. We were diverted "due to weather" because United sent a faulty plane from IAD to Burlington (I wonder how mad the people on that flight would be if they knew the plane they had just gotten off of had 3 hours of maintenance work done on it after they landed). The reason we hit weather was obviously because of United and the issues to the plane. This was a clever trick on their part to get out of having to help their customers. It seems to me, it would have made much more sense to pay $80-90 a person to put the few who wanted to stay in Allentown up for the night and gain a ton of good will. Instead, they pissed off 20+ customers, who will now tell people about this hellish trip and why you shouldn't fly on United. I couldn't listen to this nonsense so I headed down stairs to baggage claim where the bus would supposedly meet us.</p><h2>Get On the Bus!</h2>
-<table class="tr-caption-container" cellspacing="0" cellpadding="0" style="float: left; margin-right: 1em; text-align: left;">
-	<tbody>
-		<tr>
-			<td style="text-align: center;">
-				<p>
-					<a style="clear: left; margin-bottom: 1em; margin-left: auto; margin-right: auto;" imageanchor="1" href="/blog/img/partybus.jpg">
-						<img width="320" height="240" border="0" src="/blog/img/partybus.jpg">
-					</a>
-				</p>
-			</td>
-		</tr>
-		<tr>
-			<td class="tr-caption" style="text-align: center;">
-				<p>Am I in Allentown or Las Vegas?</p>
-			</td>
-		</tr>
-	</tbody>
-</table><p>And so we waited. Again. We landed in Allentown at around 3:30 AM. The buses that were suppose to show up in 5-10 minutes finally showed up around 4 AM. I walked out of the baggage claim to find two booze cruise/party buses waiting to take us to IAD (complete with functioning interior LED disco lights and the "Vomit/Destruction will cause you to forfeit your $500 deposit" sign). You couldn't even sleep on this bus, because the seats are on the side, like in the picture to the left. So, in a darkened party bus, we pulled out of the airport in Allentown, PA for the three hour drive through Harrisburg, Gettysburg, Frederick, and finally Leesburg. In the middle of the trip at 5:43 AM, United called my house and sent me this e-mail:<br/><p><br/> <br><br/></p><br/><p class="separator" style="clear: both; text-align: center;"><br/> <a style="margin-left: 1em; margin-right: 1em;" imageanchor="1" href="/blog/img/united.png"><br/> <img width="303" height="320" border="0" src="/blog/img/united.png"><br/> </a><br/></p><br/><p><br/> <br><br/></p><br/>I wish I was funny enough to make up that plot twist. Somehow the flight that didn't get cancelled when it should have been cancelled, got cancelled after I got off it in Allentown, PA. To add insult to injury, United apparently never updated their web site to say that the flight had been diverted, so people were waiting at IAD wondering what happened. I'm sure this was classic CYA by United to make sure that they didn't have to pay anything out to those who stayed in Burlington, VT, as they are not liable if it is cancelled due to weather. So, at 8 AM, we finally pulled into IAD on our party buses. A little over 13 hours from when I was suppose to leave Burlington, I made it home. There was no snow. There was no rain. There was no hurricane or tornado or typhoon. Or earthquake. There was only United Airlines and its terrible customer service. Not a bad way to spend a Friday night, eh?</p></p>
-                <p><a href="/blog/2011/09/26/trains_planes_auto.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2011/09/13/spring_integration_jmx.html"><h1>I Don't Need To Read The Manual...Spring Integration and JMX</h1></a>
-                   <p>13 September 2011</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/jmx.html">jmx</a>
-        
-                <a href="/blog/tags/spring-integration.html"> spring-integration</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2011/09/13/spring_integration_jmx.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2011/09/13/spring_integration_jmx.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2011/09/13/spring_integration_jmx.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><p>The title pretty much says it all. This seems like a pretty simple task, right? I thought that I would just go to the Spring Integration reference documentation, follow the instructions, and boom, you can see all of your Spring Integration components via JMX from your favorite JMX monitoring client. If only it were that easy. The first hurdle I encountered was that the documentation at Spring's site fails to mention how to get the JMX schema included in your integration.xml or where the parsers/handlers live in the Spring library so that it can actually load and parse the integration.xml file. The second is that there appears to be some typos in it (it should be "jmx:mbean-export", not "jmx:mbean-exporter" and the attributes of that tag are also listed incorrectly). Grr (I guess you get what you pay for). So, without further ado, this is how to turn on the MBean Exporter for Spring Integration:</p>
-<ol>
-  <li><p>Declare the "jmx" namespace in your integration.xml file:</p>
-  <pre><code>xmlns:jmx=&quot;http://www.springframework.org/schema/integration/jmx&quot;
-</code></pre></li>
-  <li><p>Add the "jmx" schema to the "schemaLocation" attribute:</p>
-  <pre><code>xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-http://www.springframework.org/schema/integration/jmx http://www.springframework.org/schema/integration/jmx/spring-integration-jmx-2.0.xsd
-http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd&quot;
-</code></pre></li>
-  <li><p>Declare the MBean server bean: </p>
-  <pre><code>&lt;bean class=&quot;org.springframework.jmx.support.MBeanServerFactoryBean&quot; id=&quot;mbeanServer&quot;&gt;
-    &lt;property name=&quot;locateExistingServerIfPossible&quot; value=&quot;true&quot;&gt;&lt;/property&gt;
-&lt;/bean&gt;
-</code></pre></li>
-  <li><p>Declare the Integration MBean Exporter: </p>
-  <pre><code>&lt;jmx:mbean-export default-domain=&quot;your.custom.domain&quot; server=&quot;mbeanServer&quot;&gt;&lt;/jmx:mbean-export&gt;
-</code></pre></li>
-  <li><p>Add the spring-integration-jmx library to your classpath.</p></li>
-</ol></p>
-                <p><a href="/blog/2011/09/13/spring_integration_jmx.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
