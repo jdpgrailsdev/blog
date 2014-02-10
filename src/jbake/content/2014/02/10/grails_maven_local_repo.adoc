@@ -1,0 +1,88 @@
+= Grails 2.3, Maven and Local Repositories
+Jonathan Pearlin
+2014-02-10
+:jbake-type: post
+:jbake-tags: grails,aether,maven,jenkins,blog
+:jbake-status: published
+:source-highlighter: prettify
+:id: grails_maven_local_repo
+:aether: http://www.eclipse.org/aether/[Aether]
+:grails: http://grails.org[Grails]
+:jenkins: http://jenkins-ci.org/[Jenkins]
+:maven: http://maven.apache.org/[Maven]
+:icons: font
+
+One of the great new features in {grails} 2.3 is the ability to use {aether} to resolve dependencies in place of Ivy.  This is great news if
+you already use {maven} to build other projects, as it now means you can have predictable builds between your {grails} and non-{grails} applications.  However, like
+any new feature, there are a few rough edges.  I ran into one the other day when trying to determine why one of my {grails} applications was not picking up dependencies from the local {maven}
+cache  (`~/.m2/repository`).  After some digging around, I ran across http://jira.grails.org/browse/GRAILS-10921[this bug].  According to it, the mavenLocal directive in the
+repositories section of `BuildConfig.groovy` is not honored when using the {aether} resolver.  So that stinks.  I quickly realized that we could make the {grails} dependency resolver
+DSL pick up the local {maven} repository by simply adding a new file-based repository:
+
+[source,groovy]
+----
+    repositories {
+        inherits true // Whether to inherit repository definitions from plugins
+
+        mavenRepo "file://${System.getProperty('user.home')}/.m2/repository"
+
+        ...
+    }
+----
+
+This little hack will allow you to continue checking the local {maven} repository when using the {grails} command line tools and the http://grails.org/doc/2.3.x/guide/introduction.html#whatsNew23[Maven dependency resolution support]
+new to {grails} 2.3.  The nice thing about this is that when/if the issue is fixed so that the local {maven} repository is honored, this fix should not cause any issues.  Not long after I made this fix,
+I went to build the application on http://jenkins-ci.org/[Jenkins] and notice some more funny business with dependencies.  After some digging, I determined the issue was due to the fact that now that the
+{grails} applications were using {maven} for dependency resolution and not Ivy, they were sharing one local dependency cache.  When the Jenkins job is a {maven} project, I typically choose
+the option to create a repository per workspace, to avoid collisions between jobs.  With a {grails} job, you do not have this option.  The option that you do have is setting the
+`grails.dependency.cache.dir` build property to tell {grails} where to cache and look for local dependencies.  I decided to conditionally set this based on whether or not the application
+was being built on Jenkins or not (the reason for this is that I already have it set in my local `~/.grails/settings.groovy` to have a separate cache per application).  Once again,
+I modified the BuildConfig.groovy file to contain the following logic:
+
+
+[source,groovy]
+----
+    final String localMavenRepo = System.getenv('JENKINS_HOME') ? "${System.getenv('WORKSPACE')}/.m2/repository" :
+                                        "${System.getProperty('user.home')}/.m2/repository"
+
+    ...
+
+    /**
+      * If the build is being executed on Jenkins, set up the ivy cache.  This
+      * is important as Grails checks to see if this has been set before allowing
+      * an override of the local Maven repository.
+      */
+    if(System.getenv('JENKINS_HOME')) {
+        grails.dependency.cache.dir = localMavenRepo
+    }
+
+    grails.project.dependency.resolver = "maven" // or ivy
+    grails.project.dependency.resolution = {
+        pom true
+
+        // inherit Grails' default dependencies
+        inherits("global") {
+        }
+
+        log "error" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+        checksums false // Whether to verify checksums on resolve
+        legacyResolve false // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
+        localRepository = localMavenRepo
+
+        repositories {
+            inherits true // Whether to inherit repository definitions from plugins
+
+            mavenRepo "file://${localMavenRepo}"
+
+            ...
+        }
+    }
+
+    ...
+----
+
+It's worth noting that in the example above, I not only set the `grails.dependency.cache.dir` {grails} build property, but
+I also set the `localRepository` property of the dependency resolution DSL to ensure that the {maven} dependency resolution is using it both as a place to check
+for dependencies AND a place to store the cached dependencies (see the https://github.com/grails/grails-core/blob/2.3.x/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy[AetherDependencyManager.groovy] source
+file in the `grails-aether` module for more details).  Now when the application builds on Jenkins, not only does it have a local {maven} repository as part of
+the list of repositories, but that repository is stored in the workspace for the Jenkins build job.

@@ -1,0 +1,19 @@
+= Blog Makeover
+Jonathan Pearlin
+2014-02-08
+:jbake-type: post
+:jbake-tags: blog
+:jbake-status: published
+:source-highlighter: prettify
+:id: grails_maven_local_repo
+:asciidoc: http://www.methods.co.nz/asciidoc/[AsciiDoc]
+:github: http://github.com[GitHub]
+:jbake: http://www.jbake.org[JBake]
+:markdown: https://daringfireball.net/projects/markdown/[Markdown]
+:icons: font
+
+In an attempt to get myself to start blogging more regularly, I have decided to re-do my blog (which has largely been dormant).  A few days ago,
+I read an interesting blog post by http://melix.github.io/blog//2014/02/hosting-jbake-github.html[Cédric Champeau] about using {jbake} to generate
+blog posts from {markdown}, {asciidoc} or HTML and publish them to {github}.  The blog post is pretty straight forward and with some minor tweaks
+I was able to give my blog a makeover.  Additionally, its much easier now to author and publish posts.  Over the next few weeks, I am going to continue
+to make tweaks to give the blog my own style.
