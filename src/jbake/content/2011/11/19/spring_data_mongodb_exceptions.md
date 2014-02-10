@@ -5,9 +5,6 @@ tags=java, mongodb, spring-data-mongodb
 status=published
 ~~~~~~
 
-Abstraction For the Win!
-========================
-
 To be fair, the Spring Data MongoDB project is currently only at Milestone releases (as of writing, they are up to M5).  Unlike most open source projects, they do have fairly good reference documentation.  Recently, we decided to add some unique contraints to a document by adding a compound index.  The Spring Data MongoDB project provides a couple mechanisms to be able to do this:
 
 1. Use the MongoTemplate class's ensureIndex method to programmatically create an index at runtime.

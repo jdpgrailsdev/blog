@@ -4,8 +4,6 @@ type=post
 tags=grails, maven
 status=published
 ~~~~~~
-Convention vs. Convention
-=========================
 
 One of the constant problems with the Grails Maven integration is the competing conventions imposed by the two technologies.  An obvious example of this is the naming convention used for WAR files by the two.  The Maven convention is to use the following when creating a WAR file:
 

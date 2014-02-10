@@ -4,8 +4,6 @@ type=post
 tags=grails
 status=published
 ~~~~~~
-The Problem
-===========
 
 Grails provides a nice feature in each plugin's descriptor file that allows the plugin to make modifications to the web.xml file created by Grails application that includes the plugin at build time.  This can be done by implementing the `doWithWebDescriptor` closure in the plugin's descriptor file (see the Grails documentation for more information).  This works fine if you have a limited number of Grails plugins in your application that want to modify the web.xml file or have plugins whose changes to the `web.xml` file do not require some sort of order.  I recently ran into an issue where we needed to make sure that a custom Grails plugin added a servlet filter to the web.xml that came BEFORE the filters added by the Spring Security plugin.  I did not want to modify the Spring Security plugin to make sure its modifications to the web.xml came after the custom plugin's modifications, nor did I want to assume that the plugins would be installed in a particular order by Grails when building the main application.  
 

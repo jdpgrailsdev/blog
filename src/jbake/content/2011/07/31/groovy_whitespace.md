@@ -4,8 +4,6 @@ type=post
 tags=groovy, xml
 status=published
 ~~~~~~
-We Can Put a Man on the Moon...
-===========================
 
 Groovy has some awesome XML reading and parsing features that make it a breeze for developers to create new XML strings or to parse existing XML strings.  The `XMLSlurper` and associated `GPathResult` classes make it easy to traverse and manipulate the DOM of an XML document/string.  On top of that, the builder support in Groovy (`MarkupBuilder`, `StreamingMarkupBuilder`) make it much easier for developers to create structured documents and get essentially built-in commenting for free (since the builder syntax essentially describes the hierarchical document by itself).  With all of these improvements and modern conveniences provided by Groovy regarding XML, you would think that it would be easy to perform the following task:
 

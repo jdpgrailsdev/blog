@@ -4,8 +4,6 @@ type=post
 tags=jmx, spring-integration
 status=published
 ~~~~~~
-Enabling JMX Monitoring with Spring Integration
-==============
 
 The title pretty much says it all.  This seems like a pretty simple task, right?  I thought that I would just go to the Spring Integration reference documentation, follow the instructions, and boom, you can see all of your Spring Integration components via JMX from your favorite JMX monitoring client.  If only it were that easy.  The first hurdle I encountered was that the documentation at Spring's site fails to mention how to get the JMX schema included in your integration.xml or where the parsers/handlers live in the Spring library so that it can actually load and parse the integration.xml file.  The second is that there appears to be some typos in it (it should be "jmx:mbean-export", not "jmx:mbean-exporter" and the attributes of that tag are also listed incorrectly). Grr (I guess you get what you pay for). So, without further ado, this is how to turn on the MBean Exporter for Spring Integration:
 

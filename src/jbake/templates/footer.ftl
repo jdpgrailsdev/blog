@@ -4,15 +4,15 @@
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.0.3</a> | Baked with <a href="http://jbake.org">JBake ${version}</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.1.0</a> | Baked with <a href="http://jbake.org">JBake ${version}</a></p>
               </div>
         </div>
 
         <!-- Le javascript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
-           <script src="/blog/js/jquery-1.9.1.min.js"></script>
-        <script src="/blog/js/bootstrap.min.js"></script>
+        <script src="https://code.jquery.com/jquery.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
         <script src="/blog/js/run_prettify.js"></script>
         <script type="text/javascript">
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */

@@ -10,7 +10,8 @@
         <meta name="generator" content="JBake" />
 
         <!-- Le styles -->
-        <link href="/blog/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
         <link href="/blog/css/asciidoctor.css" rel="stylesheet">
         <link href="/blog/css/base.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">

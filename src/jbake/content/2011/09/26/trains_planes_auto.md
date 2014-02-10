@@ -4,8 +4,6 @@ type=post
 tags=travel, united
 status=published
 ~~~~~~
-Fun with Airports
-==================
 
 <table class="tr-caption-container" cellspacing="0" cellpadding="0" style="float: left; margin-right: 1em; text-align: left;">
 	<tbody>

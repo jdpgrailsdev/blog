@@ -4,8 +4,6 @@ type=post
 tags=cloud9ide.com, eclipse, node.js
 status=published
 ~~~~~~
-Node.JS and IDE Support
-================
 
 Node.JS is a new and exciting evented I/O library for V8 JavaScript.  While the consensus seems to be to use Cloud9ide.com as the IDE of choice to develop Node.JS applications, this may be impractical for a couple of reasons.  First, Cloud9 is an online IDE, which means your source must be hosted on the Internet, either at Cloud9, Bitbucket or Github (I will say that the Github integration @ Cloud9ide.com is pretty nice).  Second, it is a rather limited IDE, which means you will have to do your other development elsewhere (if you only develop in JavaScript, than this isn't such a big deal).  Finally, the Cloud9ide.com IDE does NOT provide Node.JS code-completion for built-in modules (at least it did not at the time of writing this post).  With this in mind, I set out to see how well I could get Node.JS support into Eclipse.  Despite these shortcomings, one of the nice things about Cloud9ide.com is that it allows you to run and debug your application in their cloud, making it very easy to test your application.  Therefore, my goals for finding desktop IDE support for Node.JS was to make sure that it supported everything that Cloud9ide.com has and more.  I settled on the following requirements
 
