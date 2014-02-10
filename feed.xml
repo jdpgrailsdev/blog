@@ -6,8 +6,8 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Fri, 7 Feb 2014 21:44:53 -0500</pubDate>
-        <lastBuildDate>Fri, 7 Feb 2014 21:44:53 -0500</lastBuildDate>
+        <pubDate>Mon, 10 Feb 2014 08:27:51 -0500</pubDate>
+        <lastBuildDate>Mon, 10 Feb 2014 08:27:51 -0500</lastBuildDate>
 
         <item>
             <title>Relocation</title>
@@ -15,7 +15,7 @@
             <pubDate>Sat, 8 Dec 2012 00:00:00 -0500</pubDate>
             <guid isPermaLink="false">/2012/12/08/relocation.html</guid>
             <description>
-                    &lt;h2&gt;Relocation&lt;/h2&gt;&lt;p&gt;I have decided to relocate my blog from &lt;a href=&quot;http://jonathan-whywecanthavenicethings.blogspot.com&quot;&gt;Blog Spot&lt;/a&gt; to &lt;a href=&quot;http://jdpgrailsdev.github.io/blog&quot;&gt;GitHub&lt;/a&gt;. I have not actively posted anything in a while, but I am going to start&lt;br/&gt;up again and felt that hosting it on Github was a better choice. I will leave the old blog up with a pointer over to the new blog.&lt;/p&gt;
+                    &lt;p&gt;I have decided to relocate my blog from &lt;a href=&quot;http://jonathan-whywecanthavenicethings.blogspot.com&quot;&gt;Blog Spot&lt;/a&gt; to &lt;a href=&quot;http://jdpgrailsdev.github.io/blog&quot;&gt;GitHub&lt;/a&gt;. I have not actively posted anything in a while, but I am going to start&lt;br/&gt;up again and felt that hosting it on Github was a better choice. I will leave the old blog up with a pointer over to the new blog.&lt;/p&gt;
             </description>
         </item>
         <item>
@@ -24,7 +24,7 @@
             <pubDate>Sat, 19 Nov 2011 00:00:00 -0500</pubDate>
             <guid isPermaLink="false">/2011/11/19/spring_data_mongodb_exceptions.html</guid>
             <description>
-                    &lt;h1&gt;Abstraction For the Win!&lt;/h1&gt;&lt;p&gt;To be fair, the Spring Data MongoDB project is currently only at Milestone releases (as of writing, they are up to M5). Unlike most open source projects, they do have fairly good reference documentation. Recently, we decided to add some unique contraints to a document by adding a compound index. The Spring Data MongoDB project provides a couple mechanisms to be able to do this:&lt;/p&gt;
+                    &lt;p&gt;To be fair, the Spring Data MongoDB project is currently only at Milestone releases (as of writing, they are up to M5). Unlike most open source projects, they do have fairly good reference documentation. Recently, we decided to add some unique contraints to a document by adding a compound index. The Spring Data MongoDB project provides a couple mechanisms to be able to do this:&lt;/p&gt;
 &lt;ol&gt;
   &lt;li&gt;Use the MongoTemplate class&apos;s ensureIndex method to programmatically create an index at runtime.&lt;/li&gt;
   &lt;li&gt;Use the CompoundIndexes and CompoundIndex annotations to declare the indexes on the document model class.&lt;/li&gt;
@@ -190,8 +190,7 @@ Caused by: com.mongodb.MongoException$DuplicateKey: E11000 duplicate key error i
             <pubDate>Mon, 26 Sep 2011 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">/2011/09/26/trains_planes_auto.html</guid>
             <description>
-                    &lt;h1&gt;Fun with Airports&lt;/h1&gt;
-&lt;table class=&quot;tr-caption-container&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; style=&quot;float: left; margin-right: 1em; text-align: left;&quot;&gt;
+                    &lt;table class=&quot;tr-caption-container&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; style=&quot;float: left; margin-right: 1em; text-align: left;&quot;&gt;
 	&lt;tbody&gt;
 		&lt;tr&gt;
 			&lt;td style=&quot;text-align: center;&quot;&gt;
@@ -319,7 +318,7 @@ Caused by: com.mongodb.MongoException$DuplicateKey: E11000 duplicate key error i
             <pubDate>Tue, 13 Sep 2011 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">/2011/09/13/spring_integration_jmx.html</guid>
             <description>
-                    &lt;h1&gt;Enabling JMX Monitoring with Spring Integration&lt;/h1&gt;&lt;p&gt;The title pretty much says it all. This seems like a pretty simple task, right? I thought that I would just go to the Spring Integration reference documentation, follow the instructions, and boom, you can see all of your Spring Integration components via JMX from your favorite JMX monitoring client. If only it were that easy. The first hurdle I encountered was that the documentation at Spring&apos;s site fails to mention how to get the JMX schema included in your integration.xml or where the parsers/handlers live in the Spring library so that it can actually load and parse the integration.xml file. The second is that there appears to be some typos in it (it should be &quot;jmx:mbean-export&quot;, not &quot;jmx:mbean-exporter&quot; and the attributes of that tag are also listed incorrectly). Grr (I guess you get what you pay for). So, without further ado, this is how to turn on the MBean Exporter for Spring Integration:&lt;/p&gt;
+                    &lt;p&gt;The title pretty much says it all. This seems like a pretty simple task, right? I thought that I would just go to the Spring Integration reference documentation, follow the instructions, and boom, you can see all of your Spring Integration components via JMX from your favorite JMX monitoring client. If only it were that easy. The first hurdle I encountered was that the documentation at Spring&apos;s site fails to mention how to get the JMX schema included in your integration.xml or where the parsers/handlers live in the Spring library so that it can actually load and parse the integration.xml file. The second is that there appears to be some typos in it (it should be &quot;jmx:mbean-export&quot;, not &quot;jmx:mbean-exporter&quot; and the attributes of that tag are also listed incorrectly). Grr (I guess you get what you pay for). So, without further ado, this is how to turn on the MBean Exporter for Spring Integration:&lt;/p&gt;
 &lt;ol&gt;
   &lt;li&gt;&lt;p&gt;Declare the &quot;jmx&quot; namespace in your integration.xml file:&lt;/p&gt;
   &lt;pre&gt;&lt;code&gt;xmlns:jmx=&amp;quot;http://www.springframework.org/schema/integration/jmx&amp;quot;
@@ -347,7 +346,7 @@ http://www.springframework.org/schema/integration http://www.springframework.org
             <pubDate>Sun, 14 Aug 2011 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">/2011/08/14/war_of_the_worlds.html</guid>
             <description>
-                    &lt;h1&gt;Node.JS and IDE Support&lt;/h1&gt;&lt;p&gt;Node.JS is a new and exciting evented I/O library for V8 JavaScript. While the consensus seems to be to use Cloud9ide.com as the IDE of choice to develop Node.JS applications, this may be impractical for a couple of reasons. First, Cloud9 is an online IDE, which means your source must be hosted on the Internet, either at Cloud9, Bitbucket or Github (I will say that the Github integration @ Cloud9ide.com is pretty nice). Second, it is a rather limited IDE, which means you will have to do your other development elsewhere (if you only develop in JavaScript, than this isn&apos;t such a big deal). Finally, the Cloud9ide.com IDE does NOT provide Node.JS code-completion for built-in modules (at least it did not at the time of writing this post). With this in mind, I set out to see how well I could get Node.JS support into Eclipse. Despite these shortcomings, one of the nice things about Cloud9ide.com is that it allows you to run and debug your application in their cloud, making it very easy to test your application. Therefore, my goals for finding desktop IDE support for Node.JS was to make sure that it supported everything that Cloud9ide.com has and more. I settled on the following requirements&lt;/p&gt;
+                    &lt;p&gt;Node.JS is a new and exciting evented I/O library for V8 JavaScript. While the consensus seems to be to use Cloud9ide.com as the IDE of choice to develop Node.JS applications, this may be impractical for a couple of reasons. First, Cloud9 is an online IDE, which means your source must be hosted on the Internet, either at Cloud9, Bitbucket or Github (I will say that the Github integration @ Cloud9ide.com is pretty nice). Second, it is a rather limited IDE, which means you will have to do your other development elsewhere (if you only develop in JavaScript, than this isn&apos;t such a big deal). Finally, the Cloud9ide.com IDE does NOT provide Node.JS code-completion for built-in modules (at least it did not at the time of writing this post). With this in mind, I set out to see how well I could get Node.JS support into Eclipse. Despite these shortcomings, one of the nice things about Cloud9ide.com is that it allows you to run and debug your application in their cloud, making it very easy to test your application. Therefore, my goals for finding desktop IDE support for Node.JS was to make sure that it supported everything that Cloud9ide.com has and more. I settled on the following requirements&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;The ability to run/launch Node.JS applications from Eclipse&lt;/li&gt;
   &lt;li&gt;The ability to debug Node.JS applications from Eclipse&lt;/li&gt;

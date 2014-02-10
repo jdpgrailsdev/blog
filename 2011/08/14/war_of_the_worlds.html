@@ -10,7 +10,8 @@
         <meta name="generator" content="JBake" />
 
         <!-- Le styles -->
-        <link href="/blog/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
         <link href="/blog/css/asciidoctor.css" rel="stylesheet">
         <link href="/blog/css/base.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
@@ -75,7 +76,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2011/08/14/war_of_the_worlds.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2011/08/14/war_of_the_worlds.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><h1>Node.JS and IDE Support</h1><p>Node.JS is a new and exciting evented I/O library for V8 JavaScript. While the consensus seems to be to use Cloud9ide.com as the IDE of choice to develop Node.JS applications, this may be impractical for a couple of reasons. First, Cloud9 is an online IDE, which means your source must be hosted on the Internet, either at Cloud9, Bitbucket or Github (I will say that the Github integration @ Cloud9ide.com is pretty nice). Second, it is a rather limited IDE, which means you will have to do your other development elsewhere (if you only develop in JavaScript, than this isn't such a big deal). Finally, the Cloud9ide.com IDE does NOT provide Node.JS code-completion for built-in modules (at least it did not at the time of writing this post). With this in mind, I set out to see how well I could get Node.JS support into Eclipse. Despite these shortcomings, one of the nice things about Cloud9ide.com is that it allows you to run and debug your application in their cloud, making it very easy to test your application. Therefore, my goals for finding desktop IDE support for Node.JS was to make sure that it supported everything that Cloud9ide.com has and more. I settled on the following requirements</p>
+    <p><p>Node.JS is a new and exciting evented I/O library for V8 JavaScript. While the consensus seems to be to use Cloud9ide.com as the IDE of choice to develop Node.JS applications, this may be impractical for a couple of reasons. First, Cloud9 is an online IDE, which means your source must be hosted on the Internet, either at Cloud9, Bitbucket or Github (I will say that the Github integration @ Cloud9ide.com is pretty nice). Second, it is a rather limited IDE, which means you will have to do your other development elsewhere (if you only develop in JavaScript, than this isn't such a big deal). Finally, the Cloud9ide.com IDE does NOT provide Node.JS code-completion for built-in modules (at least it did not at the time of writing this post). With this in mind, I set out to see how well I could get Node.JS support into Eclipse. Despite these shortcomings, one of the nice things about Cloud9ide.com is that it allows you to run and debug your application in their cloud, making it very easy to test your application. Therefore, my goals for finding desktop IDE support for Node.JS was to make sure that it supported everything that Cloud9ide.com has and more. I settled on the following requirements</p>
 <ul>
   <li>The ability to run/launch Node.JS applications from Eclipse</li>
   <li>The ability to debug Node.JS applications from Eclipse</li>
@@ -212,15 +213,15 @@
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.0.3</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.1.0</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a></p>
               </div>
         </div>
 
         <!-- Le javascript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
-           <script src="/blog/js/jquery-1.9.1.min.js"></script>
-        <script src="/blog/js/bootstrap.min.js"></script>
+        <script src="https://code.jquery.com/jquery.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
         <script src="/blog/js/run_prettify.js"></script>
         <script type="text/javascript">
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */

@@ -10,7 +10,8 @@
         <meta name="generator" content="JBake" />
 
         <!-- Le styles -->
-        <link href="/blog/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
         <link href="/blog/css/asciidoctor.css" rel="stylesheet">
         <link href="/blog/css/base.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
@@ -75,7 +76,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2011/11/19/spring_data_mongodb_exceptions.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2011/11/19/spring_data_mongodb_exceptions.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><h1>Abstraction For the Win!</h1><p>To be fair, the Spring Data MongoDB project is currently only at Milestone releases (as of writing, they are up to M5). Unlike most open source projects, they do have fairly good reference documentation. Recently, we decided to add some unique contraints to a document by adding a compound index. The Spring Data MongoDB project provides a couple mechanisms to be able to do this:</p>
+    <p><p>To be fair, the Spring Data MongoDB project is currently only at Milestone releases (as of writing, they are up to M5). Unlike most open source projects, they do have fairly good reference documentation. Recently, we decided to add some unique contraints to a document by adding a compound index. The Spring Data MongoDB project provides a couple mechanisms to be able to do this:</p>
 <ol>
   <li>Use the MongoTemplate class's ensureIndex method to programmatically create an index at runtime.</li>
   <li>Use the CompoundIndexes and CompoundIndex annotations to declare the indexes on the document model class.</li>
@@ -260,15 +261,15 @@ Caused by: com.mongodb.MongoException$DuplicateKey: E11000 duplicate key error i
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.0.3</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.1.0</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a></p>
               </div>
         </div>
 
         <!-- Le javascript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
-           <script src="/blog/js/jquery-1.9.1.min.js"></script>
-        <script src="/blog/js/bootstrap.min.js"></script>
+        <script src="https://code.jquery.com/jquery.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
         <script src="/blog/js/run_prettify.js"></script>
         <script type="text/javascript">
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */

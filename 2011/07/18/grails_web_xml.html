@@ -10,7 +10,8 @@
         <meta name="generator" content="JBake" />
 
         <!-- Le styles -->
-        <link href="/blog/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
         <link href="/blog/css/asciidoctor.css" rel="stylesheet">
         <link href="/blog/css/base.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
@@ -75,7 +76,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2011/07/18/grails_web_xml.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2011/07/18/grails_web_xml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><h1>The Problem</h1><p>Grails provides a nice feature in each plugin's descriptor file that allows the plugin to make modifications to the web.xml file created by Grails application that includes the plugin at build time. This can be done by implementing the <code>doWithWebDescriptor</code> closure in the plugin's descriptor file (see the Grails documentation for more information). This works fine if you have a limited number of Grails plugins in your application that want to modify the web.xml file or have plugins whose changes to the <code>web.xml</code> file do not require some sort of order. I recently ran into an issue where we needed to make sure that a custom Grails plugin added a servlet filter to the web.xml that came BEFORE the filters added by the Spring Security plugin. I did not want to modify the Spring Security plugin to make sure its modifications to the web.xml came after the custom plugin's modifications, nor did I want to assume that the plugins would be installed in a particular order by Grails when building the main application. </p><h2>The Solution</h2><p>After realizing that I could not rely on the order that each plugin's <code>doWithWebDescriptor</code> closure would be called, I decided to use the Grails application's <code>BuildConfig.groovy</code> file to make sure that the web.xml file was modified AFTER all plugins had modified the <code>web.xml</code> file. This would allow the build to re-organize the servlet filters in the <code>web.xml</code> file to ensure they were in the right order (and would also cover the case where one or more of the filters was not added to the <code>web.xml</code> file -- i.e. this solution would work if one or both of the filters are missing from the generated web.xml file). The trick is to make use of the grails.war.resources closure in the <code>BuildConfig.groovy</code> file. This closure is called right before the WAR file is created, ensuring that nothing else will modify the web.xml file. This takes care of the timing issue. However, I still needed to write some code to actually modify the order of the servlet filters in the <code>web.xml</code> file. To do this, I made use of the Groovy shell and binding classes:</p>
+    <p><p>Grails provides a nice feature in each plugin's descriptor file that allows the plugin to make modifications to the web.xml file created by Grails application that includes the plugin at build time. This can be done by implementing the <code>doWithWebDescriptor</code> closure in the plugin's descriptor file (see the Grails documentation for more information). This works fine if you have a limited number of Grails plugins in your application that want to modify the web.xml file or have plugins whose changes to the <code>web.xml</code> file do not require some sort of order. I recently ran into an issue where we needed to make sure that a custom Grails plugin added a servlet filter to the web.xml that came BEFORE the filters added by the Spring Security plugin. I did not want to modify the Spring Security plugin to make sure its modifications to the web.xml came after the custom plugin's modifications, nor did I want to assume that the plugins would be installed in a particular order by Grails when building the main application. </p><h2>The Solution</h2><p>After realizing that I could not rely on the order that each plugin's <code>doWithWebDescriptor</code> closure would be called, I decided to use the Grails application's <code>BuildConfig.groovy</code> file to make sure that the web.xml file was modified AFTER all plugins had modified the <code>web.xml</code> file. This would allow the build to re-organize the servlet filters in the <code>web.xml</code> file to ensure they were in the right order (and would also cover the case where one or more of the filters was not added to the <code>web.xml</code> file -- i.e. this solution would work if one or both of the filters are missing from the generated web.xml file). The trick is to make use of the grails.war.resources closure in the <code>BuildConfig.groovy</code> file. This closure is called right before the WAR file is created, ensuring that nothing else will modify the web.xml file. This takes care of the timing issue. However, I still needed to write some code to actually modify the order of the servlet filters in the <code>web.xml</code> file. To do this, I made use of the Groovy shell and binding classes:</p>
 <pre><code>grails.war.resources = { stagingDir, args -&gt;
     ...
     updateWebXml(&quot;${stagingDir}/WEB-INF/web.xml&quot;)
@@ -129,15 +130,15 @@ if(webXml.exists()) {
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.0.3</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.1.0</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a></p>
               </div>
         </div>
 
         <!-- Le javascript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
-           <script src="/blog/js/jquery-1.9.1.min.js"></script>
-        <script src="/blog/js/bootstrap.min.js"></script>
+        <script src="https://code.jquery.com/jquery.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
         <script src="/blog/js/run_prettify.js"></script>
         <script type="text/javascript">
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */

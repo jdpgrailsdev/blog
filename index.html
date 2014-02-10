@@ -10,7 +10,8 @@
         <meta name="generator" content="JBake" />
 
         <!-- Le styles -->
-        <link href="/blog/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
         <link href="/blog/css/asciidoctor.css" rel="stylesheet">
         <link href="/blog/css/base.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
@@ -79,7 +80,7 @@
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2012/12/08/relocation.html" data-counter="right"></script>
                 <div class="fb-like" data-href="http://melix.github.io/blog/2012/12/08/relocation.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><h2>Relocation</h2><p>I have decided to relocate my blog from <a href="http://jonathan-whywecanthavenicethings.blogspot.com">Blog Spot</a> to <a href="http://jdpgrailsdev.github.io/blog">GitHub</a>. I have not actively posted anything in a while, but I am going to start<br/>up again and felt that hosting it on Github was a better choice. I will leave the old blog up with a pointer over to the new blog.</p></p>
+                   <p><p>I have decided to relocate my blog from <a href="http://jonathan-whywecanthavenicethings.blogspot.com">Blog Spot</a> to <a href="http://jdpgrailsdev.github.io/blog">GitHub</a>. I have not actively posted anything in a while, but I am going to start<br/>up again and felt that hosting it on Github was a better choice. I will leave the old blog up with a pointer over to the new blog.</p></p>
                 <p><a href="/blog/2012/12/08/relocation.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2011/11/19/spring_data_mongodb_exceptions.html"><h1>Where's My Exceptions, Spring Data MongoDB?</h1></a>
                    <p>19 November 2011</p>
@@ -95,7 +96,7 @@
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2011/11/19/spring_data_mongodb_exceptions.html" data-counter="right"></script>
                 <div class="fb-like" data-href="http://melix.github.io/blog/2011/11/19/spring_data_mongodb_exceptions.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><h1>Abstraction For the Win!</h1><p>To be fair, the Spring Data MongoDB project is currently only at Milestone releases (as of writing, they are up to M5). Unlike most open source projects, they do have fairly good reference documentation. Recently, we decided to add some unique contraints to a document by adding a compound index. The Spring Data MongoDB project provides a couple mechanisms to be able to do this:</p>
+                   <p><p>To be fair, the Spring Data MongoDB project is currently only at Milestone releases (as of writing, they are up to M5). Unlike most open source projects, they do have fairly good reference documentation. Recently, we decided to add some unique contraints to a document by adding a compound index. The Spring Data MongoDB project provides a couple mechanisms to be able to do this:</p>
 <ol>
   <li>Use the MongoTemplate class's ensureIndex method to programmatically create an index at runtime.</li>
   <li>Use the CompoundIndexes and CompoundIndex annotations to declare the indexes on the document model class.</li>
@@ -266,8 +267,7 @@ Caused by: com.mongodb.MongoException$DuplicateKey: E11000 duplicate key error i
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2011/09/26/trains_planes_auto.html" data-counter="right"></script>
                 <div class="fb-like" data-href="http://melix.github.io/blog/2011/09/26/trains_planes_auto.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><h1>Fun with Airports</h1>
-<table class="tr-caption-container" cellspacing="0" cellpadding="0" style="float: left; margin-right: 1em; text-align: left;">
+                   <p><table class="tr-caption-container" cellspacing="0" cellpadding="0" style="float: left; margin-right: 1em; text-align: left;">
 	<tbody>
 		<tr>
 			<td style="text-align: center;">
@@ -400,7 +400,7 @@ Caused by: com.mongodb.MongoException$DuplicateKey: E11000 duplicate key error i
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2011/09/13/spring_integration_jmx.html" data-counter="right"></script>
                 <div class="fb-like" data-href="http://melix.github.io/blog/2011/09/13/spring_integration_jmx.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><h1>Enabling JMX Monitoring with Spring Integration</h1><p>The title pretty much says it all. This seems like a pretty simple task, right? I thought that I would just go to the Spring Integration reference documentation, follow the instructions, and boom, you can see all of your Spring Integration components via JMX from your favorite JMX monitoring client. If only it were that easy. The first hurdle I encountered was that the documentation at Spring's site fails to mention how to get the JMX schema included in your integration.xml or where the parsers/handlers live in the Spring library so that it can actually load and parse the integration.xml file. The second is that there appears to be some typos in it (it should be "jmx:mbean-export", not "jmx:mbean-exporter" and the attributes of that tag are also listed incorrectly). Grr (I guess you get what you pay for). So, without further ado, this is how to turn on the MBean Exporter for Spring Integration:</p>
+                   <p><p>The title pretty much says it all. This seems like a pretty simple task, right? I thought that I would just go to the Spring Integration reference documentation, follow the instructions, and boom, you can see all of your Spring Integration components via JMX from your favorite JMX monitoring client. If only it were that easy. The first hurdle I encountered was that the documentation at Spring's site fails to mention how to get the JMX schema included in your integration.xml or where the parsers/handlers live in the Spring library so that it can actually load and parse the integration.xml file. The second is that there appears to be some typos in it (it should be "jmx:mbean-export", not "jmx:mbean-exporter" and the attributes of that tag are also listed incorrectly). Grr (I guess you get what you pay for). So, without further ado, this is how to turn on the MBean Exporter for Spring Integration:</p>
 <ol>
   <li><p>Declare the "jmx" namespace in your integration.xml file:</p>
   <pre><code>xmlns:jmx=&quot;http://www.springframework.org/schema/integration/jmx&quot;
@@ -432,15 +432,15 @@ http://www.springframework.org/schema/integration http://www.springframework.org
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.0.3</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.1.0</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a></p>
               </div>
         </div>
 
         <!-- Le javascript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
-           <script src="/blog/js/jquery-1.9.1.min.js"></script>
-        <script src="/blog/js/bootstrap.min.js"></script>
+        <script src="https://code.jquery.com/jquery.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
         <script src="/blog/js/run_prettify.js"></script>
         <script type="text/javascript">
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
