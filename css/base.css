@@ -4,6 +4,9 @@
 html,
 body {
   height: 100%;
+  font-family: 'Droid Sans', sans-serif;
+  font-size: 15px;
+  font-color: #222222;
   /* The html and body elements cannot have any padding or margin. */
 }
 
@@ -50,3 +53,38 @@ body {
 /*code {
   font-size: 80%;
 }*/
+
+/* Bootstrap customizations */
+.navbar {
+    font-size: 13px;
+    font-weight: 300;
+}
+
+.navbar-default {
+    background-color: #333333;
+    background-image: none;
+}
+
+.navbar-brand {
+    font-size: 19px;
+}
+
+.navbar-default .navbar-brand {
+    color: #ffffff;
+}
+
+.navbar-default .navbar-brand:focus {
+    color: #ffffff;
+}
+
+.navbar-default .navbar-nav > li > a {
+    color: #ffffff;
+}
+
+.navbar-default .navbar-nav > li > a:focus {
+    color: #ffffff;
+}
+
+.navbar-default .navbar-nav > li > a:hover {
+    color: #ffffff;
+}
