@@ -1,0 +1,37 @@
+= Spring and Apache Curator
+Jonathan Pearlin
+2014-02-19
+:jbake-type: post
+:jbake-tags: java,spring,curator,zookeeper
+:jbake-status: published
+:source-highlighter: prettify
+:id: spring_apache_curator
+:curator: http://curator.apache.org/[Apache Curator]
+:zookeeper: http://zookeeper.apache.org/[Apache ZooKeeper]
+:icons: font
+
+Recently, I have been working a lot with {zookeeper}.  {zookeeper} provides a Java-based driver, but it does leave a little bit to be desired.  In steps {curator}, which was originally created and open-sourced
+by https://github.com/netflix/curator[Neflix] and is now maintained by Apache.  {curator} uses a fluent-style syntax to making using {zookeeper} much easier.  In particular, {curator} contains a more robust client class that handles things such
+as retry attempts, listeners and other utilities that would otherwise need to be manually wired up using the low-level Java-based driver.  In order to support the use of {curator} within a Spring-based application,
+I decided to create a library that makes it easy to define {curator} clients in a Spring configuration for use in an application.  One of the thinks to know about the {curator} client is that you only need one
+per instance/ensemble of {zookeeper}.  Therefore, using Spring to manage the injection of a Singleton bean into a class that needs access to the client is a perfect fit.  The repository can be found on
+https://github.com/jdpgrailsdev/spring-curator[GitHub].  Please check it out and let me know what you think.  As always, contributions are welcome!
+
+=== Future Enhancements ===
+
+Currently, the https://github.com/jdpgrailsdev/spring-curator[spring-curator] library only supports the definition, creation and injection of {curator} client instances.  In the future, I would like to add the
+following support to the `spring-curator` library:
+
+* Support for registring custom retry policies
+* Definition of the following via the Spring configuration:
+** `LeaderLatch`
+** `LeaderSelector`
+** *Mutex locks
+** *Barrier barriers
+** `SharedCount`
+** `DistributedAtomicLong`
+** `PathChildrenCache`
+** `NodeCache`
+** `PersistentEphemeralNode`
+** *Queue queues
+
