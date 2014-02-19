@@ -71,6 +71,86 @@
                     <h1>Why We Can't Have Nice Things</h1>
                     <h4>A blog about technical challenges and how to over come them through powers of deduction.</h4>
                 </div>
+                   <a href="/blog/2014/02/19/spring_curator.html"><h1>Spring and Apache Curator</h1></a>
+                   <p>19 February 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/java.html">java</a>
+        
+                <a href="/blog/tags/spring.html">spring</a>
+        
+                <a href="/blog/tags/curator.html">curator</a>
+        
+                <a href="/blog/tags/zookeeper.html">zookeeper</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/02/19/spring_curator.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/02/19/spring_curator.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://melix.github.io/blog/2014/02/19/spring_curator.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Recently, I have been working a lot with <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> provides a Java-based driver, but it does leave a little bit to be desired.  In steps <a href="http://curator.apache.org/">Apache Curator</a>, which was originally created and open-sourced
+by Neflix and is now maintained by Apache.  <a href="http://curator.apache.org/">Apache Curator</a> uses a fluent-style syntax to making using <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> much easier.  In particular, <a href="http://curator.apache.org/">Apache Curator</a> contains a more robust client class that handles things such
+as retry attempts, listeners and other utilities that would otherwise need to be manually wired up using the low-level Java-based driver.  In order to support the use of <a href="http://curator.apache.org/">Apache Curator</a> within a Spring-based application,
+I decided to create a library that makes it easy to define <a href="http://curator.apache.org/">Apache Curator</a> clients in a Spring configuration for use in an application.  One of the thinks to know about the <a href="http://curator.apache.org/">Apache Curator</a> client is that you only need one
+per instance/ensemble of <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  Therefore, using Spring to manage the injection of a Singleton bean into a class that needs access to the client is a perfect fit.  The repository can be found on
+<a href="https://github.com/jdpgrailsdev/spring-curator">GitHub</a>.  Please check it out and let me know what you think.  As always, contributions are welcome!</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_future_enhancements">Future Enhancements</h3>
+<div class="paragraph">
+<p>Currently, the <a href="https://github.com/jdpgrailsdev/spring-curator">spring-curator</a> library only supports the definition, creation and injection of <a href="http://curator.apache.org/">Apache Curator</a> client instances.  In the future, I would like to add the
+following support to the <code>spring-curator</code> library:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Support for registring custom retry policies</p>
+</li>
+<li>
+<p>Definition of the following via the Spring configuration:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>LeaderLatch</code></p>
+</li>
+<li>
+<p><code>LeaderSelector</code></p>
+</li>
+<li>
+<p>*Mutex locks</p>
+</li>
+<li>
+<p>*Barrier barriers</p>
+</li>
+<li>
+<p><code>SharedCount</code></p>
+</li>
+<li>
+<p><code>DistributedAtomicLong</code></p>
+</li>
+<li>
+<p><code>PathChildrenCache</code></p>
+</li>
+<li>
+<p><code>NodeCache</code></p>
+</li>
+<li>
+<p><code>PersistentEphemeralNode</code></p>
+</li>
+<li>
+<p>*Queue queues</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div></p>
+                <p><a href="/blog/2014/02/19/spring_curator.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2014/02/10/grails_maven_local_repo.html"><h1>Grails 2.3, Maven and Local Repositories</h1></a>
                    <p>10 February 2014</p>
                 <p><em>Tags: </em>
@@ -205,179 +285,6 @@ to make tweaks to give the blog my own style.</p>
 
                    <p><p>I have decided to relocate my blog from <a href="http://jonathan-whywecanthavenicethings.blogspot.com">Blog Spot</a> to <a href="http://jdpgrailsdev.github.io/blog">GitHub</a>. I have not actively posted anything in a while, but I am going to start<br/>up again and felt that hosting it on Github was a better choice. I will leave the old blog up with a pointer over to the new blog.</p></p>
                 <p><a href="/blog/2012/12/08/relocation.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2011/11/19/spring_data_mongodb_exceptions.html"><h1>Where's My Exceptions, Spring Data MongoDB?</h1></a>
-                   <p>19 November 2011</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/java.html">java</a>
-        
-                <a href="/blog/tags/mongodb.html"> mongodb</a>
-        
-                <a href="/blog/tags/spring-data-mongodb.html"> spring-data-mongodb</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2011/11/19/spring_data_mongodb_exceptions.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2011/11/19/spring_data_mongodb_exceptions.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2011/11/19/spring_data_mongodb_exceptions.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><p>To be fair, the Spring Data MongoDB project is currently only at Milestone releases (as of writing, they are up to M5). Unlike most open source projects, they do have fairly good reference documentation. Recently, we decided to add some unique contraints to a document by adding a compound index. The Spring Data MongoDB project provides a couple mechanisms to be able to do this:</p>
-<ol>
-  <li>Use the MongoTemplate class's ensureIndex method to programmatically create an index at runtime.</li>
-  <li>Use the CompoundIndexes and CompoundIndex annotations to declare the indexes on the document model class.</li>
-  <li>Manually create the index(es) against the database using the MongoDB command line.</li>
-</ol><p>For a variety of reasons, I decided to go with option #2. Using the annotations is pretty straight forward:</p>
-<pre><code>package test;
-
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document(collection=&quot;people&quot;)
-@CompoundIndexes(value={
-    @CompoundIndex(name=&quot;people_first_name_address_idx&quot;, def=&quot;{&#39;firstName&#39;:1, &#39;address&#39;:1}&quot;, unique=true),
-    @CompoundIndex(name=&quot;people_last_name_address_idx&quot;, def=&quot;{&#39;lastName&#39;:1, &#39;address&#39;:1}&quot;, unique=true)
-})
-public class Person {
-
-    private String address;
-    private String firstName;
-    private String lastName;
-
-    ...
-}
-</code></pre><p>The example above declares two MongoDB compound indexes. In the first one, it is creating an index on the firstName and address properties of the document. The ":1" tells the index to sort that column in ascending order for the index (see the org.springframework.data.mongodb.core.query.Order class's Javadoc for more details on sort orders). The "unique=true" property tells MongoDB to reject any inserts/saves that violate this contraint (think a unique contraint in the SQL world). There are other properties on the CompoundIndex annotation, so refer to the Spring Data MongoDB Javadocs for more information. When the application starts up, the Spring Data MongoDB library listens for the application start event via Spring and will create the indexes automatically (if they don't already exist). This is a benefit over options 1 and 3 above that require manual intervention.</p><h2>So Why Didn't It Work?</h2><p>According to the paragraph above, it is pretty easy to set up indexes using Spring Data MongoDB. You annotate your classes, start your application and run some tests to make sure the unique constraint is being honored, right? That's what I thought too. I started out by annotating my document objects and re-building my application. Before installing and starting my application in Tomcat, I decided to completely drop my database from MongoDB to ensure that everything was being created properly. Once I was sure everything was clean, I installed my application and started Tomcat, causing Spring Data MongoDB to create the database, the collections and the indexes when the web application started. I verified this by running the following command in MongoDB to see the indexes existed:</p>
-<pre><code>MongoDB shell version: 1.8.2
-connecting to: test
-&gt; db.people.getIndexes()
-[
-        {
-                &quot;name&quot; : &quot;_id_&quot;,
-                &quot;ns&quot; : &quot;test.people&quot;,
-                &quot;key&quot; : {
-                     &quot;_id&quot; : 1
-                },
-                &quot;v&quot; : 0
-        },
-        {
-                &quot;name&quot; : &quot;people_first_name_address_idx&quot;,
-                &quot;ns&quot; : &quot;test.people&quot;,
-          &quot;dropDups&quot; : false,
-          &quot;sparse&quot; : false,
-          &quot;unique&quot; : true,
-          &quot;key&quot; : {
-                        &quot;firstName&quot; : 1,
-                        &quot;address&quot; : 1
-                },
-                &quot;v&quot; : 0
-        },
-        {
-                &quot;name&quot; : &quot;people_last_name_address_idx&quot;,
-              &quot;ns&quot; : &quot;test.people&quot;,
-                &quot;dropDups&quot; : false,
-          &quot;sparse&quot; : false,
-          &quot;unique&quot; : true,
-                &quot;key&quot; : {
-                    &quot;lastName&quot; : 1,
-                    &quot;address&quot; : 1
-                },
-                &quot;v&quot; : 0
-        }
-]
-&gt; 
-</code></pre><p>This allowed me to verify that Spring Data MongoDB actually did create the indexes at startup. So far, so good. My next step was to insert some data to the collection via my application. This worked and I was able to verify the document in MongoDB by using the .find({}) operation on the collection from the command line. The next step was to attempt to insert the exact same document, which should fail due to the unique constraints. To my surprise, it did not fail and I did not receive any exceptions from the MongoTemplate class (which executed the insert). Just to make sure I wasn't crazy, I took the JSON and inserted it directly to the collection using the .save({...}) operation on the collection via the Mongo command line. It did exactly what I expected it to do:</p>
-<pre><code>E11000 duplicate key error index: test-people.$people_first_name_address_idx  dup key: { : &quot;John&quot;, : &quot;123 Fake Street&quot; }
-</code></pre><p>This meant that index was working. So what was Spring Data MongoDB's problem? What was happening to the error? After some Google-foo, I stumbled across this JIRA issue: <a href="https://jira.springsource.org/browse/DATAMONGO-134">https://jira.springsource.org/browse/DATAMONGO-134</a>. Hidden in there was the answer to my problem. By default, the MongoTemplate class uses the default WriteConcern from the MongoDB Java Driver library. The default WriteConcern as it turns out does NOT raise exceptions for server errors, only network errors. This means that you will only receive an exception if you lose connection to the database or try to connect to an invalid address/port and will not receive an exception for any errors generated by MongoDB. Lame, but easy to fix. The WriteConcern class comes with some static constants that define the following write concern options:</p>
-<pre><code>/** No exceptions are raised, even for network issues */
-public final static WriteConcern NONE = new WriteConcern(-1);
-
-/** Exceptions are raised for network issues, but not server errors */
-public final static WriteConcern NORMAL = new WriteConcern(0);
-
-/** Exceptions are raised for network issues, and server errors; waits on a server for the write operation */
-public final static WriteConcern SAFE = new WriteConcern(1);
-
-/** Exceptions are raised for network issues, and server errors and the write operation waits for the server to flush the data to disk*/
-public final static WriteConcern FSYNC_SAFE = new WriteConcern(true);
-
-/** Exceptions are raised for network issues, and server errors; waits for at least 2 servers for the write operation*/
-public final static WriteConcern REPLICAS_SAFE = new WriteConcern(2);
-</code></pre><p>So, depending on your needs, you can change the write concern options used by the MongoTemplate class. Since I was using Spring to instantiate the MongoTemplate class, this required a couple of changes to my applicationContext.xml file:</p>
-<pre><code>&lt;beans 
-    xmlns:context=&quot;http://www.springframework.org/schema/context&quot;      
-    xmlns:mongo=&quot;http://www.springframework.org/schema/data/mongo&quot; 
-    xmlns:util=&quot;http://www.springframework.org/schema/util&quot;  
-    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
-    xmlns=&quot;http://www.springframework.org/schema/beans&quot; 
-    xsi:schemalocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-    http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd
-    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd&quot;&gt;
-
-    ...
-
-    &lt;mongo:db-factory dbname=&quot;${mongodb.database}&quot; host=&quot;${mongodb.host}&quot; id=&quot;databaseFactory&quot; password=&quot;${mongodb.password}&quot; port=&quot;${mongodb.port}&quot; username=&quot;${mongodb.username}&quot; /&gt;
-
-    &lt;bean class=&quot;org.springframework.data.mongodb.core.MongoTemplate&quot; id=&quot;mongoTemplate&quot;&gt;
-        &lt;constructor-arg name=&quot;mongoDbFactory&quot; ref=&quot;databaseFactory&quot; /&gt;
-        &lt;property name=&quot;writeConcern&quot;&gt;
-            &lt;util:constant static-field=&quot;com.mongodb.WriteConcern.SAFE&quot; &gt;&lt;/util:constant&gt;
-        &lt;/property&gt;
-    &lt;/bean&gt;
-    ...  
-&lt;/beans&gt;
-</code></pre><p>After making this change and restarting the application, I finally go the exception I was expecting to receive from Spring Data MongoDB:</p>
-<pre><code>2011-11-18 15:44:32,913 ERROR - Unable to create or update person &#39;{&quot;firstName&quot; : &quot;John&quot;, &quot;lastName&quot; : &quot;Doe&quot;, &quot;address&quot;: &quot;123 Fake Street&quot;}&#39;.
-org.springframework.dao.DuplicateKeyException: E11000 duplicate key error index: test.people.$people_first_name_address_idx  dup key: { : &quot;John&quot;, : &quot;123 Fake Street&quot;}; nested exception is com.mongodb.MongoException$DuplicateKey: E11000 duplicate key error index: test.people.$people_first_name_address_idx  dup key: { : &quot;John&quot;, : &quot;123 Fake Street&quot;};
-    at org.springframework.data.mongodb.core.MongoExceptionTranslator.translateExceptionIfPossible(MongoExceptionTranslator.java:53)
-    at org.springframework.data.mongodb.core.MongoTemplate.potentiallyConvertRuntimeException(MongoTemplate.java:1373)
-    at org.springframework.data.mongodb.core.MongoTemplate.execute(MongoTemplate.java:333)
-    at org.springframework.data.mongodb.core.MongoTemplate.saveDBObject(MongoTemplate.java:739)
-    at org.springframework.data.mongodb.core.MongoTemplate.doSave(MongoTemplate.java:679)
-    at org.springframework.data.mongodb.core.MongoTemplate.save(MongoTemplate.java:669)
-    at org.springframework.data.mongodb.core.MongoTemplate.save(MongoTemplate.java:665)
-    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-    at java.lang.reflect.Method.invoke(Method.java:597)
-    at com.sun.jersey.spi.container.JavaMethodInvokerFactory$1.invoke(JavaMethodInvokerFactory.java:60)
-    at com.sun.jersey.server.impl.model.method.dispatch.AbstractResourceMethodDispatchProvider$ResponseOutInvoker._dispatch(AbstractResourceMethodDispatchProvider.java:205)
-    at com.sun.jersey.server.impl.model.method.dispatch.ResourceJavaMethodDispatcher.dispatch(ResourceJavaMethodDispatcher.java:75)
-    at com.sun.jersey.server.impl.uri.rules.HttpMethodRule.accept(HttpMethodRule.java:288)
-    at com.sun.jersey.server.impl.uri.rules.ResourceClassRule.accept(ResourceClassRule.java:108)
-    at com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147
-    at com.sun.jersey.server.impl.uri.rules.RootResourceClassesRule.accept(RootResourceClassesRule.java:84)
-    at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1465)
-    at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1396)
-    at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1345)
-    at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1335)
-    at com.sun.jersey.spi.container.servlet.WebComponent.service(WebComponent.java:416)
-    at com.sun.jersey.spi.container.servlet.ServletContainer.service(ServletContainer.java:537)
-    at com.sun.jersey.spi.container.servlet.ServletContainer.service(ServletContainer.java:699)
-    at javax.servlet.http.HttpServlet.service(HttpServlet.java:717)
-    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:290)
-    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:206)
-    at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:235)
-    at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:206)
-    at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:233)
-    at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:191)
-    at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:128)
-    at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:102)
-    at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:109)
-    at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:293)
-    at org.apache.coyote.http11.Http11Processor.process(Http11Processor.java:849)
-    at org.apache.coyote.http11.Http11Protocol$Http11ConnectionHandler.process(Http11Protocol.java:583)
-    at org.apache.tomcat.util.net.JIoEndpoint$Worker.run(JIoEndpoint.java:454)
-    at java.lang.Thread.run(Thread.java:680)
-Caused by: com.mongodb.MongoException$DuplicateKey: E11000 duplicate key error index: test.people.$people_first_name_address_idx  dup key: { : &quot;John&quot;, : &quot;123 Fake Street&quot;};
-    at com.mongodb.CommandResult.getException(CommandResult.java:80)
-    at com.mongodb.CommandResult.throwOnError(CommandResult.java:116)
-    at com.mongodb.DBTCPConnector._checkWriteError(DBTCPConnector.java:126)
-    at com.mongodb.DBTCPConnector.say(DBTCPConnector.java:148)
-    at com.mongodb.DBTCPConnector.say(DBTCPConnector.java:132)
-    at com.mongodb.DBApiLayer$MyCollection.insert(DBApiLayer.java:262)
-    at com.mongodb.DBApiLayer$MyCollection.insert(DBApiLayer.java:217)
-    at com.mongodb.DBCollection.insert(DBCollection.java:71)
-</code></pre><p> at com.mongodb.DBCollection.save(DBCollection.java:633)<br/> at org.springframework.data.mongodb.core.MongoTemplate$13.doInCollection(MongoTemplate.java:745)<br/> at org.springframework.data.mongodb.core.MongoTemplate.execute(MongoTemplate.java:331)<br/> ... 41 more</p><p>So, it is really hard to blame the Spring Data MongoDB guys for this issue, as it is really a configuration option of the underlying MongoDB Java Driver. However, the MongoTemplate class does have a setWriteConcern method for this very reason and it would have saved me some time if the reference documentation had mentioned this and/or had some examples on how to change the setting. I guess that will be in the "release" :).</p></p>
-                <p><a href="/blog/2011/11/19/spring_data_mongodb_exceptions.html#disqus_thread">Comments</a></p>
 
                 <hr />
 

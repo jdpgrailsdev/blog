@@ -6,9 +6,80 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Mon, 10 Feb 2014 14:17:55 -0500</pubDate>
-        <lastBuildDate>Mon, 10 Feb 2014 14:17:55 -0500</lastBuildDate>
+        <pubDate>Wed, 19 Feb 2014 08:26:00 -0500</pubDate>
+        <lastBuildDate>Wed, 19 Feb 2014 08:26:00 -0500</lastBuildDate>
 
+        <item>
+            <title>Spring and Apache Curator</title>
+            <link>http://jdpgrailsdev.github.io/blog//2014/02/19/spring_curator.html</link>
+            <pubDate>Wed, 19 Feb 2014 00:00:00 -0500</pubDate>
+            <guid isPermaLink="false">/2014/02/19/spring_curator.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Recently, I have been working a lot with &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt;.  &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt; provides a Java-based driver, but it does leave a little bit to be desired.  In steps &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt;, which was originally created and open-sourced
+by Neflix and is now maintained by Apache.  &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; uses a fluent-style syntax to making using &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt; much easier.  In particular, &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; contains a more robust client class that handles things such
+as retry attempts, listeners and other utilities that would otherwise need to be manually wired up using the low-level Java-based driver.  In order to support the use of &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; within a Spring-based application,
+I decided to create a library that makes it easy to define &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; clients in a Spring configuration for use in an application.  One of the thinks to know about the &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; client is that you only need one
+per instance/ensemble of &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt;.  Therefore, using Spring to manage the injection of a Singleton bean into a class that needs access to the client is a perfect fit.  The repository can be found on
+&lt;a href=&quot;https://github.com/jdpgrailsdev/spring-curator&quot;&gt;GitHub&lt;/a&gt;.  Please check it out and let me know what you think.  As always, contributions are welcome!&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_future_enhancements&quot;&gt;Future Enhancements&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Currently, the &lt;a href=&quot;https://github.com/jdpgrailsdev/spring-curator&quot;&gt;spring-curator&lt;/a&gt; library only supports the definition, creation and injection of &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; client instances.  In the future, I would like to add the
+following support to the &lt;code&gt;spring-curator&lt;/code&gt; library:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;ulist&quot;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Support for registring custom retry policies&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Definition of the following via the Spring configuration:&lt;/p&gt;
+&lt;div class=&quot;ulist&quot;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;LeaderLatch&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;LeaderSelector&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;*Mutex locks&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;*Barrier barriers&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;SharedCount&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;DistributedAtomicLong&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;PathChildrenCache&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;NodeCache&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;PersistentEphemeralNode&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;*Queue queues&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Grails 2.3, Maven and Local Repositories</title>
             <link>http://jdpgrailsdev.github.io/blog//2014/02/10/grails_maven_local_repo.html</link>
@@ -290,134 +361,6 @@ Caused by: com.mongodb.MongoException$DuplicateKey: E11000 duplicate key error i
     at com.mongodb.DBApiLayer$MyCollection.insert(DBApiLayer.java:217)
     at com.mongodb.DBCollection.insert(DBCollection.java:71)
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt; at com.mongodb.DBCollection.save(DBCollection.java:633)&lt;br/&gt; at org.springframework.data.mongodb.core.MongoTemplate$13.doInCollection(MongoTemplate.java:745)&lt;br/&gt; at org.springframework.data.mongodb.core.MongoTemplate.execute(MongoTemplate.java:331)&lt;br/&gt; ... 41 more&lt;/p&gt;&lt;p&gt;So, it is really hard to blame the Spring Data MongoDB guys for this issue, as it is really a configuration option of the underlying MongoDB Java Driver. However, the MongoTemplate class does have a setWriteConcern method for this very reason and it would have saved me some time if the reference documentation had mentioned this and/or had some examples on how to change the setting. I guess that will be in the &quot;release&quot; :).&lt;/p&gt;
-            </description>
-        </item>
-        <item>
-            <title>Planes, Trains, and Automobiles</title>
-            <link>http://jdpgrailsdev.github.io/blog//2011/09/26/trains_planes_auto.html</link>
-            <pubDate>Mon, 26 Sep 2011 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">/2011/09/26/trains_planes_auto.html</guid>
-            <description>
-                    &lt;table class=&quot;tr-caption-container&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; style=&quot;float: left; margin-right: 1em; text-align: left;&quot;&gt;
-	&lt;tbody&gt;
-		&lt;tr&gt;
-			&lt;td style=&quot;text-align: center;&quot;&gt;
-				&lt;p&gt;
-					&lt;a style=&quot;margin-left: auto; margin-right: auto;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/planes-trains-automobiles.jpg&quot;&gt;
-						&lt;img width=&quot;320&quot; height=&quot;198&quot; border=&quot;0&quot; src=&quot;/blog/img/planes-trains-automobiles.jpg&quot;&gt;
-					&lt;/a&gt;
-				&lt;/p&gt;
-			&lt;/td&gt;
-		&lt;/tr&gt;
-		&lt;tr&gt;
-			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
-				&lt;p&gt;If I had been able to sing &quot;Mess Around&quot; with John Candy,&lt;/p&gt;
-				&lt;p&gt;maybe my trip wouldn&apos;t have been as bad either.&lt;/p&gt;
-			&lt;/td&gt;
-		&lt;/tr&gt;
-	&lt;/tbody&gt;
-&lt;/table&gt;&lt;p&gt;At some point, if you fly enough, you go through one of those &quot;trips from hell&quot; thanks to the airline industry. Weather gets in the way of travel or you get delayed just enough that you miss that connection and spend the night sleeping in the airport in Little Rock, Arkansas. Then there are those trips that just highlight the complete breakdown in rational thought and competence. This is the story of my attempt to get from Burlington, VT to Washington-Dulles International Airport. It will make you laugh. It will make you cry. It will make you understand why you should never fly United Airlines. It will also highlight why doing just a little extra to help your customers goes a long way (instead of choosing the tactics United uses to treat its customers like boxes of diapers being shipped from a distribution center to a Walmart -- i.e., it gets there when it gets there).&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;/p&gt;&lt;h2&gt;The Storm on the Horizon&lt;/h2&gt;
-&lt;table class=&quot;tr-caption-container&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; style=&quot;float: right; text-align: center;&quot;&gt;
-	&lt;tbody&gt;
-		&lt;tr&gt;
-			&lt;td style=&quot;text-align: center;&quot;&gt;
-				&lt;p&gt;
-					&lt;a style=&quot;margin-left: auto; margin-right: auto;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/terminal-tom-hanks.jpg&quot;&gt;
-						&lt;img width=&quot;320&quot; height=&quot;207&quot; border=&quot;0&quot; src=&quot;/blog/img/terminal-tom-hanks.jpg&quot;&gt;
-					&lt;/a&gt;
-				&lt;/p&gt;
-			&lt;/td&gt;
-		&lt;/tr&gt;
-		&lt;tr&gt;
-			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
-				&lt;p&gt;In retrospect, it would have made more&lt;/p&gt;
-				&lt;p&gt;sense to just rent a car and drive the 10 hours.&lt;/p&gt;
-			&lt;/td&gt;
-		&lt;/tr&gt;
-	&lt;/tbody&gt;
-&lt;/table&gt;&lt;p&gt;I finished up at work and headed to the airport a little after 5 PM on Friday. My flight was scheduled to leave Burlington, VT at 7:02 PM (Flight 3912). It was a direct flight to Washington-Dulles International Airport (IAD), which was suppose to hand a little after 9 PM. I got off the rental car, made it through security, and sat down at the gate at around 5:40 PM. At around 6:00 PM, the gate agent got on the PA and informed us that the plane had not yet left IAD due to a &quot;maintenance issue&quot; and that we probably wouldn&apos;t be leaving any time before 7:45 PM. She said that she could help people rebook their trips if this was going to cause them to miss their connections and would try to get hotel rooms for people who would opt to wait for the flight at 6 AM out of Burlington for IAD the next day. However, as she pointed out, there were no hotel rooms available in Burlington, due to a couple of college class reunions and a car show going on (we learned later that what this really meant was that the one hotel that took United vouchers was full and United won&apos;t pay for any other hotel -- or at least that was the message). After a hand-full of people made their way to the gate to get re-booked, the gate attendant came back on the PA at around 6:30 PM to announce that the plane had taken off from IAD and would land in Burlington around 8:00 PM. It would take about 20 minutes to turn the plane around, which would mean we would get into IAD at around 10:00 PM (not bad, since this is only an hour later than originally scheduled, if you overlook the whole &quot;maintenance&quot; issue with the plane that delayed it in the first place). Again, the gate attendant asked if anyone needed to re-book and spent roughly the next hour helping customers (we found out later that she worked for Delta, but had to cover the United gate).&lt;/p&gt;&lt;h2&gt;Take It For a Test Drive&lt;/h2&gt;
-&lt;table class=&quot;tr-caption-container&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; style=&quot;float: left; text-align: center;&quot;&gt;
-	&lt;tbody&gt;
-		&lt;tr&gt;
-			&lt;td style=&quot;text-align: center;&quot;&gt;
-				&lt;p&gt;
-					&lt;a style=&quot;margin-left: auto; margin-right: auto;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/airplane7.jpg&quot;&gt;
-						&lt;img width=&quot;320&quot; height=&quot;181&quot; border=&quot;0&quot; src=&quot;/blog/img/airplane7.jpg&quot;&gt;
-					&lt;/a&gt;
-				&lt;/p&gt;
-			&lt;/td&gt;
-		&lt;/tr&gt;
-		&lt;tr&gt;
-			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
-				&lt;p&gt;The funny thing about all of this is that the 2 gate attendants&lt;/p&gt;
-				&lt;p&gt;and the 4 TSA workers couldn&apos;t go home until we took off,&lt;/p&gt;
-				&lt;p&gt;so they were definitely motivated to get us out of there.&lt;/p&gt;
-			&lt;/td&gt;
-		&lt;/tr&gt;
-	&lt;/tbody&gt;
-&lt;/table&gt;&lt;p&gt;At 8:00 PM, the plane from IAD landed and the passengers deplaned. There were about 30 of us left still waiting to get on the flight back to IAD. Just as all of the passengers got off the plane, one of the workers from the tarmac came in and took the PA microphone. He announced that there was another &quot;maintenance&quot; problem with the plane and it would take two hours to test. He would get back to us at that time with an update. In retrospect, this was the point where I should have just gone down stairs, rented a car, and drove the 10 hours from Burlington to my house outside of IAD. Needless to say, this news was met with a lot of complaints and comments. Again, a group of people tried to get re-booked and called around to find their own hotels. Luckily for me, Burlington International Airport has free WiFi, so I kicked back, plugged my laptop in and connected to my SlingBox (just to give you a sense of how long the delay was, I was able to watch two episodes of Family Guy and the first National Treasures movie in that time). Also during this time, one of the TSA workers &quot;hit the wrong button&quot; during a test that sounded an alarm that ordered &quot;all TSA personel to secure all exits&quot; to the terminal &quot;immediately&quot; (they quickly told us that this was an accident. At around 10:00 PM the same ground crew member came in to announce that the &quot;tests went well&quot; and they just needed to take the plane &quot;out for a test drive&quot;. Let me stop here and highlight how ridiculous this was. I have never heard of this before. They literally taxied the plane out on to the runway (with no passengers), started the engines up full speed and proceeded to drive around the runway &quot;testing&quot; the aircraft. This went on for about an hour. During this time, I believe that one of the gate attendants ran home to get her dog (or at least take care of her dog), while the other covered for her. At around 11 PM, the plane made its way back to the gate, but ran into another road block. While they were out joyriding in the plane, another plane had landed and pulled up to our gate to deplane. Our plane had to wait on the tarmac for this to unfold. So, at about 11:20, our plane pulled back up to the gate. The ground crew member came back inside an announced that the test drive was a success. They simply had to run on more final test and fill out some paperwork. He would get back to us in 35 minutes. This, obviously, was met with sarcastic comments and groans from the 20 or so of us left in the terminal. At about midnight, we finally lined up to get on the plane.&lt;/p&gt;&lt;h2&gt;The Point of No Return&lt;/h2&gt;
-&lt;table class=&quot;tr-caption-container&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; style=&quot;float: right; margin-left: 1em; text-align: right;&quot;&gt;
-	&lt;tbody&gt;
-		&lt;tr&gt;
-			&lt;td style=&quot;text-align: center;&quot;&gt;
-				&lt;p&gt;
-					&lt;a style=&quot;clear: right; margin-bottom: 1em; margin-left: auto; margin-right: auto;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/airplane.jpg&quot;&gt;
-						&lt;img border=&quot;0&quot; src=&quot;/blog/img/airplane.jpg&quot;&gt;
-					&lt;/a&gt;
-				&lt;/p&gt;
-			&lt;/td&gt;
-		&lt;/tr&gt;
-		&lt;tr&gt;
-			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
-				&lt;p&gt;Our first attempt at landing  kind of went like this...&lt;/p&gt;
-			&lt;/td&gt;
-			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
-				&lt;p&gt; &lt;/p&gt;
-			&lt;/td&gt;
-			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
-				&lt;p&gt;
-					&lt;br&gt;
-				&lt;/p&gt;
-			&lt;/td&gt;
-		&lt;/tr&gt;
-	&lt;/tbody&gt;
-&lt;/table&gt;&lt;p&gt;I&apos;ve never seen a plane board that quickly. There was a good chuckle from the crowd when the gate attendant announced that &quot;premium&quot; customers were welcome to board first. We got on the plane and settled in about 5 or 10 minutes. I got a look at the pilots, who were both no older than 25 years old each (this will be important later). We pushed back from the terminal, taxied out to the runway and then nothing. We sat. And sat. And sat. After about 30 minutes, the pilot came on the intercom and told us that because it was so late, the air traffic control tower had shut down for the evening. He told us that normally this isn&apos;t a problem, as our plane got transferred to regional air traffic control. However, because the regional air traffic control was now in charge, we had to wait for all inbound planes to land first before being cleared for take off (this is obviously because they are not local to the air field and therefore can&apos;t see what is going on). So we waited. And waited. At a little after 1 AM, we finally took off. It had been delayed by over 5 hours, but we were finally going to get home, even if it was at 3 AM. The flight went smoothly (there were a few turbulence) and at around a little after 3 AM, the pilot notified us that we were starting our decent into the Washington metro area. There were low clouds over the area (we were flying above them) at a couple hundred feet. However, it was not fog: you could see through the clouds in spots and see the lights on the ground. I didn&apos;t think anything of it and assumed that we would be on the ground in minutes.&lt;/p&gt;&lt;h2&gt;Trust Your Instincts, Luke&lt;/h2&gt;
-&lt;table class=&quot;tr-caption-container&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; style=&quot;float: right; text-align: center;&quot;&gt;
-	&lt;tbody&gt;
-		&lt;tr&gt;
-			&lt;td style=&quot;text-align: center;&quot;&gt;
-				&lt;p&gt;
-					&lt;a style=&quot;margin-left: auto; margin-right: auto;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/dontgo.png&quot;&gt;
-						&lt;img width=&quot;320&quot; height=&quot;179&quot; border=&quot;0&quot; src=&quot;/blog/img/dontgo.png&quot;&gt;
-					&lt;/a&gt;
-				&lt;/p&gt;
-			&lt;/td&gt;
-		&lt;/tr&gt;
-		&lt;tr&gt;
-			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
-				&lt;p&gt;Do you have anything to declare?  Yeah, don&apos;t fly United.&lt;/p&gt;
-			&lt;/td&gt;
-		&lt;/tr&gt;
-	&lt;/tbody&gt;
-&lt;/table&gt;&lt;p&gt;The plane began its descent. The landing gear came down. We started getting closer to the ground. We started to go through the low lying clouds. Just as I thought that we were going to touch down, the engines went into full throttle, the plane pitched steeply up into the air and banked to the left, back towards Washington, D.C. and the DelMarVa peninsula. After a few minutes, the captain came on and stated that they could not see the runway at the required height, so they aborted the landing. They were going to try landing at a different runway (because that runway would magically have no clouds over it). A few minutes later we made attempt number two, with the same result. As we began circling, the pilot came on to say that he was in a conversation with air traffic control at IAD and regional air traffic control to see what the next step would be. I have no doubt that more experienced pilots would have landed that plane. About ten minutes later, the pilot came back on the intercom to say that we could not land at IAD would be diverted to Allentown, PA. He assured us that United would put us in hotels and help us arrange travel to IAD or some other destination. About 25 minutes later, we landed at the airport in Allentown, PA and again sat on another runway. The pilot told us that they were having trouble finding people at the airport to help us get to the gate. He also told us that &quot;things were changing over the last 30 minutes&quot; and that now the gate agent was trying to arrange &quot;transportation&quot; to IAD for us. We got off the plane and made our way inside to the gate area. After standing around for about 5 minutes, one of the ground crew members from outside came in and got on the microphone. He told us that he had arranged for buses to show up &quot;in 5 or 10 minutes&quot; to take us to IAD, if we were interested. The other option was to stay at the airport. This caught a bunch of people off guard and started asking about a hotel. He said that United would not pay for a hotel, because we were diverted &quot;due to weather&quot;. My jaw dropped, as did most of the people standing around the podium. We were diverted &quot;due to weather&quot; because United sent a faulty plane from IAD to Burlington (I wonder how mad the people on that flight would be if they knew the plane they had just gotten off of had 3 hours of maintenance work done on it after they landed). The reason we hit weather was obviously because of United and the issues to the plane. This was a clever trick on their part to get out of having to help their customers. It seems to me, it would have made much more sense to pay $80-90 a person to put the few who wanted to stay in Allentown up for the night and gain a ton of good will. Instead, they pissed off 20+ customers, who will now tell people about this hellish trip and why you shouldn&apos;t fly on United. I couldn&apos;t listen to this nonsense so I headed down stairs to baggage claim where the bus would supposedly meet us.&lt;/p&gt;&lt;h2&gt;Get On the Bus!&lt;/h2&gt;
-&lt;table class=&quot;tr-caption-container&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; style=&quot;float: left; margin-right: 1em; text-align: left;&quot;&gt;
-	&lt;tbody&gt;
-		&lt;tr&gt;
-			&lt;td style=&quot;text-align: center;&quot;&gt;
-				&lt;p&gt;
-					&lt;a style=&quot;clear: left; margin-bottom: 1em; margin-left: auto; margin-right: auto;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/partybus.jpg&quot;&gt;
-						&lt;img width=&quot;320&quot; height=&quot;240&quot; border=&quot;0&quot; src=&quot;/blog/img/partybus.jpg&quot;&gt;
-					&lt;/a&gt;
-				&lt;/p&gt;
-			&lt;/td&gt;
-		&lt;/tr&gt;
-		&lt;tr&gt;
-			&lt;td class=&quot;tr-caption&quot; style=&quot;text-align: center;&quot;&gt;
-				&lt;p&gt;Am I in Allentown or Las Vegas?&lt;/p&gt;
-			&lt;/td&gt;
-		&lt;/tr&gt;
-	&lt;/tbody&gt;
-&lt;/table&gt;&lt;p&gt;And so we waited. Again. We landed in Allentown at around 3:30 AM. The buses that were suppose to show up in 5-10 minutes finally showed up around 4 AM. I walked out of the baggage claim to find two booze cruise/party buses waiting to take us to IAD (complete with functioning interior LED disco lights and the &quot;Vomit/Destruction will cause you to forfeit your $500 deposit&quot; sign). You couldn&apos;t even sleep on this bus, because the seats are on the side, like in the picture to the left. So, in a darkened party bus, we pulled out of the airport in Allentown, PA for the three hour drive through Harrisburg, Gettysburg, Frederick, and finally Leesburg. In the middle of the trip at 5:43 AM, United called my house and sent me this e-mail:&lt;br/&gt;&lt;p&gt;&lt;br/&gt; &lt;br&gt;&lt;br/&gt;&lt;/p&gt;&lt;br/&gt;&lt;p class=&quot;separator&quot; style=&quot;clear: both; text-align: center;&quot;&gt;&lt;br/&gt; &lt;a style=&quot;margin-left: 1em; margin-right: 1em;&quot; imageanchor=&quot;1&quot; href=&quot;/blog/img/united.png&quot;&gt;&lt;br/&gt; &lt;img width=&quot;303&quot; height=&quot;320&quot; border=&quot;0&quot; src=&quot;/blog/img/united.png&quot;&gt;&lt;br/&gt; &lt;/a&gt;&lt;br/&gt;&lt;/p&gt;&lt;br/&gt;&lt;p&gt;&lt;br/&gt; &lt;br&gt;&lt;br/&gt;&lt;/p&gt;&lt;br/&gt;I wish I was funny enough to make up that plot twist. Somehow the flight that didn&apos;t get cancelled when it should have been cancelled, got cancelled after I got off it in Allentown, PA. To add insult to injury, United apparently never updated their web site to say that the flight had been diverted, so people were waiting at IAD wondering what happened. I&apos;m sure this was classic CYA by United to make sure that they didn&apos;t have to pay anything out to those who stayed in Burlington, VT, as they are not liable if it is cancelled due to weather. So, at 8 AM, we finally pulled into IAD on our party buses. A little over 13 hours from when I was suppose to leave Burlington, I made it home. There was no snow. There was no rain. There was no hurricane or tornado or typhoon. Or earthquake. There was only United Airlines and its terrible customer service. Not a bad way to spend a Friday night, eh?&lt;/p&gt;
             </description>
         </item>
     </channel>
