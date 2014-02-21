@@ -6,8 +6,8 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Wed, 19 Feb 2014 08:26:00 -0500</pubDate>
-        <lastBuildDate>Wed, 19 Feb 2014 08:26:00 -0500</lastBuildDate>
+        <pubDate>Thu, 20 Feb 2014 20:50:54 -0500</pubDate>
+        <lastBuildDate>Thu, 20 Feb 2014 20:50:54 -0500</lastBuildDate>
 
         <item>
             <title>Spring and Apache Curator</title>
@@ -19,7 +19,7 @@
 &lt;div class=&quot;sectionbody&quot;&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;Recently, I have been working a lot with &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt;.  &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt; provides a Java-based driver, but it does leave a little bit to be desired.  In steps &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt;, which was originally created and open-sourced
-by Neflix and is now maintained by Apache.  &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; uses a fluent-style syntax to making using &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt; much easier.  In particular, &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; contains a more robust client class that handles things such
+by &lt;a href=&quot;https://github.com/netflix/curator&quot;&gt;Neflix&lt;/a&gt; and is now maintained by Apache.  &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; uses a fluent-style syntax to making using &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt; much easier.  In particular, &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; contains a more robust client class that handles things such
 as retry attempts, listeners and other utilities that would otherwise need to be manually wired up using the low-level Java-based driver.  In order to support the use of &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; within a Spring-based application,
 I decided to create a library that makes it easy to define &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; clients in a Spring configuration for use in an application.  One of the thinks to know about the &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; client is that you only need one
 per instance/ensemble of &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt;.  Therefore, using Spring to manage the injection of a Singleton bean into a class that needs access to the client is a perfect fit.  The repository can be found on

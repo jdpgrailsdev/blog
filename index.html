@@ -47,6 +47,7 @@
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
                             <li><a href="/blog/about.html">About</a></li>
+                            <li><a href="/blog/resume.html">Résumé</a></li>
                             <li class="dropdown">
                                 <a data-toggle="dropdown" href="#">Tags<b class="caret"></b></a>
                                 <ul class="dropdown-menu" role="menu">
@@ -91,7 +92,7 @@
 <div class="sectionbody">
 <div class="paragraph">
 <p>Recently, I have been working a lot with <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> provides a Java-based driver, but it does leave a little bit to be desired.  In steps <a href="http://curator.apache.org/">Apache Curator</a>, which was originally created and open-sourced
-by Neflix and is now maintained by Apache.  <a href="http://curator.apache.org/">Apache Curator</a> uses a fluent-style syntax to making using <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> much easier.  In particular, <a href="http://curator.apache.org/">Apache Curator</a> contains a more robust client class that handles things such
+by <a href="https://github.com/netflix/curator">Neflix</a> and is now maintained by Apache.  <a href="http://curator.apache.org/">Apache Curator</a> uses a fluent-style syntax to making using <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> much easier.  In particular, <a href="http://curator.apache.org/">Apache Curator</a> contains a more robust client class that handles things such
 as retry attempts, listeners and other utilities that would otherwise need to be manually wired up using the low-level Java-based driver.  In order to support the use of <a href="http://curator.apache.org/">Apache Curator</a> within a Spring-based application,
 I decided to create a library that makes it easy to define <a href="http://curator.apache.org/">Apache Curator</a> clients in a Spring configuration for use in an application.  One of the thinks to know about the <a href="http://curator.apache.org/">Apache Curator</a> client is that you only need one
 per instance/ensemble of <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  Therefore, using Spring to manage the injection of a Singleton bean into a class that needs access to the client is a perfect fit.  The repository can be found on
@@ -296,7 +297,7 @@ to make tweaks to give the blog my own style.</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.1.0</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.1.0</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a> |         Comments powered by <a href="http://disqus.com" class="dsq-brlink"><span class="logo-disqus">Disqus</span></a></p>
               </div>
         </div>
 
@@ -317,8 +318,6 @@ to make tweaks to give the blog my own style.</p>
                 (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
             })();
         </script>
-        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
         <script type="text/javascript">
               window.___gcfg = {lang: 'en'};
 
@@ -346,7 +345,6 @@ to make tweaks to give the blog my own style.</p>
 
           ga('create', 'UA-47885115-1', 'jdpgrailsdev.github.io');
           ga('send', 'pageview');
-
         </script>
     </body>
 </html>
