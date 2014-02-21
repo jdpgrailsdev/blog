@@ -1,0 +1,110 @@
+= Résumé
+Jonathan Pearlin
+2014-02-20
+:jbake-type: page
+:jbake-status: published
+:source-highlighter: prettify
+:id: résumé
+:boston_college: http://www.bc.edu/[Boston College]
+:dealer: http://www.dealer.com[Dealer.com]
+:gradle: http://www.gradle.org/[Gradle]
+:grails: http://grails.org[Grails]
+:groovy: http://groovy.codehaus.org[Groovy]
+:maven: http://maven.apache.org[Maven]
+:mongo: http://www.mongodb.org[MongoDB]
+:phi_beta_kappa: http://pbk.org[Phi Beta Kappa]
+:rabbit: http://www.rabbitmq.com[RabbitMQ]
+:red_sox: http://boston.redsox.mlb.com/index.jsp?c_id=bos[The Boston Red Sox]
+:sparta: http://www.sparta.com[Sparta, Inc.]
+:spock: https://code.google.com/p/spock/[Spock]
+:spring: http://spring.io[Spring]
+:staples: http://www.staples.com[Staples]
+:zookeeper: http://zookeeper.apache.org/[Apache ZooKeeper]
+:icons: font
+:toc:
+:toc-placement: preambe
+
+toc::[]
+
+== Headline
+
+Software developer who is always looking for the next big challenge. My current focus is in building robust, scalable web-based applications that run on the JVM. I am always open to expanding my knowledge of new technologies, techniques and tricks. I enjoy a mix of development, evangelizing and mentoring. I am a sucker for writing unit tests, running performance tests and finding creative ways to make sure that the http://www.youtube.com/watch?v=KME46w6jU74["flowers are still standing"] when performing architecture refactors. I like contributing to open source projects and enjoy collaboration with others.
+
+== Skills
+
+[width="50%", float="left", cols="^m,^m,^m", frame="topbot", options="header"]
+|=======
+3+<|Current
+|Java |{groovy} |{grails} |{spring} |{maven}
+|Git |{spock} |{Gradle} |{zookeeper} |{mongo}
+|{rabbit} |Apache Tomcat |JUnit |Eclipse |REST
+|HTML |CSS |JavaScript |MySQL |SCRUM
+|=======
+
+[width="50%", cols="^m,^m,^m", frame="topbot", options="header"]
+|=======
+3+<|Previous
+|C |C++ |Microsoft SQL Server| PostgreSQL |JSP
+|Java Servlets |Hibernate |OpenLDAP |Ant |Glassfish
+|IBM WebSphere | Subversion |CVS |StarTeam |JMS
+|VisualBasic |EJB 2/3 |JCA | ASP |AS/400
+|=======
+
+== Experience
+
+[big]*{dealer} - https://www.google.com/maps/place/Dealer.Com/@44.4662738,-73.2141733,18z/data=!3m1!4b1!4m2!3m1!1s0x4cca7baab44f0923:0x24999beb5fd91ff1[Burlington, VT]* +
+*_Technical Lead - Frameworks_* +
+July 2011 – Present
+
+* Responsible for design and implementation of cross-cutting, framework level software for use in {dealer}’s PAAS architecture. Projects include metrics reporting and gathering framework, centralized configuration system utilizing {zookeeper} and upgrades and upkeep of {grails}-based software suite.
+* Provide code reviews, analysis and consultation for members of product development teams with engineering, including mentoring of junior staff.
+* Evangelize technologies within engineering, such as the adoption of {grails}, {groovy}, {maven}, {rabbit}, {mongo}, {spring} and other technologies.
+* Contribute internal blog posts and presentations on topics relevant to engineering.
+
+[big]*{sparta} - https://www.google.com/maps/place/Sparta+Inc/@38.8425392,-77.4384984,17z/data=!3m1!4b1!4m2!3m1!1s0x89b644f0d5d63dc1:0x9df660f04a591cfd[Centreville, VA]* +
+*_Technical Director – Visualization and Analysis Division_* +
+March 2006 – July 2011
+
+* Responsible for division-wide technical direction, including system design, prototyping, requirement gathering, tracking development, and setting and enforcing development policies and procedures.
+* Acted as technical lead/lead developer for various next generation data analysis applications using technologies such as {grails}, {groovy}, J2EE/Web 2.0 technologies (including AJAX, JSP/Servlets and JMS), OpenLDAP, HTML, CSS, JavaScript, MySQL 5.1 and Hibernate.
+* Managed team of developers, including facilitating daily SCRUM meetings.
+* Instrumental in adoption and integration of new technologies/tools within the division, such as Hudson, {maven}, {grails}, {groovy}, and {spring}.
+* Responsible for facilitating design and code reviews with peers.
+* Mentored junior developers to improve their design and programming skills.
+
+[big]*{staples} - https://www.google.com/maps/place/500+Staples+Dr/@42.2917388,-71.4893889,17z/data=!3m1!4b1!4m2!3m1!1s0x89e38a17ff986035:0x6796c2c3f2845735[Framingham, MA]* +
+*_Sr. Programmer Analyst - Retail Systems_* +
+July 2003 – March 2006
+
+* Developed and maintained backend J2EE (using JMS, CMP, Castor XML Marshalling Framework and web services) application hosted in WebSphere Application Server 5.1 that is responsible for processing POS transactions in XML from all US retail stores (1300+) and forwarding them to DB2 and an AS/400 system for further processing.
+* Translated complex business logic that is applied to POS transactions from Visual Basic into Java for inclusion in the POS transaction processing J2EE application. Also reconstructed the XML schema used to define all POS transactions.
+* Worked closely with AS/400 developers to integrate middle-tier J2EE applications and backend RPG/CL applications.
+* Developed internal J2EE applications (web applications using OpenLDAP, CMP, Hibernate 3, Quartz scheduler and Apache Struts) used by corporate associates to view POS data, transactions and render receipts. 
+* Collaborated closely with business partners to define system requirements and technical specifications for new applications.
+* Developed Apache Ant scripts to checkout, build and deploy Enterprise Application Archive (EAR) files to WebSphere Application Server 5.1.
+* Extensive experience configuring resources in WebSphere Application Server 5.1 (including JDBC datasources, JMS resources, JCA adapters, LDAP configuration and mail providers).
+* Supported J2EE applications (hosted in WebSphere Application Server 5.1 on RedHat Linux Enterprise 3.0 and DB2 8.2 on AIX) and legacy applications written in Visual Basic, Visual C++ and ASP.
+* Executed performance testing of new applications using Apache JMeter, Mercury SiteScope and IBM Tivoli Performance Analyzer and other monitoring software.
+
+[big]*{red_sox} - https://www.google.com/maps/place/Boston+Red+Sox/@42.3461357,-71.0982041,17z/data=!3m1!4b1!4m2!3m1!1s0x89e379f638628c4b:0x18da45f081a3b330[Boston, MA]* +
+*_Information Technology Intern_* +
+May 2002 – September 2002
+
+* Developed an intranet site using ASP, VB, and MS SQL technology.
+* Aided in administration and maintenance of corporate network.
+* Provided technical support for employees by solving various computer issues.
+
+== Education
+
+[big]*{boston_college} - https://www.google.com/maps/place/Boston+College/@42.3385287,-71.1762762,16z/data=!3m1!4b1!4m2!3m1!1s0x89e3785da725d4c9:0xb68ae90a5b8eb6e[Chestnut Hill, MA]* +
+*Degree:* Bachelor of Arts, _summa cum laude_, 2003 +
+*GPA*: 3.87/4.0 +
+*Major:* http://www.bc.edu/schools/cas/cs/[Computer Science] + 
+*Minor:* http://www.bc.edu/content/bc/schools/cas/history.html[History] +
+*Distinctions:* Dean’s List 8 Semesters, {phi_beta_kappa} Honor Society, http://www.nscs.org/[National Society of Collegiate Scholars], http://www.bc.edu/content/bc/schools/cas/services/students/awards.html#soph%20scholar[Sophmore Scholar of the College] +
+
+== Open Source Contributions
+
+* http://github.com/grails[Grails]
+* http://relation.to/Bloggers/The72HerosOfAS7[JBoss Application Server 7]
+* http://github.com/jdpgrailsdev[Personal GitHub Account]

@@ -12,6 +12,7 @@
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
                             <li><a href="/blog/about.html">About</a></li>
+                            <li><a href="/blog/resume.html">Résumé</a></li>
                             <li class="dropdown">
                                 <a data-toggle="dropdown" href="#">Tags<b class="caret"></b></a>
                                 <ul class="dropdown-menu" role="menu">

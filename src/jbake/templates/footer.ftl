@@ -4,7 +4,7 @@
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.1.0</a> | Baked with <a href="http://jbake.org">JBake ${version}</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.1.0</a> | Baked with <a href="http://jbake.org">JBake ${version}</a> |         Comments powered by <a href="http://disqus.com" class="dsq-brlink"><span class="logo-disqus">Disqus</span></a></p>
               </div>
         </div>
 
@@ -25,8 +25,6 @@
                 (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
             })();
         </script>
-        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
         <script type="text/javascript">
               window.___gcfg = {lang: 'en'};
 
@@ -54,7 +52,6 @@
 
           ga('create', 'UA-47885115-1', 'jdpgrailsdev.github.io');
           ga('send', 'pageview');
-
         </script>
     </body>
 </html>
