@@ -8,7 +8,11 @@
         <language>en-us</language>
         <pubDate>${published_date?string("EEE, d MMM yyyy HH:mm:ss Z")}</pubDate>
         <lastBuildDate>${published_date?string("EEE, d MMM yyyy HH:mm:ss Z")}</lastBuildDate>
-
+        <image>
+            <url>${config.site_host}/img/robot_devil.png</url>
+            <title>Jonathan Pearlin's Blog</title>
+            <link>${config.site_host}</link>
+        </image>
         <#list published_posts[0..4] as post>
         <item>
             <title><#escape x as x?xml>${post.title}</#escape></title>
