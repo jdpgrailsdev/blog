@@ -4,7 +4,7 @@
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.1.0</a> | Baked with <a href="http://jbake.org">JBake ${version}</a> |         Comments powered by <a href="http://disqus.com" class="dsq-brlink"><span class="logo-disqus">Disqus</span></a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.1.0</a> | Baked with <a href="http://jbake.org">JBake ${version}</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 
