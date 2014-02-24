@@ -79,7 +79,7 @@ July 2003 – March 2006
 * Developed and maintained backend J2EE (using JMS, CMP, Castor XML Marshalling Framework and web services) application hosted in WebSphere Application Server 5.1 that is responsible for processing POS transactions in XML from all US retail stores (1300+) and forwarding them to DB2 and an AS/400 system for further processing.
 * Translated complex business logic that is applied to POS transactions from Visual Basic into Java for inclusion in the POS transaction processing J2EE application. Also reconstructed the XML schema used to define all POS transactions.
 * Worked closely with AS/400 developers to integrate middle-tier J2EE applications and backend RPG/CL applications.
-* Developed internal J2EE applications (web applications using OpenLDAP, CMP, Hibernate 3, Quartz scheduler and Apache Struts) used by corporate associates to view POS data, transactions and render receipts. 
+* Developed internal J2EE applications (web applications using OpenLDAP, CMP, Hibernate 3, Quartz scheduler and Apache Struts) used by corporate associates to view POS data, transactions and render receipts.
 * Collaborated closely with business partners to define system requirements and technical specifications for new applications.
 * Developed Apache Ant scripts to checkout, build and deploy Enterprise Application Archive (EAR) files to WebSphere Application Server 5.1.
 * Extensive experience configuring resources in WebSphere Application Server 5.1 (including JDBC datasources, JMS resources, JCA adapters, LDAP configuration and mail providers).
@@ -99,9 +99,14 @@ May 2002 – September 2002
 [big]*{boston_college} - https://www.google.com/maps/place/Boston+College/@42.3385287,-71.1762762,16z/data=!3m1!4b1!4m2!3m1!1s0x89e3785da725d4c9:0xb68ae90a5b8eb6e[Chestnut Hill, MA]* +
 *Degree:* Bachelor of Arts, _summa cum laude_, 2003 +
 *GPA*: 3.87/4.0 +
-*Major:* http://www.bc.edu/schools/cas/cs/[Computer Science] + 
+*Major:* http://www.bc.edu/schools/cas/cs/[Computer Science] +
 *Minor:* http://www.bc.edu/content/bc/schools/cas/history.html[History] +
 *Distinctions:* Dean’s List 8 Semesters, {phi_beta_kappa} Honor Society, http://www.nscs.org/[National Society of Collegiate Scholars], http://www.bc.edu/content/bc/schools/cas/services/students/awards.html#soph%20scholar[Sophmore Scholar of the College] +
+
+== Presentations & Papers
+
+* http://www.scs-europe.net/services/ess2003/PDF/METH04.pdf["Simulation of a Distributed Mutual Exclusion Algorithm Using Multicast Communication"] - http://www.scs-europe.net/services/ess2003/[15th European Simulation Symposium and Exhibition], Delft, The Netherlands, October 26-29, 2003
+* https://rawgithub.com/jdpgrailsdev/vt-code-camp-2013-presentation/master/index.html#/start["Centralized Configuration Management with Apache ZooKeeper"] - http://vtcodecamp.org/2013/schedule[VT Code Camp], Burlington, VT, September 21, 2013
 
 == Open Source Contributions
 
