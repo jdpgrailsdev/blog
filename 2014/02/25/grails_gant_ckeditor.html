@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
-        <title>Why We Can't Have Nice Things</title>
+        <title>Why We Can't Have Nice Things :: Programmatically building CKEditor source in Grails</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -68,25 +68,17 @@
                 </div>
             </div>
             <div class="container">
-                <div class="page-header">
-                    <h1>Why We Can't Have Nice Things</h1>
-                    <h4>A blog about technical challenges and how to over come them through powers of deduction.</h4>
-                </div>
-                   <a href="/blog/2014/02/25/grails_gant_ckeditor.html"><h1>Programmatically building CKEditor source in Grails</h1></a>
-                   <p>25 February 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/grails.html">grails</a>
-        
-                <a href="/blog/tags/ckeditor.html">ckeditor</a>
-        
-                <a href="/blog/tags/gant.html">gant</a>
-        </p>
+    <div class="page-header">
+        <h1>Programmatically building CKEditor source in Grails</h1>
+    </div>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/02/25/grails_gant_ckeditor.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/02/25/grails_gant_ckeditor.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2014/02/25/grails_gant_ckeditor.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <p><em>25 February 2014</em></p>
 
-                   <p><div id="preamble">
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog//2014/02/25/grails_gant_ckeditor.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2014/02/25/grails_gant_ckeditor.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2014/02/25/grails_gant_ckeditor.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>The <a href="http://grails.org">Grails</a> Framework has some interesting quirks, particular when it comes to dependency management and build/deploy.  With a <a href="http://grails.org">Grails</a> plugin, you can define dependencies in its <code>BuildConfig.groovy</code> source file or you can place Java JAR files in the <code>lib</code>
@@ -237,213 +229,26 @@ builder code, but they have not open sourced the builder&#8201;&#8212;&#8201;onl
 the dependency, ensure that it does not get included in the packaged artifact and still be able to compile the source as part of our builds.</p>
 </div>
 </div></p>
-                <p><a href="/blog/2014/02/25/grails_gant_ckeditor.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/02/19/spring_curator.html"><h1>Spring and Apache Curator</h1></a>
-                   <p>19 February 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/java.html">java</a>
-        
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/curator.html">curator</a>
-        
-                <a href="/blog/tags/zookeeper.html">zookeeper</a>
-        </p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/02/19/spring_curator.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/02/19/spring_curator.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2014/02/19/spring_curator.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog/2014/02/25/grails_gant_ckeditor.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2014/02/25/grails_gant_ckeditor.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2014/02/25/grails_gant_ckeditor.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>Recently, I have been working a lot with <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> provides a Java-based driver, but it does leave a little bit to be desired.  In steps <a href="http://curator.apache.org/">Apache Curator</a>, which was originally created and open-sourced
-by <a href="https://github.com/netflix/curator">Neflix</a> and is now maintained by Apache.  <a href="http://curator.apache.org/">Apache Curator</a> uses a fluent-style syntax to making using <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> much easier.  In particular, <a href="http://curator.apache.org/">Apache Curator</a> contains a more robust client class that handles things such
-as retry attempts, listeners and other utilities that would otherwise need to be manually wired up using the low-level Java-based driver.  In order to support the use of <a href="http://curator.apache.org/">Apache Curator</a> within a Spring-based application,
-I decided to create a library that makes it easy to define <a href="http://curator.apache.org/">Apache Curator</a> clients in a Spring configuration for use in an application.  One of the thinks to know about the <a href="http://curator.apache.org/">Apache Curator</a> client is that you only need one
-per instance/ensemble of <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  Therefore, using Spring to manage the injection of a Singleton bean into a class that needs access to the client is a perfect fit.  The repository can be found on
-<a href="https://github.com/jdpgrailsdev/spring-curator">GitHub</a>.  Please check it out and let me know what you think.  As always, contributions are welcome!</p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_future_enhancements">Future Enhancements</h3>
-<div class="paragraph">
-<p>Currently, the <a href="https://github.com/jdpgrailsdev/spring-curator">spring-curator</a> library only supports the definition, creation and injection of <a href="http://curator.apache.org/">Apache Curator</a> client instances.  In the future, I would like to add the
-following support to the <code>spring-curator</code> library:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Support for registring custom retry policies</p>
-</li>
-<li>
-<p>Definition of the following via the Spring configuration:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><code>LeaderLatch</code></p>
-</li>
-<li>
-<p><code>LeaderSelector</code></p>
-</li>
-<li>
-<p>*Mutex locks</p>
-</li>
-<li>
-<p>*Barrier barriers</p>
-</li>
-<li>
-<p><code>SharedCount</code></p>
-</li>
-<li>
-<p><code>DistributedAtomicLong</code></p>
-</li>
-<li>
-<p><code>PathChildrenCache</code></p>
-</li>
-<li>
-<p><code>NodeCache</code></p>
-</li>
-<li>
-<p><code>PersistentEphemeralNode</code></p>
-</li>
-<li>
-<p>*Queue queues</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-</div></p>
-                <p><a href="/blog/2014/02/19/spring_curator.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/02/10/grails_maven_local_repo.html"><h1>Grails 2.3, Maven and Local Repositories</h1></a>
-                   <p>10 February 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/grails.html">grails</a>
-        
-                <a href="/blog/tags/aether.html">aether</a>
-        
-                <a href="/blog/tags/maven.html">maven</a>
-        
-                <a href="/blog/tags/jenkins.html">jenkins</a>
-        
-                <a href="/blog/tags/blog.html">blog</a>
-        </p>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '/2014/02/25/grails_gant_ckeditor.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/02/10/grails_maven_local_repo.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/02/10/grails_maven_local_repo.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2014/02/10/grails_maven_local_repo.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>One of the great new features in <a href="http://grails.org">Grails</a> 2.3 is the ability to use <a href="http://www.eclipse.org/aether/">Aether</a> to resolve dependencies in place of Ivy.  This is great news if
-you already use <a href="http://maven.apache.org/">Maven</a> to build other projects, as it now means you can have predictable builds between your <a href="http://grails.org">Grails</a> and non-http://grails.org[Grails] applications.  However, like
-any new feature, there are a few rough edges.  I ran into one the other day when trying to determine why one of my <a href="http://grails.org">Grails</a> applications was not picking up dependencies from the local <a href="http://maven.apache.org/">Maven</a>
-cache  (<code>~/.m2/repository</code>).  After some digging around, I ran across <a href="http://jira.grails.org/browse/GRAILS-10921">this bug</a>.  According to it, the mavenLocal directive in the
-repositories section of <code>BuildConfig.groovy</code> is not honored when using the <a href="http://www.eclipse.org/aether/">Aether</a> resolver.  So that stinks.  I quickly realized that we could make the <a href="http://grails.org">Grails</a> dependency resolver
-DSL pick up the local <a href="http://maven.apache.org/">Maven</a> repository by simply adding a new file-based repository:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>    repositories {
-        inherits true // Whether to inherit repository definitions from plugins
-
-        mavenRepo "file://${System.getProperty('user.home')}/.m2/repository"
-
-        ...
-    }</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This little hack will allow you to continue checking the local <a href="http://maven.apache.org/">Maven</a> repository when using the <a href="http://grails.org">Grails</a> command line tools and the <a href="http://grails.org/doc/2.3.x/guide/introduction.html#whatsNew23">Maven dependency resolution support</a>
-new to <a href="http://grails.org">Grails</a> 2.3.  The nice thing about this is that when/if the issue is fixed so that the local <a href="http://maven.apache.org/">Maven</a> repository is honored, this fix should not cause any issues.  Not long after I made this fix,
-I went to build the application on <a href="http://jenkins-ci.org/">Jenkins</a> and notice some more funny business with dependencies.  After some digging, I determined the issue was due to the fact that now that the
-<a href="http://grails.org">Grails</a> applications were using <a href="http://maven.apache.org/">Maven</a> for dependency resolution and not Ivy, they were sharing one local dependency cache.  When the Jenkins job is a <a href="http://maven.apache.org/">Maven</a> project, I typically choose
-the option to create a repository per workspace, to avoid collisions between jobs.  With a <a href="http://grails.org">Grails</a> job, you do not have this option.  The option that you do have is setting the
-<code>grails.dependency.cache.dir</code> build property to tell <a href="http://grails.org">Grails</a> where to cache and look for local dependencies.  I decided to conditionally set this based on whether or not the application
-was being built on Jenkins or not (the reason for this is that I already have it set in my local <code>~/.grails/settings.groovy</code> to have a separate cache per application).  Once again,
-I modified the BuildConfig.groovy file to contain the following logic:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>    final String localMavenRepo = System.getenv('JENKINS_HOME') ? "${System.getenv('WORKSPACE')}/.m2/repository" :
-                                        "${System.getProperty('user.home')}/.m2/repository"
-
-    ...
-
-    /**
-      * If the build is being executed on Jenkins, set up the ivy cache.  This
-      * is important as Grails checks to see if this has been set before allowing
-      * an override of the local Maven repository.
-      */
-    if(System.getenv('JENKINS_HOME')) {
-        grails.dependency.cache.dir = localMavenRepo
-    }
-
-    grails.project.dependency.resolver = "maven" // or ivy
-    grails.project.dependency.resolution = {
-        pom true
-
-        // inherit Grails' default dependencies
-        inherits("global") {
-        }
-
-        log "error" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
-        checksums false // Whether to verify checksums on resolve
-        legacyResolve false // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
-        localRepository = localMavenRepo
-
-        repositories {
-            inherits true // Whether to inherit repository definitions from plugins
-
-            mavenRepo "file://${localMavenRepo}"
-
-            ...
-        }
-    }
-
-    ...</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>It&#8217;s worth noting that in the example above, I not only set the <code>grails.dependency.cache.dir</code> <a href="http://grails.org">Grails</a> build property, but
-I also set the <code>localRepository</code> property of the dependency resolution DSL to ensure that the <a href="http://maven.apache.org/">Maven</a> dependency resolution is using it both as a place to check
-for dependencies AND a place to store the cached dependencies (see the <a href="https://github.com/grails/grails-core/blob/2.3.x/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy">AetherDependencyManager.groovy</a> source
-file in the <code>grails-aether</code> module for more details).  Now when the application builds on Jenkins, not only does it have a local <a href="http://maven.apache.org/">Maven</a> repository as part of
-the list of repositories, but that repository is stored in the workspace for the Jenkins build job.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog/2014/02/10/grails_maven_local_repo.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/02/06/redesign.html"><h1>Blog Makeover</h1></a>
-                   <p>08 February 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/blog.html">blog</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/02/06/redesign.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/02/06/redesign.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2014/02/06/redesign.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>In an attempt to get myself to start blogging more regularly, I have decided to re-do my blog (which has largely been dormant).  A few days ago,
-I read an interesting blog post by <a href="http://melix.github.io/blog//2014/02/hosting-jbake-github.html">Cédric Champeau</a> about using <a href="http://www.jbake.org">JBake</a> to generate
-blog posts from <a href="https://daringfireball.net/projects/markdown/">Markdown</a>, <a href="http://www.methods.co.nz/asciidoc/">AsciiDoc</a> or HTML and publish them to <a href="http://github.com">GitHub</a>.  The blog post is pretty straight forward and with some minor tweaks
-I was able to give my blog a makeover.  Additionally, its much easier now to author and publish posts.  Over the next few weeks, I am going to continue
-to make tweaks to give the blog my own style.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog/2014/02/06/redesign.html#disqus_thread">Comments</a></p>
-
-                <hr />
-
-                <p>Older posts are available in the <a href="/blog/archive.html">archive</a>.</p>
+    <hr>
 
             </div>
             <div id="push"></div>
