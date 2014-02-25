@@ -1,0 +1,154 @@
+= Programmatically building CKEditor source in Grails
+Jonathan Pearlin
+2014-02-25
+:jbake-type: post
+:jbake-tags: grails,ckeditor,gant
+:jbake-status: published
+:source-highlighter: prettify
+:id: grails_gant_ckeditor
+:ckeditor: http://ckeditor.com/[CKEditor]
+:gant: http://gant.codehaus.org/[Gant]
+:grails: http://grails.org[Grails]
+:guava: http://code.google.com/p/guava-libraries/[Guava]
+:ivy: https://ant.apache.org/ivy/[Ivy]
+:maven: http://maven.apache.org/[Maven]
+:icons: font
+
+The {grails} Framework has some interesting quirks, particular when it comes to dependency management and build/deploy.  With a {grails} plugin, you can define dependencies in its `BuildConfig.groovy` source file or you can place Java JAR files in the `lib`
+directory of the plugin.  Either will get included in the packaged plugin (and by extension, the packaged WAR of the application that includes the plugin) unless other special steps are taken to preclude them at package time.  This became an issue for me
+recently when using the builder provided by {ckeditor} within a {grails} plugin to compile from source the {ckeditor} JavaScript files.  We had originally put the {ckeditor} builder JAR in the `lib` folder of a plugin, as the {ckeditor} project does not
+publish its artifacts to {maven}.  This worked fine until we happened to update the version of {guava} that the plugin depended on.  The net result of this was a fun game of classpath roulette, as the builder JAR provided by {ckeditor} includes copies of
+an older version of {guava} inside its JAR (don't get me started on this).  I was able to determine this by using JBoss's http://www.jboss.org/tattletale library to check for duplicate classes on the classpath (In a future post, I will talk about how I added
+JBoss's http://www.jboss.org/tattletale[tattletale] to our {grails} builds to check for duplicate classes on the classpath, though it less important in {grails} 2.3+, where you can use {maven} POM files and the enforcer plugin to do the same thing).  Because
+we had the JAR in the `lib` directory, it gets included on the classpath and packaged in the WAR, but does not get conflict resolved with any dependencies included in the `BuildConfig.groovy` file.  Obviously, {ivy} only knows about the dependencies declared
+in the closures in `BuildConfig.groovy`.
+
+=== Build Scope to the rescue
+
+I decided that the best way to fix this was to make use of the `build` dependency scope supported by {grails}/{ivy}, which does not allow the dependency to be included in the packaged artifact.  This first meant pushing
+the {ckeditor} builder JAR file into our {maven} repository and then adding the following to the `dependencies` block in `BuildConfig.groovy`:
+
+[source,groovy]
+.BuildConfig.groovy
+----
+grails.project.dependency.resolution = {
+
+    ...
+
+    dependencies {
+        // Required to build/package ckeditor
+        build 'com.ckeditor:ckbuilder:1.6.1'
+
+        ...
+    }
+}
+----
+
+The next step was to modify the {gant} script that we wrote to perform the {ckeditor} compilation to programmatically invoke the {ckeditor} builder instead of executing a command:
+
+[source,groovy]
+.scripts/PackageCkeditor.groovy
+----
+import ckbuilder.ckbuilder
+
+target(packageCkeditor: "Packages the CKEditor for inclusion as a dependency.") {
+    String srcPath  = 'web-app/js/ckeditor-source'
+    String destPath = 'web-app/js/ckeditor'
+    String version  = '4.0.0'
+
+    grailsConsole.addStatus "Compiling CKEditor from source..."
+    ckbuilder.main(["--build", "${myPluginDir}/${srcPath}/", "${myPluginDir}/${destPath}", "--version=${version}",
+            "--build-config", "${myPluginDir}/${srcPath}/dev/builder/ddc-build-config.js", "--overwrite", "--skip-omitted-in-build-config"] as String[])
+
+    grailsConsole.updateStatus "Moving compiled CKEditor to target directory..."
+    ant.move(file: "${myPluginDir}/${destPath}/ckeditor",
+             tofile: "${myPluginDir}/${destPath}",
+             overwrite: true)
+
+    grailsConsole.updateStatus "Removing CKEditor archive artifacts..."
+    ant.delete(file: "${myPluginDir}/${destPath}/ckeditor_${version.toLowerCase()}.zip")
+    ant.delete(file: "${myPluginDir}/${destPath}/ckeditor_${version.toLowerCase()}.tar.gz")
+
+    grailsConsole.updateStatus "CKEditor successfully compiled and ready to deploy."
+}
+
+setDefaultTarget(packageCkeditor)
+----
+
+The example above makes use of the `main()` method of the `ckeditor` class provided by the builder to invoke the {ckeditor} compilation.  I tested it out and noticed that
+none of my console statements after the call to `main()` were being executed.  I quickly realized that something in the {ckeditor} code was executing `System.exit()`, which in turn
+ended up killing the {grails} process.
+
+=== Open only in case of emergency
+
+To avoid this premature exit, I decided to add a temporary custom `SecurityManager` that does not allow exits to happen:
+
+[source,groovy]
+.scripts/PackageCkeditor.groovy
+----
+import ckbuilder.ckbuilder
+
+target(packageCkeditor: "Packages the CKEditor for inclusion as a dependency.") {
+    String srcPath  = 'web-app/js/ckeditor-source'
+    String destPath = 'web-app/js/ckeditor'
+    String version  = '4.0.0'
+
+    grailsConsole.addStatus "Compiling CKEditor from source..."
+
+    /*
+     * The CKEditor builder calls System.exit().  Therefore,
+     * we need a custom security manager to prevent it from
+     * killing the Grails process too.  The code below
+     * saves off the current security manager, sets the JVM
+     * to use the custom no-exits-allowed manager and then
+     * restores it after attempting to build CKEditor.
+     */
+    def defaultSecurityManager = System.getSecurityManager()
+    System.setSecurityManager(new NoExitSecurityManager())
+
+    try {
+        ckbuilder.main(["--build", "${myPluginDir}/${srcPath}/", "${myPluginDir}/${destPath}", "--version=${version}",
+            "--build-config", "${myPluginDir}/${srcPath}/dev/builder/ddc-build-config.js", "--overwrite", "--skip-omitted-in-build-config"] as String[])
+    } catch (e) {
+        if(!(e instanceof SecurityException)) {
+            grailsConsole.addStatus("Failed to execute CKEditor build: ${e.getMessage()}")
+        }
+    } finally {
+        // Restore the security manager
+        System.setSecurityManager(defaultSecurityManager)
+    }
+
+    grailsConsole.updateStatus "Moving compiled CKEditor to target directory..."
+    ant.move(file: "${myPluginDir}/${destPath}/ckeditor",
+             tofile: "${myPluginDir}/${destPath}",
+             overwrite: true)
+
+    grailsConsole.updateStatus "Removing CKEditor archive artifacts..."
+    ant.delete(file: "${myPluginDir}/${destPath}/ckeditor_${version.toLowerCase()}.zip")
+    ant.delete(file: "${myPluginDir}/${destPath}/ckeditor_${version.toLowerCase()}.tar.gz")
+
+    grailsConsole.updateStatus "CKEditor successfully compiled and ready to deploy."
+}
+
+setDefaultTarget(packageCkeditor)
+
+/**
+ * Custom "no exits allowed" security manager implementation.
+ */
+class NoExitSecurityManager extends SecurityManager {
+
+    @Override
+    public void checkExit(int status) {
+        throw new SecurityException('Exit not allowed.')
+    }
+
+    @Override
+    public void checkPermission(Permission perm) {
+        // Allow all!
+    }
+}
+----
+
+The revamped code above now uses a custom `SecurityManager` that does not allow the exit to happen.  While this is not the cleanest approach (I would have liked to have modified the {ckeditor}
+builder code, but they have not open sourced the builder -- only the editor itself), it gets the job done.  Now, we can use the {ckeditor} programmatically and let {ivy} manage the dependency
+the dependency, ensure that it does not get included in the packaged artifact and still be able to compile the source as part of our builds.
