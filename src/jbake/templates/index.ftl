@@ -4,7 +4,6 @@
 
                 <div class="page-header">
                     <h1>Why We Can't Have Nice Things</h1>
-                    <h4>A blog about technical challenges and how to over come them through powers of deduction.</h4>
                 </div>
 <#assign lastposts = posts[0..3]>
 <#list lastposts as post>

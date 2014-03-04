@@ -1,0 +1,132 @@
+= Integrating JBoss tattletale with Grails
+Jonathan Pearlin
+2014-03-04
+:jbake-type: post
+:jbake-tags: grails,tattletale
+:jbake-status: published
+:source-highlighter: prettify
+:id: grails_tattletale
+:gant: http://gant.codehaus.org/[Gant]
+:grails: http://grails.org[Grails]
+:maven: http://maven.apache.org/[Maven]
+:maven-enforcer: http://maven.apache.org/enforcer/maven-enforcer-plugin/[Maven Enforcer plugin]
+:tattletale: http://www.jboss.org/tattletale[JBoss tattletale]
+:icons: font
+
+Prior to version 2.3 of the {grails} Framework, it was difficult, if not impossible, to use {maven} to build a {grails}-based application or plugin.  Besides losing the obvious benefits of {maven}-based builds,
+such as dependency management and the rich ecosystem of existing plugins, one of the things that is lacking is an easy way to enforce environmental constraints, such as with the {maven-enforcer}. The {maven-enforcer}
+includes the ability to http://mojo.codehaus.org/extra-enforcer-rules/banDuplicateClasses.html[fail a build when detecting multiple versions of the same class on the classpath].  This is particularly handy when an
+application depends on libraries that include classes from another library in order to reduce the number of required dependencies (this is particularly common with libraries that are not published to a {maven}
+repository or some other type of dependency management repository).  Since using the {maven-enforcer} is not an option in applications using {grails} <2.3, I decided to look at other alternatives to provide the
+duplicate class checking functionality.
+
+=== JBoss tattletale
+
+{tattletale} is a similar project to the {maven-enforcer} in that it provides many of the same analytics with regards to the classes and dependencies that are part of a Java library/application.  In addition to its
+feature set, {tattletale} also has the ability to be embedded/called programmatically, which is a must for integrating it into a {grails} {gant} script.  The first step to including a {grails} command line target
+that can perform the {tattletale} analysis is to include the {tattletale} dependency as a `build` scoped dependency:
+
+[source,groovy]
+.BuildConfig.groovy
+----
+grails.project.dependency.resolution = {
+
+    ...
+
+    dependencies {
+
+        // Required to generate the TattleTale report by the TattleTale GANT script.
+        build 'org.jboss.tattletale:tattletale:1.1.2.Final'
+
+        ...
+    }
+}
+----
+
+This makes the dependency available to the {gant} script without exporting the dependency when the application or plugin is package (or in the case of a plugin, the dependency is not added to the classpath when it is
+consumed by a {grails} application).  The next step is to write a {gant} script that performs the {tattletale} analysis.  Below is an example script that I wrote that expands the packaged application, runs the analysis
+and then outputs the HTML report to the `target/tattletale-report` directory:
+
+[source,groovy]
+.scripts/TattleTale.groovy
+----
+import org.jboss.tattletale.Main
+
+includeTargets << grailsScript("_GrailsArgParsing")
+includeTargets << grailsScript("_GrailsSettings")
+includeTargets << grailsScript("_GrailsClasspath")
+
+// Default list of comma separated report names to generate.
+DEFAULT_REPORTS='multiplejars'
+
+// Default list of comma separated JAR files to exclude.  These JARS are from the Grails global dependencies,
+// so there is not a lot we can do about resolving duplicate classes from the JAR files.
+DEFAULT_EXCLUDES='commons-beanutils-1.8.3.jar,commons-logging-1.1.1.jar,aspectjrt-1.6.10.jar,grails-plugin-controllers-2.0.3.jar'
+
+/*
+ * Target used to generated the TattleTale (http://www.jboss.org/tattletale/) report for the encapsulating Grails application.
+ * The application's archive (WAR file) MUST be built prior to running this script to invoke the TattleTale report.  If
+ * the WAR file is present, the following steps are performed:
+ *
+ *     1) The previous report is deleted.
+ *     2) The archive is unzipped to the target directory of the application.
+ *     3) The TattleTale report(s) are generated.
+ *     4) The expanded archive is deleted.
+ *
+ * The TattleTale reports that are generated can be configured by running the script with the following option:
+ *
+ *     grails tattleTale --reports=mulitplelocations,multiplejars
+ *
+ * The files that are scanned by TattleTale can be configured by adding additional exclusions via an argument:
+ *
+ *     grails tattleTale --excludes=foo.jar,bar.jar
+ *
+ * See the TattleTale User's Guide for information about the available reports (http://docs.jboss.org/tattletale/userguide/1.1/html_single/#maven_report).
+ */
+target(tattleTale: "Called from build jobs on Hudson to perform a TattleTale analysis on the application's archive.") {
+    parseArguments()
+
+    def appName = metadata['app.name']
+    def reports = argsMap.reports ?: DEFAULT_REPORTS
+    def excludes = argsMap.excludes ? "${DEFAULT_EXCLUDES},${argsMap.excludes}" : DEFAULT_EXCLUDES
+    def archiveFile = "target/${appName}.war"
+    def expandedArchiveDir = "target/${appName}"
+    def reportDir = 'target/tattletale-report'
+
+    if(new File(archiveFile).exists()) {
+        ant.delete(dir:reportDir, failonerror:"false", verbose:"true")
+        grailsConsole.addStatus "************ Unzipping application archive '${archiveFile}'..."
+        ant.unzip(src: archiveFile , dest:expandedArchiveDir, overwrite:"true")
+        grailsConsole.addStatus "************ Running TattleTask report for '${appName}'..."
+        executeTattleTale("${expandedArchiveDir}/WEB-INF/lib", reportDir, reports, excludes)
+        grailsConsole.addStatus "************ Removing expanded archive for application '${appName}'..."
+        ant.delete(dir:expandedArchiveDir, failonerror:"false", verbose:"true")
+        grailsConsole.addStatus "************ Duplicate class check for application '${appName}' completed."
+        grailsConsole.addStatus "************ TattleTale report available in '${new File(reportDir).absolutePath}/index.html'..."
+    } else {
+        grailsConsole.warn "Application archive file ${archiveFile} does NOT exist.  Nothing to report!  Please build the WAR file before running this script."
+    }
+}
+
+/**
+ * Executes the TattleTale report.
+ * @param source The source directory containing JAR files.
+ * @param destination The output destination directory for the generated report(s).
+ * @param reports The comma separated string containing the names of the reports to generate.
+ * @param excludes The comma separated string containing the names of directories or files to exludes
+ */
+private def executeTattleTale(def source, def destination, def reports, def excludes) {
+    def tattleTale = new Main()
+    tattleTale.source = source
+    tattleTale.destination = destination
+    tattleTale.reports = reports
+    tattleTale.excludes = excludes
+    tattleTale.profiles = 'spring30,java6'
+    tattleTale.execute()
+}
+
+setDefaultTarget(tattleTale)
+----
+
+Note that the script above requires the user to first run `grails war` or `grails package-plugin` prior to running the `grails tattletale` target command.  It is also possible to hook into the {grails} events that get fired to perform the analysis after
+compilation has been completed, which would avoid the need to expand the packaged WAR file.  Regardless of how you choose to implement the execution of {tattletale}, the end result is still valuable.
