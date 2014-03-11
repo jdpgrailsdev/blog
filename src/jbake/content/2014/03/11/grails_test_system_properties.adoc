@@ -1,0 +1,38 @@
+= Setting system properties when running Grails tests
+Jonathan Pearlin
+2014-03-11
+:jbake-type: post
+:jbake-tags: grails
+:jbake-status: published
+:source-highlighter: prettify
+:id: grails_test_system_properties
+:curator: http://curator.apache.org/[Apache Curator]
+:gant: http://gant.codehaus.org/[Gant]
+:grails: http://grails.org[Grails]
+:zookeeper: http://zookeeper.apache.org/[Apache ZooKeeper]
+:icons: font
+
+We have a {grails} application that relies on {zookeeper} for some of its data.  This application makes use of the {curator} library to connect to {zookeeper}.  The {curator} library also includes
+a testing server to make it easy to write unit tests for the classes that need to interact with {zookeeper}.  Our {zookeeper} implementation makes uses of SASL-based authentication to prevent
+unwanted access to different parts of the data stored in {zookeeper}.  Unfortunately, the ability to set which configuration file to use when connecting to {zookeeper} is set via JVM system
+properties.  This is fine when the application is running, but can make unit testing difficult, as developers have to remember to set the appropriate system properties before executing unit
+test.  Luckily, {grails} has a nice events framework that fires as certain stages in execution are hit.  I decided that it would be trivial to add an event hook that listens for the
+start of the test phase and sets the appropriate system properties required to simulate the same access control when interacting with the {curator} test server.  I made the following modification
+to the `scripts/Events.groovy` file in the {grails} application:
+
+[source,groovy]
+.scripts/Events.groovy
+----
+eventTestPhaseStart = { args ->
+    //Add the required ZooKeeper auth system properties so that tests will pass!
+    System.setProperty('java.security.auth.login.config', "${System.getProperty('user.dir')}/test/unit/jaas_test.config")
+    System.setProperty('zookeeper.authProvider.1', 'org.apache.zookeeper.server.auth.SASLAuthenticationProvider')
+    grailsConsole.addStatus "Running tests with the following system properties:"
+    grailsConsole.addStatus "${System.getProperties()}"
+}
+----
+
+The above event is fired right before the first test is executed by {grails} when using the `grails test-app` command.  It sets the login configuration file to
+one that is packaged within the project and sets the `authProvider` to the appropriate type (in our case, SASL).  There are many other events that you can listen
+for in order to perform logic upon firing.  You can see more information about {grails} events in the http://grails.org/doc/2.3.x/guide/commandLine.html#events[documentation] or
+by looking through the {gant} scripts in the `scripts` folder of the {grails} installation.
