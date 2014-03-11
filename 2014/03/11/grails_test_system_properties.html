@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
-        <title>Why We Can't Have Nice Things</title>
+        <title>Why We Can't Have Nice Things :: Setting system properties when running Grails tests</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -68,59 +68,67 @@
                 </div>
             </div>
             <div class="container">
-                <div class="page-header">
-                    <h1>Why We Can't Have Nice Things Archive</h1>
-                </div>
+    <div class="page-header">
+        <h1>Setting system properties when running Grails tests</h1>
+    </div>
 
-                    <h4>March 2014</h4>
-                <ul>
+    <p><em>11 March 2014</em></p>
 
-                    <li>11 - <a href="/blog/2014/03/11/grails_test_system_properties.html">Setting system properties when running Grails tests</a></li>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog//2014/03/11/grails_test_system_properties.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2014/03/11/grails_test_system_properties.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2014/03/11/grails_test_system_properties.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                    <li>04 - <a href="/blog/2014/03/04/grails_tattletale.html">Integrating JBoss tattletale with Grails</a></li>
-                </ul>
-                <h4>February 2014</h4>
-                <ul>
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>We have a <a href="http://grails.org">Grails</a> application that relies on <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> for some of its data.  This application makes use of the <a href="http://curator.apache.org/">Apache Curator</a> library to connect to <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  The <a href="http://curator.apache.org/">Apache Curator</a> library also includes
+a testing server to make it easy to write unit tests for the classes that need to interact with <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  Our <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> implementation makes uses of SASL-based authentication to prevent
+unwanted access to different parts of the data stored in <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  Unfortunately, the ability to set which configuration file to use when connecting to <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> is set via JVM system
+properties.  This is fine when the application is running, but can make unit testing difficult, as developers have to remember to set the appropriate system properties before executing unit
+test.  Luckily, <a href="http://grails.org">Grails</a> has a nice events framework that fires as certain stages in execution are hit.  I decided that it would be trivial to add an event hook that listens for the
+start of the test phase and sets the appropriate system properties required to simulate the same access control when interacting with the <a href="http://curator.apache.org/">Apache Curator</a> test server.  I made the following modification
+to the <code>scripts/Events.groovy</code> file in the <a href="http://grails.org">Grails</a> application:</p>
+</div>
+<div class="listingblock">
+<div class="title">scripts/Events.groovy</div>
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>eventTestPhaseStart = { args -&gt;
+    //Add the required ZooKeeper auth system properties so that tests will pass!
+    System.setProperty('java.security.auth.login.config', "${System.getProperty('user.dir')}/test/unit/jaas_test.config")
+    System.setProperty('zookeeper.authProvider.1', 'org.apache.zookeeper.server.auth.SASLAuthenticationProvider')
+    grailsConsole.addStatus "Running tests with the following system properties:"
+    grailsConsole.addStatus "${System.getProperties()}"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above event is fired right before the first test is executed by <a href="http://grails.org">Grails</a> when using the <code>grails test-app</code> command.  It sets the login configuration file to
+one that is packaged within the project and sets the <code>authProvider</code> to the appropriate type (in our case, SASL).  There are many other events that you can listen
+for in order to perform logic upon firing.  You can see more information about <a href="http://grails.org">Grails</a> events in the <a href="http://grails.org/doc/2.3.x/guide/commandLine.html#events">documentation</a> or
+by looking through the <a href="http://gant.codehaus.org/">Gant</a> scripts in the <code>scripts</code> folder of the <a href="http://grails.org">Grails</a> installation.</p>
+</div>
+</div>
+</div></p>
 
-                    <li>25 - <a href="/blog/2014/02/25/grails_gant_ckeditor.html">Programmatically building CKEditor source in Grails</a></li>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog/2014/03/11/grails_test_system_properties.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2014/03/11/grails_test_system_properties.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2014/03/11/grails_test_system_properties.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                    <li>19 - <a href="/blog/2014/02/19/spring_curator.html">Spring and Apache Curator</a></li>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '/2014/03/11/grails_test_system_properties.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-                    <li>10 - <a href="/blog/2014/02/10/grails_maven_local_repo.html">Grails 2.3, Maven and Local Repositories</a></li>
-
-                    <li>08 - <a href="/blog/2014/02/06/redesign.html">Blog Makeover</a></li>
-                </ul>
-                <h4>December 2012</h4>
-                <ul>
-
-                    <li>08 - <a href="/blog/2012/12/08/relocation.html">Relocation</a></li>
-                </ul>
-                <h4>November 2011</h4>
-                <ul>
-
-                    <li>19 - <a href="/blog/2011/11/19/spring_data_mongodb_exceptions.html">Where&apos;s My Exceptions, Spring Data MongoDB?</a></li>
-                </ul>
-                <h4>September 2011</h4>
-                <ul>
-
-                    <li>26 - <a href="/blog/2011/09/26/trains_planes_auto.html">Planes, Trains, and Automobiles</a></li>
-
-                    <li>13 - <a href="/blog/2011/09/13/spring_integration_jmx.html">I Don&apos;t Need To Read The Manual...Spring Integration and JMX</a></li>
-                </ul>
-                <h4>August 2011</h4>
-                <ul>
-
-                    <li>14 - <a href="/blog/2011/08/14/war_of_the_worlds.html">War of the Worlds</a></li>
-                </ul>
-                <h4>July 2011</h4>
-                <ul>
-
-                    <li>31 - <a href="/blog/2011/07/31/groovy_whitespace.html">Keep Your Hands Off of My Whitespace!</a></li>
-
-                    <li>27 - <a href="/blog/2011/07/27/grails_rename_war.html">Maven Trick to Rename Grails War</a></li>
-
-                    <li>18 - <a href="/blog/2011/07/18/grails_web_xml.html">Grails web.xml Generation Magic</a></li>
-                </ul>
+    <hr>
 
             </div>
             <div id="push"></div>

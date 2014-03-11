@@ -6,13 +6,52 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 4 Mar 2014 07:47:23 -0500</pubDate>
-        <lastBuildDate>Tue, 4 Mar 2014 07:47:23 -0500</lastBuildDate>
+        <pubDate>Tue, 11 Mar 2014 07:50:12 -0400</pubDate>
+        <lastBuildDate>Tue, 11 Mar 2014 07:50:12 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Setting system properties when running Grails tests</title>
+            <link>http://jdpgrailsdev.github.io/blog//2014/03/11/grails_test_system_properties.html</link>
+            <pubDate>Tue, 11 Mar 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">/2014/03/11/grails_test_system_properties.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;We have a &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; application that relies on &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt; for some of its data.  This application makes use of the &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; library to connect to &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt;.  The &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; library also includes
+a testing server to make it easy to write unit tests for the classes that need to interact with &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt;.  Our &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt; implementation makes uses of SASL-based authentication to prevent
+unwanted access to different parts of the data stored in &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt;.  Unfortunately, the ability to set which configuration file to use when connecting to &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt; is set via JVM system
+properties.  This is fine when the application is running, but can make unit testing difficult, as developers have to remember to set the appropriate system properties before executing unit
+test.  Luckily, &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; has a nice events framework that fires as certain stages in execution are hit.  I decided that it would be trivial to add an event hook that listens for the
+start of the test phase and sets the appropriate system properties required to simulate the same access control when interacting with the &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; test server.  I made the following modification
+to the &lt;code&gt;scripts/Events.groovy&lt;/code&gt; file in the &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; application:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;scripts/Events.groovy&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;eventTestPhaseStart = { args -&amp;gt;
+    //Add the required ZooKeeper auth system properties so that tests will pass!
+    System.setProperty(&apos;java.security.auth.login.config&apos;, &quot;${System.getProperty(&apos;user.dir&apos;)}/test/unit/jaas_test.config&quot;)
+    System.setProperty(&apos;zookeeper.authProvider.1&apos;, &apos;org.apache.zookeeper.server.auth.SASLAuthenticationProvider&apos;)
+    grailsConsole.addStatus &quot;Running tests with the following system properties:&quot;
+    grailsConsole.addStatus &quot;${System.getProperties()}&quot;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The above event is fired right before the first test is executed by &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; when using the &lt;code&gt;grails test-app&lt;/code&gt; command.  It sets the login configuration file to
+one that is packaged within the project and sets the &lt;code&gt;authProvider&lt;/code&gt; to the appropriate type (in our case, SASL).  There are many other events that you can listen
+for in order to perform logic upon firing.  You can see more information about &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; events in the &lt;a href=&quot;http://grails.org/doc/2.3.x/guide/commandLine.html#events&quot;&gt;documentation&lt;/a&gt; or
+by looking through the &lt;a href=&quot;http://gant.codehaus.org/&quot;&gt;Gant&lt;/a&gt; scripts in the &lt;code&gt;scripts&lt;/code&gt; folder of the &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; installation.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Integrating JBoss tattletale with Grails</title>
             <link>http://jdpgrailsdev.github.io/blog//2014/03/04/grails_tattletale.html</link>
@@ -462,25 +501,6 @@ I also set the &lt;code&gt;localRepository&lt;/code&gt; property of the dependen
 for dependencies AND a place to store the cached dependencies (see the &lt;a href=&quot;https://github.com/grails/grails-core/blob/2.3.x/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy&quot;&gt;AetherDependencyManager.groovy&lt;/a&gt; source
 file in the &lt;code&gt;grails-aether&lt;/code&gt; module for more details).  Now when the application builds on Jenkins, not only does it have a local &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; repository as part of
 the list of repositories, but that repository is stored in the workspace for the Jenkins build job.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Blog Makeover</title>
-            <link>http://jdpgrailsdev.github.io/blog//2014/02/06/redesign.html</link>
-            <pubDate>Sat, 8 Feb 2014 00:00:00 -0500</pubDate>
-            <guid isPermaLink="false">/2014/02/06/redesign.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;In an attempt to get myself to start blogging more regularly, I have decided to re-do my blog (which has largely been dormant).  A few days ago,
-I read an interesting blog post by &lt;a href=&quot;http://melix.github.io/blog//2014/02/hosting-jbake-github.html&quot;&gt;Cédric Champeau&lt;/a&gt; about using &lt;a href=&quot;http://www.jbake.org&quot;&gt;JBake&lt;/a&gt; to generate
-blog posts from &lt;a href=&quot;https://daringfireball.net/projects/markdown/&quot;&gt;Markdown&lt;/a&gt;, &lt;a href=&quot;http://www.methods.co.nz/asciidoc/&quot;&gt;AsciiDoc&lt;/a&gt; or HTML and publish them to &lt;a href=&quot;http://github.com&quot;&gt;GitHub&lt;/a&gt;.  The blog post is pretty straight forward and with some minor tweaks
-I was able to give my blog a makeover.  Additionally, its much easier now to author and publish posts.  Over the next few weeks, I am going to continue
-to make tweaks to give the blog my own style.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
