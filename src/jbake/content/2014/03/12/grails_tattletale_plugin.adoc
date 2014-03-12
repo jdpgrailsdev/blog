@@ -1,0 +1,13 @@
+= Grails Tattletale Plugin
+Jonathan Pearlin
+2014-03-12
+:jbake-type: post
+:jbake-tags: grails,tattletale
+:jbake-status: published
+:source-highlighter: prettify
+:id: grails_tattletale
+:icons: font
+
+I am pleased to announce that I have officially released the http://grails.org/plugin/tattletale[Grails Tattletale plugin] to the http://grails.org/plugins/[Grails Plugins portal].
+
+Full documentation can be found https://github.com/jdpgrailsdev/grails-tattletale/blob/master/README.md[here].
