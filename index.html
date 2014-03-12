@@ -71,6 +71,29 @@
                 <div class="page-header">
                     <h1>Why We Can't Have Nice Things</h1>
                 </div>
+                   <a href="/blog/2014/03/12/grails_tattletale_plugin.html"><h1>Grails Tattletale Plugin</h1></a>
+                   <p>12 March 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/grails.html">grails</a>
+        
+                <a href="/blog/tags/tattletale.html">tattletale</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/03/12/grails_tattletale_plugin.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/03/12/grails_tattletale_plugin.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://melix.github.io/blog/2014/03/12/grails_tattletale_plugin.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>I am pleased to announce that I have officially released the <a href="http://grails.org/plugin/tattletale">Grails Tattletale plugin</a> to the <a href="http://grails.org/plugins/">Grails Plugins portal</a>.</p>
+</div>
+<div class="paragraph">
+<p>Full documentation can be found <a href="https://github.com/jdpgrailsdev/grails-tattletale/blob/master/README.md">here</a>.</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog/2014/03/12/grails_tattletale_plugin.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2014/03/11/grails_test_system_properties.html"><h1>Setting system properties when running Grails tests</h1></a>
                    <p>11 March 2014</p>
                 <p><em>Tags: </em>
@@ -419,86 +442,6 @@ the dependency, ensure that it does not get included in the packaged artifact an
 </div>
 </div></p>
                 <p><a href="/blog/2014/02/25/grails_gant_ckeditor.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/02/19/spring_curator.html"><h1>Spring and Apache Curator</h1></a>
-                   <p>19 February 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/java.html">java</a>
-        
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/curator.html">curator</a>
-        
-                <a href="/blog/tags/zookeeper.html">zookeeper</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/02/19/spring_curator.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/02/19/spring_curator.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2014/02/19/spring_curator.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>Recently, I have been working a lot with <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> provides a Java-based driver, but it does leave a little bit to be desired.  In steps <a href="http://curator.apache.org/">Apache Curator</a>, which was originally created and open-sourced
-by <a href="https://github.com/netflix/curator">Neflix</a> and is now maintained by Apache.  <a href="http://curator.apache.org/">Apache Curator</a> uses a fluent-style syntax to making using <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> much easier.  In particular, <a href="http://curator.apache.org/">Apache Curator</a> contains a more robust client class that handles things such
-as retry attempts, listeners and other utilities that would otherwise need to be manually wired up using the low-level Java-based driver.  In order to support the use of <a href="http://curator.apache.org/">Apache Curator</a> within a Spring-based application,
-I decided to create a library that makes it easy to define <a href="http://curator.apache.org/">Apache Curator</a> clients in a Spring configuration for use in an application.  One of the thinks to know about the <a href="http://curator.apache.org/">Apache Curator</a> client is that you only need one
-per instance/ensemble of <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  Therefore, using Spring to manage the injection of a Singleton bean into a class that needs access to the client is a perfect fit.  The repository can be found on
-<a href="https://github.com/jdpgrailsdev/spring-curator">GitHub</a>.  Please check it out and let me know what you think.  As always, contributions are welcome!</p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_future_enhancements">Future Enhancements</h3>
-<div class="paragraph">
-<p>Currently, the <a href="https://github.com/jdpgrailsdev/spring-curator">spring-curator</a> library only supports the definition, creation and injection of <a href="http://curator.apache.org/">Apache Curator</a> client instances.  In the future, I would like to add the
-following support to the <code>spring-curator</code> library:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Support for registring custom retry policies</p>
-</li>
-<li>
-<p>Definition of the following via the Spring configuration:</p>
-<div class="ulist">
-<ul>
-<li>
-<p><code>LeaderLatch</code></p>
-</li>
-<li>
-<p><code>LeaderSelector</code></p>
-</li>
-<li>
-<p>*Mutex locks</p>
-</li>
-<li>
-<p>*Barrier barriers</p>
-</li>
-<li>
-<p><code>SharedCount</code></p>
-</li>
-<li>
-<p><code>DistributedAtomicLong</code></p>
-</li>
-<li>
-<p><code>PathChildrenCache</code></p>
-</li>
-<li>
-<p><code>NodeCache</code></p>
-</li>
-<li>
-<p><code>PersistentEphemeralNode</code></p>
-</li>
-<li>
-<p>*Queue queues</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-</div></p>
-                <p><a href="/blog/2014/02/19/spring_curator.html#disqus_thread">Comments</a></p>
 
                 <hr />
 

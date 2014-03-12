@@ -6,13 +6,31 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 11 Mar 2014 07:50:12 -0400</pubDate>
-        <lastBuildDate>Tue, 11 Mar 2014 07:50:12 -0400</lastBuildDate>
+        <pubDate>Wed, 12 Mar 2014 13:54:21 -0400</pubDate>
+        <lastBuildDate>Wed, 12 Mar 2014 13:54:21 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Grails Tattletale Plugin</title>
+            <link>http://jdpgrailsdev.github.io/blog//2014/03/12/grails_tattletale_plugin.html</link>
+            <pubDate>Wed, 12 Mar 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">/2014/03/12/grails_tattletale_plugin.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;I am pleased to announce that I have officially released the &lt;a href=&quot;http://grails.org/plugin/tattletale&quot;&gt;Grails Tattletale plugin&lt;/a&gt; to the &lt;a href=&quot;http://grails.org/plugins/&quot;&gt;Grails Plugins portal&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Full documentation can be found &lt;a href=&quot;https://github.com/jdpgrailsdev/grails-tattletale/blob/master/README.md&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Setting system properties when running Grails tests</title>
             <link>http://jdpgrailsdev.github.io/blog//2014/03/11/grails_test_system_properties.html</link>
@@ -413,95 +431,6 @@ following support to the &lt;code&gt;spring-curator&lt;/code&gt; library:&lt;/p&
 &lt;/div&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Grails 2.3, Maven and Local Repositories</title>
-            <link>http://jdpgrailsdev.github.io/blog//2014/02/10/grails_maven_local_repo.html</link>
-            <pubDate>Mon, 10 Feb 2014 00:00:00 -0500</pubDate>
-            <guid isPermaLink="false">/2014/02/10/grails_maven_local_repo.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;One of the great new features in &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; 2.3 is the ability to use &lt;a href=&quot;http://www.eclipse.org/aether/&quot;&gt;Aether&lt;/a&gt; to resolve dependencies in place of Ivy.  This is great news if
-you already use &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; to build other projects, as it now means you can have predictable builds between your &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; and non-http://grails.org[Grails] applications.  However, like
-any new feature, there are a few rough edges.  I ran into one the other day when trying to determine why one of my &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; applications was not picking up dependencies from the local &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt;
-cache  (&lt;code&gt;~/.m2/repository&lt;/code&gt;).  After some digging around, I ran across &lt;a href=&quot;http://jira.grails.org/browse/GRAILS-10921&quot;&gt;this bug&lt;/a&gt;.  According to it, the mavenLocal directive in the
-repositories section of &lt;code&gt;BuildConfig.groovy&lt;/code&gt; is not honored when using the &lt;a href=&quot;http://www.eclipse.org/aether/&quot;&gt;Aether&lt;/a&gt; resolver.  So that stinks.  I quickly realized that we could make the &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; dependency resolver
-DSL pick up the local &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; repository by simply adding a new file-based repository:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;    repositories {
-        inherits true // Whether to inherit repository definitions from plugins
-
-        mavenRepo &quot;file://${System.getProperty(&apos;user.home&apos;)}/.m2/repository&quot;
-
-        ...
-    }&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;This little hack will allow you to continue checking the local &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; repository when using the &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; command line tools and the &lt;a href=&quot;http://grails.org/doc/2.3.x/guide/introduction.html#whatsNew23&quot;&gt;Maven dependency resolution support&lt;/a&gt;
-new to &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; 2.3.  The nice thing about this is that when/if the issue is fixed so that the local &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; repository is honored, this fix should not cause any issues.  Not long after I made this fix,
-I went to build the application on &lt;a href=&quot;http://jenkins-ci.org/&quot;&gt;Jenkins&lt;/a&gt; and notice some more funny business with dependencies.  After some digging, I determined the issue was due to the fact that now that the
-&lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; applications were using &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; for dependency resolution and not Ivy, they were sharing one local dependency cache.  When the Jenkins job is a &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; project, I typically choose
-the option to create a repository per workspace, to avoid collisions between jobs.  With a &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; job, you do not have this option.  The option that you do have is setting the
-&lt;code&gt;grails.dependency.cache.dir&lt;/code&gt; build property to tell &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; where to cache and look for local dependencies.  I decided to conditionally set this based on whether or not the application
-was being built on Jenkins or not (the reason for this is that I already have it set in my local &lt;code&gt;~/.grails/settings.groovy&lt;/code&gt; to have a separate cache per application).  Once again,
-I modified the BuildConfig.groovy file to contain the following logic:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;    final String localMavenRepo = System.getenv(&apos;JENKINS_HOME&apos;) ? &quot;${System.getenv(&apos;WORKSPACE&apos;)}/.m2/repository&quot; :
-                                        &quot;${System.getProperty(&apos;user.home&apos;)}/.m2/repository&quot;
-
-    ...
-
-    /**
-      * If the build is being executed on Jenkins, set up the ivy cache.  This
-      * is important as Grails checks to see if this has been set before allowing
-      * an override of the local Maven repository.
-      */
-    if(System.getenv(&apos;JENKINS_HOME&apos;)) {
-        grails.dependency.cache.dir = localMavenRepo
-    }
-
-    grails.project.dependency.resolver = &quot;maven&quot; // or ivy
-    grails.project.dependency.resolution = {
-        pom true
-
-        // inherit Grails&apos; default dependencies
-        inherits(&quot;global&quot;) {
-        }
-
-        log &quot;error&quot; // log level of Ivy resolver, either &apos;error&apos;, &apos;warn&apos;, &apos;info&apos;, &apos;debug&apos; or &apos;verbose&apos;
-        checksums false // Whether to verify checksums on resolve
-        legacyResolve false // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
-        localRepository = localMavenRepo
-
-        repositories {
-            inherits true // Whether to inherit repository definitions from plugins
-
-            mavenRepo &quot;file://${localMavenRepo}&quot;
-
-            ...
-        }
-    }
-
-    ...&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;It&amp;#8217;s worth noting that in the example above, I not only set the &lt;code&gt;grails.dependency.cache.dir&lt;/code&gt; &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; build property, but
-I also set the &lt;code&gt;localRepository&lt;/code&gt; property of the dependency resolution DSL to ensure that the &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; dependency resolution is using it both as a place to check
-for dependencies AND a place to store the cached dependencies (see the &lt;a href=&quot;https://github.com/grails/grails-core/blob/2.3.x/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy&quot;&gt;AetherDependencyManager.groovy&lt;/a&gt; source
-file in the &lt;code&gt;grails-aether&lt;/code&gt; module for more details).  Now when the application builds on Jenkins, not only does it have a local &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; repository as part of
-the list of repositories, but that repository is stored in the workspace for the Jenkins build job.&lt;/p&gt;
-&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
             </description>
