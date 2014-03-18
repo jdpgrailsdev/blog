@@ -1,18 +1,93 @@
 <?xml version="1.0"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
-        <title>Why We Can't Have Nice Things</title>
+        <title>The Flowers Are Still Standing</title>
         <link>http://jdpgrailsdev.github.io/blog/</link>
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Wed, 12 Mar 2014 13:54:21 -0400</pubDate>
-        <lastBuildDate>Wed, 12 Mar 2014 13:54:21 -0400</lastBuildDate>
+        <pubDate>Tue, 18 Mar 2014 07:35:22 -0400</pubDate>
+        <lastBuildDate>Tue, 18 Mar 2014 07:35:22 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Parsing the Grails Spring Beans DSL with Groovy</title>
+            <link>http://jdpgrailsdev.github.io/blog//2014/03/18/grails_bean_builder.html</link>
+            <pubDate>Tue, 18 Mar 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">/2014/03/18/grails_bean_builder.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;As part of a current project, I recently had the need to determine which of my &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; applications made use of certain &lt;a href=&quot;http://spring.io&quot;&gt;Spring&lt;/a&gt; beans in order to prepare for a migration.  While it is possible to
+use the normal XML-based configuration in a &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; application (which in turn would have made parsing the configuration fairly straight forward), &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; applications typically make use of the built-in
+&lt;a href=&quot;http://grails.org/doc/latest/guide/spring.html#springdslAdditional&quot;&gt;Spring beans DSL&lt;/a&gt; to declare their &lt;a href=&quot;http://spring.io&quot;&gt;Spring&lt;/a&gt; configuration.  However, because the DSL is represented in &lt;a href=&quot;http://groovy.codehaus.org&quot;&gt;Groovy&lt;/a&gt;, it meant that parsing it
+would not be as easy as if it were in XML.  I decided the best approach would be to use the &lt;code&gt;grails.spring.BeanBuilder&lt;/code&gt; outside of a &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; application in a &lt;a href=&quot;http://groovy.codehaus.org&quot;&gt;Groovy&lt;/a&gt; script.  I was particularly interested
+in finding beans of type &lt;code&gt;org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean&lt;/code&gt; class, which have &lt;code&gt;serviceInterface&lt;/code&gt; and &lt;code&gt;serviceUrl&lt;/code&gt; properties, so I wrote a script that loads and parses the
+DSL and then loops over each bean definition for beans that contained those properties:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;@Grapes([
+    @Grab(group=&apos;org.grails&apos;, module=&apos;grails-spring&apos;, version=&apos;2.3.6&apos;),
+    @Grab(group=&apos;org.springframework&apos;, module=&apos;spring-web&apos;, version=&apos;4.0.2.RELEASE&apos;)
+])
+
+import grails.spring.BeanBuilder
+
+// The resources.groovy file must have:
+//
+// beans {
+//
+// and not
+// beans = {
+//
+// for this script to work!
+
+BeanBuilder beanBuilder = new BeanBuilder()
+beanBuilder.setClassLoader(this.class.classLoader)
+beanBuilder.loadBeans(&apos;file:./grails-app/conf/spring/resources.groovy&apos;)
+
+beanBuilder.springConfig.beanConfigs.each {
+    if(it.value.definition.propertyValues.getPropertyValue(&apos;serviceInterface&apos;)) {
+        println &quot;${it.key} -&amp;gt; ${it.value.clazz.name}&quot;
+        println &quot;\tserviceUrl = ${it.value.definition.propertyValues.getPropertyValue(&apos;serviceUrl&apos;).value}&quot;
+        println &quot;\tserviceInterface = ${it.value.definition.propertyValues.getPropertyValue(&apos;serviceInterface&apos;).value}&quot;
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;There are a couple of important things to note in the example above:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;olist arabic&quot;&gt;
+&lt;ol class=&quot;arabic&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;grails.spring.BeanBuilder&lt;/code&gt; can be used outside of &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; applications by including the &lt;code&gt;org.grails:grails-spring&lt;/code&gt; module.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;resources.groovy&lt;/code&gt; file (or any file that contains the proper DSL syntax) must have &lt;code&gt;beans&lt;/code&gt; closure be the top level of the DSL and not be a variable (i.e. beans = { &amp;#8230; ) for the script to parse the file correctly.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;In the example above, I did not provide a full classpath for all of the possible beans in the file.  This means that you cannot create the application context from the builder without getting ClassNotFoundException errors.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Command line argument parsing could be added to allow for the script to be run from anywhere and not just the root of the Grails application, as is the case in the example above.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;All and all, this script was pretty easy to create and can be used as part of a larger process to identify, convert and/or even re-write the &lt;code&gt;resources.groovy&lt;/code&gt; file.  Additionally, this
+&lt;a href=&quot;http://spring.io/blog/2014/03/03/groovy-bean-configuration-in-spring-framework-4&quot;&gt;DSL has now been incorporated directly into the Spring Framework&lt;/a&gt;), which means that not only can you now declare &lt;a href=&quot;http://spring.io&quot;&gt;Spring&lt;/a&gt; beans via the &lt;a href=&quot;http://groovy.codehaus.org&quot;&gt;Groovy&lt;/a&gt;
+DSL just like in &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt;, but that you could use the same solution above to inspect that configuration outside of the application if the need should arise.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Grails Tattletale Plugin</title>
             <link>http://jdpgrailsdev.github.io/blog//2014/03/12/grails_tattletale_plugin.html</link>
@@ -360,77 +435,6 @@ class NoExitSecurityManager extends SecurityManager {
 &lt;p&gt;The revamped code above now uses a custom &lt;code&gt;SecurityManager&lt;/code&gt; that does not allow the exit to happen.  While this is not the cleanest approach (I would have liked to have modified the &lt;a href=&quot;http://ckeditor.com/&quot;&gt;CKEditor&lt;/a&gt;
 builder code, but they have not open sourced the builder&amp;#8201;&amp;#8212;&amp;#8201;only the editor itself), it gets the job done.  Now, we can use the &lt;a href=&quot;http://ckeditor.com/&quot;&gt;CKEditor&lt;/a&gt; programmatically and let &lt;a href=&quot;https://ant.apache.org/ivy/&quot;&gt;Ivy&lt;/a&gt; manage the dependency
 the dependency, ensure that it does not get included in the packaged artifact and still be able to compile the source as part of our builds.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Spring and Apache Curator</title>
-            <link>http://jdpgrailsdev.github.io/blog//2014/02/19/spring_curator.html</link>
-            <pubDate>Wed, 19 Feb 2014 00:00:00 -0500</pubDate>
-            <guid isPermaLink="false">/2014/02/19/spring_curator.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Recently, I have been working a lot with &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt;.  &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt; provides a Java-based driver, but it does leave a little bit to be desired.  In steps &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt;, which was originally created and open-sourced
-by &lt;a href=&quot;https://github.com/netflix/curator&quot;&gt;Neflix&lt;/a&gt; and is now maintained by Apache.  &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; uses a fluent-style syntax to making using &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt; much easier.  In particular, &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; contains a more robust client class that handles things such
-as retry attempts, listeners and other utilities that would otherwise need to be manually wired up using the low-level Java-based driver.  In order to support the use of &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; within a Spring-based application,
-I decided to create a library that makes it easy to define &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; clients in a Spring configuration for use in an application.  One of the thinks to know about the &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; client is that you only need one
-per instance/ensemble of &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt;.  Therefore, using Spring to manage the injection of a Singleton bean into a class that needs access to the client is a perfect fit.  The repository can be found on
-&lt;a href=&quot;https://github.com/jdpgrailsdev/spring-curator&quot;&gt;GitHub&lt;/a&gt;.  Please check it out and let me know what you think.  As always, contributions are welcome!&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;sect2&quot;&gt;
-&lt;h3 id=&quot;_future_enhancements&quot;&gt;Future Enhancements&lt;/h3&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Currently, the &lt;a href=&quot;https://github.com/jdpgrailsdev/spring-curator&quot;&gt;spring-curator&lt;/a&gt; library only supports the definition, creation and injection of &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; client instances.  In the future, I would like to add the
-following support to the &lt;code&gt;spring-curator&lt;/code&gt; library:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;ulist&quot;&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Support for registring custom retry policies&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Definition of the following via the Spring configuration:&lt;/p&gt;
-&lt;div class=&quot;ulist&quot;&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;LeaderLatch&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;LeaderSelector&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;*Mutex locks&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;*Barrier barriers&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;SharedCount&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;DistributedAtomicLong&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;PathChildrenCache&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;NodeCache&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;PersistentEphemeralNode&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;*Queue queues&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/div&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
 &lt;/div&gt;
 &lt;/div&gt;
             </description>
