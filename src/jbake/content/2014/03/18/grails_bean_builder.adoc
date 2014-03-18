@@ -1,0 +1,61 @@
+= Parsing the Grails Spring Beans DSL with Groovy
+Jonathan Pearlin
+2014-03-18
+:jbake-type: post
+:jbake-tags: grails,spring,groovy
+:jbake-status: published
+:source-highlighter: prettify
+:id: grails_spring_beans_dsl_groovy
+:grails: http://grails.org[Grails]
+:groovy: http://groovy.codehaus.org[Groovy]
+:spring: http://spring.io[Spring]
+:icons: font
+
+As part of a current project, I recently had the need to determine which of my {grails} applications made use of certain {spring} beans in order to prepare for a migration.  While it is possible to
+use the normal XML-based configuration in a {grails} application (which in turn would have made parsing the configuration fairly straight forward), {grails} applications typically make use of the built-in
+http://grails.org/doc/latest/guide/spring.html#springdslAdditional[Spring beans DSL] to declare their {spring} configuration.  However, because the DSL is represented in {groovy}, it meant that parsing it
+would not be as easy as if it were in XML.  I decided the best approach would be to use the `grails.spring.BeanBuilder` outside of a {grails} application in a {groovy} script.  I was particularly interested
+in finding beans of type `org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean` class, which have `serviceInterface` and `serviceUrl` properties, so I wrote a script that loads and parses the
+DSL and then loops over each bean definition for beans that contained those properties:
+
+[source,groovy]
+----
+@Grapes([
+    @Grab(group='org.grails', module='grails-spring', version='2.3.6'),
+    @Grab(group='org.springframework', module='spring-web', version='4.0.2.RELEASE')
+])
+
+import grails.spring.BeanBuilder
+
+// The resources.groovy file must have:
+//
+// beans {
+//
+// and not
+// beans = {
+//
+// for this script to work!
+
+BeanBuilder beanBuilder = new BeanBuilder()
+beanBuilder.setClassLoader(this.class.classLoader)
+beanBuilder.loadBeans('file:./grails-app/conf/spring/resources.groovy')
+
+beanBuilder.springConfig.beanConfigs.each {
+    if(it.value.definition.propertyValues.getPropertyValue('serviceInterface')) {
+        println "${it.key} -> ${it.value.clazz.name}"
+        println "\tserviceUrl = ${it.value.definition.propertyValues.getPropertyValue('serviceUrl').value}"
+        println "\tserviceInterface = ${it.value.definition.propertyValues.getPropertyValue('serviceInterface').value}"
+    }
+}
+----
+
+There are a couple of important things to note in the example above:
+
+. The `grails.spring.BeanBuilder` can be used outside of {grails} applications by including the `org.grails:grails-spring` module.
+. The `resources.groovy` file (or any file that contains the proper DSL syntax) must have `beans` closure be the top level of the DSL and not be a variable (i.e. beans = { ... ) for the script to parse the file correctly.
+. In the example above, I did not provide a full classpath for all of the possible beans in the file.  This means that you cannot create the application context from the builder without getting ClassNotFoundException errors.
+. Command line argument parsing could be added to allow for the script to be run from anywhere and not just the root of the Grails application, as is the case in the example above.
+
+All and all, this script was pretty easy to create and can be used as part of a larger process to identify, convert and/or even re-write the `resources.groovy` file.  Additionally, this
+http://spring.io/blog/2014/03/03/groovy-bean-configuration-in-spring-framework-4[DSL has now been incorporated directly into the Spring Framework]), which means that not only can you now declare {spring} beans via the {groovy}
+DSL just like in {grails}, but that you could use the same solution above to inspect that configuration outside of the application if the need should arise.

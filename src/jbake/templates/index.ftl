@@ -3,7 +3,7 @@
 <#include "menu.ftl">
 
                 <div class="page-header">
-                    <h1>Why We Can't Have Nice Things</h1>
+                    <h1>The Flowers Are Still Standing</h1>
                 </div>
 <#assign lastposts = posts[0..3]>
 <#list lastposts as post>

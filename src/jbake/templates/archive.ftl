@@ -3,7 +3,7 @@
 <#include "menu.ftl">
 
                 <div class="page-header">
-                    <h1>Why We Can't Have Nice Things Archive</h1>
+                    <h1>The Flowers Are Still Standing</h1>
                 </div>
 
 <#list published_posts as post>
