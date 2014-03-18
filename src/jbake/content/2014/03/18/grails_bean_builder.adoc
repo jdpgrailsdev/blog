@@ -14,7 +14,7 @@ Jonathan Pearlin
 As part of a current project, I recently had the need to determine which of my {grails} applications made use of certain {spring} beans in order to prepare for a migration.  While it is possible to
 use the normal XML-based configuration in a {grails} application (which in turn would have made parsing the configuration fairly straight forward), {grails} applications typically make use of the built-in
 http://grails.org/doc/latest/guide/spring.html#springdslAdditional[Spring beans DSL] to declare their {spring} configuration.  However, because the DSL is represented in {groovy}, it meant that parsing it
-would not be as easy as if it were in XML.  I decided the best approach would be to use the `grails.spring.BeanBuilder` outside of a {grails} application in a {groovy} script.  I was particularly interested
+would not be as easy as if it were in XML.  I decided that the best approach would be to use the `grails.spring.BeanBuilder` outside of a {grails} application in a {groovy} script.  I was particularly interested
 in finding beans of type `org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean` class, which have `serviceInterface` and `serviceUrl` properties, so I wrote a script that loads and parses the
 DSL and then loops over each bean definition for beans that contained those properties:
 
