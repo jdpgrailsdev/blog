@@ -84,7 +84,7 @@
 <p>As part of a current project, I recently had the need to determine which of my <a href="http://grails.org">Grails</a> applications made use of certain <a href="http://spring.io">Spring</a> beans in order to prepare for a migration.  While it is possible to
 use the normal XML-based configuration in a <a href="http://grails.org">Grails</a> application (which in turn would have made parsing the configuration fairly straight forward), <a href="http://grails.org">Grails</a> applications typically make use of the built-in
 <a href="http://grails.org/doc/latest/guide/spring.html#springdslAdditional">Spring beans DSL</a> to declare their <a href="http://spring.io">Spring</a> configuration.  However, because the DSL is represented in <a href="http://groovy.codehaus.org">Groovy</a>, it meant that parsing it
-would not be as easy as if it were in XML.  I decided the best approach would be to use the <code>grails.spring.BeanBuilder</code> outside of a <a href="http://grails.org">Grails</a> application in a <a href="http://groovy.codehaus.org">Groovy</a> script.  I was particularly interested
+would not be as easy as if it were in XML.  I decided that the best approach would be to use the <code>grails.spring.BeanBuilder</code> outside of a <a href="http://grails.org">Grails</a> application in a <a href="http://groovy.codehaus.org">Groovy</a> script.  I was particularly interested
 in finding beans of type <code>org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean</code> class, which have <code>serviceInterface</code> and <code>serviceUrl</code> properties, so I wrote a script that loads and parses the
 DSL and then loops over each bean definition for beans that contained those properties:</p>
 </div>

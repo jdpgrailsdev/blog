@@ -6,8 +6,8 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 18 Mar 2014 07:35:22 -0400</pubDate>
-        <lastBuildDate>Tue, 18 Mar 2014 07:35:22 -0400</lastBuildDate>
+        <pubDate>Tue, 18 Mar 2014 07:39:36 -0400</pubDate>
+        <lastBuildDate>Tue, 18 Mar 2014 07:39:36 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
@@ -25,7 +25,7 @@
 &lt;p&gt;As part of a current project, I recently had the need to determine which of my &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; applications made use of certain &lt;a href=&quot;http://spring.io&quot;&gt;Spring&lt;/a&gt; beans in order to prepare for a migration.  While it is possible to
 use the normal XML-based configuration in a &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; application (which in turn would have made parsing the configuration fairly straight forward), &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; applications typically make use of the built-in
 &lt;a href=&quot;http://grails.org/doc/latest/guide/spring.html#springdslAdditional&quot;&gt;Spring beans DSL&lt;/a&gt; to declare their &lt;a href=&quot;http://spring.io&quot;&gt;Spring&lt;/a&gt; configuration.  However, because the DSL is represented in &lt;a href=&quot;http://groovy.codehaus.org&quot;&gt;Groovy&lt;/a&gt;, it meant that parsing it
-would not be as easy as if it were in XML.  I decided the best approach would be to use the &lt;code&gt;grails.spring.BeanBuilder&lt;/code&gt; outside of a &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; application in a &lt;a href=&quot;http://groovy.codehaus.org&quot;&gt;Groovy&lt;/a&gt; script.  I was particularly interested
+would not be as easy as if it were in XML.  I decided that the best approach would be to use the &lt;code&gt;grails.spring.BeanBuilder&lt;/code&gt; outside of a &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; application in a &lt;a href=&quot;http://groovy.codehaus.org&quot;&gt;Groovy&lt;/a&gt; script.  I was particularly interested
 in finding beans of type &lt;code&gt;org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean&lt;/code&gt; class, which have &lt;code&gt;serviceInterface&lt;/code&gt; and &lt;code&gt;serviceUrl&lt;/code&gt; properties, so I wrote a script that loads and parses the
 DSL and then loops over each bean definition for beans that contained those properties:&lt;/p&gt;
 &lt;/div&gt;
