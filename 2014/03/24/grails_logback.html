@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
-        <title>The Flowers Are Still Standing</title>
+        <title>The Flowers Are Still Standing :: Grails and Logback</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -70,22 +70,17 @@
                 </div>
             </div>
             <div class="container">
-                <div class="page-header">
-                    <h1>The Flowers Are Still Standing</h1>
-                </div>
-                   <a href="/blog/2014/03/24/grails_logback.html"><h1>Grails and Logback</h1></a>
-                   <p>24 March 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/grails.html">grails</a>
-        
-                <a href="/blog/tags/logback.html">logback</a>
-        </p>
+    <div class="page-header">
+        <h1>Grails and Logback</h1>
+    </div>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/03/24/grails_logback.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/03/24/grails_logback.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2014/03/24/grails_logback.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <p><em>24 March 2014</em></p>
 
-                   <p><div id="preamble">
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog//2014/03/24/grails_logback.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2014/03/24/grails_logback.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2014/03/24/grails_logback.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>The other day, I decided to attempt to switch a <a href="http://grails.org">Grails</a> application from using Log4j (the built-in option) for logging to <a href="http://logback.qos.ch/">Logback</a>.  The core <a href="http://grails.org">Grails</a> development team
@@ -305,158 +300,26 @@ file is on the classpath for <a href="http://logback.qos.ch/">Logback</a> to fin
 spare time, I might attempt to make some modifications to the <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a> to handle using the DSL in non-WAR-deployed scenarios, which would elminate the need for a <code>logback.groovy</code> file.</p>
 </div>
 </div></p>
-                <p><a href="/blog/2014/03/24/grails_logback.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/03/18/grails_bean_builder.html"><h1>Parsing the Grails Spring Beans DSL with Groovy</h1></a>
-                   <p>18 March 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/grails.html">grails</a>
-        
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/groovy.html">groovy</a>
-        </p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/03/18/grails_bean_builder.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/03/18/grails_bean_builder.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2014/03/18/grails_bean_builder.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog/2014/03/24/grails_logback.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2014/03/24/grails_logback.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2014/03/24/grails_logback.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>As part of a current project, I recently had the need to determine which of my <a href="http://grails.org">Grails</a> applications made use of certain <a href="http://spring.io">Spring</a> beans in order to prepare for a migration.  While it is possible to
-use the normal XML-based configuration in a <a href="http://grails.org">Grails</a> application (which in turn would have made parsing the configuration fairly straight forward), <a href="http://grails.org">Grails</a> applications typically make use of the built-in
-<a href="http://grails.org/doc/latest/guide/spring.html#springdslAdditional">Spring beans DSL</a> to declare their <a href="http://spring.io">Spring</a> configuration.  However, because the DSL is represented in <a href="http://groovy.codehaus.org">Groovy</a>, it meant that parsing it
-would not be as easy as if it were in XML.  I decided that the best approach would be to use the <code>grails.spring.BeanBuilder</code> outside of a <a href="http://grails.org">Grails</a> application in a <a href="http://groovy.codehaus.org">Groovy</a> script.  I was particularly interested
-in finding beans of type <code>org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean</code> class, which have <code>serviceInterface</code> and <code>serviceUrl</code> properties, so I wrote a script that loads and parses the
-DSL and then loops over each bean definition for beans that contained those properties:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>@Grapes([
-    @Grab(group='org.grails', module='grails-spring', version='2.3.6'),
-    @Grab(group='org.springframework', module='spring-web', version='4.0.2.RELEASE')
-])
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '/2014/03/24/grails_logback.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-import grails.spring.BeanBuilder
-
-// The resources.groovy file must have:
-//
-// beans {
-//
-// and not
-// beans = {
-//
-// for this script to work!
-
-BeanBuilder beanBuilder = new BeanBuilder()
-beanBuilder.setClassLoader(this.class.classLoader)
-beanBuilder.loadBeans('file:./grails-app/conf/spring/resources.groovy')
-
-beanBuilder.springConfig.beanConfigs.each {
-    if(it.value.definition.propertyValues.getPropertyValue('serviceInterface')) {
-        println "${it.key} -&gt; ${it.value.clazz.name}"
-        println "\tserviceUrl = ${it.value.definition.propertyValues.getPropertyValue('serviceUrl').value}"
-        println "\tserviceInterface = ${it.value.definition.propertyValues.getPropertyValue('serviceInterface').value}"
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>There are a couple of important things to note in the example above:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>The <code>grails.spring.BeanBuilder</code> can be used outside of <a href="http://grails.org">Grails</a> applications by including the <code>org.grails:grails-spring</code> module.</p>
-</li>
-<li>
-<p>The <code>resources.groovy</code> file (or any file that contains the proper DSL syntax) must have <code>beans</code> closure be the top level of the DSL and not be a variable (i.e. beans = { &#8230; ) for the script to parse the file correctly.</p>
-</li>
-<li>
-<p>In the example above, I did not provide a full classpath for all of the possible beans in the file.  This means that you cannot create the application context from the builder without getting ClassNotFoundException errors.</p>
-</li>
-<li>
-<p>Command line argument parsing could be added to allow for the script to be run from anywhere and not just the root of the Grails application, as is the case in the example above.</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>All and all, this script was pretty easy to create and can be used as part of a larger process to identify, convert and/or even re-write the <code>resources.groovy</code> file.  Additionally, this
-<a href="http://spring.io/blog/2014/03/03/groovy-bean-configuration-in-spring-framework-4">DSL has now been incorporated directly into the Spring Framework</a>), which means that not only can you now declare <a href="http://spring.io">Spring</a> beans via the <a href="http://groovy.codehaus.org">Groovy</a>
-DSL just like in <a href="http://grails.org">Grails</a>, but that you could use the same solution above to inspect that configuration outside of the application if the need should arise.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog/2014/03/18/grails_bean_builder.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/03/12/grails_tattletale_plugin.html"><h1>Grails Tattletale Plugin</h1></a>
-                   <p>12 March 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/grails.html">grails</a>
-        
-                <a href="/blog/tags/tattletale.html">tattletale</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/03/12/grails_tattletale_plugin.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/03/12/grails_tattletale_plugin.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2014/03/12/grails_tattletale_plugin.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>I am pleased to announce that I have officially released the <a href="http://grails.org/plugin/tattletale">Grails Tattletale plugin</a> to the <a href="http://grails.org/plugins/">Grails Plugins portal</a>.</p>
-</div>
-<div class="paragraph">
-<p>Full documentation can be found <a href="https://github.com/jdpgrailsdev/grails-tattletale/blob/master/README.md">here</a>.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog/2014/03/12/grails_tattletale_plugin.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/03/11/grails_test_system_properties.html"><h1>Setting system properties when running Grails tests</h1></a>
-                   <p>11 March 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/grails.html">grails</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/03/11/grails_test_system_properties.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/03/11/grails_test_system_properties.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2014/03/11/grails_test_system_properties.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>We have a <a href="http://grails.org">Grails</a> application that relies on <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> for some of its data.  This application makes use of the <a href="http://curator.apache.org/">Apache Curator</a> library to connect to <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  The <a href="http://curator.apache.org/">Apache Curator</a> library also includes
-a testing server to make it easy to write unit tests for the classes that need to interact with <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  Our <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> implementation makes uses of SASL-based authentication to prevent
-unwanted access to different parts of the data stored in <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  Unfortunately, the ability to set which configuration file to use when connecting to <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> is set via JVM system
-properties.  This is fine when the application is running, but can make unit testing difficult, as developers have to remember to set the appropriate system properties before executing unit
-test.  Luckily, <a href="http://grails.org">Grails</a> has a nice events framework that fires as certain stages in execution are hit.  I decided that it would be trivial to add an event hook that listens for the
-start of the test phase and sets the appropriate system properties required to simulate the same access control when interacting with the <a href="http://curator.apache.org/">Apache Curator</a> test server.  I made the following modification
-to the <code>scripts/Events.groovy</code> file in the <a href="http://grails.org">Grails</a> application:</p>
-</div>
-<div class="listingblock">
-<div class="title">scripts/Events.groovy</div>
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>eventTestPhaseStart = { args -&gt;
-    //Add the required ZooKeeper auth system properties so that tests will pass!
-    System.setProperty('java.security.auth.login.config', "${System.getProperty('user.dir')}/test/unit/jaas_test.config")
-    System.setProperty('zookeeper.authProvider.1', 'org.apache.zookeeper.server.auth.SASLAuthenticationProvider')
-    grailsConsole.addStatus "Running tests with the following system properties:"
-    grailsConsole.addStatus "${System.getProperties()}"
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The above event is fired right before the first test is executed by <a href="http://grails.org">Grails</a> when using the <code>grails test-app</code> command.  It sets the login configuration file to
-one that is packaged within the project and sets the <code>authProvider</code> to the appropriate type (in our case, SASL).  There are many other events that you can listen
-for in order to perform logic upon firing.  You can see more information about <a href="http://grails.org">Grails</a> events in the <a href="http://grails.org/doc/2.3.x/guide/commandLine.html#events">documentation</a> or
-by looking through the <a href="http://gant.codehaus.org/">Gant</a> scripts in the <code>scripts</code> folder of the <a href="http://grails.org">Grails</a> installation.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog/2014/03/11/grails_test_system_properties.html#disqus_thread">Comments</a></p>
-
-                <hr />
-
-                <p>Older posts are available in the <a href="/blog/archive.html">archive</a>.</p>
+    <hr>
 
             </div>
             <div id="push"></div>
