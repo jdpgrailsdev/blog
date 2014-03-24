@@ -16,11 +16,13 @@
                             <li class="dropdown">
                                 <a data-toggle="dropdown" href="#">Tags<b class="caret"></b></a>
                                 <ul class="dropdown-menu" role="menu">
+                                    <li><a href="/blog/tags/gradle.html">Gradle</a></li>
                                     <li><a href="/blog/tags/grails.html">Grails</a></li>
                                     <li><a href="/blog/tags/groovy.html">Groovy</a></li>
                                     <li><a href="/blog/tags/java.html">Java</a></li>
                                     <li><a href="/blog/tags/maven.html">Maven</a></li>
                                     <li><a href="/blog/tags/spring.html">Spring</a></li>
+                                    <li><a href="/blog/tags/zookeeper.html">ZooKeeper</a></li>
                                 </ul>
                             </li>
                             <li><a href="/blog/${config.feed_file}">Feed</a></li>

@@ -1,0 +1,178 @@
+= Grails and Logback
+Jonathan Pearlin
+2014-03-24
+:jbake-type: post
+:jbake-tags: grails,logback
+:jbake-status: published
+:source-highlighter: prettify
+:id: grails_logback
+:grails: http://grails.org[Grails]
+:grails_logback: http://grails.org/plugin/logback[Grails Logback Plugin]
+:groovy: http://groovy.codehaus.org[Groovy]
+:logback: http://logback.qos.ch/[Logback]
+:maven: http://maven.apache.org/[Maven]
+:icons: font
+
+The other day, I decided to attempt to switch a {grails} application from using Log4j (the built-in option) for logging to {logback}.  The core {grails} development team
+maintains a {grails_logback} that appeared to be just what I needed.  I started by modifying my {grails} application's `pom.xml` file
+to reference the {grails_logback}:
+
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>org.grails.plugins</groupId>
+    <artifactId>logback</artifactId>			<1>
+    <version>0.3.1</version>
+    <scope>compile</scope>
+</dependency>
+----
+<1> Note that the plugin is a `binary` plugin, so I did not need to specify the packaging as `zip`.  If you are not using {maven} support with your {grails} application (or are using a version of {grails} that did not yet support {maven} POM files), you can include
+the {grails_logback} in the `dependencies` block of your `grails-app/conf/BuildConfig.groovy` and **NOT** in the `plugins` block.
+
+Additionally, I added the following global exclusions to `grails-app/conf/BuildConfig.groovy`, per the plugin's instructions:
+
+[source,groovy]
+.grails-app/conf/BuildConfig.groovy
+----
+// inherit Grails' default dependencies
+inherits("global") {
+    excludes 'grails-plugin-log4j', 'log4j'		<1>
+}
+----
+<1> If any other dependencies have a runtime dependency on `log4j`, you will need to remove it from the global excludes.
+
+=== Follow the instructions, they said
+
+In my first attempt at getting this working, I next moved on to changing the `log4j` closure in `grails-app/conf/Config.groovy` to `logback`, as the documentation suggests.  Subsequent
+digging uncovered that the {grails_logback} only initializes {logback} using the DSL from `grails-app/conf/Config.groovy` if the application has been deployed as a WAR file
+to a container.  What this means in practical terms is that when running a {grails} application locally using the `run-app` command, you have no control over the {logback} configuration
+via the DSL and thus every log statement gets printed using the default level, which is `DEBUG` (more on this in a bit...).
+
+Back to my first attempt.  With `grails-app/conf/Config.groovy` modified, I attempted to run my application, after performing the requisite `clean` called out by the documentation, but
+ran into compile errors related to code that was directly importing and using Log4j.  I fixed these by switching any code that explicitly imported and used the Log4J `Logger` class to use the SLF4J `Logger`
+instead.  I next ran into some AST transformation errors with classes that had the {groovy} logging `@Log4j` annotation present.  I switched these to use the SLF4J logging annotation (`@SLF4J`).  The
+last issue that I encountered in my attempts to get the application to compile and start was related to something that {grails} automatically puts in `grails-app/conf/Config.groovy` when generating a
+new application (**NOTE**:  the application in question was built using {grails} version 2.3.5).  By default, when you generate a new application, the following gets added to the configuration:
+
+[source,groovy]
+.grails-app/conf/Config.groovy
+----
+environments {
+    development {
+        grails.logging.jul.usebridge = true
+    }
+    production {
+        grails.logging.jul.usebridge = false
+    }
+}
+----
+
+which enables the use of the SLF4J JUL bridge in the local environment.  If you run the application with `grails.logging.jul.usebridge = true` **AND** have excluded the `grails-plugin-log4j` dependency,
+you will see the following error upon application start up:
+
+[source,text]
+----
+| Error 2014-03-11 12:43:41,282 [localhost-startStop-1] ERROR o.c.g.g.w.c.GrailsContextLoader  - Error initializing the application: org.slf4j.bridge.SLF4JBridgeHandler
+java.lang.NoClassDefFoundError: org.slf4j.bridge.SLF4JBridgeHandler
+    at LogbackGrailsPlugin$_closure2.doCall(LogbackGrailsPlugin.groovy:45) ~[logback-0.3.1.jar:na]
+    at grails.spring.BeanBuilder.invokeBeanDefiningClosure(BeanBuilder.java:756) ~[grails-spring-2.3.5.jar:2.3.5]
+    at grails.spring.BeanBuilder.beans(BeanBuilder.java:584) ~[grails-spring-2.3.5.jar:2.3.5]
+    at grails.spring.BeanBuilder.invokeMethod(BeanBuilder.java:527) ~[grails-spring-2.3.5.jar:2.3.5]
+    at java.util.concurrent.FutureTask.run(FutureTask.java:262) [na:1.7.0_51]
+    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145) [na:1.7.0_51]
+    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615) [na:1.7.0_51]
+    at java.lang.Thread.run(Thread.java:744) [na:1.7.0_51]
+Message: org.slf4j.bridge.SLF4JBridgeHandler
+    Line | Method
+->>   45 | doCall                    in LogbackGrailsPlugin$_closure2
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+|    756 | invokeBeanDefiningClosure in grails.spring.BeanBuilder
+|    584 | beans . . . . . . . . . . in     ''
+|    527 | invokeMethod              in     ''
+|    262 | run . . . . . . . . . . . in java.util.concurrent.FutureTask
+|   1145 | runWorker                 in java.util.concurrent.ThreadPoolExecutor
+|    615 | run . . . . . . . . . . . in java.util.concurrent.ThreadPoolExecutor$Worker
+^    744 | run                       in java.lang.Thread
+----
+
+The fix for this is to ensure that `org.slf4j:jul-to-slf4j:1.7.5` is included as a `runtime` dependency.  If you are using an older version of {grails}, check the `lib` directory
+of the {grails} installation to determine the proper version of SLF4J to use.  Also note that if you have any dependencies that require Log4J, you may also need to add that dependency
+to the classpath or remove it from the global excludes to get your application to start.
+
+=== Using Logback with grails run-app
+
+Let's get back to the issue of the DSL only being used when the application is deployed as a WAR file.  If you take a look at the plugin descriptor for the {grails_logback}, you will notice this
+little snippet:
+
+[source,groovy]
+.LogbackGrailsPlugin.groovy
+----
+def doWithSpring = {
+    if (application.config?.grails?.logging?.jul?.usebridge) {					<1>
+        LogManager.logManager.readConfiguration new ByteArrayInputStream(".level=INFO".bytes)
+        SLF4JBridgeHandler.install()
+    }
+
+    if (application.warDeployed) {								<2>
+        // only initialize here if deployed as a war since doWithWebDescriptor isn't called
+        initLogging application
+    }
+}
+----
+<1> `grails.logging.jul.usebridge` is set to `true` by default in `*Config.groovy` when creating a new {grails} application/plugin in 2.3.x and above.
+<2> `warDeployed` comes from an entry in `application.properties` that is added by {grails} when the WAR file is built using the `grails war` command.
+
+Based on the code above, it appears that the DSL is only loaded when the WAR is deployed.  This explains why no matter how many changes I made to the DSL, none of those changes were getting picked up.
+Being familiar with {logback}, I knew that if you put a `logback.groovy` file on the classpath, {logback} would automatically find and use it for configuration instead of the DSL.  To test this theory,
+I put a new `logback.groovy` file in `grails-app/conf` to ensure it was on the classpath.  I also added the following the `grails-app/conf/BootStrap.groovy` to verify which configuration {logback} had
+selected:
+
+[source,groovy]
+.grails-app/conf/BootStrap.groovy
+----
+def init = { servletContext ->
+    StatusPrinter.print((LoggerContext) LoggerFactory.getILoggerFactory())		<1>
+}
+----
+<1> Useful line of code to enable {logback} to print out which (if any) configuration file it loaded.
+
+After another application restart, I noticed that {logback} was still not picking up my configuration.  I did a quick check of `target/classes` to confirm a suspicion that {grails} had compiled my `logback.groovy`
+file instead of treating it like a non-source file.  Sure enough, I found `logback.class` in `target\classes`.  This meant that I would need to come up with a creative way to get {grails} to get an
+un-compiled version of the file on the classpath.  My first thought was to put some logic in `grails-app/conf/BuildConfig.groovy` to set the `logback.configurationFile` system property supported by
+{logback} to the un-compiled version of `logback.groovy`:
+
+[source,groovy]
+.grails-app/conf/BuildConfig.groovy
+----
+/*
+ * If the application is being run locally, set the Logback configuration file
+ * system property.  This is necessary as Grails will attempt to compile the .groovy
+ * file instead of simply adding it to the classpath "as is".  There is a corresponding
+ * event handler in 'scripts/Events.groovy' that takes care of making sure that the
+ * Groovy configuration file makes it into the WAR in its un-compiled state.
+ */
+if(new File("${basedir}/grails-app/conf/logback.groovy").exists()) {
+    System.setProperty('logback.configurationFile', "${basedir}/grails-app/conf/logback.groovy")		<1>
+}
+----
+<1> This is a programmatic way to force {logback} to use the {groovy}-based configuration file.  This could also be set as an JVM argument (`-Dlogback.configurationFile=...`).
+
+After adding this code and restarting the application, {logback} finally found and loaded by custom configuration file.  This little trick works great when running the application using
+the `run-app` command, but I knew that I would have the same issue when building the WAR file.  To address getting the `logback.groovy` file in to the built WAR file as an un-compiled
+configuration file, I added the following to `scripts/Events.groovy`:
+
+[source,groovy]
+.scripts/Events.groovy
+----
+eventCreateWarStart = { warName, stagingDir ->
+    ant.copy file:"${basedir}/grails-app/conf/logback.groovy", todir: "${stagingDir}/WEB-INF/classes"
+}
+----
+
+When {grails} starts the process of building the WAR file, this script will now copy over the un-compiled `logback.groovy` file to `classes` folder in the WAR.  This will guarantee that the
+file is on the classpath for {logback} to find at runtime in its un-compiled form.  After making this change, I built the WAR file and extracted it to verify the results.  Everything looked good.
+
+In retrospect, I could have easily just ditched the {grails_logback} in favor of directly using the {logback} dependencies, but I still would have encountered the issue with {grails} compiling the
+`logback.groovy` file.  In addition I also would have lost support for the automatic `log` property injection in controllers, tag libraries, etc that {grails} provides via an AST transformation.  In my
+spare time, I might attempt to make some modifications to the {grails_logback} to handle using the DSL in non-WAR-deployed scenarios, which would elminate the need for a `logback.groovy` file.
