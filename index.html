@@ -73,6 +73,182 @@
                 <div class="page-header">
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
+                   <a href="/blog/2014/04/03/maven_java8_javadoc.html"><h1>Maven, the JavaDoc plugin and Java 8</h1></a>
+                   <p>03 April 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/maven.html">maven</a>
+        
+                <a href="/blog/tags/java.html">java</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/04/03/maven_java8_javadoc.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/04/03/maven_java8_javadoc.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://melix.github.io/blog/2014/04/03/maven_java8_javadoc.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>On March 18th, Oracle officially released <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.  Eager to start using some of the new features (in a non-beta release), I quickly downloaded and installed the JDK on my laptop.  I switched my
+system to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> by default and set upon compiling one of my projects.  To my suprise, the build failed with a bunch of errors that looked like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint"><code>[ERROR] Failed to execute goal org.apache.maven.plugins:maven-javadoc-plugin:2.8.1:jar (default) on project ddc-metrics-annotations: MavenReportException: Error while creating archive:
+[ERROR] Exit code: 1 - /Projects/libraries/test-library/src/main/java/com/test/Tester.java:30: warning: no @return</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It turns out that <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> includes a much more strict set of rules for its doclint.  According to  <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html">Steven Colebourne</a>, the
+<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> doclint by default enforces the following rules when processing JavaDoc comments:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>No self-closed HTML tags, such as &lt;br /&gt; or &lt;a id="x" /&gt;</p>
+</li>
+<li>
+<p>No unclosed HTML tags, such as &lt;ul&gt; without matching &lt;/ul&gt;</p>
+</li>
+<li>
+<p>No invalid HTML end tags, such as &lt;/br&gt;</p>
+</li>
+<li>
+<p>No invalid HTML attributes, based on doclint&#8217;s interpretation of W3C HTML 4.01</p>
+</li>
+<li>
+<p>No duplicate HTML id attribute</p>
+</li>
+<li>
+<p>No empty HTML href attribute</p>
+</li>
+<li>
+<p>No incorrectly nested headers, such as class documentation must have &lt;h3&gt;, not &lt;h4&gt;</p>
+</li>
+<li>
+<p>No invalid HTML tags, such as List&lt;String&gt; (where you forgot to escape using &lt;)</p>
+</li>
+<li>
+<p>No broken @link references</p>
+</li>
+<li>
+<p>No broken @param references, they must match the actual parameter name</p>
+</li>
+<li>
+<p>No broken @throws references, the first word must be a class name</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This is fine if you are starting with a green field project, but if you are like me and have to switch between new and legacy code bases, it may not be possible to correct all of these
+issues in order to get <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/">Maven JavaDoc plugin</a> generated using <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.  Per <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html">Steven Colebourne&#8217;s blog</a>, the solution is to
+include the <code>-Xdoclint:none</code> JVM argument in the configuration of the <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/">Maven JavaDoc plugin</a>:</p>
+</div>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="prettyprint xml language-xml"><code>...
+&lt;plugin&gt;
+    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+    &lt;artifactId&gt;maven-javadoc-plugin&lt;/artifactId&gt;
+    &lt;version&gt;2.9.1&lt;/version&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;phase&gt;package&lt;/phase&gt;
+            &lt;goals&gt;
+                &lt;goal&gt;jar&lt;/goal&gt;
+            &lt;/goals&gt;
+            &lt;configuration&gt;
+                &lt;additionalparam&gt;-Xdoclint:none&lt;/additionalparam&gt;
+            &lt;/configuration&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+&lt;/plugin&gt;
+...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This works great when building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.  However, if you switch back to Java 7 and attempt to build with the <code>-Xdoclint:none</code> JVM argument, the build will fail, as Java 7 does not
+recognize that JVM argument.  What can we do to support JavaDoc generation via <a href="http://maven.apache.org/">Maven</a> for both Java 7 and Java 8 on a legacy code base?  Use
+<a href="http://maven.apache.org/guides/introduction/introduction-to-profiles.html">Maven profiles</a>!  Instead of modifying the existing <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/">Maven JavaDoc plugin</a> declaration in our <code>pom.xml</code> file, let&#8217;s instead
+add a new profile that only activates when we are building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>:</p>
+</div>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="prettyprint xml language-xml"><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;groupId&gt;com.test&lt;/groupId&gt;
+    &lt;artifactId&gt;test&lt;/artifactId&gt;
+    &lt;packaging&gt;jar&lt;/packaging&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+
+    &lt;build&gt;
+        ...
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-javadoc-plugin&lt;/artifactId&gt;
+                &lt;version&gt;2.9.1&lt;/version&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;phase&gt;package&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;jar&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+
+    &lt;profile&gt;
+        &lt;id&gt;java8&lt;/id&gt;
+        &lt;activation&gt;
+            &lt;jdk&gt;1.8&lt;/jdk&gt;								<i class="conum" data-value="1"></i><b>(1)</b>
+        &lt;/activation&gt;
+        &lt;build&gt;
+            &lt;plugins&gt;
+                &lt;plugin&gt;
+                    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                    &lt;artifactId&gt;maven-javadoc-plugin&lt;/artifactId&gt;
+                    &lt;version&gt;2.9.1&lt;/version&gt;
+                    &lt;executions&gt;
+                        &lt;execution&gt;
+                            &lt;phase&gt;package&lt;/phase&gt;
+                            &lt;goals&gt;
+                                &lt;goal&gt;jar&lt;/goal&gt;
+                            &lt;/goals&gt;
+                            &lt;configuration&gt;
+                                &lt;additionalparam&gt;-Xdoclint:none&lt;/additionalparam&gt;
+                            &lt;/configuration&gt;
+                        &lt;/execution&gt;
+                    &lt;/executions&gt;
+                &lt;/plugin&gt;
+            &lt;/plugins&gt;
+        &lt;/build&gt;
+    &lt;/profile&gt;
+&lt;/project&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Will activate this profile if the JRE that is executing the <a href="http://maven.apache.org/">Maven</a> build is version 1.8 (<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>).</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We can now safely build our project with either Java 7 or <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> without having it fail due to either the more strict doclint rules in <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> or the fact that Java 7 does not recognize
+the JVM argument.  I&#8217;m sure that this is not the last of these issues that will come up with regards to changes between previous versions of Java and <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.  Luckily, we should be able
+to apply the same profile trick for any differences until such a time that all the different code bases that you support are converted to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog/2014/04/03/maven_java8_javadoc.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2014/03/24/grails_logback.html"><h1>Grails and Logback</h1></a>
                    <p>24 March 2014</p>
                 <p><em>Tags: </em>
@@ -411,48 +587,6 @@ DSL just like in <a href="http://grails.org">Grails</a>, but that you could use 
 </div>
 </div></p>
                 <p><a href="/blog/2014/03/12/grails_tattletale_plugin.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/03/11/grails_test_system_properties.html"><h1>Setting system properties when running Grails tests</h1></a>
-                   <p>11 March 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/grails.html">grails</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/03/11/grails_test_system_properties.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/03/11/grails_test_system_properties.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2014/03/11/grails_test_system_properties.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>We have a <a href="http://grails.org">Grails</a> application that relies on <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> for some of its data.  This application makes use of the <a href="http://curator.apache.org/">Apache Curator</a> library to connect to <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  The <a href="http://curator.apache.org/">Apache Curator</a> library also includes
-a testing server to make it easy to write unit tests for the classes that need to interact with <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  Our <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> implementation makes uses of SASL-based authentication to prevent
-unwanted access to different parts of the data stored in <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  Unfortunately, the ability to set which configuration file to use when connecting to <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> is set via JVM system
-properties.  This is fine when the application is running, but can make unit testing difficult, as developers have to remember to set the appropriate system properties before executing unit
-test.  Luckily, <a href="http://grails.org">Grails</a> has a nice events framework that fires as certain stages in execution are hit.  I decided that it would be trivial to add an event hook that listens for the
-start of the test phase and sets the appropriate system properties required to simulate the same access control when interacting with the <a href="http://curator.apache.org/">Apache Curator</a> test server.  I made the following modification
-to the <code>scripts/Events.groovy</code> file in the <a href="http://grails.org">Grails</a> application:</p>
-</div>
-<div class="listingblock">
-<div class="title">scripts/Events.groovy</div>
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>eventTestPhaseStart = { args -&gt;
-    //Add the required ZooKeeper auth system properties so that tests will pass!
-    System.setProperty('java.security.auth.login.config', "${System.getProperty('user.dir')}/test/unit/jaas_test.config")
-    System.setProperty('zookeeper.authProvider.1', 'org.apache.zookeeper.server.auth.SASLAuthenticationProvider')
-    grailsConsole.addStatus "Running tests with the following system properties:"
-    grailsConsole.addStatus "${System.getProperties()}"
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The above event is fired right before the first test is executed by <a href="http://grails.org">Grails</a> when using the <code>grails test-app</code> command.  It sets the login configuration file to
-one that is packaged within the project and sets the <code>authProvider</code> to the appropriate type (in our case, SASL).  There are many other events that you can listen
-for in order to perform logic upon firing.  You can see more information about <a href="http://grails.org">Grails</a> events in the <a href="http://grails.org/doc/2.3.x/guide/commandLine.html#events">documentation</a> or
-by looking through the <a href="http://gant.codehaus.org/">Gant</a> scripts in the <code>scripts</code> folder of the <a href="http://grails.org">Grails</a> installation.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog/2014/03/11/grails_test_system_properties.html#disqus_thread">Comments</a></p>
 
                 <hr />
 

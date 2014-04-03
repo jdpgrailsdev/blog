@@ -6,13 +6,184 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Mon, 24 Mar 2014 07:37:02 -0400</pubDate>
-        <lastBuildDate>Mon, 24 Mar 2014 07:37:02 -0400</lastBuildDate>
+        <pubDate>Thu, 3 Apr 2014 07:34:58 -0400</pubDate>
+        <lastBuildDate>Thu, 3 Apr 2014 07:34:58 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Maven, the JavaDoc plugin and Java 8</title>
+            <link>http://jdpgrailsdev.github.io/blog//2014/04/03/maven_java8_javadoc.html</link>
+            <pubDate>Thu, 3 Apr 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">/2014/04/03/maven_java8_javadoc.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;On March 18th, Oracle officially released &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot;&gt;Java 8&lt;/a&gt;.  Eager to start using some of the new features (in a non-beta release), I quickly downloaded and installed the JDK on my laptop.  I switched my
+system to use &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot;&gt;Java 8&lt;/a&gt; by default and set upon compiling one of my projects.  To my suprise, the build failed with a bunch of errors that looked like this:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;[ERROR] Failed to execute goal org.apache.maven.plugins:maven-javadoc-plugin:2.8.1:jar (default) on project ddc-metrics-annotations: MavenReportException: Error while creating archive:
+[ERROR] Exit code: 1 - /Projects/libraries/test-library/src/main/java/com/test/Tester.java:30: warning: no @return&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;It turns out that &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot;&gt;Java 8&lt;/a&gt; includes a much more strict set of rules for its doclint.  According to  &lt;a href=&quot;http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html&quot;&gt;Steven Colebourne&lt;/a&gt;, the
+&lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot;&gt;Java 8&lt;/a&gt; doclint by default enforces the following rules when processing JavaDoc comments:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;ulist&quot;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;No self-closed HTML tags, such as &amp;lt;br /&amp;gt; or &amp;lt;a id=&quot;x&quot; /&amp;gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;No unclosed HTML tags, such as &amp;lt;ul&amp;gt; without matching &amp;lt;/ul&amp;gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;No invalid HTML end tags, such as &amp;lt;/br&amp;gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;No invalid HTML attributes, based on doclint&amp;#8217;s interpretation of W3C HTML 4.01&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;No duplicate HTML id attribute&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;No empty HTML href attribute&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;No incorrectly nested headers, such as class documentation must have &amp;lt;h3&amp;gt;, not &amp;lt;h4&amp;gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;No invalid HTML tags, such as List&amp;lt;String&amp;gt; (where you forgot to escape using &amp;lt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;No broken @link references&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;No broken @param references, they must match the actual parameter name&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;No broken @throws references, the first word must be a class name&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;This is fine if you are starting with a green field project, but if you are like me and have to switch between new and legacy code bases, it may not be possible to correct all of these
+issues in order to get &lt;a href=&quot;http://maven.apache.org/plugins/maven-javadoc-plugin/&quot;&gt;Maven JavaDoc plugin&lt;/a&gt; generated using &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot;&gt;Java 8&lt;/a&gt;.  Per &lt;a href=&quot;http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html&quot;&gt;Steven Colebourne&amp;#8217;s blog&lt;/a&gt;, the solution is to
+include the &lt;code&gt;-Xdoclint:none&lt;/code&gt; JVM argument in the configuration of the &lt;a href=&quot;http://maven.apache.org/plugins/maven-javadoc-plugin/&quot;&gt;Maven JavaDoc plugin&lt;/a&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;pom.xml&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint xml language-xml&quot;&gt;&lt;code&gt;...
+&amp;lt;plugin&amp;gt;
+    &amp;lt;groupId&amp;gt;org.apache.maven.plugins&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;maven-javadoc-plugin&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;2.9.1&amp;lt;/version&amp;gt;
+    &amp;lt;executions&amp;gt;
+        &amp;lt;execution&amp;gt;
+            &amp;lt;phase&amp;gt;package&amp;lt;/phase&amp;gt;
+            &amp;lt;goals&amp;gt;
+                &amp;lt;goal&amp;gt;jar&amp;lt;/goal&amp;gt;
+            &amp;lt;/goals&amp;gt;
+            &amp;lt;configuration&amp;gt;
+                &amp;lt;additionalparam&amp;gt;-Xdoclint:none&amp;lt;/additionalparam&amp;gt;
+            &amp;lt;/configuration&amp;gt;
+        &amp;lt;/execution&amp;gt;
+    &amp;lt;/executions&amp;gt;
+&amp;lt;/plugin&amp;gt;
+...&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;This works great when building with &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot;&gt;Java 8&lt;/a&gt;.  However, if you switch back to Java 7 and attempt to build with the &lt;code&gt;-Xdoclint:none&lt;/code&gt; JVM argument, the build will fail, as Java 7 does not
+recognize that JVM argument.  What can we do to support JavaDoc generation via &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; for both Java 7 and Java 8 on a legacy code base?  Use
+&lt;a href=&quot;http://maven.apache.org/guides/introduction/introduction-to-profiles.html&quot;&gt;Maven profiles&lt;/a&gt;!  Instead of modifying the existing &lt;a href=&quot;http://maven.apache.org/plugins/maven-javadoc-plugin/&quot;&gt;Maven JavaDoc plugin&lt;/a&gt; declaration in our &lt;code&gt;pom.xml&lt;/code&gt; file, let&amp;#8217;s instead
+add a new profile that only activates when we are building with &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot;&gt;Java 8&lt;/a&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;pom.xml&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint xml language-xml&quot;&gt;&lt;code&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&amp;gt;
+&amp;lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;&amp;gt;
+    &amp;lt;modelVersion&amp;gt;4.0.0&amp;lt;/modelVersion&amp;gt;
+    &amp;lt;groupId&amp;gt;com.test&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;test&amp;lt;/artifactId&amp;gt;
+    &amp;lt;packaging&amp;gt;jar&amp;lt;/packaging&amp;gt;
+    &amp;lt;version&amp;gt;1.0.0&amp;lt;/version&amp;gt;
+
+    &amp;lt;build&amp;gt;
+        ...
+        &amp;lt;plugins&amp;gt;
+            &amp;lt;plugin&amp;gt;
+                &amp;lt;groupId&amp;gt;org.apache.maven.plugins&amp;lt;/groupId&amp;gt;
+                &amp;lt;artifactId&amp;gt;maven-javadoc-plugin&amp;lt;/artifactId&amp;gt;
+                &amp;lt;version&amp;gt;2.9.1&amp;lt;/version&amp;gt;
+                &amp;lt;executions&amp;gt;
+                    &amp;lt;execution&amp;gt;
+                        &amp;lt;phase&amp;gt;package&amp;lt;/phase&amp;gt;
+                        &amp;lt;goals&amp;gt;
+                            &amp;lt;goal&amp;gt;jar&amp;lt;/goal&amp;gt;
+                        &amp;lt;/goals&amp;gt;
+                    &amp;lt;/execution&amp;gt;
+                &amp;lt;/executions&amp;gt;
+            &amp;lt;/plugin&amp;gt;
+        &amp;lt;/plugins&amp;gt;
+    &amp;lt;/build&amp;gt;
+
+    &amp;lt;profile&amp;gt;
+        &amp;lt;id&amp;gt;java8&amp;lt;/id&amp;gt;
+        &amp;lt;activation&amp;gt;
+            &amp;lt;jdk&amp;gt;1.8&amp;lt;/jdk&amp;gt;								&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
+        &amp;lt;/activation&amp;gt;
+        &amp;lt;build&amp;gt;
+            &amp;lt;plugins&amp;gt;
+                &amp;lt;plugin&amp;gt;
+                    &amp;lt;groupId&amp;gt;org.apache.maven.plugins&amp;lt;/groupId&amp;gt;
+                    &amp;lt;artifactId&amp;gt;maven-javadoc-plugin&amp;lt;/artifactId&amp;gt;
+                    &amp;lt;version&amp;gt;2.9.1&amp;lt;/version&amp;gt;
+                    &amp;lt;executions&amp;gt;
+                        &amp;lt;execution&amp;gt;
+                            &amp;lt;phase&amp;gt;package&amp;lt;/phase&amp;gt;
+                            &amp;lt;goals&amp;gt;
+                                &amp;lt;goal&amp;gt;jar&amp;lt;/goal&amp;gt;
+                            &amp;lt;/goals&amp;gt;
+                            &amp;lt;configuration&amp;gt;
+                                &amp;lt;additionalparam&amp;gt;-Xdoclint:none&amp;lt;/additionalparam&amp;gt;
+                            &amp;lt;/configuration&amp;gt;
+                        &amp;lt;/execution&amp;gt;
+                    &amp;lt;/executions&amp;gt;
+                &amp;lt;/plugin&amp;gt;
+            &amp;lt;/plugins&amp;gt;
+        &amp;lt;/build&amp;gt;
+    &amp;lt;/profile&amp;gt;
+&amp;lt;/project&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Will activate this profile if the JRE that is executing the &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; build is version 1.8 (&lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot;&gt;Java 8&lt;/a&gt;).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;We can now safely build our project with either Java 7 or &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot;&gt;Java 8&lt;/a&gt; without having it fail due to either the more strict doclint rules in &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot;&gt;Java 8&lt;/a&gt; or the fact that Java 7 does not recognize
+the JVM argument.  I&amp;#8217;m sure that this is not the last of these issues that will come up with regards to changes between previous versions of Java and &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot;&gt;Java 8&lt;/a&gt;.  Luckily, we should be able
+to apply the same profile trick for any differences until such a time that all the different code bases that you support are converted to use &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot;&gt;Java 8&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Grails and Logback</title>
             <link>http://jdpgrailsdev.github.io/blog//2014/03/24/grails_logback.html</link>
@@ -369,141 +540,6 @@ one that is packaged within the project and sets the &lt;code&gt;authProvider&lt
 for in order to perform logic upon firing.  You can see more information about &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; events in the &lt;a href=&quot;http://grails.org/doc/2.3.x/guide/commandLine.html#events&quot;&gt;documentation&lt;/a&gt; or
 by looking through the &lt;a href=&quot;http://gant.codehaus.org/&quot;&gt;Gant&lt;/a&gt; scripts in the &lt;code&gt;scripts&lt;/code&gt; folder of the &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; installation.&lt;/p&gt;
 &lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Integrating JBoss tattletale with Grails</title>
-            <link>http://jdpgrailsdev.github.io/blog//2014/03/04/grails_tattletale.html</link>
-            <pubDate>Tue, 4 Mar 2014 00:00:00 -0500</pubDate>
-            <guid isPermaLink="false">/2014/03/04/grails_tattletale.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Prior to version 2.3 of the &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; Framework, it was difficult, if not impossible, to use &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt; to build a &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt;-based application or plugin.  Besides losing the obvious benefits of &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt;-based builds,
-such as dependency management and the rich ecosystem of existing plugins, one of the things that is lacking is an easy way to enforce environmental constraints, such as with the &lt;a href=&quot;http://maven.apache.org/enforcer/maven-enforcer-plugin/&quot;&gt;Maven Enforcer plugin&lt;/a&gt;. The &lt;a href=&quot;http://maven.apache.org/enforcer/maven-enforcer-plugin/&quot;&gt;Maven Enforcer plugin&lt;/a&gt;
-includes the ability to &lt;a href=&quot;http://mojo.codehaus.org/extra-enforcer-rules/banDuplicateClasses.html&quot;&gt;fail a build when detecting multiple versions of the same class on the classpath&lt;/a&gt;.  This is particularly handy when an
-application depends on libraries that include classes from another library in order to reduce the number of required dependencies (this is particularly common with libraries that are not published to a &lt;a href=&quot;http://maven.apache.org/&quot;&gt;Maven&lt;/a&gt;
-repository or some other type of dependency management repository).  Since using the &lt;a href=&quot;http://maven.apache.org/enforcer/maven-enforcer-plugin/&quot;&gt;Maven Enforcer plugin&lt;/a&gt; is not an option in applications using &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; &amp;lt;2.3, I decided to look at other alternatives to provide the
-duplicate class checking functionality.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;sect2&quot;&gt;
-&lt;h3 id=&quot;_jboss_tattletale&quot;&gt;JBoss tattletale&lt;/h3&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;&lt;a href=&quot;http://www.jboss.org/tattletale&quot;&gt;JBoss tattletale&lt;/a&gt; is a similar project to the &lt;a href=&quot;http://maven.apache.org/enforcer/maven-enforcer-plugin/&quot;&gt;Maven Enforcer plugin&lt;/a&gt; in that it provides many of the same analytics with regards to the classes and dependencies that are part of a Java library/application.  In addition to its
-feature set, &lt;a href=&quot;http://www.jboss.org/tattletale&quot;&gt;JBoss tattletale&lt;/a&gt; also has the ability to be embedded/called programmatically, which is a must for integrating it into a &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; &lt;a href=&quot;http://gant.codehaus.org/&quot;&gt;Gant&lt;/a&gt; script.  The first step to including a &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; command line target
-that can perform the &lt;a href=&quot;http://www.jboss.org/tattletale&quot;&gt;JBoss tattletale&lt;/a&gt; analysis is to include the &lt;a href=&quot;http://www.jboss.org/tattletale&quot;&gt;JBoss tattletale&lt;/a&gt; dependency as a &lt;code&gt;build&lt;/code&gt; scoped dependency:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;BuildConfig.groovy&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;grails.project.dependency.resolution = {
-
-    ...
-
-    dependencies {
-
-        // Required to generate the TattleTale report by the TattleTale GANT script.
-        build &apos;org.jboss.tattletale:tattletale:1.1.2.Final&apos;
-
-        ...
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;This makes the dependency available to the &lt;a href=&quot;http://gant.codehaus.org/&quot;&gt;Gant&lt;/a&gt; script without exporting the dependency when the application or plugin is package (or in the case of a plugin, the dependency is not added to the classpath when it is
-consumed by a &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; application).  The next step is to write a &lt;a href=&quot;http://gant.codehaus.org/&quot;&gt;Gant&lt;/a&gt; script that performs the &lt;a href=&quot;http://www.jboss.org/tattletale&quot;&gt;JBoss tattletale&lt;/a&gt; analysis.  Below is an example script that I wrote that expands the packaged application, runs the analysis
-and then outputs the HTML report to the &lt;code&gt;target/tattletale-report&lt;/code&gt; directory:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;scripts/TattleTale.groovy&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;import org.jboss.tattletale.Main
-
-includeTargets &amp;lt;&amp;lt; grailsScript(&quot;_GrailsArgParsing&quot;)
-includeTargets &amp;lt;&amp;lt; grailsScript(&quot;_GrailsSettings&quot;)
-includeTargets &amp;lt;&amp;lt; grailsScript(&quot;_GrailsClasspath&quot;)
-
-// Default list of comma separated report names to generate.
-DEFAULT_REPORTS=&apos;multiplejars&apos;
-
-// Default list of comma separated JAR files to exclude.  These JARS are from the Grails global dependencies,
-// so there is not a lot we can do about resolving duplicate classes from the JAR files.
-DEFAULT_EXCLUDES=&apos;commons-beanutils-1.8.3.jar,commons-logging-1.1.1.jar,aspectjrt-1.6.10.jar,grails-plugin-controllers-2.0.3.jar&apos;
-
-/*
- * Target used to generated the TattleTale (http://www.jboss.org/tattletale/) report for the encapsulating Grails application.
- * The application&apos;s archive (WAR file) MUST be built prior to running this script to invoke the TattleTale report.  If
- * the WAR file is present, the following steps are performed:
- *
- *     1) The previous report is deleted.
- *     2) The archive is unzipped to the target directory of the application.
- *     3) The TattleTale report(s) are generated.
- *     4) The expanded archive is deleted.
- *
- * The TattleTale reports that are generated can be configured by running the script with the following option:
- *
- *     grails tattleTale --reports=mulitplelocations,multiplejars
- *
- * The files that are scanned by TattleTale can be configured by adding additional exclusions via an argument:
- *
- *     grails tattleTale --excludes=foo.jar,bar.jar
- *
- * See the TattleTale User&apos;s Guide for information about the available reports (http://docs.jboss.org/tattletale/userguide/1.1/html_single/#maven_report).
- */
-target(tattleTale: &quot;Called from build jobs on Hudson to perform a TattleTale analysis on the application&apos;s archive.&quot;) {
-    parseArguments()
-
-    def appName = metadata[&apos;app.name&apos;]
-    def reports = argsMap.reports ?: DEFAULT_REPORTS
-    def excludes = argsMap.excludes ? &quot;${DEFAULT_EXCLUDES},${argsMap.excludes}&quot; : DEFAULT_EXCLUDES
-    def archiveFile = &quot;target/${appName}.war&quot;
-    def expandedArchiveDir = &quot;target/${appName}&quot;
-    def reportDir = &apos;target/tattletale-report&apos;
-
-    if(new File(archiveFile).exists()) {
-        ant.delete(dir:reportDir, failonerror:&quot;false&quot;, verbose:&quot;true&quot;)
-        grailsConsole.addStatus &quot;************ Unzipping application archive &apos;${archiveFile}&apos;...&quot;
-        ant.unzip(src: archiveFile , dest:expandedArchiveDir, overwrite:&quot;true&quot;)
-        grailsConsole.addStatus &quot;************ Running TattleTask report for &apos;${appName}&apos;...&quot;
-        executeTattleTale(&quot;${expandedArchiveDir}/WEB-INF/lib&quot;, reportDir, reports, excludes)
-        grailsConsole.addStatus &quot;************ Removing expanded archive for application &apos;${appName}&apos;...&quot;
-        ant.delete(dir:expandedArchiveDir, failonerror:&quot;false&quot;, verbose:&quot;true&quot;)
-        grailsConsole.addStatus &quot;************ Duplicate class check for application &apos;${appName}&apos; completed.&quot;
-        grailsConsole.addStatus &quot;************ TattleTale report available in &apos;${new File(reportDir).absolutePath}/index.html&apos;...&quot;
-    } else {
-        grailsConsole.warn &quot;Application archive file ${archiveFile} does NOT exist.  Nothing to report!  Please build the WAR file before running this script.&quot;
-    }
-}
-
-/**
- * Executes the TattleTale report.
- * @param source The source directory containing JAR files.
- * @param destination The output destination directory for the generated report(s).
- * @param reports The comma separated string containing the names of the reports to generate.
- * @param excludes The comma separated string containing the names of directories or files to exludes
- */
-private def executeTattleTale(def source, def destination, def reports, def excludes) {
-    def tattleTale = new Main()
-    tattleTale.source = source
-    tattleTale.destination = destination
-    tattleTale.reports = reports
-    tattleTale.excludes = excludes
-    tattleTale.profiles = &apos;spring30,java6&apos;
-    tattleTale.execute()
-}
-
-setDefaultTarget(tattleTale)&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Note that the script above requires the user to first run &lt;code&gt;grails war&lt;/code&gt; or &lt;code&gt;grails package-plugin&lt;/code&gt; prior to running the &lt;code&gt;grails tattletale&lt;/code&gt; target command.  It is also possible to hook into the &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; events that get fired to perform the analysis after
-compilation has been completed, which would avoid the need to expand the packaged WAR file.  Regardless of how you choose to implement the execution of &lt;a href=&quot;http://www.jboss.org/tattletale&quot;&gt;JBoss tattletale&lt;/a&gt;, the end result is still valuable.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
             </description>
