@@ -1,0 +1,134 @@
+= Maven, the JavaDoc plugin and Java 8
+Jonathan Pearlin
+2014-04-03
+:jbake-type: post
+:jbake-tags: maven,java
+:jbake-status: published
+:source-highlighter: prettify
+:id: maven_javadoc_java8
+:maven: http://maven.apache.org/[Maven]
+:java8: http://www.oracle.com/technetwork/java/javase/downloads/index.html[Java 8]
+:maven_javadoc: http://maven.apache.org/plugins/maven-javadoc-plugin/[Maven JavaDoc plugin]
+:icons: font
+
+On March 18th, Oracle officially released {java8}.  Eager to start using some of the new features (in a non-beta release), I quickly downloaded and installed the JDK on my laptop.  I switched my
+system to use {java8} by default and set upon compiling one of my projects.  To my suprise, the build failed with a bunch of errors that looked like this:
+
+[source]
+----
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-javadoc-plugin:2.8.1:jar (default) on project ddc-metrics-annotations: MavenReportException: Error while creating archive:
+[ERROR] Exit code: 1 - /Projects/libraries/test-library/src/main/java/com/test/Tester.java:30: warning: no @return
+----
+
+It turns out that {java8} includes a much more strict set of rules for its doclint.  According to  http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html[Steven Colebourne], the
+{java8} doclint by default enforces the following rules when processing JavaDoc comments:
+
+* No self-closed HTML tags, such as <br /> or <a id="x" />
+* No unclosed HTML tags, such as <ul> without matching </ul>
+* No invalid HTML end tags, such as </br>
+* No invalid HTML attributes, based on doclint's interpretation of W3C HTML 4.01
+* No duplicate HTML id attribute
+* No empty HTML href attribute
+* No incorrectly nested headers, such as class documentation must have <h3>, not <h4>
+* No invalid HTML tags, such as List<String> (where you forgot to escape using &lt;)
+* No broken @link references
+* No broken @param references, they must match the actual parameter name
+* No broken @throws references, the first word must be a class name
+
+This is fine if you are starting with a green field project, but if you are like me and have to switch between new and legacy code bases, it may not be possible to correct all of these
+issues in order to get {maven_javadoc} generated using {java8}.  Per http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html[Steven Colebourne's blog], the solution is to
+include the `-Xdoclint:none` JVM argument in the configuration of the {maven_javadoc}:
+
+[source,xml]
+.pom.xml
+----
+...
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-javadoc-plugin</artifactId>
+    <version>2.9.1</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>jar</goal>
+            </goals>
+            <configuration>
+                <additionalparam>-Xdoclint:none</additionalparam>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+...
+----
+
+This works great when building with {java8}.  However, if you switch back to Java 7 and attempt to build with the `-Xdoclint:none` JVM argument, the build will fail, as Java 7 does not
+recognize that JVM argument.  What can we do to support JavaDoc generation via {maven} for both Java 7 and Java 8 on a legacy code base?  Use
+http://maven.apache.org/guides/introduction/introduction-to-profiles.html[Maven profiles]!  Instead of modifying the existing {maven_javadoc} declaration in our `pom.xml` file, let's instead
+add a new profile that only activates when we are building with {java8}:
+
+[source,xml]
+.pom.xml
+----
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.test</groupId>
+    <artifactId>test</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0.0</version>
+
+    <build>
+        ...
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profile>
+        <id>java8</id>
+        <activation>
+            <jdk>1.8</jdk>								<1>
+        </activation>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.9.1</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                            <configuration>
+                                <additionalparam>-Xdoclint:none</additionalparam>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+</project>
+----
+<1> Will activate this profile if the JRE that is executing the {maven} build is version 1.8 ({java8}).
+
+We can now safely build our project with either Java 7 or {java8} without having it fail due to either the more strict doclint rules in {java8} or the fact that Java 7 does not recognize
+the JVM argument.  I'm sure that this is not the last of these issues that will come up with regards to changes between previous versions of Java and {java8}.  Luckily, we should be able
+to apply the same profile trick for any differences until such a time that all the different code bases that you support are converted to use {java8}.
