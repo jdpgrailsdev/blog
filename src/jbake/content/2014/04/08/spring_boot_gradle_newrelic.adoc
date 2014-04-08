@@ -1,0 +1,110 @@
+= Using the New Relic agent with Spring-Boot and Gradle
+Jonathan Pearlin
+2014-04-08
+:jbake-type: post
+:jbake-tags: spring,gradle
+:jbake-status: published
+:source-highlighter: prettify
+:id: gradle_api_transitive
+:gradle: http://gradle.org[Gradle]
+:newrelic: http://newrelic.com[New Relic]
+:spring_boot: http://projects.spring.io/spring-boot/[Spring Boot]
+:icons: font
+
+I wanted to play around with {spring_boot} the other day and found it pretty easy to get up and running using their {gradle} plugin.  After only a few minutes, I had a sample Spring-based web application running as a stand-alone process.  Next, I thought I would add in {newrelic} support so I could see some performance stats.  Normally, you would install the {newrelic} agent in your application container or add a `javaagent` JVM option pointing at the {newrelic} agent to enable metrics gathering.  In my first attempt, I added the `javaagent` JVM option pointing at the {newrelic} agent to the `DEFAULT_JVM_OPTS` variable in my `gradlew` script and restarted the application.  It failed with a weird error about not being able to find some of the classes provided by the {newrelic} agent after claiming that it started the agent and found the YAML configuration file.  It seemed like there was obviously some issue between {gradle} and the Java agent.  After a
+few quick minutes searching on the internets, I found that the {spring_boot} {gradle} plugin supports passing an agent to the {spring_boot} process.  I made the following change to my
+`build.gradle` file:
+
+[source,groovy]
+.build.gradle
+----
+apply plugin: 'spring-boot'
+
+...
+
+springBoot {
+    mainClass = 'com.sample.Application'
+    agent = file('/opt/newrelic/newrelic.jar')			<1>
+}
+----
+<1>This is the path to where ever you downloaded and the {newrelic} agent JAR to that should include your customized YAML configuration file.
+
+I restarted my application using the {spring_boot} {gradle} task (`run`) and metrics started flowing!  This is great, but it depends on a hard-coded path to the installed {newrelic} agent (yuck).
+Because you can do anything with {gradle} (slight exaggeration), I figured that with some {gradle}-foo, I could include the {newrelic} agent as a dependency, download it and point to the
+downloaded file for the `javaagent` JVM option.  After a little playing around, I came up with the following:
+
+[source,groovy]
+.build.gradle
+----
+apply plugin: 'groovy'
+apply plugin: 'spring-boot'
+
+group = 'com.test'
+version = '1.0.0-SNAPSHOT'
+
+description = """Test application"""
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.1.BUILD-SNAPSHOT")
+    }
+}
+
+configurations {
+    newrelic	// Custom configuration to allow for the copying of the New Relic agent at run time.
+}
+
+ext {
+    groovyVersion='2.2.1'
+    newrelicVersion='3.5.1'
+    springBootVersion='1.0.1.RELEASE'
+    springVersion='4.0.3.RELEASE'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    newrelic "com.newrelic.agent.java:newrelic-agent:${newrelicVersion}"
+
+    compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
+    compile("org.springframework:spring-beans:${springVersion}")
+    compile("org.springframework:spring-context:${springVersion}")
+    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+
+    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+}
+
+task copyAgent(type: Copy) {
+    from {
+        configurations.newrelic				<1>
+    }
+    into "$buildDir/lib"
+    rename ("newrelic-agent-${newrelicVersion}.jar", 'newrelic.jar')
+}
+
+springBoot {
+    mainClass = 'com.test.sample.Application'
+    agent = file("$buildDir/lib/newrelic.jar")		<2>
+}
+
+project.tasks.run.dependsOn([copyAgent])			<3>
+----
+<1> Per the `dependencies` block, the only file in the `newrelic` configuration is the agent JAR itself.
+<2> Tell {spring_boot} to use the the downloaded, copied {newrelic} agent JAR instead of the previously hard-coded value.
+<3> Make the {spring_boot} `run` task depend on the copy task to ensure that the agent is copied before we attempt to launch the application.
+
+Finally, the last thing that I did was set up a symbolic link from my project's directory to where my {newrelic} YAML file resides.  The {newrelic} agent will
+automatically look for the `newrelic.yml` file in the same location as the agent JAR or in the current working directory.  With this last piece in place, all
+hard-coded paths are now removed from the equation.
