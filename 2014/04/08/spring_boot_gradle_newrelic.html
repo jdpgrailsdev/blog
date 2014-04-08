@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <title>The Flowers Are Still Standing :: Using the New Relic agent with Spring-Boot and Gradle</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta name="author" content="Jonathan Pearlin" />
+        <meta name="keywords" content="" />
+        <meta name="generator" content="JBake" />
+
+        <!-- Le styles -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
+        <link href="/blog/css/asciidoctor.css" rel="stylesheet">
+        <link href="/blog/css/base.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+        <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+              <script src="/blog/js/html5shiv.js"></script>
+        <![endif]-->
+
+        <!-- Fav and touch icons -->
+        <!--
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png" />
+        <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png" />
+        -->
+        <link rel="shortcut icon" href="/blog/favicon.ico" />
+    </head>
+    <body>
+        <div id="wrap">
+            <!-- Fixed navbar -->
+            <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/blog/index.html">Jonathan Pearlin's Blog</a>
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="/blog/about.html">About</a></li>
+                            <li><a href="/blog/resume.html">Résumé</a></li>
+                            <li class="dropdown">
+                                <a data-toggle="dropdown" href="#">Tags<b class="caret"></b></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="/blog/tags/gradle.html">Gradle</a></li>
+                                    <li><a href="/blog/tags/grails.html">Grails</a></li>
+                                    <li><a href="/blog/tags/groovy.html">Groovy</a></li>
+                                    <li><a href="/blog/tags/java.html">Java</a></li>
+                                    <li><a href="/blog/tags/maven.html">Maven</a></li>
+                                    <li><a href="/blog/tags/spring.html">Spring</a></li>
+                                    <li><a href="/blog/tags/zookeeper.html">ZooKeeper</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="/blog/feed.xml">Feed</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="https://github.com/jdpgrailsdev" target="_blank"><i class="fa fa-github"></i></a></li>
+                            <li><a href="http://www.linkedin.com/pub/jonathan-pearlin/4/946/9a0" style="text-decoration:none;" target="_blank"><i class="fa fa-linkedin-square"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+    <div class="page-header">
+        <h1>Using the New Relic agent with Spring-Boot and Gradle</h1>
+    </div>
+
+    <p><em>08 April 2014</em></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog//2014/04/08/spring_boot_gradle_newrelic.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2014/04/08/spring_boot_gradle_newrelic.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2014/04/08/spring_boot_gradle_newrelic.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>I wanted to play around with <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> the other day and found it pretty easy to get up and running using their <a href="http://gradle.org">Gradle</a> plugin.  After only a few minutes, I had a sample Spring-based web application running as a stand-alone process.  Next, I thought I would add in <a href="http://newrelic.com">New Relic</a> support so I could see some performance stats.  Normally, you would install the <a href="http://newrelic.com">New Relic</a> agent in your application container or add a <code>javaagent</code> JVM option pointing at the <a href="http://newrelic.com">New Relic</a> agent to enable metrics gathering.  In my first attempt, I added the <code>javaagent</code> JVM option pointing at the <a href="http://newrelic.com">New Relic</a> agent to the <code>DEFAULT_JVM_OPTS</code> variable in my <code>gradlew</code> script and restarted the application.  It failed with a weird error about not being able to find some of the classes provided by the <a href="http://newrelic.com">New Relic</a> agent after claiming that it started the agent and found the YAML configuration file.  It seemed like there was obviously some issue between <a href="http://gradle.org">Gradle</a> and the Java agent.  After a
+few quick minutes searching on the internets, I found that the <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> <a href="http://gradle.org">Gradle</a> plugin supports passing an agent to the <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> process.  I made the following change to my
+<code>build.gradle</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>apply plugin: 'spring-boot'
+
+...
+
+springBoot {
+    mainClass = 'com.sample.Application'
+    agent = file('/opt/newrelic/newrelic.jar')			<i class="conum" data-value="1"></i><b>(1)</b>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>&lt;1&gt;This is the path to where ever you downloaded and the <a href="http://newrelic.com">New Relic</a> agent JAR to that should include your customized YAML configuration file.</p>
+</div>
+<div class="paragraph">
+<p>I restarted my application using the <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> <a href="http://gradle.org">Gradle</a> task (<code>run</code>) and metrics started flowing!  This is great, but it depends on a hard-coded path to the installed <a href="http://newrelic.com">New Relic</a> agent (yuck).
+Because you can do anything with <a href="http://gradle.org">Gradle</a> (slight exaggeration), I figured that with some <a href="http://gradle.org">Gradle</a>-foo, I could include the <a href="http://newrelic.com">New Relic</a> agent as a dependency, download it and point to the
+downloaded file for the <code>javaagent</code> JVM option.  After a little playing around, I came up with the following:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>apply plugin: 'groovy'
+apply plugin: 'spring-boot'
+
+group = 'com.test'
+version = '1.0.0-SNAPSHOT'
+
+description = """Test application"""
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.1.BUILD-SNAPSHOT")
+    }
+}
+
+configurations {
+    newrelic	// Custom configuration to allow for the copying of the New Relic agent at run time.
+}
+
+ext {
+    groovyVersion='2.2.1'
+    newrelicVersion='3.5.1'
+    springBootVersion='1.0.1.RELEASE'
+    springVersion='4.0.3.RELEASE'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    newrelic "com.newrelic.agent.java:newrelic-agent:${newrelicVersion}"
+
+    compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
+    compile("org.springframework:spring-beans:${springVersion}")
+    compile("org.springframework:spring-context:${springVersion}")
+    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+
+    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+}
+
+task copyAgent(type: Copy) {
+    from {
+        configurations.newrelic				<i class="conum" data-value="1"></i><b>(1)</b>
+    }
+    into "$buildDir/lib"
+    rename ("newrelic-agent-${newrelicVersion}.jar", 'newrelic.jar')
+}
+
+springBoot {
+    mainClass = 'com.test.sample.Application'
+    agent = file("$buildDir/lib/newrelic.jar")		<i class="conum" data-value="2"></i><b>(2)</b>
+}
+
+project.tasks.run.dependsOn([copyAgent])			<i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Per the <code>dependencies</code> block, the only file in the <code>newrelic</code> configuration is the agent JAR itself.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Tell <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> to use the the downloaded, copied <a href="http://newrelic.com">New Relic</a> agent JAR instead of the previously hard-coded value.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Make the <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> <code>run</code> task depend on the copy task to ensure that the agent is copied before we attempt to launch the application.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Finally, the last thing that I did was set up a symbolic link from my project&#8217;s directory to where my <a href="http://newrelic.com">New Relic</a> YAML file resides.  The <a href="http://newrelic.com">New Relic</a> agent will
+automatically look for the <code>newrelic.yml</code> file in the same location as the agent JAR or in the current working directory.  With this last piece in place, all
+hard-coded paths are now removed from the equation.</p>
+</div>
+</div>
+</div></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog/2014/04/08/spring_boot_gradle_newrelic.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2014/04/08/spring_boot_gradle_newrelic.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2014/04/08/spring_boot_gradle_newrelic.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '/2014/04/08/spring_boot_gradle_newrelic.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    <hr>
+
+            </div>
+            <div id="push"></div>
+        </div>
+
+        <div id="footer">
+              <div class="container">
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.1.0</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+              </div>
+        </div>
+
+        <!-- Le javascript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="https://code.jquery.com/jquery.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+        <script src="/blog/js/run_prettify.js"></script>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'jdpearlin'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <script type="text/javascript">
+              window.___gcfg = {lang: 'en'};
+
+              (function() {
+                var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+                po.src = 'https://apis.google.com/js/plusone.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+              })();
+        </script>
+        <script>
+            (function(d, s, id) {
+                  var js, fjs = d.getElementsByTagName(s)[0];
+                  if (d.getElementById(id)) return;
+                  js = d.createElement(s); js.id = id;
+                  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+                  fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+        </script>
+        <script src="//platform.linkedin.com/in.js" type="text/javascript"></script>
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-47885115-1', 'jdpgrailsdev.github.io');
+          ga('send', 'pageview');
+        </script>
+    </body>
+</html>

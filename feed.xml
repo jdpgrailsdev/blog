@@ -6,13 +6,141 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Thu, 3 Apr 2014 07:34:58 -0400</pubDate>
-        <lastBuildDate>Thu, 3 Apr 2014 07:34:58 -0400</lastBuildDate>
+        <pubDate>Tue, 8 Apr 2014 08:05:25 -0400</pubDate>
+        <lastBuildDate>Tue, 8 Apr 2014 08:05:25 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Using the New Relic agent with Spring-Boot and Gradle</title>
+            <link>http://jdpgrailsdev.github.io/blog//2014/04/08/spring_boot_gradle_newrelic.html</link>
+            <pubDate>Tue, 8 Apr 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">/2014/04/08/spring_boot_gradle_newrelic.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;I wanted to play around with &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot;&gt;Spring Boot&lt;/a&gt; the other day and found it pretty easy to get up and running using their &lt;a href=&quot;http://gradle.org&quot;&gt;Gradle&lt;/a&gt; plugin.  After only a few minutes, I had a sample Spring-based web application running as a stand-alone process.  Next, I thought I would add in &lt;a href=&quot;http://newrelic.com&quot;&gt;New Relic&lt;/a&gt; support so I could see some performance stats.  Normally, you would install the &lt;a href=&quot;http://newrelic.com&quot;&gt;New Relic&lt;/a&gt; agent in your application container or add a &lt;code&gt;javaagent&lt;/code&gt; JVM option pointing at the &lt;a href=&quot;http://newrelic.com&quot;&gt;New Relic&lt;/a&gt; agent to enable metrics gathering.  In my first attempt, I added the &lt;code&gt;javaagent&lt;/code&gt; JVM option pointing at the &lt;a href=&quot;http://newrelic.com&quot;&gt;New Relic&lt;/a&gt; agent to the &lt;code&gt;DEFAULT_JVM_OPTS&lt;/code&gt; variable in my &lt;code&gt;gradlew&lt;/code&gt; script and restarted the application.  It failed with a weird error about not being able to find some of the classes provided by the &lt;a href=&quot;http://newrelic.com&quot;&gt;New Relic&lt;/a&gt; agent after claiming that it started the agent and found the YAML configuration file.  It seemed like there was obviously some issue between &lt;a href=&quot;http://gradle.org&quot;&gt;Gradle&lt;/a&gt; and the Java agent.  After a
+few quick minutes searching on the internets, I found that the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot;&gt;Spring Boot&lt;/a&gt; &lt;a href=&quot;http://gradle.org&quot;&gt;Gradle&lt;/a&gt; plugin supports passing an agent to the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot;&gt;Spring Boot&lt;/a&gt; process.  I made the following change to my
+&lt;code&gt;build.gradle&lt;/code&gt; file:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;build.gradle&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;apply plugin: &apos;spring-boot&apos;
+
+...
+
+springBoot {
+    mainClass = &apos;com.sample.Application&apos;
+    agent = file(&apos;/opt/newrelic/newrelic.jar&apos;)			&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&amp;lt;1&amp;gt;This is the path to where ever you downloaded and the &lt;a href=&quot;http://newrelic.com&quot;&gt;New Relic&lt;/a&gt; agent JAR to that should include your customized YAML configuration file.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;I restarted my application using the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot;&gt;Spring Boot&lt;/a&gt; &lt;a href=&quot;http://gradle.org&quot;&gt;Gradle&lt;/a&gt; task (&lt;code&gt;run&lt;/code&gt;) and metrics started flowing!  This is great, but it depends on a hard-coded path to the installed &lt;a href=&quot;http://newrelic.com&quot;&gt;New Relic&lt;/a&gt; agent (yuck).
+Because you can do anything with &lt;a href=&quot;http://gradle.org&quot;&gt;Gradle&lt;/a&gt; (slight exaggeration), I figured that with some &lt;a href=&quot;http://gradle.org&quot;&gt;Gradle&lt;/a&gt;-foo, I could include the &lt;a href=&quot;http://newrelic.com&quot;&gt;New Relic&lt;/a&gt; agent as a dependency, download it and point to the
+downloaded file for the &lt;code&gt;javaagent&lt;/code&gt; JVM option.  After a little playing around, I came up with the following:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;build.gradle&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;apply plugin: &apos;groovy&apos;
+apply plugin: &apos;spring-boot&apos;
+
+group = &apos;com.test&apos;
+version = &apos;1.0.0-SNAPSHOT&apos;
+
+description = &quot;&quot;&quot;Test application&quot;&quot;&quot;
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url &quot;http://repo.spring.io/snapshot&quot; }
+        maven { url &quot;http://repo.spring.io/milestone&quot; }
+    }
+    dependencies {
+        classpath(&quot;org.springframework.boot:spring-boot-gradle-plugin:1.0.1.BUILD-SNAPSHOT&quot;)
+    }
+}
+
+configurations {
+    newrelic	// Custom configuration to allow for the copying of the New Relic agent at run time.
+}
+
+ext {
+    groovyVersion=&apos;2.2.1&apos;
+    newrelicVersion=&apos;3.5.1&apos;
+    springBootVersion=&apos;1.0.1.RELEASE&apos;
+    springVersion=&apos;4.0.3.RELEASE&apos;
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    newrelic &quot;com.newrelic.agent.java:newrelic-agent:${newrelicVersion}&quot;
+
+    compile(&quot;org.codehaus.groovy:groovy-all:${groovyVersion}&quot;)
+    compile(&quot;org.springframework:spring-beans:${springVersion}&quot;)
+    compile(&quot;org.springframework:spring-context:${springVersion}&quot;)
+    compile(&quot;org.springframework.boot:spring-boot-starter-web:${springBootVersion}&quot;)
+
+    testCompile(&quot;org.springframework.boot:spring-boot-starter-test:${springBootVersion}&quot;)
+}
+
+task copyAgent(type: Copy) {
+    from {
+        configurations.newrelic				&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
+    }
+    into &quot;$buildDir/lib&quot;
+    rename (&quot;newrelic-agent-${newrelicVersion}.jar&quot;, &apos;newrelic.jar&apos;)
+}
+
+springBoot {
+    mainClass = &apos;com.test.sample.Application&apos;
+    agent = file(&quot;$buildDir/lib/newrelic.jar&quot;)		&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;(2)&lt;/b&gt;
+}
+
+project.tasks.run.dependsOn([copyAgent])			&lt;i class=&quot;conum&quot; data-value=&quot;3&quot;&gt;&lt;/i&gt;&lt;b&gt;(3)&lt;/b&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Per the &lt;code&gt;dependencies&lt;/code&gt; block, the only file in the &lt;code&gt;newrelic&lt;/code&gt; configuration is the agent JAR itself.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Tell &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot;&gt;Spring Boot&lt;/a&gt; to use the the downloaded, copied &lt;a href=&quot;http://newrelic.com&quot;&gt;New Relic&lt;/a&gt; agent JAR instead of the previously hard-coded value.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;3&quot;&gt;&lt;/i&gt;&lt;b&gt;3&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Make the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot;&gt;Spring Boot&lt;/a&gt; &lt;code&gt;run&lt;/code&gt; task depend on the copy task to ensure that the agent is copied before we attempt to launch the application.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Finally, the last thing that I did was set up a symbolic link from my project&amp;#8217;s directory to where my &lt;a href=&quot;http://newrelic.com&quot;&gt;New Relic&lt;/a&gt; YAML file resides.  The &lt;a href=&quot;http://newrelic.com&quot;&gt;New Relic&lt;/a&gt; agent will
+automatically look for the &lt;code&gt;newrelic.yml&lt;/code&gt; file in the same location as the agent JAR or in the current working directory.  With this last piece in place, all
+hard-coded paths are now removed from the equation.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Maven, the JavaDoc plugin and Java 8</title>
             <link>http://jdpgrailsdev.github.io/blog//2014/04/03/maven_java8_javadoc.html</link>
@@ -500,45 +628,6 @@ DSL just like in &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt;, b
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;Full documentation can be found &lt;a href=&quot;https://github.com/jdpgrailsdev/grails-tattletale/blob/master/README.md&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Setting system properties when running Grails tests</title>
-            <link>http://jdpgrailsdev.github.io/blog//2014/03/11/grails_test_system_properties.html</link>
-            <pubDate>Tue, 11 Mar 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">/2014/03/11/grails_test_system_properties.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;We have a &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; application that relies on &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt; for some of its data.  This application makes use of the &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; library to connect to &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt;.  The &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; library also includes
-a testing server to make it easy to write unit tests for the classes that need to interact with &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt;.  Our &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt; implementation makes uses of SASL-based authentication to prevent
-unwanted access to different parts of the data stored in &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt;.  Unfortunately, the ability to set which configuration file to use when connecting to &lt;a href=&quot;http://zookeeper.apache.org/&quot;&gt;Apache ZooKeeper&lt;/a&gt; is set via JVM system
-properties.  This is fine when the application is running, but can make unit testing difficult, as developers have to remember to set the appropriate system properties before executing unit
-test.  Luckily, &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; has a nice events framework that fires as certain stages in execution are hit.  I decided that it would be trivial to add an event hook that listens for the
-start of the test phase and sets the appropriate system properties required to simulate the same access control when interacting with the &lt;a href=&quot;http://curator.apache.org/&quot;&gt;Apache Curator&lt;/a&gt; test server.  I made the following modification
-to the &lt;code&gt;scripts/Events.groovy&lt;/code&gt; file in the &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; application:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;scripts/Events.groovy&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;eventTestPhaseStart = { args -&amp;gt;
-    //Add the required ZooKeeper auth system properties so that tests will pass!
-    System.setProperty(&apos;java.security.auth.login.config&apos;, &quot;${System.getProperty(&apos;user.dir&apos;)}/test/unit/jaas_test.config&quot;)
-    System.setProperty(&apos;zookeeper.authProvider.1&apos;, &apos;org.apache.zookeeper.server.auth.SASLAuthenticationProvider&apos;)
-    grailsConsole.addStatus &quot;Running tests with the following system properties:&quot;
-    grailsConsole.addStatus &quot;${System.getProperties()}&quot;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The above event is fired right before the first test is executed by &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; when using the &lt;code&gt;grails test-app&lt;/code&gt; command.  It sets the login configuration file to
-one that is packaged within the project and sets the &lt;code&gt;authProvider&lt;/code&gt; to the appropriate type (in our case, SASL).  There are many other events that you can listen
-for in order to perform logic upon firing.  You can see more information about &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; events in the &lt;a href=&quot;http://grails.org/doc/2.3.x/guide/commandLine.html#events&quot;&gt;documentation&lt;/a&gt; or
-by looking through the &lt;a href=&quot;http://gant.codehaus.org/&quot;&gt;Gant&lt;/a&gt; scripts in the &lt;code&gt;scripts&lt;/code&gt; folder of the &lt;a href=&quot;http://grails.org&quot;&gt;Grails&lt;/a&gt; installation.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
