@@ -1,24 +1,31 @@
 = Résumé
 Jonathan Pearlin
-2014-02-20
+2014-04-10
 :jbake-type: page
 :jbake-status: published
 :source-highlighter: prettify
 :id: résumé
 :boston_college: http://www.bc.edu/[Boston College]
 :dealer: http://www.dealer.com[Dealer.com]
+:eclipse: http://eclipse.org/[Eclipse]
+:git: http://git-scm.com/[Git]
 :gradle: http://www.gradle.org/[Gradle]
 :grails: http://grails.org[Grails]
 :groovy: http://groovy.codehaus.org[Groovy]
+:jenkins: http://jenkins-ci.org/[Jeknins]
+:junit: http://junit.org/[JUnit]
 :maven: http://maven.apache.org[Maven]
 :mongo: http://www.mongodb.org[MongoDB]
+:mysql: http://www.mysql.com/[MySQL]
 :phi_beta_kappa: http://pbk.org[Phi Beta Kappa]
 :rabbit: http://www.rabbitmq.com[RabbitMQ]
 :red_sox: http://boston.redsox.mlb.com/index.jsp?c_id=bos[The Boston Red Sox]
+:rest: http://en.wikipedia.org/wiki/Representational_state_transfer[REST]
 :sparta: http://www.sparta.com[Sparta, Inc.]
 :spock: https://code.google.com/p/spock/[Spock]
 :spring: http://spring.io[Spring]
 :staples: http://www.staples.com[Staples]
+:tomcat: http://tomcat.apache.org/[Apache Tomcat]
 :zookeeper: http://zookeeper.apache.org/[Apache ZooKeeper]
 :icons: font
 :toc:
@@ -28,7 +35,10 @@ toc::[]
 
 == Headline
 
-Software developer who is always looking for the next big challenge. My current focus is in building robust, scalable web-based applications that run on the JVM. I am always open to expanding my knowledge of new technologies, techniques and tricks. I enjoy a mix of development, evangelizing and mentoring. I am a sucker for writing unit tests, running performance tests and finding creative ways to make sure that the http://www.youtube.com/watch?v=KME46w6jU74["flowers are still standing"] when performing architecture refactors. I like contributing to open source projects and enjoy collaboration with others.
+Software developer who is not afraid to tackle any challenge. My current focus is on building and supporting robust, scalable web-based applications that run on the JVM, evangelism of technology
+and mentoring.  I am always open to expanding my knowledge of new technologies, techniques and tricks.  I believe in  writing unit tests, running performance tests and finding  creative ways to
+make sure that the http://www.youtube.com/watch?v=KME46w6jU74["flowers are still standing"] when performing architecture refactors. I enjoy contributing to open source projects and collaborating
+with others.
 
 == Skills
 
@@ -36,9 +46,9 @@ Software developer who is always looking for the next big challenge. My current 
 |=======
 3+<|Current
 |Java |{groovy} |{grails} |{spring} |{maven}
-|Git |{spock} |{Gradle} |{zookeeper} |{mongo}
-|{rabbit} |Apache Tomcat |JUnit |Eclipse |REST
-|HTML |CSS |JavaScript |MySQL |SCRUM
+|{git} |{spock} |{gradle} |{zookeeper} |{mongo}
+|{rabbit} |{tomcat} |{junit} |{eclipse} |{rest}
+|{jenkins} |HTML |CSS |JavaScript |{mysql} |SCRUM
 |=======
 
 [width="50%", cols="^m,^m,^m", frame="topbot", options="header"]
@@ -56,7 +66,7 @@ Software developer who is always looking for the next big challenge. My current 
 *_Technical Lead - Frameworks_* +
 July 2011 – Present
 
-* Responsible for design and implementation of cross-cutting, framework level software for use in {dealer}’s PAAS architecture. Projects include metrics reporting and gathering framework, centralized configuration system utilizing {zookeeper} and upgrades and upkeep of {grails}-based software suite.
+* Responsible for design and implementation of cross-cutting, framework level software for use in {dealer}’s http://en.wikipedia.org/wiki/Software_as_a_service[SaaS] architecture. Projects include metrics reporting and gathering framework, centralized configuration system utilizing {zookeeper} and upgrades and upkeep of {grails}-based software suite.
 * Provide code reviews, analysis and consultation for members of product development teams with engineering, including mentoring of junior staff.
 * Evangelize technologies within engineering, such as the adoption of {grails}, {groovy}, {maven}, {rabbit}, {mongo}, {spring} and other technologies.
 * Contribute internal blog posts and presentations on topics relevant to engineering.
