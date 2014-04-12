@@ -1,27 +1,37 @@
 buildscript {
-  repositories {
-      mavenLocal() // needed to use the local JBake 2.3.0 build
-      mavenCentral()
-      jcenter()
-  }
+    repositories {
+        mavenLocal() // needed to use the local JBake 2.3.0 build
+        mavenCentral()
+        jcenter()
+    }
 
-  dependencies {
-    classpath 'me.champeau.gradle:jbake-gradle-plugin:0.1-SNAPSHOT'
-    classpath 'org.asciidoctor:asciidoctor-java-integration:0.1.4'
-    classpath 'org.freemarker:freemarker:2.3.19'
-    classpath 'org.pegdown:pegdown:1.4.1'
-  }
+    dependencies {
+        classpath 'me.champeau.gradle:jbake-gradle-plugin:0.1-SNAPSHOT'
+        classpath 'org.asciidoctor:asciidoctor-java-integration:0.1.4'
+        classpath 'org.freemarker:freemarker:2.3.19'
+        classpath 'org.pegdown:pegdown:1.4.1'
+        classpath 'org.ajoberstar:gradle-git:0.7.1'
+    }
 }
 
 apply plugin: 'jbake'
+apply plugin: 'jetty'
+apply from: 'gradle/publish.gradle'
 
 jbake {
-   input = file('src/jbake')
-   output = file('build/jbake')
-   clearCache = true
+    input = file('src/jbake')
+    output = file('build/jbake')
+    clearCache = true
 }
 
-task publish(type: GradleBuild) {
-    buildFile = 'publish.gradle'
-    tasks = ['publishGhPages']
+jettyRun {
+	httpPort = 8820
+	contextPath = 'blog'
+	webAppSourceDirectory = file("$buildDir/jbake")
 }
+
+// Re-generate content using JBake before launching the local Jetty server.
+project.tasks.jettyRun.dependsOn([project.tasks.jbake])
+
+// Re-generate content using JBake before publishing to GitHub.
+project.tasks.publish.dependsOn([project.tasks.jbake])

@@ -1,0 +1,61 @@
+= Add a custom GitHub activity stream to your blog
+Jonathan Pearlin
+2014-05-06
+:jbake-type: post
+:jbake-tags: github,jquery,bootstrap,blog
+:jbake-status: published
+:source-highlighter: prettify
+:id: github_activity_menu
+:icons: font
+
+Ingredients:
+
+* JQuery
+* Bootstrap 3.1.1 Panels - http://getbootstrap.com/components/#panels-list-group 
+* Font Awesome 4.0.3 - http://fortawesome.github.io/Font-Awesome/
+* GitHub Events API - https://developer.github.com/v3/activity/events and https://developer.github.com/v3/activity/events/types/
+* GitHub Octicon - https://github.com/styleguide/css/7.0 + https://github.com/rummik/octicon
+
+Process:
+
+1) Modified template to add custom Bootstrap panel to menu template
+2) Tweaked CSS to format panel
+3) Added Octicon CSS to get GitHub icon font
+4) Wrote JavaScript to call GitHub API
+
+// HTML
+
+<div id="activity" class="pull-left">
+    <div class="panel panel-primary">
+          <!-- Default panel contents -->
+          <div class="panel-heading"><a target="_blank" href="http://github.com/jdpgrailsdev?tab=activity"><i class="fa fa-github"></i> My Recent GitHub Activity</a></div>
+		  <div class="panel-body">
+		      <i class='icon-spinner icon-spin icon-large'></i> Loading...
+		  </div>
+          <!-- List group -->
+          <ul class="list-group">
+          </ul>
+    </div>
+</div>
+
+
+// CSS
+
+#activity {
+  padding-top: 110px;
+  padding-left: 20px;
+  width: 275px;	
+}
+
+#wrap > #activity > .panel > ul {
+  margin-left: 0px;
+}
+
+#wrap > #activity > .panel > .panel-heading > a {
+	color: #ffffff;
+}
+
+.relativeTime {
+	color: #BBBBBB;
+    font-size: 12px;
+}

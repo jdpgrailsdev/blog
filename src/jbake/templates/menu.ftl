@@ -13,6 +13,7 @@
                         <ul class="nav navbar-nav">
                             <li><a href="/blog/about.html">About</a></li>
                             <li><a href="/blog/resume.html">Résumé</a></li>
+                            <li><a href="/blog/friends.html">Friends</a></li>
                             <li class="dropdown">
                                 <a data-toggle="dropdown" href="#">Tags<b class="caret"></b></a>
                                 <ul class="dropdown-menu" role="menu">
@@ -34,4 +35,16 @@
                     </div>
                 </div>
             </div>
+			<div id="activity" class="pull-left">
+	            <div class="panel panel-primary">
+	                  <!-- Default panel contents -->
+	                  <div class="panel-heading"><a target="_blank" href="http://github.com/jdpgrailsdev?tab=activity"><i class="fa fa-github"></i> My Recent GitHub Activity</a></div>
+					  <div class="panel-body">
+					      <i class='icon-spinner icon-spin icon-large'></i> Loading...
+					  </div>
+	                  <!-- List group -->
+                      <ul class="list-group">
+	                  </ul>
+	            </div>
+			</div>
             <div class="container">

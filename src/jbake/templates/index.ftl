@@ -5,6 +5,7 @@
                 <div class="page-header">
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
+
 <#assign lastposts = posts[0..3]>
 <#list lastposts as post>
        <#if (post.status == "published")>
@@ -16,7 +17,7 @@
 
                 <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog${post.uri}"></div>
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog${post.uri}" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog${post.uri}" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog${post.uri}" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
                    <p>${post.body}</p>
                 <p><a href="/blog${post.uri}#disqus_thread">Comments</a></p>

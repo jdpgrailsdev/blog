@@ -1,0 +1,233 @@
+= Code Coverage with Cobertura
+Jonathan Pearlin
+2014-04-29
+:jbake-type: post
+:jbake-tags: gradle,cobertura
+:jbake-status: published
+:source-highlighter: prettify
+:id: gradle_cobertura
+:cobertura: http://cobertura.github.io/cobertura/[Cobertura]
+:cobertura_gradle_plugin: https://github.com/stevesaliman/gradle-cobertura-plugin[Cobertura Gradle Plugin]
+:cobertura_grails_plugin: http://grails.org/plugin/code-coverage[Cobertura Grails Plugin]
+:cobertura_maven_plugin: http://mojo.codehaus.org/cobertura-maven-plugin/[Cobertura Maven Plugin]
+:gradle: http://gradle.org[Gradle]
+:grails: http://grails.org[Grails]
+:maven: http://maven.apache.org/[Maven]
+:icons: font
+
+In all of my projects, I typically like to include unit tests and unit test coverage analysis to determine the effectiveness of my tests.  While there
+are different Java code coverage packages out there, I normally use {cobertura}, mostly due to ease of use, features and familiarity with it.  In this
+post, I am going to cover the different ways to configure and use {cobertura} as part of {maven}, {grails} and {gradle} projects.
+
+== Maven
+
+In order to perform {cobertura} instrumentation and generate coverage reports in a {maven} project, the first thing that you will need to do is to
+include the {cobertura_maven_plugin} in your project's `pom.xml` file:
+
+[source,xml]
+.pom.xml
+----
+<plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>cobertura-maven-plugin</artifactId>
+    <version>2.6</version>
+    <configuration>
+        <formats>
+            <format>html</format>		<1>
+            <format>xml</format>
+        </formats>
+        <outputDirectory>${project.build.directory}/surefire-reports/cobertura</outputDirectory>		<2>
+        <instrumentation>
+            <ignoreTrivial>true</ignoreTrivial>			<3>
+            <ignores>
+                <ignore>org.slf4j.Logger.*</ignore>		<4>
+            </ignores>
+            <excludes>
+                <exclude>**/Example.class</exclude>		<5>
+            </excludes>
+        </instrumentation>
+    </configuration>
+    <executions>
+        <execution>
+            <phase>package</phase>			<6>
+            <goals>
+                <goal>cobertura</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+<1> Enables the output format(s) for the generated coverage report(s).
+<2> Sets the output location for the generated coverage report(s).
+<3> Instructs {cobertura} to ignore trivial methods, such as getters and setters when producing the coverage report(s).
+<4> Instructs {cobertura} to ignore any references to methods of the `org.slf4j.Logger` class when producing the coverage report(s).
+<5> Provides {cobertura} with a list of compiled class files to ignore when producing the coverage report(s).
+<6> Binds the `cobertura` goal of the {cobertura_maven_plugin} to the `package` phase of the https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference[Maven Build Lifecycle].
+
+The configuration of the {cobertura_maven_plugin} shown above will cause the `cobertura` goal to execute automatically during the `package` phase of the
+{maven} lifecycle.  For instance, if the following command is executed on a {maven} project:
+
+    ++maven clean package++
+
+then the {cobertura_maven_plugin} will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
+manually invoke the plugin by running the goal explicitly in the project:
+
+    ++maven cobertura++
+
+For additional information on the configuration and use of the {cobertura_maven_plugin}, consult the http://mojo.codehaus.org/cobertura-maven-plugin/usage.html[usage] and
+http://mojo.codehaus.org/cobertura-maven-plugin/cobertura-mojo.html[cobertura goal] documentation.
+
+Finally, this all assumes that you have unit tests that will execute as part of the `test` phase of the https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference[Maven Build Lifecycle].  Take
+a look at the http://maven.apache.org/surefire/maven-surefire-plugin/[Maven Surefire Plugin] for an example of how to execute unit tests as part of a {maven} build.
+
+== Grails
+
+Like with {maven}, there is a {cobertura} plugin for the {grails} framework.  The first step to enabling the generation of {cobertura} code coverage report(s) in a {grails} project is to
+include the {cobertura_grails_plugin} as a dependency in your `BuildConfig.groovy`, `pom.xml` or `build.gradle`, depending on which build system your project uses:
+
+[source,groovy]
+.BuildConfig.groovy
+----
+plugins {
+    test ':code-coverage:1.2.7'		<1>
+}
+----
+<1> Dependencies in `BuildConfig.groovy` without a group ID are assumed to have a `org.grails` or `org.grails.plugins` as a group ID, depending on which closure they are declared in.
+
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>org.grails.plugins</groupId>
+    <artifactId>code-coverage</artifactId>
+    <version>1.2.7</version>
+    <scope>test</scope>
+    <type>zip</type>
+</dependency>
+----
+
+[source,groovy]
+.build.gradle
+----
+dependencies {
+    test 'org.grails.plugins:code-coverage:1.2.7'
+}
+----
+
+The next step is to configure the {cobertura_grails_plugin}, also in `BuildConfig.groovy`:
+
+[source,groovy]
+.BuildConfig.groovy
+----
+coverage {
+    enabledByDefault = true			<1>
+    html = true			<2>
+    xml = true
+
+    exclusions = ['**/*Example*']			<3>
+}
+----
+<1> Automatically instruments the code and generates the coverage report(s) when running tests.
+<2> Enables the output format(s) for the generated coverage report(s).
+<3> Provides {cobertura} with a list of compiled class files to ignore when producing the coverage report(s).
+
+The configuration of the {cobertura_grails_plugin} shown above will cause the the plugin to execute automatically when running the `test-app` {grails} command.  For instance,
+if the following command is executed on a {grails} project:
+
+    ++grails test-app :unit++
+
+then the {cobertura_grails_plugin} will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
+manually invoke the plugin by adding an additional parameter to the `test-app` command:
+
+    ++grails test-app :unit --coverage++
+
+For additional information on the configuration and use of the {cobertura_grails_plugin}, consult the https://github.com/beckje01/grails-code-coverage[Grails Code Coverage plugin] documentation.
+
+As with the {cobertura_maven_plugin}, the code coverage report(s) will only be generated if there are unit tests or source files that can be under test present in the project.
+
+== Gradle
+
+There are multiple {gradle} plugins that provide {cobertura} functionality to a {gradle} project.  The one that I prefer to use is the {cobertura_gradle_plugin} that is maintained by Steve Saliman.
+This plugin provides much better configuration option and has much better documentation (at the time of writing) than the others.  Below is a sample {gradle} project file that includes the
+{cobertura_gradle_plugin}:
+
+[source,groovy]
+.build.gradle
+----
+apply plugin: 'groovy'
+apply plugin: 'cobertura'			<1>
+
+group = 'com.example'
+version = '1.0.0-SNAPSHOT'
+description = """Sample project with Spock tests and Cobertura code coverage"""
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.saliman:gradle-cobertura-plugin:2.2.4'			<2>
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.codehaus.groovy', name: 'groovy-all', '2.2.1'
+
+    testCompile group: 'cglib', name: 'cglib-nodeps', version:'2.2.2'
+    testCompile group: 'junit', name: 'junit-dep', version:'4.11'
+    testCompile group: 'org.spockframework', name: 'spock-core', '0.7-groovy-2.0'
+    testCompile group: 'org.objenesis', name: 'objenesis', version:'1.2'
+}
+
+test {
+    filter {
+        includeTestsMatching "*Spec"
+    }
+}
+
+cobertura {
+    coverageFormats = ['html', 'xml']			<3>
+    coverageIgnoreTrivial = true			<4>
+    coverageIgnores = ['org.slf4j.Logger.*']			<5>
+    coverageReportDir = new File("$buildDir/reports/cobertura")			<6>
+}
+
+test.finalizedBy(project.tasks.cobertura)			<7>
+----
+<1> Applies the {cobertura_gradle_plugin} to this build script.  This means that the tasks registered by the plugin will be available to be executed by this project.
+<2> Tells {gradle} to add the JAR that contains the {cobertura_gradle_plugin} and its tasks to the classpath for the build script.  This is required for {gradle} to be able to find the plugin.
+<3> Enables the output format(s) for the generated coverage report(s).
+<4> Instructs {cobertura} to ignore trivial methods, such as getters and setters when producing the coverage report(s).
+<5> Instructs {cobertura} to ignore any references to methods of the `org.slf4j.Logger` class when producing the coverage report(s).
+<6> Sets the output location for the generated coverage report(s).
+<7> Tells {gradle} to automatically execute the `cobertura` task after the `test` task has completed.
+
+The configuration of the {cobertura_gradle_plugin} shown above will cause the the plugin to execute automatically after the `test` task completes.  For instance,
+if the following command is executed on a {gradle} project:
+
+    ++./gradlew test++
+
+then the {cobertura_gradle_plugin} will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
+manually invoke the plugin by running the `cobertura` task explicitly:
+
+    ++./gradlew cobertura++
+
+For additional information on the configuration and use of the plugin, consult the documentation on its https://github.com/stevesaliman/gradle-cobertura-plugin[GitHub repository].
+
+As with the {cobertura_maven_plugin} and {cobertura_grails_plugin}, the code coverage report(s) will only be generated if there are unit tests or source files that can be under test present in the project.
+
+== Summary
+
+The examples above illustrate how I normally configure the various plugins for use in the different build systems outlined in this post.  Once you have found a configuration that works for you, I would
+recommend looking into integration with your build system/continuous integration in order to publish reports and determine the health of a build based on additions or regressions in the amount of code
+under test for your project.  That being said, just having the ability to generate code coverage to determine the effectiveness of unit tests is still a step in the right direction towards
+ensuring the stability of any code base.

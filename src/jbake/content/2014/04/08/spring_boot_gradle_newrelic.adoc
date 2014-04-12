@@ -27,7 +27,7 @@ springBoot {
     agent = file('/opt/newrelic/newrelic.jar')			<1>
 }
 ----
-<1>This is the path to where ever you downloaded and the {newrelic} agent JAR to that should include your customized YAML configuration file.
+<1> This is the path to where ever you downloaded and the {newrelic} agent JAR to that should include your customized YAML configuration file.
 
 I restarted my application using the {spring_boot} {gradle} task (`run`) and metrics started flowing!  This is great, but it depends on a hard-coded path to the installed {newrelic} agent (yuck).
 Because you can do anything with {gradle} (slight exaggeration), I figured that with some {gradle}-foo, I could include the {newrelic} agent as a dependency, download it and point to the
