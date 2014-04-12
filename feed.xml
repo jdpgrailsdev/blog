@@ -6,8 +6,8 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 8 Apr 2014 08:05:25 -0400</pubDate>
-        <lastBuildDate>Tue, 8 Apr 2014 08:05:25 -0400</lastBuildDate>
+        <pubDate>Sat, 12 Apr 2014 18:34:13 -0400</pubDate>
+        <lastBuildDate>Sat, 12 Apr 2014 18:34:13 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
@@ -39,8 +39,13 @@ springBoot {
 }&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;&amp;lt;1&amp;gt;This is the path to where ever you downloaded and the &lt;a href=&quot;http://newrelic.com&quot;&gt;New Relic&lt;/a&gt; agent JAR to that should include your customized YAML configuration file.&lt;/p&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;This is the path to where ever you downloaded and the &lt;a href=&quot;http://newrelic.com&quot;&gt;New Relic&lt;/a&gt; agent JAR to that should include your customized YAML configuration file.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;I restarted my application using the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot;&gt;Spring Boot&lt;/a&gt; &lt;a href=&quot;http://gradle.org&quot;&gt;Gradle&lt;/a&gt; task (&lt;code&gt;run&lt;/code&gt;) and metrics started flowing!  This is great, but it depends on a hard-coded path to the installed &lt;a href=&quot;http://newrelic.com&quot;&gt;New Relic&lt;/a&gt; agent (yuck).

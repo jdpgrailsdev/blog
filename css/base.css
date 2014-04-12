@@ -43,16 +43,32 @@ body {
 -------------------------------------------------- */
 /* Not required for template or sticky footer method. */
 
+#activity {
+  padding-top: 110px;
+  padding-left: 20px;
+  width: 275px;	
+}
+
+#wrap > #activity > .panel > ul {
+  margin-left: 0px;
+}
+
+#wrap > #activity > .panel > .panel-heading > a {
+	color: #ffffff;
+}
+
 #wrap > .container {
   padding-top: 60px;
 }
+
 .container .credit {
   margin: 20px 0;
 }
 
-/*code {
-  font-size: 80%;
-}*/
+.relativeTime {
+	color: #BBBBBB;
+    font-size: 12px;
+}
 
 /* Bootstrap customizations */
 .navbar {

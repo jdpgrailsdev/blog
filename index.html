@@ -10,12 +10,13 @@
         <meta name="generator" content="JBake" />
 
         <!-- Le styles -->
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
         <link href="/blog/css/asciidoctor.css" rel="stylesheet">
         <link href="/blog/css/base.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
         <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
+		<link href='/blog/css/octicons.min.css' rel='stylesheet' type='text/css'>
 
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -48,6 +49,7 @@
                         <ul class="nav navbar-nav">
                             <li><a href="/blog/about.html">About</a></li>
                             <li><a href="/blog/resume.html">Résumé</a></li>
+                            <li><a href="/blog/friends.html">Friends</a></li>
                             <li class="dropdown">
                                 <a data-toggle="dropdown" href="#">Tags<b class="caret"></b></a>
                                 <ul class="dropdown-menu" role="menu">
@@ -69,10 +71,23 @@
                     </div>
                 </div>
             </div>
+			<div id="activity" class="pull-left">
+	            <div class="panel panel-primary">
+	                  <!-- Default panel contents -->
+	                  <div class="panel-heading"><a target="_blank" href="http://github.com/jdpgrailsdev?tab=activity"><i class="fa fa-github"></i> My Recent GitHub Activity</a></div>
+					  <div class="panel-body">
+					      <i class='icon-spinner icon-spin icon-large'></i> Loading...
+					  </div>
+	                  <!-- List group -->
+                      <ul class="list-group">
+	                  </ul>
+	            </div>
+			</div>
             <div class="container">
                 <div class="page-header">
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
+
                    <a href="/blog/2014/04/08/spring_boot_gradle_newrelic.html"><h1>Using the New Relic agent with Spring-Boot and Gradle</h1></a>
                    <p>08 April 2014</p>
                 <p><em>Tags: </em>
@@ -83,7 +98,7 @@
 
                 <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/04/08/spring_boot_gradle_newrelic.html"></div>
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/04/08/spring_boot_gradle_newrelic.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2014/04/08/spring_boot_gradle_newrelic.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/04/08/spring_boot_gradle_newrelic.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
                    <p><div id="preamble">
 <div class="sectionbody">
@@ -105,8 +120,13 @@ springBoot {
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>&lt;1&gt;This is the path to where ever you downloaded and the <a href="http://newrelic.com">New Relic</a> agent JAR to that should include your customized YAML configuration file.</p>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This is the path to where ever you downloaded and the <a href="http://newrelic.com">New Relic</a> agent JAR to that should include your customized YAML configuration file.</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>I restarted my application using the <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> <a href="http://gradle.org">Gradle</a> task (<code>run</code>) and metrics started flowing!  This is great, but it depends on a hard-coded path to the installed <a href="http://newrelic.com">New Relic</a> agent (yuck).
@@ -216,7 +236,7 @@ hard-coded paths are now removed from the equation.</p>
 
                 <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/04/03/maven_java8_javadoc.html"></div>
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/04/03/maven_java8_javadoc.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2014/04/03/maven_java8_javadoc.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/04/03/maven_java8_javadoc.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
                    <p><div id="preamble">
 <div class="sectionbody">
@@ -392,7 +412,7 @@ to apply the same profile trick for any differences until such a time that all t
 
                 <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/03/24/grails_logback.html"></div>
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/03/24/grails_logback.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2014/03/24/grails_logback.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/03/24/grails_logback.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
                    <p><div id="preamble">
 <div class="sectionbody">
@@ -627,7 +647,7 @@ spare time, I might attempt to make some modifications to the <a href="http://gr
 
                 <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/03/18/grails_bean_builder.html"></div>
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/03/18/grails_bean_builder.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://melix.github.io/blog/2014/03/18/grails_bean_builder.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/03/18/grails_bean_builder.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
                    <p><div id="preamble">
 <div class="sectionbody">
@@ -708,7 +728,7 @@ DSL just like in <a href="http://grails.org">Grails</a>, but that you could use 
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.1.0</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://twitter.github.com/bootstrap/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 
@@ -716,8 +736,9 @@ DSL just like in <a href="http://grails.org">Grails</a>, but that you could use 
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="https://code.jquery.com/jquery.js"></script>
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
         <script src="/blog/js/run_prettify.js"></script>
+        <script src="/blog/js/github_activity.js"></script>
         <script type="text/javascript">
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
             var disqus_shortname = 'jdpearlin'; // required: replace example with your forum shortname
@@ -738,7 +759,7 @@ DSL just like in <a href="http://grails.org">Grails</a>, but that you could use 
                 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
               })();
         </script>
-        <script>
+        <script type="text/javascript">
             (function(d, s, id) {
                   var js, fjs = d.getElementsByTagName(s)[0];
                   if (d.getElementById(id)) return;
@@ -748,7 +769,7 @@ DSL just like in <a href="http://grails.org">Grails</a>, but that you could use 
             }(document, 'script', 'facebook-jssdk'));
         </script>
         <script src="//platform.linkedin.com/in.js" type="text/javascript"></script>
-        <script>
+        <script type="text/javascript">
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
           (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
           m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
