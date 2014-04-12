@@ -89,6 +89,12 @@ $(document).ready(function() {
 			}		
 		});
 		
+		// If no events were found, display the "No recent activity" message.
+		if(count == 0) {
+			activityList.append("<li class=\"list-group-item\"><div><span class=\"octicon octicon-x\"></span>" + 
+				"<a href=\"https://github.com/jdpgrailsdev?tab=activity\" target=\"_blank\"> No recent activity</a></li>");
+		}
+		
 		// Add a link to the end of the list to see all of the activity on GitHub.com.
 		activityList.append("<li class=\"list-group-item\"><div><span class=\"octicon octicon-rss\"></span>" + 
 			"<a href=\"https://github.com/jdpgrailsdev?tab=activity\" target=\"_blank\"> See all activity @ GitHub</a></li>");
