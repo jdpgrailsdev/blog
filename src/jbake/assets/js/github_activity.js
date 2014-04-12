@@ -73,7 +73,7 @@ $(document).ready(function() {
 					link = githubEvent.payload.comment.html_url;
 					text = "Commented on pull request " + githubEvent.repo.name + "#" 
 						+ extractPullRequestNumber(githubEvent.payload.comment.pull_request_url);
-				} else if(githubEvent.type == 'PushEvent') {
+				} else if(githubEvent.type == 'PushEvent' && !(githubEvent.repo.name == 'jdpgrailsdev/blog')) {
 					octicon = "octicon-git-commit";
 					link = "http://github.com/" + githubEvent.repo.name + "/commit/" + githubEvent.payload.head;
 					text = "Pushed to " + normalizeBranch(githubEvent.payload.ref) + " at " + githubEvent.repo.name;
