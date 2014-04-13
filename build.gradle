@@ -25,9 +25,9 @@ jbake {
 }
 
 jettyRun {
-	httpPort = 8820
-	contextPath = 'blog'
-	webAppSourceDirectory = file("$buildDir/jbake")
+    httpPort = 8820
+    contextPath = 'blog'
+    webAppSourceDirectory = file("$buildDir/jbake")
 }
 
 // Re-generate content using JBake before launching the local Jetty server.

@@ -5,9 +5,10 @@ Jonathan Pearlin
 :jbake-tags: grails,tattletale
 :jbake-status: published
 :source-highlighter: prettify
+:linkattrs:
 :id: grails_tattletale_plugin
 :icons: font
 
-I am pleased to announce that I have officially released the http://grails.org/plugin/tattletale[Grails Tattletale plugin] to the http://grails.org/plugins/[Grails Plugins portal].
+I am pleased to announce that I have officially released the http://grails.org/plugin/tattletale[Grails Tattletale plugin, window="_blank"] to the http://grails.org/plugins/[Grails Plugins portal, window="_blank"].
 
-Full documentation can be found https://github.com/jdpgrailsdev/grails-tattletale/blob/master/README.md[here].
+Full documentation can be found https://github.com/jdpgrailsdev/grails-tattletale/blob/master/README.md[here, window="_blank"].

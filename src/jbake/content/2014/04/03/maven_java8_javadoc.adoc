@@ -5,10 +5,11 @@ Jonathan Pearlin
 :jbake-tags: maven,java
 :jbake-status: published
 :source-highlighter: prettify
+:linkattrs:
 :id: maven_javadoc_java8
-:maven: http://maven.apache.org/[Maven]
-:java8: http://www.oracle.com/technetwork/java/javase/downloads/index.html[Java 8]
-:maven_javadoc: http://maven.apache.org/plugins/maven-javadoc-plugin/[Maven JavaDoc plugin]
+:maven: http://maven.apache.org/[Maven, window="_blank"]
+:java8: http://www.oracle.com/technetwork/java/javase/downloads/index.html[Java 8, window="_blank"]
+:maven_javadoc: http://maven.apache.org/plugins/maven-javadoc-plugin/[Maven JavaDoc plugin, window="_blank"]
 :icons: font
 
 On March 18th, Oracle officially released {java8}.  Eager to start using some of the new features (in a non-beta release), I quickly downloaded and installed the JDK on my laptop.  I switched my
@@ -20,7 +21,7 @@ system to use {java8} by default and set upon compiling one of my projects.  To 
 [ERROR] Exit code: 1 - /Projects/libraries/test-library/src/main/java/com/test/Tester.java:30: warning: no @return
 ----
 
-It turns out that {java8} includes a much more strict set of rules for its doclint.  According to  http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html[Steven Colebourne], the
+It turns out that {java8} includes a much more strict set of rules for its doclint.  According to  http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html[Steven Colebourne, window="_blank"], the
 {java8} doclint by default enforces the following rules when processing JavaDoc comments:
 
 * No self-closed HTML tags, such as <br /> or <a id="x" />
@@ -36,7 +37,7 @@ It turns out that {java8} includes a much more strict set of rules for its docli
 * No broken @throws references, the first word must be a class name
 
 This is fine if you are starting with a green field project, but if you are like me and have to switch between new and legacy code bases, it may not be possible to correct all of these
-issues in order to get {maven_javadoc} generated using {java8}.  Per http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html[Steven Colebourne's blog], the solution is to
+issues in order to get {maven_javadoc} generated using {java8}.  Per http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html[Steven Colebourne's blog, window="_blank"], the solution is to
 include the `-Xdoclint:none` JVM argument in the configuration of the {maven_javadoc}:
 
 [source,xml]
@@ -64,7 +65,7 @@ include the `-Xdoclint:none` JVM argument in the configuration of the {maven_jav
 
 This works great when building with {java8}.  However, if you switch back to Java 7 and attempt to build with the `-Xdoclint:none` JVM argument, the build will fail, as Java 7 does not
 recognize that JVM argument.  What can we do to support JavaDoc generation via {maven} for both Java 7 and Java 8 on a legacy code base?  Use
-http://maven.apache.org/guides/introduction/introduction-to-profiles.html[Maven profiles]!  Instead of modifying the existing {maven_javadoc} declaration in our `pom.xml` file, let's instead
+http://maven.apache.org/guides/introduction/introduction-to-profiles.html[Maven profiles, window="_blank"]!  Instead of modifying the existing {maven_javadoc} declaration in our `pom.xml` file, let's instead
 add a new profile that only activates when we are building with {java8}:
 
 [source,xml]

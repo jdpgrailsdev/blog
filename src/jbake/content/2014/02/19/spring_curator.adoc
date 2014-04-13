@@ -5,9 +5,10 @@ Jonathan Pearlin
 :jbake-tags: java,spring,curator,zookeeper
 :jbake-status: published
 :source-highlighter: prettify
+:linkattrs:
 :id: spring_apache_curator
-:curator: http://curator.apache.org/[Apache Curator]
-:zookeeper: http://zookeeper.apache.org/[Apache ZooKeeper]
+:curator: http://curator.apache.org/[Apache Curator, window="_blank"]
+:zookeeper: http://zookeeper.apache.org/[Apache ZooKeeper, window="_blank"]
 :icons: font
 
 Recently, I have been working a lot with {zookeeper}.  {zookeeper} provides a Java-based driver, but it does leave a little bit to be desired.  In steps {curator}, which was originally created and open-sourced
@@ -15,14 +16,14 @@ by https://github.com/netflix/curator[Neflix] and is now maintained by Apache.  
 as retry attempts, listeners and other utilities that would otherwise need to be manually wired up using the low-level Java-based driver.  In order to support the use of {curator} within a Spring-based application,
 I decided to create a library that makes it easy to define {curator} clients in a Spring configuration for use in an application.  One of the thinks to know about the {curator} client is that you only need one
 per instance/ensemble of {zookeeper}.  Therefore, using Spring to manage the injection of a Singleton bean into a class that needs access to the client is a perfect fit.  The repository can be found on
-https://github.com/jdpgrailsdev/spring-curator[GitHub].  Please check it out and let me know what you think.  As always, contributions are welcome!
+https://github.com/jdpgrailsdev/spring-curator[GitHub, window="_blank"].  Please check it out and let me know what you think.  As always, contributions are welcome!
 
 === Future Enhancements ===
 
-Currently, the https://github.com/jdpgrailsdev/spring-curator[spring-curator] library only supports the definition, creation and injection of {curator} client instances.  In the future, I would like to add the
+Currently, the https://github.com/jdpgrailsdev/spring-curator[spring-curator, window="_blank"] library only supports the definition, creation and injection of {curator} client instances.  In the future, I would like to add the
 following support to the `spring-curator` library:
 
-* Support for registring custom retry policies
+* Support for registering custom retry policies
 * Definition of the following via the Spring configuration:
 ** `LeaderLatch`
 ** `LeaderSelector`

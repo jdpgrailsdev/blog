@@ -5,23 +5,24 @@ Jonathan Pearlin
 :jbake-tags: grails,ckeditor,gant
 :jbake-status: published
 :source-highlighter: prettify
+:linkattrs:
 :id: grails_gant_ckeditor
-:ckeditor: http://ckeditor.com/[CKEditor]
-:gant: http://gant.codehaus.org/[Gant]
-:grails: http://grails.org[Grails]
-:guava: http://code.google.com/p/guava-libraries/[Guava]
-:ivy: https://ant.apache.org/ivy/[Ivy]
-:maven: http://maven.apache.org/[Maven]
+:ckeditor: http://ckeditor.com/[CKEditor, window="_blank"]
+:gant: http://gant.codehaus.org/[Gant, window="_blank"]
+:grails: http://grails.org[Grails, window="_blank"]
+:guava: http://code.google.com/p/guava-libraries/[Guava, window="_blank"]
+:ivy: https://ant.apache.org/ivy/[Ivy, window="_blank"]
+:maven: http://maven.apache.org/[Maven, window="_blank"]
 :icons: font
 
 The {grails} Framework has some interesting quirks, particular when it comes to dependency management and build/deploy.  With a {grails} plugin, you can define dependencies in its `BuildConfig.groovy` source file or you can place Java JAR files in the `lib`
 directory of the plugin.  Either will get included in the packaged plugin (and by extension, the packaged WAR of the application that includes the plugin) unless other special steps are taken to preclude them at package time.  This became an issue for me
 recently when using the builder provided by {ckeditor} within a {grails} plugin to compile from source the {ckeditor} JavaScript files.  We had originally put the {ckeditor} builder JAR in the `lib` folder of a plugin, as the {ckeditor} project does not
 publish its artifacts to {maven}.  This worked fine until we happened to update the version of {guava} that the plugin depended on.  The net result of this was a fun game of classpath roulette, as the builder JAR provided by {ckeditor} includes copies of
-an older version of {guava} inside its JAR (don't get me started on this).  I was able to determine this by using JBoss's http://www.jboss.org/tattletale library to check for duplicate classes on the classpath (In a future post, I will talk about how I added
-JBoss's http://www.jboss.org/tattletale[tattletale] to our {grails} builds to check for duplicate classes on the classpath, though it less important in {grails} 2.3+, where you can use {maven} POM files and the enforcer plugin to do the same thing).  Because
-we had the JAR in the `lib` directory, it gets included on the classpath and packaged in the WAR, but does not get conflict resolved with any dependencies included in the `BuildConfig.groovy` file.  Obviously, {ivy} only knows about the dependencies declared
-in the closures in `BuildConfig.groovy`.
+an older version of {guava} inside its JAR (don't get me started on this).  I was able to determine this by using JBoss's http://www.jboss.org/tattletale[Tattletale, window="_blank"] library to check for duplicate classes on the classpath (In a future post,
+I will talk about how I added JBoss's http://www.jboss.org/tattletale[Tattletale, window="_blank"] to our {grails} builds to check for duplicate classes on the classpath, though it less important in {grails} 2.3+, where you can use {maven} POM files and the
+enforcer plugin to do the same thing).  Because we had the JAR in the `lib` directory, it gets included on the classpath and packaged in the WAR, but does not get conflict resolved with any dependencies included in the `BuildConfig.groovy` file.  Obviously,
+{ivy} only knows about the dependencies declared in the closures in `BuildConfig.groovy`.
 
 === Build Scope to the rescue
 

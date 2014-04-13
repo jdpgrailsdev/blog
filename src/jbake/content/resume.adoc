@@ -4,29 +4,30 @@ Jonathan Pearlin
 :jbake-type: page
 :jbake-status: published
 :source-highlighter: prettify
+:linkattrs:
 :id: résumé
-:boston_college: http://www.bc.edu/[Boston College]
-:dealer: http://www.dealer.com[Dealer.com]
-:eclipse: http://eclipse.org/[Eclipse]
-:git: http://git-scm.com/[Git]
-:gradle: http://www.gradle.org/[Gradle]
-:grails: http://grails.org[Grails]
-:groovy: http://groovy.codehaus.org[Groovy]
-:jenkins: http://jenkins-ci.org/[Jeknins]
-:junit: http://junit.org/[JUnit]
-:maven: http://maven.apache.org[Maven]
-:mongo: http://www.mongodb.org[MongoDB]
-:mysql: http://www.mysql.com/[MySQL]
-:phi_beta_kappa: http://pbk.org[Phi Beta Kappa]
-:rabbit: http://www.rabbitmq.com[RabbitMQ]
-:red_sox: http://boston.redsox.mlb.com/index.jsp?c_id=bos[The Boston Red Sox]
-:rest: http://en.wikipedia.org/wiki/Representational_state_transfer[REST]
-:sparta: http://www.sparta.com[Sparta, Inc.]
-:spock: https://code.google.com/p/spock/[Spock]
-:spring: http://spring.io[Spring]
-:staples: http://www.staples.com[Staples]
-:tomcat: http://tomcat.apache.org/[Apache Tomcat]
-:zookeeper: http://zookeeper.apache.org/[Apache ZooKeeper]
+:boston_college: http://www.bc.edu/[Boston College, window="_blank"]
+:dealer: http://www.dealer.com[Dealer.com, window="_blank"]
+:eclipse: http://eclipse.org/[Eclipse, window="_blank"]
+:git: http://git-scm.com/[Git, window="_blank"]
+:gradle: http://www.gradle.org/[Gradle, window="_blank"]
+:grails: http://grails.org[Grails, window="_blank"]
+:groovy: http://groovy.codehaus.org[Groovy, window="_blank"]
+:jenkins: http://jenkins-ci.org/[Jeknin, window="_blank"s]
+:junit: http://junit.org/[JUnit, window="_blank"]
+:maven: http://maven.apache.org[Maven, window="_blank"]
+:mongo: http://www.mongodb.org[MongoDB, window="_blank"]
+:mysql: http://www.mysql.com/[MySQL, window="_blank"]
+:phi_beta_kappa: http://pbk.org[Phi Beta Kappa, window="_blank"]
+:rabbit: http://www.rabbitmq.com[RabbitMQ, window="_blank"]
+:red_sox: http://boston.redsox.mlb.com/index.jsp?c_id=bos[The Boston Red Sox, window="_blank"]
+:rest: http://en.wikipedia.org/wiki/Representational_state_transfer[REST, window="_blank"]
+:sparta: http://www.sparta.com["Sparta, Inc.", window="_blank"]
+:spock: https://code.google.com/p/spock/[Spock, window="_blank"]
+:spring: http://spring.io[Spring, window="_blank"]
+:staples: http://www.staples.com["Staples, Inc.", window="_blank"]
+:tomcat: http://tomcat.apache.org/[Apache Tomcat, window="_blank"]
+:zookeeper: http://zookeeper.apache.org/[Apache ZooKeeper, window="_blank"]
 :icons: font
 :toc:
 :toc-placement: preambe
@@ -37,7 +38,7 @@ toc::[]
 
 Software developer who is not afraid to tackle any challenge. My current focus is on building and supporting robust, scalable web-based applications that run on the JVM, evangelism of technology
 and mentoring.  I am always open to expanding my knowledge of new technologies, techniques and tricks.  I believe in  writing unit tests, running performance tests and finding  creative ways to
-make sure that the http://www.youtube.com/watch?v=KME46w6jU74["flowers are still standing"] when performing architecture refactors. I enjoy contributing to open source projects and collaborating
+make sure that the http://www.youtube.com/watch?v=KME46w6jU74["flowers are still standing", window="_blank"] when performing architecture refactors. I enjoy contributing to open source projects and collaborating
 with others.
 
 == Skills
@@ -62,17 +63,17 @@ with others.
 
 == Experience
 
-[big]*{dealer} - https://www.google.com/maps/place/Dealer.Com/@44.4662738,-73.2141733,18z/data=!3m1!4b1!4m2!3m1!1s0x4cca7baab44f0923:0x24999beb5fd91ff1[Burlington, VT]* +
-*_Technical Lead - Frameworks_* +
+[big]*{dealer} - https://www.google.com/maps/place/Dealer.Com/@44.4662738,-73.2141733,18z/data=!3m1!4b1!4m2!3m1!1s0x4cca7baab44f0923:0x24999beb5fd91ff1["Burlington, VT", window="_blank"]* +
+*__Technical Lead - Frameworks__* +
 July 2011 – Present
 
-* Responsible for design and implementation of cross-cutting, framework level software for use in {dealer}’s http://en.wikipedia.org/wiki/Software_as_a_service[SaaS] architecture. Projects include metrics reporting and gathering framework, centralized configuration system utilizing {zookeeper} and upgrades and upkeep of {grails}-based software suite.
+* Responsible for design and implementation of cross-cutting, framework level software for use in {dealer}’s http://en.wikipedia.org/wiki/Software_as_a_service[SaaS, window="_blank"] architecture. Projects include metrics reporting and gathering framework, centralized configuration system utilizing {zookeeper} and upgrades and upkeep of {grails}-based software suite.
 * Provide code reviews, analysis and consultation for members of product development teams with engineering, including mentoring of junior staff.
 * Evangelize technologies within engineering, such as the adoption of {grails}, {groovy}, {maven}, {rabbit}, {mongo}, {spring} and other technologies.
 * Contribute internal blog posts and presentations on topics relevant to engineering.
 
-[big]*{sparta} - https://www.google.com/maps/place/Sparta+Inc/@38.8425392,-77.4384984,17z/data=!3m1!4b1!4m2!3m1!1s0x89b644f0d5d63dc1:0x9df660f04a591cfd[Centreville, VA]* +
-*_Technical Director – Visualization and Analysis Division_* +
+[big]*{sparta} - https://www.google.com/maps/place/Sparta+Inc/@38.8425392,-77.4384984,17z/data=!3m1!4b1!4m2!3m1!1s0x89b644f0d5d63dc1:0x9df660f04a591cfd["Centreville, VA", window="_blank"]* +
+*__Technical Director – Visualization and Analysis Division__* +
 March 2006 – July 2011
 
 * Responsible for division-wide technical direction, including system design, prototyping, requirement gathering, tracking development, and setting and enforcing development policies and procedures.
@@ -82,8 +83,8 @@ March 2006 – July 2011
 * Responsible for facilitating design and code reviews with peers.
 * Mentored junior developers to improve their design and programming skills.
 
-[big]*{staples} - https://www.google.com/maps/place/500+Staples+Dr/@42.2917388,-71.4893889,17z/data=!3m1!4b1!4m2!3m1!1s0x89e38a17ff986035:0x6796c2c3f2845735[Framingham, MA]* +
-*_Sr. Programmer Analyst - Retail Systems_* +
+[big]*{staples} - https://www.google.com/maps/place/500+Staples+Dr/@42.2917388,-71.4893889,17z/data=!3m1!4b1!4m2!3m1!1s0x89e38a17ff986035:0x6796c2c3f2845735["Framingham, MA", window="_blank"]* +
+*__Senior Programmer Analyst - Retail Systems__* +
 July 2003 – March 2006
 
 * Developed and maintained backend J2EE (using JMS, CMP, Castor XML Marshalling Framework and web services) application hosted in WebSphere Application Server 5.1 that is responsible for processing POS transactions in XML from all US retail stores (1300+) and forwarding them to DB2 and an AS/400 system for further processing.
@@ -96,8 +97,8 @@ July 2003 – March 2006
 * Supported J2EE applications (hosted in WebSphere Application Server 5.1 on RedHat Linux Enterprise 3.0 and DB2 8.2 on AIX) and legacy applications written in Visual Basic, Visual C++ and ASP.
 * Executed performance testing of new applications using Apache JMeter, Mercury SiteScope and IBM Tivoli Performance Analyzer and other monitoring software.
 
-[big]*{red_sox} - https://www.google.com/maps/place/Boston+Red+Sox/@42.3461357,-71.0982041,17z/data=!3m1!4b1!4m2!3m1!1s0x89e379f638628c4b:0x18da45f081a3b330[Boston, MA]* +
-*_Information Technology Intern_* +
+[big]*{red_sox} - https://www.google.com/maps/place/Boston+Red+Sox/@42.3461357,-71.0982041,17z/data=!3m1!4b1!4m2!3m1!1s0x89e379f638628c4b:0x18da45f081a3b330["Boston, MA", window="_blank"]* +
+*__Information Technology Intern__* +
 May 2002 – September 2002
 
 * Developed an intranet site using ASP, VB, and MS SQL technology.
@@ -106,20 +107,20 @@ May 2002 – September 2002
 
 == Education
 
-[big]*{boston_college} - https://www.google.com/maps/place/Boston+College/@42.3385287,-71.1762762,16z/data=!3m1!4b1!4m2!3m1!1s0x89e3785da725d4c9:0xb68ae90a5b8eb6e[Chestnut Hill, MA]* +
-*Degree:* Bachelor of Arts, _summa cum laude_, 2003 +
+[big]*{boston_college} - https://www.google.com/maps/place/Boston+College/@42.3385287,-71.1762762,16z/data=!3m1!4b1!4m2!3m1!1s0x89e3785da725d4c9:0xb68ae90a5b8eb6e["Chestnut Hill, MA", window="_blank"]* +
+*Degree:* Bachelor of Arts, __summa cum laude__, 2003 +
 *GPA*: 3.87/4.0 +
-*Major:* http://www.bc.edu/schools/cas/cs/[Computer Science] +
-*Minor:* http://www.bc.edu/content/bc/schools/cas/history.html[History] +
-*Distinctions:* Dean’s List 8 Semesters, {phi_beta_kappa} Honor Society, http://www.nscs.org/[National Society of Collegiate Scholars], http://www.bc.edu/content/bc/schools/cas/services/students/awards.html#soph%20scholar[Sophmore Scholar of the College] +
+*Major:* http://www.bc.edu/schools/cas/cs/[Computer Science, window="_blank"] +
+*Minor:* http://www.bc.edu/content/bc/schools/cas/history.html[History, window="_blank"] +
+*Distinctions:* Dean’s List 8 Semesters, {phi_beta_kappa} Honor Society, http://www.nscs.org/[National Society of Collegiate Scholars, window="_blank"], http://www.bc.edu/content/bc/schools/cas/services/students/awards.html#soph%20scholar[Sophmore Scholar of the College, window="_blank"] +
 
 == Presentations & Papers
 
-* http://www.scs-europe.net/services/ess2003/PDF/METH04.pdf["Simulation of a Distributed Mutual Exclusion Algorithm Using Multicast Communication"] - http://www.scs-europe.net/services/ess2003/[15th European Simulation Symposium and Exhibition], Delft, The Netherlands, October 26-29, 2003
-* https://rawgithub.com/jdpgrailsdev/vt-code-camp-2013-presentation/master/index.html#/start["Centralized Configuration Management with Apache ZooKeeper"] - http://vtcodecamp.org/2013/schedule[VT Code Camp], Burlington, VT, September 21, 2013
+* http://www.scs-europe.net/services/ess2003/PDF/METH04.pdf["Simulation of a Distributed Mutual Exclusion Algorithm Using Multicast Communication", window="_blank"] - http://www.scs-europe.net/services/ess2003/[15th European Simulation Symposium and Exhibition, window="_blank"], Delft, The Netherlands, October 26-29, 2003
+* https://rawgithub.com/jdpgrailsdev/vt-code-camp-2013-presentation/master/index.html#/start["Centralized Configuration Management with Apache ZooKeeper", window="_blank"] - http://vtcodecamp.org/2013/schedule[VT Code Camp, window="_blank"], Burlington, VT, September 21, 2013
 
 == Open Source Contributions
 
-* http://github.com/grails[Grails]
-* http://relation.to/Bloggers/The72HerosOfAS7[JBoss Application Server 7]
-* http://github.com/jdpgrailsdev[Personal GitHub Account]
+* http://github.com/grails[Grails, window="_blank"]
+* http://relation.to/Bloggers/The72HerosOfAS7[JBoss Application Server 7, window="_blank"]
+* http://github.com/jdpgrailsdev[Personal GitHub Account, window="_blank"]

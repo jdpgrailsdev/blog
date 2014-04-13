@@ -5,17 +5,18 @@ Jonathan Pearlin
 :jbake-tags: grails,tattletale
 :jbake-status: published
 :source-highlighter: prettify
+:linkattrs:
 :id: grails_tattletale
-:gant: http://gant.codehaus.org/[Gant]
-:grails: http://grails.org[Grails]
-:maven: http://maven.apache.org/[Maven]
-:maven-enforcer: http://maven.apache.org/enforcer/maven-enforcer-plugin/[Maven Enforcer plugin]
-:tattletale: http://www.jboss.org/tattletale[JBoss tattletale]
+:gant: http://gant.codehaus.org/[Gant, window="_blank"]
+:grails: http://grails.org[Grails, window="_blank"]
+:maven: http://maven.apache.org/[Maven, window="_blank"]
+:maven-enforcer: http://maven.apache.org/enforcer/maven-enforcer-plugin/[Maven Enforcer plugin, window="_blank"]
+:tattletale: http://www.jboss.org/tattletale[JBoss Tattletale, window="_blank"]
 :icons: font
 
 Prior to version 2.3 of the {grails} Framework, it was difficult, if not impossible, to use {maven} to build a {grails}-based application or plugin.  Besides losing the obvious benefits of {maven}-based builds,
 such as dependency management and the rich ecosystem of existing plugins, one of the things that is lacking is an easy way to enforce environmental constraints, such as with the {maven-enforcer}. The {maven-enforcer}
-includes the ability to http://mojo.codehaus.org/extra-enforcer-rules/banDuplicateClasses.html[fail a build when detecting multiple versions of the same class on the classpath].  This is particularly handy when an
+includes the ability to http://mojo.codehaus.org/extra-enforcer-rules/banDuplicateClasses.html[fail a build when detecting multiple versions of the same class on the classpath, window="_blank"].  This is particularly handy when an
 application depends on libraries that include classes from another library in order to reduce the number of required dependencies (this is particularly common with libraries that are not published to a {maven}
 repository or some other type of dependency management repository).  Since using the {maven-enforcer} is not an option in applications using {grails} <2.3, I decided to look at other alternatives to provide the
 duplicate class checking functionality.

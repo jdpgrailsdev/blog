@@ -5,17 +5,18 @@ Jonathan Pearlin
 :jbake-tags: grails,gradle,logback
 :jbake-status: published
 :source-highlighter: prettify
+:linkattrs:
 :id: grails_gradle_logback
-:gradle: http://gradle.org[Gradle]
-:grails: http://grails.org[Grails]
-:grals_gradle: https://github.com/grails/grails-gradle-plugin/[Grails Gradle Plugin]
-:grails_logback: http://grails.org/plugin/logback[Grails Logback Plugin]
-:groovy: http://groovy.codehaus.org[Groovy]
-:logback: http://logback.qos.ch/[Logback]
-:maven: http://maven.apache.org/[Maven]
+:gradle: http://gradle.org[Gradle, window="_blank"]
+:grails: http://grails.org[Grails, window="_blank"]
+:grals_gradle: https://github.com/grails/grails-gradle-plugin/[Grails Gradle Plugin, window="_blank"]
+:grails_logback: http://grails.org/plugin/logback[Grails Logback Plugin, window="_blank"]
+:groovy: http://groovy.codehaus.org[Groovy, window="_blank"]
+:logback: http://logback.qos.ch/[Logback, window="_blank"]
+:maven: http://maven.apache.org/[Maven, window="_blank"]
 :icons: font
 
-In a http://jonathanpearlin.com/blog/2014/03/24/grails_logback.html[previous post], I discussed how to switch a {grails} application to use {logback} instead of Log4j for logging.  In that post, I
+In a http://jonathanpearlin.com/blog/2014/03/24/grails_logback.html[previous post, window="_blank"], I discussed how to switch a {grails} application to use {logback} instead of Log4j for logging.  In that post, I
 covered using both the {maven} support in Grails to configure the dependencies required to use {logback} with {grails}, as well as how to use the built in dependency management support via the
 `BuildConfig.groovy` dependencies DSL.  I did not cover how to make this all work with {gradle}.  Like in the previous post, the same caveats and issues still apply with regards to the {logback} DSL
 defined in `Config.groovy` and the use of the `logback.groovy` file in its place, so I will not re-hash that here.  Instead, I will point out a couple of issues with regards to getting the

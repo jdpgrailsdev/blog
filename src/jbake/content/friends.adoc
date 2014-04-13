@@ -6,9 +6,10 @@ Jonathan Pearlin
 :source-highlighter: prettify
 :id: friends
 :icons: font
+:linkattrs:
 
 This page contains a collection of links to the blogs/personal web sites of friends and colleagues of mine whom I respect and admire.  I highly recommend
 that you add them to your blog reading rotation.
 
-- http://blog.founddrama.net/[found drama] by https://twitter.com/founddrama[Rob Friesel, Jr.]
-- http://akeffalas.github.io/blog/[The Programmer's Tool Belt] by https://twitter.com/akeffalas[Andy Keffalas]
+- http://blog.founddrama.net/[found drama, window="_blank"] by https://twitter.com/founddrama["Rob Friesel, Jr.", window="_blank"]
+- http://akeffalas.github.io/blog/[The Programmer's Tool Belt, window="_blank"] by https://twitter.com/akeffalas[Andy Keffalas, window="_blank"]

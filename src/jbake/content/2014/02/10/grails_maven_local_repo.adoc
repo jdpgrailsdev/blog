@@ -5,17 +5,18 @@ Jonathan Pearlin
 :jbake-tags: grails,aether,maven,jenkins,blog
 :jbake-status: published
 :source-highlighter: prettify
+:linkattrs:
 :id: grails_maven_local_repo
-:aether: http://www.eclipse.org/aether/[Aether]
-:grails: http://grails.org[Grails]
-:jenkins: http://jenkins-ci.org/[Jenkins]
-:maven: http://maven.apache.org/[Maven]
+:aether: http://www.eclipse.org/aether/[Aether, window="_blank"]
+:grails: http://grails.org[Grails, window="_blank"]
+:jenkins: http://jenkins-ci.org/[Jenkins, window="_blank"]
+:maven: http://maven.apache.org/[Maven, window="_blank"]
 :icons: font
 
 One of the great new features in {grails} 2.3 is the ability to use {aether} to resolve dependencies in place of Ivy.  This is great news if
 you already use {maven} to build other projects, as it now means you can have predictable builds between your {grails} and non-{grails} applications.  However, like
 any new feature, there are a few rough edges.  I ran into one the other day when trying to determine why one of my {grails} applications was not picking up dependencies from the local {maven}
-cache  (`~/.m2/repository`).  After some digging around, I ran across http://jira.grails.org/browse/GRAILS-10921[this bug].  According to it, the mavenLocal directive in the
+cache  (`~/.m2/repository`).  After some digging around, I ran across http://jira.grails.org/browse/GRAILS-10921[this bug, window="_blank"].  According to it, the mavenLocal directive in the
 repositories section of `BuildConfig.groovy` is not honored when using the {aether} resolver.  So that stinks.  I quickly realized that we could make the {grails} dependency resolver
 DSL pick up the local {maven} repository by simply adding a new file-based repository:
 
@@ -30,9 +31,9 @@ DSL pick up the local {maven} repository by simply adding a new file-based repos
     }
 ----
 
-This little hack will allow you to continue checking the local {maven} repository when using the {grails} command line tools and the http://grails.org/doc/2.3.x/guide/introduction.html#whatsNew23[Maven dependency resolution support]
+This little hack will allow you to continue checking the local {maven} repository when using the {grails} command line tools and the http://grails.org/doc/2.3.x/guide/introduction.html#whatsNew23[Maven dependency resolution support, window="_blank"]
 new to {grails} 2.3.  The nice thing about this is that when/if the issue is fixed so that the local {maven} repository is honored, this fix should not cause any issues.  Not long after I made this fix,
-I went to build the application on http://jenkins-ci.org/[Jenkins] and notice some more funny business with dependencies.  After some digging, I determined the issue was due to the fact that now that the
+I went to build the application on http://jenkins-ci.org/[Jenkins, window="_blank"] and notice some more funny business with dependencies.  After some digging, I determined the issue was due to the fact that now that the
 {grails} applications were using {maven} for dependency resolution and not Ivy, they were sharing one local dependency cache.  When the Jenkins job is a {maven} project, I typically choose
 the option to create a repository per workspace, to avoid collisions between jobs.  With a {grails} job, you do not have this option.  The option that you do have is setting the
 `grails.dependency.cache.dir` build property to tell {grails} where to cache and look for local dependencies.  I decided to conditionally set this based on whether or not the application
@@ -83,6 +84,6 @@ I modified the BuildConfig.groovy file to contain the following logic:
 
 It's worth noting that in the example above, I not only set the `grails.dependency.cache.dir` {grails} build property, but
 I also set the `localRepository` property of the dependency resolution DSL to ensure that the {maven} dependency resolution is using it both as a place to check
-for dependencies AND a place to store the cached dependencies (see the https://github.com/grails/grails-core/blob/2.3.x/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy[AetherDependencyManager.groovy] source
+for dependencies AND a place to store the cached dependencies (see the https://github.com/grails/grails-core/blob/2.3.x/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy[AetherDependencyManager.groovy, window="_blank"] source
 file in the `grails-aether` module for more details).  Now when the application builds on Jenkins, not only does it have a local {maven} repository as part of
 the list of repositories, but that repository is stored in the workspace for the Jenkins build job.

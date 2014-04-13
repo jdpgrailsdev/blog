@@ -5,12 +5,13 @@ Jonathan Pearlin
 :jbake-tags: gradle
 :jbake-status: published
 :source-highlighter: prettify
+:linkattrs:
 :id: gradle_api_transitive
-:gradle: http://gradle.org[Gradle]
-:groovy: http://groovy.codehaus.org[Groovy]
-:maven: http://maven.apache.org/[Maven]
-:raml: http://raml.org[RAML]
-:spock: https://code.google.com/p/spock/[Spock]
+:gradle: http://gradle.org[Gradle, window="_blank"]
+:groovy: http://groovy.codehaus.org[Groovy, window="_blank"]
+:maven: http://maven.apache.org/[Maven, window="_blank"]
+:raml: http://raml.org[RAML, window="_blank"]
+:spock: https://code.google.com/p/spock/[Spock, window="_blank"]
 :icons: font
 
 Recently, I have been working on porting the {raml} {maven} plugin to a {gradle} plugin and ran into a limitation with {gradle} and its API jars.  An interesting difference between {gradle} and

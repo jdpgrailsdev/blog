@@ -5,15 +5,20 @@ Jonathan Pearlin
 :jbake-tags: spring,gradle
 :jbake-status: published
 :source-highlighter: prettify
+:linkattrs:
 :id: gradle_api_transitive
-:gradle: http://gradle.org[Gradle]
-:newrelic: http://newrelic.com[New Relic]
-:spring_boot: http://projects.spring.io/spring-boot/[Spring Boot]
+:gradle: http://gradle.org[Gradle, window="_blank"]
+:newrelic: http://newrelic.com[New Relic, window="_blank"]
+:spring_boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
 :icons: font
 
-I wanted to play around with {spring_boot} the other day and found it pretty easy to get up and running using their {gradle} plugin.  After only a few minutes, I had a sample Spring-based web application running as a stand-alone process.  Next, I thought I would add in {newrelic} support so I could see some performance stats.  Normally, you would install the {newrelic} agent in your application container or add a `javaagent` JVM option pointing at the {newrelic} agent to enable metrics gathering.  In my first attempt, I added the `javaagent` JVM option pointing at the {newrelic} agent to the `DEFAULT_JVM_OPTS` variable in my `gradlew` script and restarted the application.  It failed with a weird error about not being able to find some of the classes provided by the {newrelic} agent after claiming that it started the agent and found the YAML configuration file.  It seemed like there was obviously some issue between {gradle} and the Java agent.  After a
-few quick minutes searching on the internets, I found that the {spring_boot} {gradle} plugin supports passing an agent to the {spring_boot} process.  I made the following change to my
-`build.gradle` file:
+I wanted to play around with {spring_boot} the other day and found it pretty easy to get up and running using their {gradle} plugin.  After only a few minutes, I had a sample Spring-based
+web application running as a stand-alone process.  Next, I thought I would add in {newrelic} support so I could see some performance stats.  Normally, you would install the {newrelic} agent
+in your application container or add a `javaagent` JVM option pointing at the {newrelic} agent to enable metrics gathering.  In my first attempt, I added the `javaagent` JVM option pointing
+at the {newrelic} agent to the `DEFAULT_JVM_OPTS` variable in my `gradlew` script and restarted the application.  It failed with a weird error about not being able to find some of the
+classes provided by the {newrelic} agent after claiming that it started the agent and found the YAML configuration file.  It seemed like there was obviously some issue between {gradle} and
+the Java agent.  After a few quick minutes searching on the internets, I found that the {spring_boot} {gradle} plugin supports passing an agent to the {spring_boot} process.  I made the
+following change to my `build.gradle` file:
 
 [source,groovy]
 .build.gradle

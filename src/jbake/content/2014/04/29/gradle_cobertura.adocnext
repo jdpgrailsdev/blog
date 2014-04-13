@@ -5,14 +5,15 @@ Jonathan Pearlin
 :jbake-tags: gradle,cobertura
 :jbake-status: published
 :source-highlighter: prettify
+:linkattrs:
 :id: gradle_cobertura
-:cobertura: http://cobertura.github.io/cobertura/[Cobertura]
-:cobertura_gradle_plugin: https://github.com/stevesaliman/gradle-cobertura-plugin[Cobertura Gradle Plugin]
-:cobertura_grails_plugin: http://grails.org/plugin/code-coverage[Cobertura Grails Plugin]
-:cobertura_maven_plugin: http://mojo.codehaus.org/cobertura-maven-plugin/[Cobertura Maven Plugin]
-:gradle: http://gradle.org[Gradle]
-:grails: http://grails.org[Grails]
-:maven: http://maven.apache.org/[Maven]
+:cobertura: http://cobertura.github.io/cobertura/[Cobertura, window="_blank"]
+:cobertura_gradle_plugin: https://github.com/stevesaliman/gradle-cobertura-plugin[Cobertura Gradle Plugin, window="_blank"]
+:cobertura_grails_plugin: http://grails.org/plugin/code-coverage[Cobertura Grails Plugin, window="_blank"]
+:cobertura_maven_plugin: http://mojo.codehaus.org/cobertura-maven-plugin/[Cobertura Maven Plugin, window="_blank"]
+:gradle: http://gradle.org[Gradle, window="_blank"]
+:grails: http://grails.org[Grails, window="_blank"]
+:maven: http://maven.apache.org/[Maven, window="_blank"]
 :icons: font
 
 In all of my projects, I typically like to include unit tests and unit test coverage analysis to determine the effectiveness of my tests.  While there
@@ -62,7 +63,7 @@ include the {cobertura_maven_plugin} in your project's `pom.xml` file:
 <3> Instructs {cobertura} to ignore trivial methods, such as getters and setters when producing the coverage report(s).
 <4> Instructs {cobertura} to ignore any references to methods of the `org.slf4j.Logger` class when producing the coverage report(s).
 <5> Provides {cobertura} with a list of compiled class files to ignore when producing the coverage report(s).
-<6> Binds the `cobertura` goal of the {cobertura_maven_plugin} to the `package` phase of the https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference[Maven Build Lifecycle].
+<6> Binds the `cobertura` goal of the {cobertura_maven_plugin} to the `package` phase of the https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference[Maven Build Lifecycle, window="_blank"].
 
 The configuration of the {cobertura_maven_plugin} shown above will cause the `cobertura` goal to execute automatically during the `package` phase of the
 {maven} lifecycle.  For instance, if the following command is executed on a {maven} project:
@@ -74,11 +75,11 @@ manually invoke the plugin by running the goal explicitly in the project:
 
     ++maven cobertura++
 
-For additional information on the configuration and use of the {cobertura_maven_plugin}, consult the http://mojo.codehaus.org/cobertura-maven-plugin/usage.html[usage] and
-http://mojo.codehaus.org/cobertura-maven-plugin/cobertura-mojo.html[cobertura goal] documentation.
+For additional information on the configuration and use of the {cobertura_maven_plugin}, consult the http://mojo.codehaus.org/cobertura-maven-plugin/usage.html[usage, window="_blank"] and
+http://mojo.codehaus.org/cobertura-maven-plugin/cobertura-mojo.html[cobertura goal, window="_blank"] documentation.
 
-Finally, this all assumes that you have unit tests that will execute as part of the `test` phase of the https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference[Maven Build Lifecycle].  Take
-a look at the http://maven.apache.org/surefire/maven-surefire-plugin/[Maven Surefire Plugin] for an example of how to execute unit tests as part of a {maven} build.
+Finally, this all assumes that you have unit tests that will execute as part of the `test` phase of the https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference[Maven Build Lifecycle, window="_blank"].  Take
+a look at the http://maven.apache.org/surefire/maven-surefire-plugin/[Maven Surefire Plugin, window="_blank"] for an example of how to execute unit tests as part of a {maven} build.
 
 == Grails
 
@@ -141,7 +142,7 @@ manually invoke the plugin by adding an additional parameter to the `test-app` c
 
     ++grails test-app :unit --coverage++
 
-For additional information on the configuration and use of the {cobertura_grails_plugin}, consult the https://github.com/beckje01/grails-code-coverage[Grails Code Coverage plugin] documentation.
+For additional information on the configuration and use of the {cobertura_grails_plugin}, consult the https://github.com/beckje01/grails-code-coverage[Grails Code Coverage plugin, window="_blank"] documentation.
 
 As with the {cobertura_maven_plugin}, the code coverage report(s) will only be generated if there are unit tests or source files that can be under test present in the project.
 
@@ -221,7 +222,7 @@ manually invoke the plugin by running the `cobertura` task explicitly:
 
     ++./gradlew cobertura++
 
-For additional information on the configuration and use of the plugin, consult the documentation on its https://github.com/stevesaliman/gradle-cobertura-plugin[GitHub repository].
+For additional information on the configuration and use of the plugin, consult the documentation on its https://github.com/stevesaliman/gradle-cobertura-plugin[GitHub repository, window="_blank"].
 
 As with the {cobertura_maven_plugin} and {cobertura_grails_plugin}, the code coverage report(s) will only be generated if there are unit tests or source files that can be under test present in the project.
 

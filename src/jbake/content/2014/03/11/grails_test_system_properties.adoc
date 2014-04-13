@@ -5,11 +5,12 @@ Jonathan Pearlin
 :jbake-tags: grails
 :jbake-status: published
 :source-highlighter: prettify
+:linkattrs:
 :id: grails_test_system_properties
-:curator: http://curator.apache.org/[Apache Curator]
-:gant: http://gant.codehaus.org/[Gant]
-:grails: http://grails.org[Grails]
-:zookeeper: http://zookeeper.apache.org/[Apache ZooKeeper]
+:curator: http://curator.apache.org/[Apache Curator, window="_blank"]
+:gant: http://gant.codehaus.org/[Gant, window="_blank"]
+:grails: http://grails.org[Grails, window="_blank"]
+:zookeeper: http://zookeeper.apache.org/[Apache ZooKeeper, window="_blank"]
 :icons: font
 
 We have a {grails} application that relies on {zookeeper} for some of its data.  This application makes use of the {curator} library to connect to {zookeeper}.  The {curator} library also includes
@@ -34,5 +35,5 @@ eventTestPhaseStart = { args ->
 
 The above event is fired right before the first test is executed by {grails} when using the `grails test-app` command.  It sets the login configuration file to
 one that is packaged within the project and sets the `authProvider` to the appropriate type (in our case, SASL).  There are many other events that you can listen
-for in order to perform logic upon firing.  You can see more information about {grails} events in the http://grails.org/doc/2.3.x/guide/commandLine.html#events[documentation] or
+for in order to perform logic upon firing.  You can see more information about {grails} events in the http://grails.org/doc/2.3.x/guide/commandLine.html#events[documentation, window="_blank"] or
 by looking through the {gant} scripts in the `scripts` folder of the {grails} installation.
