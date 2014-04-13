@@ -76,7 +76,7 @@ $(document).ready(function() {
                 } else if(githubEvent.type == 'PushEvent' && !(githubEvent.repo.name == "jdpgrailsdev/blog")) {
                     octicon = "octicon-git-commit";
                     link = "http://github.com/" + githubEvent.repo.name + "/commit/" + githubEvent.payload.head;
-                    text = "Pushed " + githubEvent.payload.head + " to " + normalizeBranch(githubEvent.payload.ref) + " at " + githubEvent.repo.name;
+                    text = "Pushed to " + normalizeBranch(githubEvent.payload.ref) + " at " + githubEvent.repo.name;
                 }
 
                 // If the event is one of the supported types, add a new line item to the HTML panel.
