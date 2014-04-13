@@ -97,9 +97,13 @@
     <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>I wanted to play around with <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> the other day and found it pretty easy to get up and running using their <a href="http://gradle.org">Gradle</a> plugin.  After only a few minutes, I had a sample Spring-based web application running as a stand-alone process.  Next, I thought I would add in <a href="http://newrelic.com">New Relic</a> support so I could see some performance stats.  Normally, you would install the <a href="http://newrelic.com">New Relic</a> agent in your application container or add a <code>javaagent</code> JVM option pointing at the <a href="http://newrelic.com">New Relic</a> agent to enable metrics gathering.  In my first attempt, I added the <code>javaagent</code> JVM option pointing at the <a href="http://newrelic.com">New Relic</a> agent to the <code>DEFAULT_JVM_OPTS</code> variable in my <code>gradlew</code> script and restarted the application.  It failed with a weird error about not being able to find some of the classes provided by the <a href="http://newrelic.com">New Relic</a> agent after claiming that it started the agent and found the YAML configuration file.  It seemed like there was obviously some issue between <a href="http://gradle.org">Gradle</a> and the Java agent.  After a
-few quick minutes searching on the internets, I found that the <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> <a href="http://gradle.org">Gradle</a> plugin supports passing an agent to the <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> process.  I made the following change to my
-<code>build.gradle</code> file:</p>
+<p>I wanted to play around with <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> the other day and found it pretty easy to get up and running using their <a href="http://gradle.org" target="_blank">Gradle</a> plugin.  After only a few minutes, I had a sample Spring-based
+web application running as a stand-alone process.  Next, I thought I would add in <a href="http://newrelic.com" target="_blank">New Relic</a> support so I could see some performance stats.  Normally, you would install the <a href="http://newrelic.com" target="_blank">New Relic</a> agent
+in your application container or add a <code>javaagent</code> JVM option pointing at the <a href="http://newrelic.com" target="_blank">New Relic</a> agent to enable metrics gathering.  In my first attempt, I added the <code>javaagent</code> JVM option pointing
+at the <a href="http://newrelic.com" target="_blank">New Relic</a> agent to the <code>DEFAULT_JVM_OPTS</code> variable in my <code>gradlew</code> script and restarted the application.  It failed with a weird error about not being able to find some of the
+classes provided by the <a href="http://newrelic.com" target="_blank">New Relic</a> agent after claiming that it started the agent and found the YAML configuration file.  It seemed like there was obviously some issue between <a href="http://gradle.org" target="_blank">Gradle</a> and
+the Java agent.  After a few quick minutes searching on the internets, I found that the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <a href="http://gradle.org" target="_blank">Gradle</a> plugin supports passing an agent to the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> process.  I made the
+following change to my <code>build.gradle</code> file:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -118,13 +122,13 @@ springBoot {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This is the path to where ever you downloaded and the <a href="http://newrelic.com">New Relic</a> agent JAR to that should include your customized YAML configuration file.</td>
+<td>This is the path to where ever you downloaded and the <a href="http://newrelic.com" target="_blank">New Relic</a> agent JAR to that should include your customized YAML configuration file.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>I restarted my application using the <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> <a href="http://gradle.org">Gradle</a> task (<code>run</code>) and metrics started flowing!  This is great, but it depends on a hard-coded path to the installed <a href="http://newrelic.com">New Relic</a> agent (yuck).
-Because you can do anything with <a href="http://gradle.org">Gradle</a> (slight exaggeration), I figured that with some <a href="http://gradle.org">Gradle</a>-foo, I could include the <a href="http://newrelic.com">New Relic</a> agent as a dependency, download it and point to the
+<p>I restarted my application using the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <a href="http://gradle.org" target="_blank">Gradle</a> task (<code>run</code>) and metrics started flowing!  This is great, but it depends on a hard-coded path to the installed <a href="http://newrelic.com" target="_blank">New Relic</a> agent (yuck).
+Because you can do anything with <a href="http://gradle.org" target="_blank">Gradle</a> (slight exaggeration), I figured that with some <a href="http://gradle.org" target="_blank">Gradle</a>-foo, I could include the <a href="http://newrelic.com" target="_blank">New Relic</a> agent as a dependency, download it and point to the
 downloaded file for the <code>javaagent</code> JVM option.  After a little playing around, I came up with the following:</p>
 </div>
 <div class="listingblock">
@@ -204,16 +208,16 @@ project.tasks.run.dependsOn([copyAgent])			<i class="conum" data-value="3"></i><
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Tell <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> to use the the downloaded, copied <a href="http://newrelic.com">New Relic</a> agent JAR instead of the previously hard-coded value.</td>
+<td>Tell <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> to use the the downloaded, copied <a href="http://newrelic.com" target="_blank">New Relic</a> agent JAR instead of the previously hard-coded value.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Make the <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> <code>run</code> task depend on the copy task to ensure that the agent is copied before we attempt to launch the application.</td>
+<td>Make the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <code>run</code> task depend on the copy task to ensure that the agent is copied before we attempt to launch the application.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Finally, the last thing that I did was set up a symbolic link from my project&#8217;s directory to where my <a href="http://newrelic.com">New Relic</a> YAML file resides.  The <a href="http://newrelic.com">New Relic</a> agent will
+<p>Finally, the last thing that I did was set up a symbolic link from my project&#8217;s directory to where my <a href="http://newrelic.com" target="_blank">New Relic</a> YAML file resides.  The <a href="http://newrelic.com" target="_blank">New Relic</a> agent will
 automatically look for the <code>newrelic.yml</code> file in the same location as the agent JAR or in the current working directory.  With this last piece in place, all
 hard-coded paths are now removed from the equation.</p>
 </div>

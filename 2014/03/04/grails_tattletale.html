@@ -97,11 +97,11 @@
     <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Prior to version 2.3 of the <a href="http://grails.org">Grails</a> Framework, it was difficult, if not impossible, to use <a href="http://maven.apache.org/">Maven</a> to build a <a href="http://grails.org">Grails</a>-based application or plugin.  Besides losing the obvious benefits of <a href="http://maven.apache.org/">Maven</a>-based builds,
-such as dependency management and the rich ecosystem of existing plugins, one of the things that is lacking is an easy way to enforce environmental constraints, such as with the <a href="http://maven.apache.org/enforcer/maven-enforcer-plugin/">Maven Enforcer plugin</a>. The <a href="http://maven.apache.org/enforcer/maven-enforcer-plugin/">Maven Enforcer plugin</a>
-includes the ability to <a href="http://mojo.codehaus.org/extra-enforcer-rules/banDuplicateClasses.html">fail a build when detecting multiple versions of the same class on the classpath</a>.  This is particularly handy when an
-application depends on libraries that include classes from another library in order to reduce the number of required dependencies (this is particularly common with libraries that are not published to a <a href="http://maven.apache.org/">Maven</a>
-repository or some other type of dependency management repository).  Since using the <a href="http://maven.apache.org/enforcer/maven-enforcer-plugin/">Maven Enforcer plugin</a> is not an option in applications using <a href="http://grails.org">Grails</a> &lt;2.3, I decided to look at other alternatives to provide the
+<p>Prior to version 2.3 of the <a href="http://grails.org" target="_blank">Grails</a> Framework, it was difficult, if not impossible, to use <a href="http://maven.apache.org/" target="_blank">Maven</a> to build a <a href="http://grails.org" target="_blank">Grails</a>-based application or plugin.  Besides losing the obvious benefits of <a href="http://maven.apache.org/" target="_blank">Maven</a>-based builds,
+such as dependency management and the rich ecosystem of existing plugins, one of the things that is lacking is an easy way to enforce environmental constraints, such as with the <a href="http://maven.apache.org/enforcer/maven-enforcer-plugin/" target="_blank">Maven Enforcer plugin</a>. The <a href="http://maven.apache.org/enforcer/maven-enforcer-plugin/" target="_blank">Maven Enforcer plugin</a>
+includes the ability to <a href="http://mojo.codehaus.org/extra-enforcer-rules/banDuplicateClasses.html" target="_blank">fail a build when detecting multiple versions of the same class on the classpath</a>.  This is particularly handy when an
+application depends on libraries that include classes from another library in order to reduce the number of required dependencies (this is particularly common with libraries that are not published to a <a href="http://maven.apache.org/" target="_blank">Maven</a>
+repository or some other type of dependency management repository).  Since using the <a href="http://maven.apache.org/enforcer/maven-enforcer-plugin/" target="_blank">Maven Enforcer plugin</a> is not an option in applications using <a href="http://grails.org" target="_blank">Grails</a> &lt;2.3, I decided to look at other alternatives to provide the
 duplicate class checking functionality.</p>
 </div>
 </div>
@@ -109,9 +109,9 @@ duplicate class checking functionality.</p>
 <div class="sect2">
 <h3 id="_jboss_tattletale">JBoss tattletale</h3>
 <div class="paragraph">
-<p><a href="http://www.jboss.org/tattletale">JBoss tattletale</a> is a similar project to the <a href="http://maven.apache.org/enforcer/maven-enforcer-plugin/">Maven Enforcer plugin</a> in that it provides many of the same analytics with regards to the classes and dependencies that are part of a Java library/application.  In addition to its
-feature set, <a href="http://www.jboss.org/tattletale">JBoss tattletale</a> also has the ability to be embedded/called programmatically, which is a must for integrating it into a <a href="http://grails.org">Grails</a> <a href="http://gant.codehaus.org/">Gant</a> script.  The first step to including a <a href="http://grails.org">Grails</a> command line target
-that can perform the <a href="http://www.jboss.org/tattletale">JBoss tattletale</a> analysis is to include the <a href="http://www.jboss.org/tattletale">JBoss tattletale</a> dependency as a <code>build</code> scoped dependency:</p>
+<p><a href="http://www.jboss.org/tattletale" target="_blank">JBoss Tattletale</a> is a similar project to the <a href="http://maven.apache.org/enforcer/maven-enforcer-plugin/" target="_blank">Maven Enforcer plugin</a> in that it provides many of the same analytics with regards to the classes and dependencies that are part of a Java library/application.  In addition to its
+feature set, <a href="http://www.jboss.org/tattletale" target="_blank">JBoss Tattletale</a> also has the ability to be embedded/called programmatically, which is a must for integrating it into a <a href="http://grails.org" target="_blank">Grails</a> <a href="http://gant.codehaus.org/" target="_blank">Gant</a> script.  The first step to including a <a href="http://grails.org" target="_blank">Grails</a> command line target
+that can perform the <a href="http://www.jboss.org/tattletale" target="_blank">JBoss Tattletale</a> analysis is to include the <a href="http://www.jboss.org/tattletale" target="_blank">JBoss Tattletale</a> dependency as a <code>build</code> scoped dependency:</p>
 </div>
 <div class="listingblock">
 <div class="title">BuildConfig.groovy</div>
@@ -131,8 +131,8 @@ that can perform the <a href="http://www.jboss.org/tattletale">JBoss tattletale<
 </div>
 </div>
 <div class="paragraph">
-<p>This makes the dependency available to the <a href="http://gant.codehaus.org/">Gant</a> script without exporting the dependency when the application or plugin is package (or in the case of a plugin, the dependency is not added to the classpath when it is
-consumed by a <a href="http://grails.org">Grails</a> application).  The next step is to write a <a href="http://gant.codehaus.org/">Gant</a> script that performs the <a href="http://www.jboss.org/tattletale">JBoss tattletale</a> analysis.  Below is an example script that I wrote that expands the packaged application, runs the analysis
+<p>This makes the dependency available to the <a href="http://gant.codehaus.org/" target="_blank">Gant</a> script without exporting the dependency when the application or plugin is package (or in the case of a plugin, the dependency is not added to the classpath when it is
+consumed by a <a href="http://grails.org" target="_blank">Grails</a> application).  The next step is to write a <a href="http://gant.codehaus.org/" target="_blank">Gant</a> script that performs the <a href="http://www.jboss.org/tattletale" target="_blank">JBoss Tattletale</a> analysis.  Below is an example script that I wrote that expands the packaged application, runs the analysis
 and then outputs the HTML report to the <code>target/tattletale-report</code> directory:</p>
 </div>
 <div class="listingblock">
@@ -217,8 +217,8 @@ setDefaultTarget(tattleTale)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Note that the script above requires the user to first run <code>grails war</code> or <code>grails package-plugin</code> prior to running the <code>grails tattletale</code> target command.  It is also possible to hook into the <a href="http://grails.org">Grails</a> events that get fired to perform the analysis after
-compilation has been completed, which would avoid the need to expand the packaged WAR file.  Regardless of how you choose to implement the execution of <a href="http://www.jboss.org/tattletale">JBoss tattletale</a>, the end result is still valuable.</p>
+<p>Note that the script above requires the user to first run <code>grails war</code> or <code>grails package-plugin</code> prior to running the <code>grails tattletale</code> target command.  It is also possible to hook into the <a href="http://grails.org" target="_blank">Grails</a> events that get fired to perform the analysis after
+compilation has been completed, which would avoid the need to expand the packaged WAR file.  Regardless of how you choose to implement the execution of <a href="http://www.jboss.org/tattletale" target="_blank">JBoss Tattletale</a>, the end result is still valuable.</p>
 </div>
 </div></p>
 

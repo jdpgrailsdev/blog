@@ -97,22 +97,22 @@
     <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>The <a href="http://grails.org">Grails</a> Framework has some interesting quirks, particular when it comes to dependency management and build/deploy.  With a <a href="http://grails.org">Grails</a> plugin, you can define dependencies in its <code>BuildConfig.groovy</code> source file or you can place Java JAR files in the <code>lib</code>
+<p>The <a href="http://grails.org" target="_blank">Grails</a> Framework has some interesting quirks, particular when it comes to dependency management and build/deploy.  With a <a href="http://grails.org" target="_blank">Grails</a> plugin, you can define dependencies in its <code>BuildConfig.groovy</code> source file or you can place Java JAR files in the <code>lib</code>
 directory of the plugin.  Either will get included in the packaged plugin (and by extension, the packaged WAR of the application that includes the plugin) unless other special steps are taken to preclude them at package time.  This became an issue for me
-recently when using the builder provided by <a href="http://ckeditor.com/">CKEditor</a> within a <a href="http://grails.org">Grails</a> plugin to compile from source the <a href="http://ckeditor.com/">CKEditor</a> JavaScript files.  We had originally put the <a href="http://ckeditor.com/">CKEditor</a> builder JAR in the <code>lib</code> folder of a plugin, as the <a href="http://ckeditor.com/">CKEditor</a> project does not
-publish its artifacts to <a href="http://maven.apache.org/">Maven</a>.  This worked fine until we happened to update the version of <a href="http://code.google.com/p/guava-libraries/">Guava</a> that the plugin depended on.  The net result of this was a fun game of classpath roulette, as the builder JAR provided by <a href="http://ckeditor.com/">CKEditor</a> includes copies of
-an older version of <a href="http://code.google.com/p/guava-libraries/">Guava</a> inside its JAR (don&#8217;t get me started on this).  I was able to determine this by using JBoss&#8217;s <a href="http://www.jboss.org/tattletale">http://www.jboss.org/tattletale</a> library to check for duplicate classes on the classpath (In a future post, I will talk about how I added
-JBoss&#8217;s <a href="http://www.jboss.org/tattletale">tattletale</a> to our <a href="http://grails.org">Grails</a> builds to check for duplicate classes on the classpath, though it less important in <a href="http://grails.org">Grails</a> 2.3+, where you can use <a href="http://maven.apache.org/">Maven</a> POM files and the enforcer plugin to do the same thing).  Because
-we had the JAR in the <code>lib</code> directory, it gets included on the classpath and packaged in the WAR, but does not get conflict resolved with any dependencies included in the <code>BuildConfig.groovy</code> file.  Obviously, <a href="https://ant.apache.org/ivy/">Ivy</a> only knows about the dependencies declared
-in the closures in <code>BuildConfig.groovy</code>.</p>
+recently when using the builder provided by <a href="http://ckeditor.com/" target="_blank">CKEditor</a> within a <a href="http://grails.org" target="_blank">Grails</a> plugin to compile from source the <a href="http://ckeditor.com/" target="_blank">CKEditor</a> JavaScript files.  We had originally put the <a href="http://ckeditor.com/" target="_blank">CKEditor</a> builder JAR in the <code>lib</code> folder of a plugin, as the <a href="http://ckeditor.com/" target="_blank">CKEditor</a> project does not
+publish its artifacts to <a href="http://maven.apache.org/" target="_blank">Maven</a>.  This worked fine until we happened to update the version of <a href="http://code.google.com/p/guava-libraries/" target="_blank">Guava</a> that the plugin depended on.  The net result of this was a fun game of classpath roulette, as the builder JAR provided by <a href="http://ckeditor.com/" target="_blank">CKEditor</a> includes copies of
+an older version of <a href="http://code.google.com/p/guava-libraries/" target="_blank">Guava</a> inside its JAR (don&#8217;t get me started on this).  I was able to determine this by using JBoss&#8217;s <a href="http://www.jboss.org/tattletale" target="_blank">Tattletale</a> library to check for duplicate classes on the classpath (In a future post,
+I will talk about how I added JBoss&#8217;s <a href="http://www.jboss.org/tattletale" target="_blank">Tattletale</a> to our <a href="http://grails.org" target="_blank">Grails</a> builds to check for duplicate classes on the classpath, though it less important in <a href="http://grails.org" target="_blank">Grails</a> 2.3+, where you can use <a href="http://maven.apache.org/" target="_blank">Maven</a> POM files and the
+enforcer plugin to do the same thing).  Because we had the JAR in the <code>lib</code> directory, it gets included on the classpath and packaged in the WAR, but does not get conflict resolved with any dependencies included in the <code>BuildConfig.groovy</code> file.  Obviously,
+<a href="https://ant.apache.org/ivy/" target="_blank">Ivy</a> only knows about the dependencies declared in the closures in <code>BuildConfig.groovy</code>.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_build_scope_to_the_rescue">Build Scope to the rescue</h3>
 <div class="paragraph">
-<p>I decided that the best way to fix this was to make use of the <code>build</code> dependency scope supported by <a href="http://grails.org">Grails</a>/https://ant.apache.org/ivy/[Ivy], which does not allow the dependency to be included in the packaged artifact.  This first meant pushing
-the <a href="http://ckeditor.com/">CKEditor</a> builder JAR file into our <a href="http://maven.apache.org/">Maven</a> repository and then adding the following to the <code>dependencies</code> block in <code>BuildConfig.groovy</code>:</p>
+<p>I decided that the best way to fix this was to make use of the <code>build</code> dependency scope supported by <a href="http://grails.org" target="_blank">Grails</a>/https://ant.apache.org/ivy/[Ivy, window="_blank"], which does not allow the dependency to be included in the packaged artifact.  This first meant pushing
+the <a href="http://ckeditor.com/" target="_blank">CKEditor</a> builder JAR file into our <a href="http://maven.apache.org/" target="_blank">Maven</a> repository and then adding the following to the <code>dependencies</code> block in <code>BuildConfig.groovy</code>:</p>
 </div>
 <div class="listingblock">
 <div class="title">BuildConfig.groovy</div>
@@ -131,7 +131,7 @@ the <a href="http://ckeditor.com/">CKEditor</a> builder JAR file into our <a hre
 </div>
 </div>
 <div class="paragraph">
-<p>The next step was to modify the <a href="http://gant.codehaus.org/">Gant</a> script that we wrote to perform the <a href="http://ckeditor.com/">CKEditor</a> compilation to programmatically invoke the <a href="http://ckeditor.com/">CKEditor</a> builder instead of executing a command:</p>
+<p>The next step was to modify the <a href="http://gant.codehaus.org/" target="_blank">Gant</a> script that we wrote to perform the <a href="http://ckeditor.com/" target="_blank">CKEditor</a> compilation to programmatically invoke the <a href="http://ckeditor.com/" target="_blank">CKEditor</a> builder instead of executing a command:</p>
 </div>
 <div class="listingblock">
 <div class="title">scripts/PackageCkeditor.groovy</div>
@@ -163,9 +163,9 @@ setDefaultTarget(packageCkeditor)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The example above makes use of the <code>main()</code> method of the <code>ckeditor</code> class provided by the builder to invoke the <a href="http://ckeditor.com/">CKEditor</a> compilation.  I tested it out and noticed that
-none of my console statements after the call to <code>main()</code> were being executed.  I quickly realized that something in the <a href="http://ckeditor.com/">CKEditor</a> code was executing <code>System.exit()</code>, which in turn
-ended up killing the <a href="http://grails.org">Grails</a> process.</p>
+<p>The example above makes use of the <code>main()</code> method of the <code>ckeditor</code> class provided by the builder to invoke the <a href="http://ckeditor.com/" target="_blank">CKEditor</a> compilation.  I tested it out and noticed that
+none of my console statements after the call to <code>main()</code> were being executed.  I quickly realized that something in the <a href="http://ckeditor.com/" target="_blank">CKEditor</a> code was executing <code>System.exit()</code>, which in turn
+ended up killing the <a href="http://grails.org" target="_blank">Grails</a> process.</p>
 </div>
 </div>
 <div class="sect2">
@@ -240,8 +240,8 @@ class NoExitSecurityManager extends SecurityManager {
 </div>
 </div>
 <div class="paragraph">
-<p>The revamped code above now uses a custom <code>SecurityManager</code> that does not allow the exit to happen.  While this is not the cleanest approach (I would have liked to have modified the <a href="http://ckeditor.com/">CKEditor</a>
-builder code, but they have not open sourced the builder&#8201;&#8212;&#8201;only the editor itself), it gets the job done.  Now, we can use the <a href="http://ckeditor.com/">CKEditor</a> programmatically and let <a href="https://ant.apache.org/ivy/">Ivy</a> manage the dependency
+<p>The revamped code above now uses a custom <code>SecurityManager</code> that does not allow the exit to happen.  While this is not the cleanest approach (I would have liked to have modified the <a href="http://ckeditor.com/" target="_blank">CKEditor</a>
+builder code, but they have not open sourced the builder&#8201;&#8212;&#8201;only the editor itself), it gets the job done.  Now, we can use the <a href="http://ckeditor.com/" target="_blank">CKEditor</a> programmatically and let <a href="https://ant.apache.org/ivy/" target="_blank">Ivy</a> manage the dependency
 the dependency, ensure that it does not get included in the packaged artifact and still be able to compile the source as part of our builds.</p>
 </div>
 </div></p>

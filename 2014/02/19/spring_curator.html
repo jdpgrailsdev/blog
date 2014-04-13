@@ -97,25 +97,25 @@
     <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Recently, I have been working a lot with <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> provides a Java-based driver, but it does leave a little bit to be desired.  In steps <a href="http://curator.apache.org/">Apache Curator</a>, which was originally created and open-sourced
-by <a href="https://github.com/netflix/curator">Neflix</a> and is now maintained by Apache.  <a href="http://curator.apache.org/">Apache Curator</a> uses a fluent-style syntax to making using <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a> much easier.  In particular, <a href="http://curator.apache.org/">Apache Curator</a> contains a more robust client class that handles things such
-as retry attempts, listeners and other utilities that would otherwise need to be manually wired up using the low-level Java-based driver.  In order to support the use of <a href="http://curator.apache.org/">Apache Curator</a> within a Spring-based application,
-I decided to create a library that makes it easy to define <a href="http://curator.apache.org/">Apache Curator</a> clients in a Spring configuration for use in an application.  One of the thinks to know about the <a href="http://curator.apache.org/">Apache Curator</a> client is that you only need one
-per instance/ensemble of <a href="http://zookeeper.apache.org/">Apache ZooKeeper</a>.  Therefore, using Spring to manage the injection of a Singleton bean into a class that needs access to the client is a perfect fit.  The repository can be found on
-<a href="https://github.com/jdpgrailsdev/spring-curator">GitHub</a>.  Please check it out and let me know what you think.  As always, contributions are welcome!</p>
+<p>Recently, I have been working a lot with <a href="http://zookeeper.apache.org/" target="_blank">Apache ZooKeeper</a>.  <a href="http://zookeeper.apache.org/" target="_blank">Apache ZooKeeper</a> provides a Java-based driver, but it does leave a little bit to be desired.  In steps <a href="http://curator.apache.org/" target="_blank">Apache Curator</a>, which was originally created and open-sourced
+by <a href="https://github.com/netflix/curator">Neflix</a> and is now maintained by Apache.  <a href="http://curator.apache.org/" target="_blank">Apache Curator</a> uses a fluent-style syntax to making using <a href="http://zookeeper.apache.org/" target="_blank">Apache ZooKeeper</a> much easier.  In particular, <a href="http://curator.apache.org/" target="_blank">Apache Curator</a> contains a more robust client class that handles things such
+as retry attempts, listeners and other utilities that would otherwise need to be manually wired up using the low-level Java-based driver.  In order to support the use of <a href="http://curator.apache.org/" target="_blank">Apache Curator</a> within a Spring-based application,
+I decided to create a library that makes it easy to define <a href="http://curator.apache.org/" target="_blank">Apache Curator</a> clients in a Spring configuration for use in an application.  One of the thinks to know about the <a href="http://curator.apache.org/" target="_blank">Apache Curator</a> client is that you only need one
+per instance/ensemble of <a href="http://zookeeper.apache.org/" target="_blank">Apache ZooKeeper</a>.  Therefore, using Spring to manage the injection of a Singleton bean into a class that needs access to the client is a perfect fit.  The repository can be found on
+<a href="https://github.com/jdpgrailsdev/spring-curator" target="_blank">GitHub</a>.  Please check it out and let me know what you think.  As always, contributions are welcome!</p>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_future_enhancements">Future Enhancements</h3>
 <div class="paragraph">
-<p>Currently, the <a href="https://github.com/jdpgrailsdev/spring-curator">spring-curator</a> library only supports the definition, creation and injection of <a href="http://curator.apache.org/">Apache Curator</a> client instances.  In the future, I would like to add the
+<p>Currently, the <a href="https://github.com/jdpgrailsdev/spring-curator" target="_blank">spring-curator</a> library only supports the definition, creation and injection of <a href="http://curator.apache.org/" target="_blank">Apache Curator</a> client instances.  In the future, I would like to add the
 following support to the <code>spring-curator</code> library:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Support for registring custom retry policies</p>
+<p>Support for registering custom retry policies</p>
 </li>
 <li>
 <p>Definition of the following via the Spring configuration:</p>

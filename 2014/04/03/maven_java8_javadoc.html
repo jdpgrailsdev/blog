@@ -97,8 +97,8 @@
     <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>On March 18th, Oracle officially released <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.  Eager to start using some of the new features (in a non-beta release), I quickly downloaded and installed the JDK on my laptop.  I switched my
-system to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> by default and set upon compiling one of my projects.  To my suprise, the build failed with a bunch of errors that looked like this:</p>
+<p>On March 18th, Oracle officially released <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.  Eager to start using some of the new features (in a non-beta release), I quickly downloaded and installed the JDK on my laptop.  I switched my
+system to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> by default and set upon compiling one of my projects.  To my suprise, the build failed with a bunch of errors that looked like this:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -107,8 +107,8 @@ system to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/i
 </div>
 </div>
 <div class="paragraph">
-<p>It turns out that <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> includes a much more strict set of rules for its doclint.  According to  <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html">Steven Colebourne</a>, the
-<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> doclint by default enforces the following rules when processing JavaDoc comments:</p>
+<p>It turns out that <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> includes a much more strict set of rules for its doclint.  According to  <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html" target="_blank">Steven Colebourne</a>, the
+<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> doclint by default enforces the following rules when processing JavaDoc comments:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -149,8 +149,8 @@ system to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/i
 </div>
 <div class="paragraph">
 <p>This is fine if you are starting with a green field project, but if you are like me and have to switch between new and legacy code bases, it may not be possible to correct all of these
-issues in order to get <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/">Maven JavaDoc plugin</a> generated using <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.  Per <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html">Steven Colebourne&#8217;s blog</a>, the solution is to
-include the <code>-Xdoclint:none</code> JVM argument in the configuration of the <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/">Maven JavaDoc plugin</a>:</p>
+issues in order to get <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank">Maven JavaDoc plugin</a> generated using <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.  Per <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html" target="_blank">Steven Colebourne&#8217;s blog</a>, the solution is to
+include the <code>-Xdoclint:none</code> JVM argument in the configuration of the <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank">Maven JavaDoc plugin</a>:</p>
 </div>
 <div class="listingblock">
 <div class="title">pom.xml</div>
@@ -176,10 +176,10 @@ include the <code>-Xdoclint:none</code> JVM argument in the configuration of the
 </div>
 </div>
 <div class="paragraph">
-<p>This works great when building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.  However, if you switch back to Java 7 and attempt to build with the <code>-Xdoclint:none</code> JVM argument, the build will fail, as Java 7 does not
-recognize that JVM argument.  What can we do to support JavaDoc generation via <a href="http://maven.apache.org/">Maven</a> for both Java 7 and Java 8 on a legacy code base?  Use
-<a href="http://maven.apache.org/guides/introduction/introduction-to-profiles.html">Maven profiles</a>!  Instead of modifying the existing <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/">Maven JavaDoc plugin</a> declaration in our <code>pom.xml</code> file, let&#8217;s instead
-add a new profile that only activates when we are building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>:</p>
+<p>This works great when building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.  However, if you switch back to Java 7 and attempt to build with the <code>-Xdoclint:none</code> JVM argument, the build will fail, as Java 7 does not
+recognize that JVM argument.  What can we do to support JavaDoc generation via <a href="http://maven.apache.org/" target="_blank">Maven</a> for both Java 7 and Java 8 on a legacy code base?  Use
+<a href="http://maven.apache.org/guides/introduction/introduction-to-profiles.html" target="_blank">Maven profiles</a>!  Instead of modifying the existing <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank">Maven JavaDoc plugin</a> declaration in our <code>pom.xml</code> file, let&#8217;s instead
+add a new profile that only activates when we are building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>:</p>
 </div>
 <div class="listingblock">
 <div class="title">pom.xml</div>
@@ -246,14 +246,14 @@ add a new profile that only activates when we are building with <a href="http://
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Will activate this profile if the JRE that is executing the <a href="http://maven.apache.org/">Maven</a> build is version 1.8 (<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>).</td>
+<td>Will activate this profile if the JRE that is executing the <a href="http://maven.apache.org/" target="_blank">Maven</a> build is version 1.8 (<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>).</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>We can now safely build our project with either Java 7 or <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> without having it fail due to either the more strict doclint rules in <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> or the fact that Java 7 does not recognize
-the JVM argument.  I&#8217;m sure that this is not the last of these issues that will come up with regards to changes between previous versions of Java and <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.  Luckily, we should be able
-to apply the same profile trick for any differences until such a time that all the different code bases that you support are converted to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.</p>
+<p>We can now safely build our project with either Java 7 or <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> without having it fail due to either the more strict doclint rules in <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> or the fact that Java 7 does not recognize
+the JVM argument.  I&#8217;m sure that this is not the last of these issues that will come up with regards to changes between previous versions of Java and <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.  Luckily, we should be able
+to apply the same profile trick for any differences until such a time that all the different code bases that you support are converted to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.</p>
 </div>
 </div>
 </div></p>

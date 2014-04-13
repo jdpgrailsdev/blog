@@ -97,9 +97,9 @@
     <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>The other day, I decided to attempt to switch a <a href="http://grails.org">Grails</a> application from using Log4j (the built-in option) for logging to <a href="http://logback.qos.ch/">Logback</a>.  The core <a href="http://grails.org">Grails</a> development team
-maintains a <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a> that appeared to be just what I needed.  I started by modifying my <a href="http://grails.org">Grails</a> application&#8217;s <code>pom.xml</code> file
-to reference the <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a>:</p>
+<p>The other day, I decided to attempt to switch a <a href="http://grails.org" target="_blank">Grails</a> application from using Log4j (the built-in option) for logging to <a href="http://logback.qos.ch/" target="_blank">Logback</a>.  The core <a href="http://grails.org" target="_blank">Grails</a> development team
+maintains a <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a> that appeared to be just what I needed.  I started by modifying my <a href="http://grails.org" target="_blank">Grails</a> application&#8217;s <code>pom.xml</code> file
+to reference the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a>:</p>
 </div>
 <div class="listingblock">
 <div class="title">pom.xml</div>
@@ -116,8 +116,8 @@ to reference the <a href="http://grails.org/plugin/logback">Grails Logback Plugi
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Note that the plugin is a <code>binary</code> plugin, so I did not need to specify the packaging as <code>zip</code>.  If you are not using <a href="http://maven.apache.org/">Maven</a> support with your <a href="http://grails.org">Grails</a> application (or are using a version of <a href="http://grails.org">Grails</a> that did not yet support <a href="http://maven.apache.org/">Maven</a> POM files), you can include
-the <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a> in the <code>dependencies</code> block of your <code>grails-app/conf/BuildConfig.groovy</code> and <strong>NOT</strong> in the <code>plugins</code> block.</td>
+<td>Note that the plugin is a <code>binary</code> plugin, so I did not need to specify the packaging as <code>zip</code>.  If you are not using <a href="http://maven.apache.org/" target="_blank">Maven</a> support with your <a href="http://grails.org" target="_blank">Grails</a> application (or are using a version of <a href="http://grails.org" target="_blank">Grails</a> that did not yet support <a href="http://maven.apache.org/" target="_blank">Maven</a> POM files), you can include
+the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a> in the <code>dependencies</code> block of your <code>grails-app/conf/BuildConfig.groovy</code> and <strong>NOT</strong> in the <code>plugins</code> block.</td>
 </tr>
 </table>
 </div>
@@ -147,16 +147,16 @@ inherits("global") {
 <h3 id="_follow_the_instructions_they_said">Follow the instructions, they said</h3>
 <div class="paragraph">
 <p>In my first attempt at getting this working, I next moved on to changing the <code>log4j</code> closure in <code>grails-app/conf/Config.groovy</code> to <code>logback</code>, as the documentation suggests.  Subsequent
-digging uncovered that the <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a> only initializes <a href="http://logback.qos.ch/">Logback</a> using the DSL from <code>grails-app/conf/Config.groovy</code> if the application has been deployed as a WAR file
-to a container.  What this means in practical terms is that when running a <a href="http://grails.org">Grails</a> application locally using the <code>run-app</code> command, you have no control over the <a href="http://logback.qos.ch/">Logback</a> configuration
+digging uncovered that the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a> only initializes <a href="http://logback.qos.ch/" target="_blank">Logback</a> using the DSL from <code>grails-app/conf/Config.groovy</code> if the application has been deployed as a WAR file
+to a container.  What this means in practical terms is that when running a <a href="http://grails.org" target="_blank">Grails</a> application locally using the <code>run-app</code> command, you have no control over the <a href="http://logback.qos.ch/" target="_blank">Logback</a> configuration
 via the DSL and thus every log statement gets printed using the default level, which is <code>DEBUG</code> (more on this in a bit&#8230;).</p>
 </div>
 <div class="paragraph">
 <p>Back to my first attempt.  With <code>grails-app/conf/Config.groovy</code> modified, I attempted to run my application, after performing the requisite <code>clean</code> called out by the documentation, but
 ran into compile errors related to code that was directly importing and using Log4j.  I fixed these by switching any code that explicitly imported and used the Log4J <code>Logger</code> class to use the SLF4J <code>Logger</code>
-instead.  I next ran into some AST transformation errors with classes that had the <a href="http://groovy.codehaus.org">Groovy</a> logging <code>@Log4j</code> annotation present.  I switched these to use the SLF4J logging annotation (<code>@SLF4J</code>).  The
-last issue that I encountered in my attempts to get the application to compile and start was related to something that <a href="http://grails.org">Grails</a> automatically puts in <code>grails-app/conf/Config.groovy</code> when generating a
-new application (<strong>NOTE</strong>:  the application in question was built using <a href="http://grails.org">Grails</a> version 2.3.5).  By default, when you generate a new application, the following gets added to the configuration:</p>
+instead.  I next ran into some AST transformation errors with classes that had the <a href="http://groovy.codehaus.org" target="_blank">Groovy</a> logging <code>@Log4j</code> annotation present.  I switched these to use the SLF4J logging annotation (<code>@SLF4J</code>).  The
+last issue that I encountered in my attempts to get the application to compile and start was related to something that <a href="http://grails.org" target="_blank">Grails</a> automatically puts in <code>grails-app/conf/Config.groovy</code> when generating a
+new application (<strong>NOTE</strong>:  the application in question was built using <a href="http://grails.org" target="_blank">Grails</a> version 2.3.5).  By default, when you generate a new application, the following gets added to the configuration:</p>
 </div>
 <div class="listingblock">
 <div class="title">grails-app/conf/Config.groovy</div>
@@ -201,15 +201,15 @@ Message: org.slf4j.bridge.SLF4JBridgeHandler
 </div>
 </div>
 <div class="paragraph">
-<p>The fix for this is to ensure that <code>org.slf4j:jul-to-slf4j:1.7.5</code> is included as a <code>runtime</code> dependency.  If you are using an older version of <a href="http://grails.org">Grails</a>, check the <code>lib</code> directory
-of the <a href="http://grails.org">Grails</a> installation to determine the proper version of SLF4J to use.  Also note that if you have any dependencies that require Log4J, you may also need to add that dependency
+<p>The fix for this is to ensure that <code>org.slf4j:jul-to-slf4j:1.7.5</code> is included as a <code>runtime</code> dependency.  If you are using an older version of <a href="http://grails.org" target="_blank">Grails</a>, check the <code>lib</code> directory
+of the <a href="http://grails.org" target="_blank">Grails</a> installation to determine the proper version of SLF4J to use.  Also note that if you have any dependencies that require Log4J, you may also need to add that dependency
 to the classpath or remove it from the global excludes to get your application to start.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_using_logback_with_grails_run_app">Using Logback with grails run-app</h3>
 <div class="paragraph">
-<p>Let&#8217;s get back to the issue of the DSL only being used when the application is deployed as a WAR file.  If you take a look at the plugin descriptor for the <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a>, you will notice this
+<p>Let&#8217;s get back to the issue of the DSL only being used when the application is deployed as a WAR file.  If you take a look at the plugin descriptor for the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a>, you will notice this
 little snippet:</p>
 </div>
 <div class="listingblock">
@@ -232,18 +232,18 @@ little snippet:</p>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><code>grails.logging.jul.usebridge</code> is set to <code>true</code> by default in <code>*Config.groovy</code> when creating a new <a href="http://grails.org">Grails</a> application/plugin in 2.3.x and above.</td>
+<td><code>grails.logging.jul.usebridge</code> is set to <code>true</code> by default in <code>*Config.groovy</code> when creating a new <a href="http://grails.org" target="_blank">Grails</a> application/plugin in 2.3.x and above.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td><code>warDeployed</code> comes from an entry in <code>application.properties</code> that is added by <a href="http://grails.org">Grails</a> when the WAR file is built using the <code>grails war</code> command.</td>
+<td><code>warDeployed</code> comes from an entry in <code>application.properties</code> that is added by <a href="http://grails.org" target="_blank">Grails</a> when the WAR file is built using the <code>grails war</code> command.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
 <p>Based on the code above, it appears that the DSL is only loaded when the WAR is deployed.  This explains why no matter how many changes I made to the DSL, none of those changes were getting picked up.
-Being familiar with <a href="http://logback.qos.ch/">Logback</a>, I knew that if you put a <code>logback.groovy</code> file on the classpath, <a href="http://logback.qos.ch/">Logback</a> would automatically find and use it for configuration instead of the DSL.  To test this theory,
-I put a new <code>logback.groovy</code> file in <code>grails-app/conf</code> to ensure it was on the classpath.  I also added the following the <code>grails-app/conf/BootStrap.groovy</code> to verify which configuration <a href="http://logback.qos.ch/">Logback</a> had
+Being familiar with <a href="http://logback.qos.ch/" target="_blank">Logback</a>, I knew that if you put a <code>logback.groovy</code> file on the classpath, <a href="http://logback.qos.ch/" target="_blank">Logback</a> would automatically find and use it for configuration instead of the DSL.  To test this theory,
+I put a new <code>logback.groovy</code> file in <code>grails-app/conf</code> to ensure it was on the classpath.  I also added the following the <code>grails-app/conf/BootStrap.groovy</code> to verify which configuration <a href="http://logback.qos.ch/" target="_blank">Logback</a> had
 selected:</p>
 </div>
 <div class="listingblock">
@@ -258,15 +258,15 @@ selected:</p>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Useful line of code to enable <a href="http://logback.qos.ch/">Logback</a> to print out which (if any) configuration file it loaded.</td>
+<td>Useful line of code to enable <a href="http://logback.qos.ch/" target="_blank">Logback</a> to print out which (if any) configuration file it loaded.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>After another application restart, I noticed that <a href="http://logback.qos.ch/">Logback</a> was still not picking up my configuration.  I did a quick check of <code>target/classes</code> to confirm a suspicion that <a href="http://grails.org">Grails</a> had compiled my <code>logback.groovy</code>
-file instead of treating it like a non-source file.  Sure enough, I found <code>logback.class</code> in <code>target\classes</code>.  This meant that I would need to come up with a creative way to get <a href="http://grails.org">Grails</a> to get an
+<p>After another application restart, I noticed that <a href="http://logback.qos.ch/" target="_blank">Logback</a> was still not picking up my configuration.  I did a quick check of <code>target/classes</code> to confirm a suspicion that <a href="http://grails.org" target="_blank">Grails</a> had compiled my <code>logback.groovy</code>
+file instead of treating it like a non-source file.  Sure enough, I found <code>logback.class</code> in <code>target\classes</code>.  This meant that I would need to come up with a creative way to get <a href="http://grails.org" target="_blank">Grails</a> to get an
 un-compiled version of the file on the classpath.  My first thought was to put some logic in <code>grails-app/conf/BuildConfig.groovy</code> to set the <code>logback.configurationFile</code> system property supported by
-<a href="http://logback.qos.ch/">Logback</a> to the un-compiled version of <code>logback.groovy</code>:</p>
+<a href="http://logback.qos.ch/" target="_blank">Logback</a> to the un-compiled version of <code>logback.groovy</code>:</p>
 </div>
 <div class="listingblock">
 <div class="title">grails-app/conf/BuildConfig.groovy</div>
@@ -287,12 +287,12 @@ if(new File("${basedir}/grails-app/conf/logback.groovy").exists()) {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This is a programmatic way to force <a href="http://logback.qos.ch/">Logback</a> to use the <a href="http://groovy.codehaus.org">Groovy</a>-based configuration file.  This could also be set as an JVM argument (<code>-Dlogback.configurationFile=...</code>).</td>
+<td>This is a programmatic way to force <a href="http://logback.qos.ch/" target="_blank">Logback</a> to use the <a href="http://groovy.codehaus.org" target="_blank">Groovy</a>-based configuration file.  This could also be set as an JVM argument (<code>-Dlogback.configurationFile=...</code>).</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>After adding this code and restarting the application, <a href="http://logback.qos.ch/">Logback</a> finally found and loaded by custom configuration file.  This little trick works great when running the application using
+<p>After adding this code and restarting the application, <a href="http://logback.qos.ch/" target="_blank">Logback</a> finally found and loaded by custom configuration file.  This little trick works great when running the application using
 the <code>run-app</code> command, but I knew that I would have the same issue when building the WAR file.  To address getting the <code>logback.groovy</code> file in to the built WAR file as an un-compiled
 configuration file, I added the following to <code>scripts/Events.groovy</code>:</p>
 </div>
@@ -305,13 +305,13 @@ configuration file, I added the following to <code>scripts/Events.groovy</code>:
 </div>
 </div>
 <div class="paragraph">
-<p>When <a href="http://grails.org">Grails</a> starts the process of building the WAR file, this script will now copy over the un-compiled <code>logback.groovy</code> file to <code>classes</code> folder in the WAR.  This will guarantee that the
-file is on the classpath for <a href="http://logback.qos.ch/">Logback</a> to find at runtime in its un-compiled form.  After making this change, I built the WAR file and extracted it to verify the results.  Everything looked good.</p>
+<p>When <a href="http://grails.org" target="_blank">Grails</a> starts the process of building the WAR file, this script will now copy over the un-compiled <code>logback.groovy</code> file to <code>classes</code> folder in the WAR.  This will guarantee that the
+file is on the classpath for <a href="http://logback.qos.ch/" target="_blank">Logback</a> to find at runtime in its un-compiled form.  After making this change, I built the WAR file and extracted it to verify the results.  Everything looked good.</p>
 </div>
 <div class="paragraph">
-<p>In retrospect, I could have easily just ditched the <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a> in favor of directly using the <a href="http://logback.qos.ch/">Logback</a> dependencies, but I still would have encountered the issue with <a href="http://grails.org">Grails</a> compiling the
-<code>logback.groovy</code> file.  In addition I also would have lost support for the automatic <code>log</code> property injection in controllers, tag libraries, etc that <a href="http://grails.org">Grails</a> provides via an AST transformation.  In my
-spare time, I might attempt to make some modifications to the <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a> to handle using the DSL in non-WAR-deployed scenarios, which would elminate the need for a <code>logback.groovy</code> file.</p>
+<p>In retrospect, I could have easily just ditched the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a> in favor of directly using the <a href="http://logback.qos.ch/" target="_blank">Logback</a> dependencies, but I still would have encountered the issue with <a href="http://grails.org" target="_blank">Grails</a> compiling the
+<code>logback.groovy</code> file.  In addition I also would have lost support for the automatic <code>log</code> property injection in controllers, tag libraries, etc that <a href="http://grails.org" target="_blank">Grails</a> provides via an AST transformation.  In my
+spare time, I might attempt to make some modifications to the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a> to handle using the DSL in non-WAR-deployed scenarios, which would elminate the need for a <code>logback.groovy</code> file.</p>
 </div>
 </div></p>
 

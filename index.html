@@ -103,9 +103,13 @@
                    <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>I wanted to play around with <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> the other day and found it pretty easy to get up and running using their <a href="http://gradle.org">Gradle</a> plugin.  After only a few minutes, I had a sample Spring-based web application running as a stand-alone process.  Next, I thought I would add in <a href="http://newrelic.com">New Relic</a> support so I could see some performance stats.  Normally, you would install the <a href="http://newrelic.com">New Relic</a> agent in your application container or add a <code>javaagent</code> JVM option pointing at the <a href="http://newrelic.com">New Relic</a> agent to enable metrics gathering.  In my first attempt, I added the <code>javaagent</code> JVM option pointing at the <a href="http://newrelic.com">New Relic</a> agent to the <code>DEFAULT_JVM_OPTS</code> variable in my <code>gradlew</code> script and restarted the application.  It failed with a weird error about not being able to find some of the classes provided by the <a href="http://newrelic.com">New Relic</a> agent after claiming that it started the agent and found the YAML configuration file.  It seemed like there was obviously some issue between <a href="http://gradle.org">Gradle</a> and the Java agent.  After a
-few quick minutes searching on the internets, I found that the <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> <a href="http://gradle.org">Gradle</a> plugin supports passing an agent to the <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> process.  I made the following change to my
-<code>build.gradle</code> file:</p>
+<p>I wanted to play around with <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> the other day and found it pretty easy to get up and running using their <a href="http://gradle.org" target="_blank">Gradle</a> plugin.  After only a few minutes, I had a sample Spring-based
+web application running as a stand-alone process.  Next, I thought I would add in <a href="http://newrelic.com" target="_blank">New Relic</a> support so I could see some performance stats.  Normally, you would install the <a href="http://newrelic.com" target="_blank">New Relic</a> agent
+in your application container or add a <code>javaagent</code> JVM option pointing at the <a href="http://newrelic.com" target="_blank">New Relic</a> agent to enable metrics gathering.  In my first attempt, I added the <code>javaagent</code> JVM option pointing
+at the <a href="http://newrelic.com" target="_blank">New Relic</a> agent to the <code>DEFAULT_JVM_OPTS</code> variable in my <code>gradlew</code> script and restarted the application.  It failed with a weird error about not being able to find some of the
+classes provided by the <a href="http://newrelic.com" target="_blank">New Relic</a> agent after claiming that it started the agent and found the YAML configuration file.  It seemed like there was obviously some issue between <a href="http://gradle.org" target="_blank">Gradle</a> and
+the Java agent.  After a few quick minutes searching on the internets, I found that the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <a href="http://gradle.org" target="_blank">Gradle</a> plugin supports passing an agent to the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> process.  I made the
+following change to my <code>build.gradle</code> file:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -124,13 +128,13 @@ springBoot {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This is the path to where ever you downloaded and the <a href="http://newrelic.com">New Relic</a> agent JAR to that should include your customized YAML configuration file.</td>
+<td>This is the path to where ever you downloaded and the <a href="http://newrelic.com" target="_blank">New Relic</a> agent JAR to that should include your customized YAML configuration file.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>I restarted my application using the <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> <a href="http://gradle.org">Gradle</a> task (<code>run</code>) and metrics started flowing!  This is great, but it depends on a hard-coded path to the installed <a href="http://newrelic.com">New Relic</a> agent (yuck).
-Because you can do anything with <a href="http://gradle.org">Gradle</a> (slight exaggeration), I figured that with some <a href="http://gradle.org">Gradle</a>-foo, I could include the <a href="http://newrelic.com">New Relic</a> agent as a dependency, download it and point to the
+<p>I restarted my application using the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <a href="http://gradle.org" target="_blank">Gradle</a> task (<code>run</code>) and metrics started flowing!  This is great, but it depends on a hard-coded path to the installed <a href="http://newrelic.com" target="_blank">New Relic</a> agent (yuck).
+Because you can do anything with <a href="http://gradle.org" target="_blank">Gradle</a> (slight exaggeration), I figured that with some <a href="http://gradle.org" target="_blank">Gradle</a>-foo, I could include the <a href="http://newrelic.com" target="_blank">New Relic</a> agent as a dependency, download it and point to the
 downloaded file for the <code>javaagent</code> JVM option.  After a little playing around, I came up with the following:</p>
 </div>
 <div class="listingblock">
@@ -210,16 +214,16 @@ project.tasks.run.dependsOn([copyAgent])			<i class="conum" data-value="3"></i><
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Tell <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> to use the the downloaded, copied <a href="http://newrelic.com">New Relic</a> agent JAR instead of the previously hard-coded value.</td>
+<td>Tell <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> to use the the downloaded, copied <a href="http://newrelic.com" target="_blank">New Relic</a> agent JAR instead of the previously hard-coded value.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Make the <a href="http://projects.spring.io/spring-boot/">Spring Boot</a> <code>run</code> task depend on the copy task to ensure that the agent is copied before we attempt to launch the application.</td>
+<td>Make the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <code>run</code> task depend on the copy task to ensure that the agent is copied before we attempt to launch the application.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Finally, the last thing that I did was set up a symbolic link from my project&#8217;s directory to where my <a href="http://newrelic.com">New Relic</a> YAML file resides.  The <a href="http://newrelic.com">New Relic</a> agent will
+<p>Finally, the last thing that I did was set up a symbolic link from my project&#8217;s directory to where my <a href="http://newrelic.com" target="_blank">New Relic</a> YAML file resides.  The <a href="http://newrelic.com" target="_blank">New Relic</a> agent will
 automatically look for the <code>newrelic.yml</code> file in the same location as the agent JAR or in the current working directory.  With this last piece in place, all
 hard-coded paths are now removed from the equation.</p>
 </div>
@@ -241,8 +245,8 @@ hard-coded paths are now removed from the equation.</p>
                    <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>On March 18th, Oracle officially released <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.  Eager to start using some of the new features (in a non-beta release), I quickly downloaded and installed the JDK on my laptop.  I switched my
-system to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> by default and set upon compiling one of my projects.  To my suprise, the build failed with a bunch of errors that looked like this:</p>
+<p>On March 18th, Oracle officially released <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.  Eager to start using some of the new features (in a non-beta release), I quickly downloaded and installed the JDK on my laptop.  I switched my
+system to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> by default and set upon compiling one of my projects.  To my suprise, the build failed with a bunch of errors that looked like this:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -251,8 +255,8 @@ system to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/i
 </div>
 </div>
 <div class="paragraph">
-<p>It turns out that <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> includes a much more strict set of rules for its doclint.  According to  <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html">Steven Colebourne</a>, the
-<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> doclint by default enforces the following rules when processing JavaDoc comments:</p>
+<p>It turns out that <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> includes a much more strict set of rules for its doclint.  According to  <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html" target="_blank">Steven Colebourne</a>, the
+<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> doclint by default enforces the following rules when processing JavaDoc comments:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -293,8 +297,8 @@ system to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/i
 </div>
 <div class="paragraph">
 <p>This is fine if you are starting with a green field project, but if you are like me and have to switch between new and legacy code bases, it may not be possible to correct all of these
-issues in order to get <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/">Maven JavaDoc plugin</a> generated using <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.  Per <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html">Steven Colebourne&#8217;s blog</a>, the solution is to
-include the <code>-Xdoclint:none</code> JVM argument in the configuration of the <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/">Maven JavaDoc plugin</a>:</p>
+issues in order to get <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank">Maven JavaDoc plugin</a> generated using <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.  Per <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html" target="_blank">Steven Colebourne&#8217;s blog</a>, the solution is to
+include the <code>-Xdoclint:none</code> JVM argument in the configuration of the <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank">Maven JavaDoc plugin</a>:</p>
 </div>
 <div class="listingblock">
 <div class="title">pom.xml</div>
@@ -320,10 +324,10 @@ include the <code>-Xdoclint:none</code> JVM argument in the configuration of the
 </div>
 </div>
 <div class="paragraph">
-<p>This works great when building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.  However, if you switch back to Java 7 and attempt to build with the <code>-Xdoclint:none</code> JVM argument, the build will fail, as Java 7 does not
-recognize that JVM argument.  What can we do to support JavaDoc generation via <a href="http://maven.apache.org/">Maven</a> for both Java 7 and Java 8 on a legacy code base?  Use
-<a href="http://maven.apache.org/guides/introduction/introduction-to-profiles.html">Maven profiles</a>!  Instead of modifying the existing <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/">Maven JavaDoc plugin</a> declaration in our <code>pom.xml</code> file, let&#8217;s instead
-add a new profile that only activates when we are building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>:</p>
+<p>This works great when building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.  However, if you switch back to Java 7 and attempt to build with the <code>-Xdoclint:none</code> JVM argument, the build will fail, as Java 7 does not
+recognize that JVM argument.  What can we do to support JavaDoc generation via <a href="http://maven.apache.org/" target="_blank">Maven</a> for both Java 7 and Java 8 on a legacy code base?  Use
+<a href="http://maven.apache.org/guides/introduction/introduction-to-profiles.html" target="_blank">Maven profiles</a>!  Instead of modifying the existing <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank">Maven JavaDoc plugin</a> declaration in our <code>pom.xml</code> file, let&#8217;s instead
+add a new profile that only activates when we are building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>:</p>
 </div>
 <div class="listingblock">
 <div class="title">pom.xml</div>
@@ -390,14 +394,14 @@ add a new profile that only activates when we are building with <a href="http://
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Will activate this profile if the JRE that is executing the <a href="http://maven.apache.org/">Maven</a> build is version 1.8 (<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>).</td>
+<td>Will activate this profile if the JRE that is executing the <a href="http://maven.apache.org/" target="_blank">Maven</a> build is version 1.8 (<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>).</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>We can now safely build our project with either Java 7 or <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> without having it fail due to either the more strict doclint rules in <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a> or the fact that Java 7 does not recognize
-the JVM argument.  I&#8217;m sure that this is not the last of these issues that will come up with regards to changes between previous versions of Java and <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.  Luckily, we should be able
-to apply the same profile trick for any differences until such a time that all the different code bases that you support are converted to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 8</a>.</p>
+<p>We can now safely build our project with either Java 7 or <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> without having it fail due to either the more strict doclint rules in <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> or the fact that Java 7 does not recognize
+the JVM argument.  I&#8217;m sure that this is not the last of these issues that will come up with regards to changes between previous versions of Java and <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.  Luckily, we should be able
+to apply the same profile trick for any differences until such a time that all the different code bases that you support are converted to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.</p>
 </div>
 </div>
 </div></p>
@@ -417,9 +421,9 @@ to apply the same profile trick for any differences until such a time that all t
                    <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>The other day, I decided to attempt to switch a <a href="http://grails.org">Grails</a> application from using Log4j (the built-in option) for logging to <a href="http://logback.qos.ch/">Logback</a>.  The core <a href="http://grails.org">Grails</a> development team
-maintains a <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a> that appeared to be just what I needed.  I started by modifying my <a href="http://grails.org">Grails</a> application&#8217;s <code>pom.xml</code> file
-to reference the <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a>:</p>
+<p>The other day, I decided to attempt to switch a <a href="http://grails.org" target="_blank">Grails</a> application from using Log4j (the built-in option) for logging to <a href="http://logback.qos.ch/" target="_blank">Logback</a>.  The core <a href="http://grails.org" target="_blank">Grails</a> development team
+maintains a <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a> that appeared to be just what I needed.  I started by modifying my <a href="http://grails.org" target="_blank">Grails</a> application&#8217;s <code>pom.xml</code> file
+to reference the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a>:</p>
 </div>
 <div class="listingblock">
 <div class="title">pom.xml</div>
@@ -436,8 +440,8 @@ to reference the <a href="http://grails.org/plugin/logback">Grails Logback Plugi
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Note that the plugin is a <code>binary</code> plugin, so I did not need to specify the packaging as <code>zip</code>.  If you are not using <a href="http://maven.apache.org/">Maven</a> support with your <a href="http://grails.org">Grails</a> application (or are using a version of <a href="http://grails.org">Grails</a> that did not yet support <a href="http://maven.apache.org/">Maven</a> POM files), you can include
-the <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a> in the <code>dependencies</code> block of your <code>grails-app/conf/BuildConfig.groovy</code> and <strong>NOT</strong> in the <code>plugins</code> block.</td>
+<td>Note that the plugin is a <code>binary</code> plugin, so I did not need to specify the packaging as <code>zip</code>.  If you are not using <a href="http://maven.apache.org/" target="_blank">Maven</a> support with your <a href="http://grails.org" target="_blank">Grails</a> application (or are using a version of <a href="http://grails.org" target="_blank">Grails</a> that did not yet support <a href="http://maven.apache.org/" target="_blank">Maven</a> POM files), you can include
+the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a> in the <code>dependencies</code> block of your <code>grails-app/conf/BuildConfig.groovy</code> and <strong>NOT</strong> in the <code>plugins</code> block.</td>
 </tr>
 </table>
 </div>
@@ -467,16 +471,16 @@ inherits("global") {
 <h3 id="_follow_the_instructions_they_said">Follow the instructions, they said</h3>
 <div class="paragraph">
 <p>In my first attempt at getting this working, I next moved on to changing the <code>log4j</code> closure in <code>grails-app/conf/Config.groovy</code> to <code>logback</code>, as the documentation suggests.  Subsequent
-digging uncovered that the <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a> only initializes <a href="http://logback.qos.ch/">Logback</a> using the DSL from <code>grails-app/conf/Config.groovy</code> if the application has been deployed as a WAR file
-to a container.  What this means in practical terms is that when running a <a href="http://grails.org">Grails</a> application locally using the <code>run-app</code> command, you have no control over the <a href="http://logback.qos.ch/">Logback</a> configuration
+digging uncovered that the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a> only initializes <a href="http://logback.qos.ch/" target="_blank">Logback</a> using the DSL from <code>grails-app/conf/Config.groovy</code> if the application has been deployed as a WAR file
+to a container.  What this means in practical terms is that when running a <a href="http://grails.org" target="_blank">Grails</a> application locally using the <code>run-app</code> command, you have no control over the <a href="http://logback.qos.ch/" target="_blank">Logback</a> configuration
 via the DSL and thus every log statement gets printed using the default level, which is <code>DEBUG</code> (more on this in a bit&#8230;).</p>
 </div>
 <div class="paragraph">
 <p>Back to my first attempt.  With <code>grails-app/conf/Config.groovy</code> modified, I attempted to run my application, after performing the requisite <code>clean</code> called out by the documentation, but
 ran into compile errors related to code that was directly importing and using Log4j.  I fixed these by switching any code that explicitly imported and used the Log4J <code>Logger</code> class to use the SLF4J <code>Logger</code>
-instead.  I next ran into some AST transformation errors with classes that had the <a href="http://groovy.codehaus.org">Groovy</a> logging <code>@Log4j</code> annotation present.  I switched these to use the SLF4J logging annotation (<code>@SLF4J</code>).  The
-last issue that I encountered in my attempts to get the application to compile and start was related to something that <a href="http://grails.org">Grails</a> automatically puts in <code>grails-app/conf/Config.groovy</code> when generating a
-new application (<strong>NOTE</strong>:  the application in question was built using <a href="http://grails.org">Grails</a> version 2.3.5).  By default, when you generate a new application, the following gets added to the configuration:</p>
+instead.  I next ran into some AST transformation errors with classes that had the <a href="http://groovy.codehaus.org" target="_blank">Groovy</a> logging <code>@Log4j</code> annotation present.  I switched these to use the SLF4J logging annotation (<code>@SLF4J</code>).  The
+last issue that I encountered in my attempts to get the application to compile and start was related to something that <a href="http://grails.org" target="_blank">Grails</a> automatically puts in <code>grails-app/conf/Config.groovy</code> when generating a
+new application (<strong>NOTE</strong>:  the application in question was built using <a href="http://grails.org" target="_blank">Grails</a> version 2.3.5).  By default, when you generate a new application, the following gets added to the configuration:</p>
 </div>
 <div class="listingblock">
 <div class="title">grails-app/conf/Config.groovy</div>
@@ -521,15 +525,15 @@ Message: org.slf4j.bridge.SLF4JBridgeHandler
 </div>
 </div>
 <div class="paragraph">
-<p>The fix for this is to ensure that <code>org.slf4j:jul-to-slf4j:1.7.5</code> is included as a <code>runtime</code> dependency.  If you are using an older version of <a href="http://grails.org">Grails</a>, check the <code>lib</code> directory
-of the <a href="http://grails.org">Grails</a> installation to determine the proper version of SLF4J to use.  Also note that if you have any dependencies that require Log4J, you may also need to add that dependency
+<p>The fix for this is to ensure that <code>org.slf4j:jul-to-slf4j:1.7.5</code> is included as a <code>runtime</code> dependency.  If you are using an older version of <a href="http://grails.org" target="_blank">Grails</a>, check the <code>lib</code> directory
+of the <a href="http://grails.org" target="_blank">Grails</a> installation to determine the proper version of SLF4J to use.  Also note that if you have any dependencies that require Log4J, you may also need to add that dependency
 to the classpath or remove it from the global excludes to get your application to start.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_using_logback_with_grails_run_app">Using Logback with grails run-app</h3>
 <div class="paragraph">
-<p>Let&#8217;s get back to the issue of the DSL only being used when the application is deployed as a WAR file.  If you take a look at the plugin descriptor for the <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a>, you will notice this
+<p>Let&#8217;s get back to the issue of the DSL only being used when the application is deployed as a WAR file.  If you take a look at the plugin descriptor for the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a>, you will notice this
 little snippet:</p>
 </div>
 <div class="listingblock">
@@ -552,18 +556,18 @@ little snippet:</p>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><code>grails.logging.jul.usebridge</code> is set to <code>true</code> by default in <code>*Config.groovy</code> when creating a new <a href="http://grails.org">Grails</a> application/plugin in 2.3.x and above.</td>
+<td><code>grails.logging.jul.usebridge</code> is set to <code>true</code> by default in <code>*Config.groovy</code> when creating a new <a href="http://grails.org" target="_blank">Grails</a> application/plugin in 2.3.x and above.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td><code>warDeployed</code> comes from an entry in <code>application.properties</code> that is added by <a href="http://grails.org">Grails</a> when the WAR file is built using the <code>grails war</code> command.</td>
+<td><code>warDeployed</code> comes from an entry in <code>application.properties</code> that is added by <a href="http://grails.org" target="_blank">Grails</a> when the WAR file is built using the <code>grails war</code> command.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
 <p>Based on the code above, it appears that the DSL is only loaded when the WAR is deployed.  This explains why no matter how many changes I made to the DSL, none of those changes were getting picked up.
-Being familiar with <a href="http://logback.qos.ch/">Logback</a>, I knew that if you put a <code>logback.groovy</code> file on the classpath, <a href="http://logback.qos.ch/">Logback</a> would automatically find and use it for configuration instead of the DSL.  To test this theory,
-I put a new <code>logback.groovy</code> file in <code>grails-app/conf</code> to ensure it was on the classpath.  I also added the following the <code>grails-app/conf/BootStrap.groovy</code> to verify which configuration <a href="http://logback.qos.ch/">Logback</a> had
+Being familiar with <a href="http://logback.qos.ch/" target="_blank">Logback</a>, I knew that if you put a <code>logback.groovy</code> file on the classpath, <a href="http://logback.qos.ch/" target="_blank">Logback</a> would automatically find and use it for configuration instead of the DSL.  To test this theory,
+I put a new <code>logback.groovy</code> file in <code>grails-app/conf</code> to ensure it was on the classpath.  I also added the following the <code>grails-app/conf/BootStrap.groovy</code> to verify which configuration <a href="http://logback.qos.ch/" target="_blank">Logback</a> had
 selected:</p>
 </div>
 <div class="listingblock">
@@ -578,15 +582,15 @@ selected:</p>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Useful line of code to enable <a href="http://logback.qos.ch/">Logback</a> to print out which (if any) configuration file it loaded.</td>
+<td>Useful line of code to enable <a href="http://logback.qos.ch/" target="_blank">Logback</a> to print out which (if any) configuration file it loaded.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>After another application restart, I noticed that <a href="http://logback.qos.ch/">Logback</a> was still not picking up my configuration.  I did a quick check of <code>target/classes</code> to confirm a suspicion that <a href="http://grails.org">Grails</a> had compiled my <code>logback.groovy</code>
-file instead of treating it like a non-source file.  Sure enough, I found <code>logback.class</code> in <code>target\classes</code>.  This meant that I would need to come up with a creative way to get <a href="http://grails.org">Grails</a> to get an
+<p>After another application restart, I noticed that <a href="http://logback.qos.ch/" target="_blank">Logback</a> was still not picking up my configuration.  I did a quick check of <code>target/classes</code> to confirm a suspicion that <a href="http://grails.org" target="_blank">Grails</a> had compiled my <code>logback.groovy</code>
+file instead of treating it like a non-source file.  Sure enough, I found <code>logback.class</code> in <code>target\classes</code>.  This meant that I would need to come up with a creative way to get <a href="http://grails.org" target="_blank">Grails</a> to get an
 un-compiled version of the file on the classpath.  My first thought was to put some logic in <code>grails-app/conf/BuildConfig.groovy</code> to set the <code>logback.configurationFile</code> system property supported by
-<a href="http://logback.qos.ch/">Logback</a> to the un-compiled version of <code>logback.groovy</code>:</p>
+<a href="http://logback.qos.ch/" target="_blank">Logback</a> to the un-compiled version of <code>logback.groovy</code>:</p>
 </div>
 <div class="listingblock">
 <div class="title">grails-app/conf/BuildConfig.groovy</div>
@@ -607,12 +611,12 @@ if(new File("${basedir}/grails-app/conf/logback.groovy").exists()) {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This is a programmatic way to force <a href="http://logback.qos.ch/">Logback</a> to use the <a href="http://groovy.codehaus.org">Groovy</a>-based configuration file.  This could also be set as an JVM argument (<code>-Dlogback.configurationFile=...</code>).</td>
+<td>This is a programmatic way to force <a href="http://logback.qos.ch/" target="_blank">Logback</a> to use the <a href="http://groovy.codehaus.org" target="_blank">Groovy</a>-based configuration file.  This could also be set as an JVM argument (<code>-Dlogback.configurationFile=...</code>).</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>After adding this code and restarting the application, <a href="http://logback.qos.ch/">Logback</a> finally found and loaded by custom configuration file.  This little trick works great when running the application using
+<p>After adding this code and restarting the application, <a href="http://logback.qos.ch/" target="_blank">Logback</a> finally found and loaded by custom configuration file.  This little trick works great when running the application using
 the <code>run-app</code> command, but I knew that I would have the same issue when building the WAR file.  To address getting the <code>logback.groovy</code> file in to the built WAR file as an un-compiled
 configuration file, I added the following to <code>scripts/Events.groovy</code>:</p>
 </div>
@@ -625,13 +629,13 @@ configuration file, I added the following to <code>scripts/Events.groovy</code>:
 </div>
 </div>
 <div class="paragraph">
-<p>When <a href="http://grails.org">Grails</a> starts the process of building the WAR file, this script will now copy over the un-compiled <code>logback.groovy</code> file to <code>classes</code> folder in the WAR.  This will guarantee that the
-file is on the classpath for <a href="http://logback.qos.ch/">Logback</a> to find at runtime in its un-compiled form.  After making this change, I built the WAR file and extracted it to verify the results.  Everything looked good.</p>
+<p>When <a href="http://grails.org" target="_blank">Grails</a> starts the process of building the WAR file, this script will now copy over the un-compiled <code>logback.groovy</code> file to <code>classes</code> folder in the WAR.  This will guarantee that the
+file is on the classpath for <a href="http://logback.qos.ch/" target="_blank">Logback</a> to find at runtime in its un-compiled form.  After making this change, I built the WAR file and extracted it to verify the results.  Everything looked good.</p>
 </div>
 <div class="paragraph">
-<p>In retrospect, I could have easily just ditched the <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a> in favor of directly using the <a href="http://logback.qos.ch/">Logback</a> dependencies, but I still would have encountered the issue with <a href="http://grails.org">Grails</a> compiling the
-<code>logback.groovy</code> file.  In addition I also would have lost support for the automatic <code>log</code> property injection in controllers, tag libraries, etc that <a href="http://grails.org">Grails</a> provides via an AST transformation.  In my
-spare time, I might attempt to make some modifications to the <a href="http://grails.org/plugin/logback">Grails Logback Plugin</a> to handle using the DSL in non-WAR-deployed scenarios, which would elminate the need for a <code>logback.groovy</code> file.</p>
+<p>In retrospect, I could have easily just ditched the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a> in favor of directly using the <a href="http://logback.qos.ch/" target="_blank">Logback</a> dependencies, but I still would have encountered the issue with <a href="http://grails.org" target="_blank">Grails</a> compiling the
+<code>logback.groovy</code> file.  In addition I also would have lost support for the automatic <code>log</code> property injection in controllers, tag libraries, etc that <a href="http://grails.org" target="_blank">Grails</a> provides via an AST transformation.  In my
+spare time, I might attempt to make some modifications to the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a> to handle using the DSL in non-WAR-deployed scenarios, which would elminate the need for a <code>logback.groovy</code> file.</p>
 </div>
 </div></p>
                 <p><a href="/blog/2014/03/24/grails_logback.html#disqus_thread">Comments</a></p>
@@ -652,10 +656,10 @@ spare time, I might attempt to make some modifications to the <a href="http://gr
                    <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>As part of a current project, I recently had the need to determine which of my <a href="http://grails.org">Grails</a> applications made use of certain <a href="http://spring.io">Spring</a> beans in order to prepare for a migration.  While it is possible to
-use the normal XML-based configuration in a <a href="http://grails.org">Grails</a> application (which in turn would have made parsing the configuration fairly straight forward), <a href="http://grails.org">Grails</a> applications typically make use of the built-in
-<a href="http://grails.org/doc/latest/guide/spring.html#springdslAdditional">Spring beans DSL</a> to declare their <a href="http://spring.io">Spring</a> configuration.  However, because the DSL is represented in <a href="http://groovy.codehaus.org">Groovy</a>, it meant that parsing it
-would not be as easy as if it were in XML.  I decided that the best approach would be to use the <code>grails.spring.BeanBuilder</code> outside of a <a href="http://grails.org">Grails</a> application in a <a href="http://groovy.codehaus.org">Groovy</a> script.  I was particularly interested
+<p>As part of a current project, I recently had the need to determine which of my <a href="http://grails.org" target="_blank">Grails</a> applications made use of certain <a href="http://spring.io" target="_blank">Spring</a> beans in order to prepare for a migration.  While it is possible to
+use the normal XML-based configuration in a <a href="http://grails.org" target="_blank">Grails</a> application (which in turn would have made parsing the configuration fairly straight forward), <a href="http://grails.org" target="_blank">Grails</a> applications typically make use of the built-in
+<a href="http://grails.org/doc/latest/guide/spring.html#springdslAdditional" target="_blank">Spring beans DSL</a> to declare their <a href="http://spring.io" target="_blank">Spring</a> configuration.  However, because the DSL is represented in <a href="http://groovy.codehaus.org" target="_blank">Groovy</a>, it meant that parsing it
+would not be as easy as if it were in XML.  I decided that the best approach would be to use the <code>grails.spring.BeanBuilder</code> outside of a <a href="http://grails.org" target="_blank">Grails</a> application in a <a href="http://groovy.codehaus.org" target="_blank">Groovy</a> script.  I was particularly interested
 in finding beans of type <code>org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean</code> class, which have <code>serviceInterface</code> and <code>serviceUrl</code> properties, so I wrote a script that loads and parses the
 DSL and then loops over each bean definition for beans that contained those properties:</p>
 </div>
@@ -696,10 +700,10 @@ beanBuilder.springConfig.beanConfigs.each {
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>The <code>grails.spring.BeanBuilder</code> can be used outside of <a href="http://grails.org">Grails</a> applications by including the <code>org.grails:grails-spring</code> module.</p>
+<p>The <code>grails.spring.BeanBuilder</code> can be used outside of <a href="http://grails.org" target="_blank">Grails</a> applications by including the <code>org.grails:grails-spring</code> module.</p>
 </li>
 <li>
-<p>The <code>resources.groovy</code> file (or any file that contains the proper DSL syntax) must have <code>beans</code> closure be the top level of the DSL and not be a variable (i.e. beans = { &#8230; ) for the script to parse the file correctly.</p>
+<p>The <code>resources.groovy</code> file (or any file that contains the proper DSL syntax) must have <code>beans</code> closure be the top level of the DSL and not be a variable (i.e. beans = { &#8230; }) for the script to parse the file correctly.</p>
 </li>
 <li>
 <p>In the example above, I did not provide a full classpath for all of the possible beans in the file.  This means that you cannot create the application context from the builder without getting ClassNotFoundException errors.</p>
@@ -711,8 +715,8 @@ beanBuilder.springConfig.beanConfigs.each {
 </div>
 <div class="paragraph">
 <p>All and all, this script was pretty easy to create and can be used as part of a larger process to identify, convert and/or even re-write the <code>resources.groovy</code> file.  Additionally, this
-<a href="http://spring.io/blog/2014/03/03/groovy-bean-configuration-in-spring-framework-4">DSL has now been incorporated directly into the Spring Framework</a>), which means that not only can you now declare <a href="http://spring.io">Spring</a> beans via the <a href="http://groovy.codehaus.org">Groovy</a>
-DSL just like in <a href="http://grails.org">Grails</a>, but that you could use the same solution above to inspect that configuration outside of the application if the need should arise.</p>
+<a href="http://spring.io/blog/2014/03/03/groovy-bean-configuration-in-spring-framework-4" target="_blank">DSL has now been incorporated directly into the Spring Framework</a>), which means that not only can you now declare <a href="http://spring.io" target="_blank">Spring</a> beans via the <a href="http://groovy.codehaus.org" target="_blank">Groovy</a>
+DSL just like in <a href="http://grails.org" target="_blank">Grails</a>, but that you could use the same solution above to inspect that configuration outside of the application if the need should arise.</p>
 </div>
 </div>
 </div></p>

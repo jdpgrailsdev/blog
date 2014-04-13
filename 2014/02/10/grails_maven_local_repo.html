@@ -97,12 +97,12 @@
     <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>One of the great new features in <a href="http://grails.org">Grails</a> 2.3 is the ability to use <a href="http://www.eclipse.org/aether/">Aether</a> to resolve dependencies in place of Ivy.  This is great news if
-you already use <a href="http://maven.apache.org/">Maven</a> to build other projects, as it now means you can have predictable builds between your <a href="http://grails.org">Grails</a> and non-http://grails.org[Grails] applications.  However, like
-any new feature, there are a few rough edges.  I ran into one the other day when trying to determine why one of my <a href="http://grails.org">Grails</a> applications was not picking up dependencies from the local <a href="http://maven.apache.org/">Maven</a>
-cache  (<code>~/.m2/repository</code>).  After some digging around, I ran across <a href="http://jira.grails.org/browse/GRAILS-10921">this bug</a>.  According to it, the mavenLocal directive in the
-repositories section of <code>BuildConfig.groovy</code> is not honored when using the <a href="http://www.eclipse.org/aether/">Aether</a> resolver.  So that stinks.  I quickly realized that we could make the <a href="http://grails.org">Grails</a> dependency resolver
-DSL pick up the local <a href="http://maven.apache.org/">Maven</a> repository by simply adding a new file-based repository:</p>
+<p>One of the great new features in <a href="http://grails.org" target="_blank">Grails</a> 2.3 is the ability to use <a href="http://www.eclipse.org/aether/" target="_blank">Aether</a> to resolve dependencies in place of Ivy.  This is great news if
+you already use <a href="http://maven.apache.org/" target="_blank">Maven</a> to build other projects, as it now means you can have predictable builds between your <a href="http://grails.org" target="_blank">Grails</a> and non-http://grails.org[Grails, window="_blank"] applications.  However, like
+any new feature, there are a few rough edges.  I ran into one the other day when trying to determine why one of my <a href="http://grails.org" target="_blank">Grails</a> applications was not picking up dependencies from the local <a href="http://maven.apache.org/" target="_blank">Maven</a>
+cache  (<code>~/.m2/repository</code>).  After some digging around, I ran across <a href="http://jira.grails.org/browse/GRAILS-10921" target="_blank">this bug</a>.  According to it, the mavenLocal directive in the
+repositories section of <code>BuildConfig.groovy</code> is not honored when using the <a href="http://www.eclipse.org/aether/" target="_blank">Aether</a> resolver.  So that stinks.  I quickly realized that we could make the <a href="http://grails.org" target="_blank">Grails</a> dependency resolver
+DSL pick up the local <a href="http://maven.apache.org/" target="_blank">Maven</a> repository by simply adding a new file-based repository:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -116,12 +116,12 @@ DSL pick up the local <a href="http://maven.apache.org/">Maven</a> repository by
 </div>
 </div>
 <div class="paragraph">
-<p>This little hack will allow you to continue checking the local <a href="http://maven.apache.org/">Maven</a> repository when using the <a href="http://grails.org">Grails</a> command line tools and the <a href="http://grails.org/doc/2.3.x/guide/introduction.html#whatsNew23">Maven dependency resolution support</a>
-new to <a href="http://grails.org">Grails</a> 2.3.  The nice thing about this is that when/if the issue is fixed so that the local <a href="http://maven.apache.org/">Maven</a> repository is honored, this fix should not cause any issues.  Not long after I made this fix,
-I went to build the application on <a href="http://jenkins-ci.org/">Jenkins</a> and notice some more funny business with dependencies.  After some digging, I determined the issue was due to the fact that now that the
-<a href="http://grails.org">Grails</a> applications were using <a href="http://maven.apache.org/">Maven</a> for dependency resolution and not Ivy, they were sharing one local dependency cache.  When the Jenkins job is a <a href="http://maven.apache.org/">Maven</a> project, I typically choose
-the option to create a repository per workspace, to avoid collisions between jobs.  With a <a href="http://grails.org">Grails</a> job, you do not have this option.  The option that you do have is setting the
-<code>grails.dependency.cache.dir</code> build property to tell <a href="http://grails.org">Grails</a> where to cache and look for local dependencies.  I decided to conditionally set this based on whether or not the application
+<p>This little hack will allow you to continue checking the local <a href="http://maven.apache.org/" target="_blank">Maven</a> repository when using the <a href="http://grails.org" target="_blank">Grails</a> command line tools and the <a href="http://grails.org/doc/2.3.x/guide/introduction.html#whatsNew23" target="_blank">Maven dependency resolution support</a>
+new to <a href="http://grails.org" target="_blank">Grails</a> 2.3.  The nice thing about this is that when/if the issue is fixed so that the local <a href="http://maven.apache.org/" target="_blank">Maven</a> repository is honored, this fix should not cause any issues.  Not long after I made this fix,
+I went to build the application on <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> and notice some more funny business with dependencies.  After some digging, I determined the issue was due to the fact that now that the
+<a href="http://grails.org" target="_blank">Grails</a> applications were using <a href="http://maven.apache.org/" target="_blank">Maven</a> for dependency resolution and not Ivy, they were sharing one local dependency cache.  When the Jenkins job is a <a href="http://maven.apache.org/" target="_blank">Maven</a> project, I typically choose
+the option to create a repository per workspace, to avoid collisions between jobs.  With a <a href="http://grails.org" target="_blank">Grails</a> job, you do not have this option.  The option that you do have is setting the
+<code>grails.dependency.cache.dir</code> build property to tell <a href="http://grails.org" target="_blank">Grails</a> where to cache and look for local dependencies.  I decided to conditionally set this based on whether or not the application
 was being built on Jenkins or not (the reason for this is that I already have it set in my local <code>~/.grails/settings.groovy</code> to have a separate cache per application).  Once again,
 I modified the BuildConfig.groovy file to contain the following logic:</p>
 </div>
@@ -167,10 +167,10 @@ I modified the BuildConfig.groovy file to contain the following logic:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>It&#8217;s worth noting that in the example above, I not only set the <code>grails.dependency.cache.dir</code> <a href="http://grails.org">Grails</a> build property, but
-I also set the <code>localRepository</code> property of the dependency resolution DSL to ensure that the <a href="http://maven.apache.org/">Maven</a> dependency resolution is using it both as a place to check
-for dependencies AND a place to store the cached dependencies (see the <a href="https://github.com/grails/grails-core/blob/2.3.x/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy">AetherDependencyManager.groovy</a> source
-file in the <code>grails-aether</code> module for more details).  Now when the application builds on Jenkins, not only does it have a local <a href="http://maven.apache.org/">Maven</a> repository as part of
+<p>It&#8217;s worth noting that in the example above, I not only set the <code>grails.dependency.cache.dir</code> <a href="http://grails.org" target="_blank">Grails</a> build property, but
+I also set the <code>localRepository</code> property of the dependency resolution DSL to ensure that the <a href="http://maven.apache.org/" target="_blank">Maven</a> dependency resolution is using it both as a place to check
+for dependencies AND a place to store the cached dependencies (see the <a href="https://github.com/grails/grails-core/blob/2.3.x/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy" target="_blank">AetherDependencyManager.groovy</a> source
+file in the <code>grails-aether</code> module for more details).  Now when the application builds on Jenkins, not only does it have a local <a href="http://maven.apache.org/" target="_blank">Maven</a> repository as part of
 the list of repositories, but that repository is stored in the workspace for the Jenkins build job.</p>
 </div>
 </div>
