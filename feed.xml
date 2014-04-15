@@ -6,13 +6,279 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Sun, 13 Apr 2014 15:15:02 -0400</pubDate>
-        <lastBuildDate>Sun, 13 Apr 2014 15:15:02 -0400</lastBuildDate>
+        <pubDate>Tue, 15 Apr 2014 07:42:26 -0400</pubDate>
+        <lastBuildDate>Tue, 15 Apr 2014 07:42:26 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Gradle API and Transitive Dependencies</title>
+            <link>http://jdpgrailsdev.github.io/blog//2014/04/15/gradle_api_dependencies.html</link>
+            <pubDate>Tue, 15 Apr 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">/2014/04/15/gradle_api_dependencies.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Recently, I have been working on porting the &lt;a href=&quot;http://raml.org&quot; target=&quot;_blank&quot;&gt;RAML&lt;/a&gt; &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; plugin to a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin and ran into a limitation with &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; and its API jars.  An interesting difference between &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; and
+&lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; is that &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; does not want you to rely on its API jars from a &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; repository (unlike &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt;, whose API jars are all stored in the central &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; repository).  Instead, the
+&lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; team has built in some special dependency handlers that in effect treat the required &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; (and &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; dependencies, if need be) as &quot;provided&quot; dependencies:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;build.gradle&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;...
+dependencies {
+    gradleApi()						&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
+    localGroovy()					&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;(2)&lt;/b&gt;
+    compile &apos;commmons-lang:commons-lang:2.6&apos;
+}
+...&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Tells &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; to include the gradle-core dependency and its required dependencies.  Normally used for plugin development.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Tells &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; to include the &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; dependency used by &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;, which at the time of writing is 1.8.6.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;What this means is that when building your &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin, &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; will use the jars that are part of the local &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; installation to resolve these dependencies, thus ensuring that you
+get the right versions of jars used by the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; API based on the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; version.  It will &lt;strong&gt;NOT&lt;/strong&gt; resolve these dependencies against any external repository.  This is a nice improvement
+over &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt;, but it comes with one major limitation that can cause issues:  there is no way to override and/or exclude any of the transitive dependencies brought in by the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;.  This
+wouldn&amp;#8217;t be that big of an issue, except for the fact the &lt;code&gt;gradleApi()&lt;/code&gt; dependency has a bunch of transitive dependencies.  Below is an example of what is include if both &lt;code&gt;gradleApi()&lt;/code&gt; and
+&lt;code&gt;localGroovy()&lt;/code&gt; are used:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint text language-text&quot;&gt;&lt;code&gt;~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/gradle-core-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/groovy-all-1.8.6.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/asm-all-5.0_BETA.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/ant-1.9.2.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/commons-collections-3.2.1.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/commons-io-1.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/commons-lang-2.6.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/ivy-2.2.0.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/logback-core-1.0.13.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/logback-classic-1.0.13.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/guava-jdk5-14.0.1.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/jcip-annotations-1.0.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/jul-to-slf4j-1.7.5.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/jarjar-1.3.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/javax.inject-1.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/bintray-client-java-impl-0.1.0.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/httpclient-4.2.2.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/slf4j-api-1.7.5.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/log4j-over-slf4j-1.7.5.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/jcl-over-slf4j-1.7.5.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/ant-launcher-1.9.2.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/jsch-0.1.46.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/joda-time-2.3.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/bintray-client-java-api-0.1.0.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/commons-logging-1.1.1.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/commons-beanutils-1.8.0.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/ezmorph-1.0.6.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/json-lib-2.3-jdk15.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/xml-resolver-1.2.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/http-builder-0.6.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/commons-codec-1.6.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/httpcore-4.2.2.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/jcifs-1.3.17.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/gradle-docs-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/gradle-base-services-groovy-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/gradle-base-services-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/gradle-resources-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/gradle-cli-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/gradle-native-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/jna-3.2.7.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/native-platform-0.7.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/jna-posix-1.0.3.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/jansi-1.2.1.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/native-platform-osx-i386-0.7.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/native-platform-osx-amd64-0.7.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/native-platform-linux-amd64-0.7.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/native-platform-linux-i386-0.7.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/native-platform-windows-amd64-0.7.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/native-platform-windows-i386-0.7.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/gradle-messaging-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/kryo-2.20.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/asm-4.0.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/reflectasm-1.07-shaded.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/minlog-1.2.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/objenesis-1.2.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-core-impl-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-maven-settings-3.0.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-maven-repository-metadata-3.0.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-plexus-container-default-1.5.5.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-maven-aether-provider-3.0.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-wagon-provider-api-2.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-plexus-cipher-1.7.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-plexus-interpolation-1.14.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-plexus-utils-2.0.6.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-plexus-classworlds-2.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-maven-plugin-api-3.0.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-maven-model-builder-3.0.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-plexus-sec-dispatcher-1.3.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-plexus-component-annotations-1.5.5.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-aether-connector-wagon-1.13.1.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-maven-compat-3.0.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-wagon-http-2.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-aether-api-1.13.1.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-maven-settings-builder-3.0.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-aether-spi-1.13.1.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-maven-core-3.0.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-wagon-http-shared4-2.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-aether-util-1.13.1.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-maven-artifact-3.0.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-maven-model-3.0.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jarjar-aether-impl-1.13.1.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/maven-ant-tasks-2.1.3.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/nekohtml-1.9.14.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/xbean-reflect-3.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/xml-apis-1.3.04.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/xercesImpl-2.9.1.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/gradle-tooling-api-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-plugins-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/junit-4.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/testng-6.3.1.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/commons-cli-1.2.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/bsh-2.0b4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jcommander-1.12.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/snakeyaml-1.6.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/hamcrest-core-1.3.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-code-quality-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-jetty-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jetty-6.1.25.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jetty-util-6.1.25.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/servlet-api-2.5-20081211.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jetty-plus-6.1.25.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jsp-2.1-6.1.14.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jetty-annotations-6.1.25.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/geronimo-annotation_1.0_spec-1.0.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jetty-naming-6.1.25.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/core-3.1.1.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jsp-api-2.1-6.1.14.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-antlr-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/ant-antlr-1.9.2.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/antlr-2.7.7.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/gradle-wrapper-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-osgi-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/bndlib-2.1.0.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-maven-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/pmaven-common-0.8-20100325.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/pmaven-groovy-0.8-20100325.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/plexus-component-annotations-1.5.2.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-ide-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-announce-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-scala-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-sonar-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/sonar-runner-2.0.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/sonar-batch-bootstrapper-2.9.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-signing-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/bcpg-jdk15-1.46.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/bcprov-jdk15-1.46.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-cpp-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-ear-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-javascript-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/rhino-1.7R3.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gson-2.2.4.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/simple-4.1.21.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-build-comparison-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-diagnostics-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-reporting-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/jatl-0.2.2.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-publish-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-ivy-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-jacoco-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-build-init-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-language-jvm-1.11.jar
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-language-base-1.11.jar&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;If you build a plugin and use it in another &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; project, these dependencies do not appear to override and/or interfere with any dependencies of that project.  Where
+this becomes an issues is with the &quot;test&quot; scope of the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin project itself.  I first noticed an issue when attempting to use the &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; 2.0 version of &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt;
+to write tests for my plugin.  Each time I attempted to build the project (and therefore run the tests), &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt; would complain that &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; 1.8.6 was not compatible:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint text language-text&quot;&gt;&lt;code&gt;GroovyVersionException: The Spock compiler plugin cannot execute because Spock 0.7.0-groovy-2.0 is not compatible with Groovy 1.8.6. For more information, see http://versioninfo.spockframework.org
+Spock location: file:~/.gradle/caches/artifacts-23/filestore/org.spockframework/spock-core/0.7-groovy-2.0/jar/4de0b428de0c14b6eb6375d8174f71848cbfc1d7/spock-core-0.7-groovy-2.0.jar
+Groovy location: file:~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/groovy-all-1.8.6.jar&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;This seemed odd, as I was explicitly including version 2.2.1 of &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; in my build.gradle script.  After a little digging on the internets, I discovered that &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; depends on
+&lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; 1.8.6 and by using the &lt;code&gt;localGroovy()&lt;/code&gt; or &lt;code&gt;gradleApi()&lt;/code&gt; dependencies, there is no way to replace/override this.  Furthermore, its probably not a good idea to do so, as
+&lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; itself is partially written in &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt;.  Luckily, &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt; supports both &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; 1.8.x and 2.x, so I simply changed my &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt; dependency to be compatible with &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt;
+1.8.6.  I thought that I was out of the woods, but on my next attempt to run the tests, I ran into another issue.  The tests failed, complaining about a missing method exception:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint text language-text&quot;&gt;&lt;code&gt;org.gradle.api.tasks.TaskExecutionException: Execution failed for task &apos;:raml-generate&apos;.
+    at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeActions(ExecuteActionsTaskExecuter.java:69)
+    at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:46)
+    at org.gradle.api.internal.tasks.execution.PostExecutionAnalysisTaskExecuter.execute(PostExecutionAnalysisTaskExecuter.java:35)
+    at org.gradle.api.internal.tasks.execution.SkipUpToDateTaskExecuter.execute(SkipUpToDateTaskExecuter.java:64)
+    at org.gradle.api.internal.tasks.execution.ValidatingTaskExecuter.execute(ValidatingTaskExecuter.java:58)
+    at org.gradle.api.internal.tasks.execution.SkipEmptySourceFilesTaskExecuter.execute(SkipEmptySourceFilesTaskExecuter.java:42)
+    at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:52)
+    at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:53)
+    at org.gradle.api.internal.tasks.execution.ExecuteAtMostOnceTaskExecuter.execute(ExecuteAtMostOnceTaskExecuter.java:43)
+    at org.gradle.api.internal.AbstractTask.executeWithoutThrowingTaskFailure(AbstractTask.java:289)
+    at org.gradle.api.internal.AbstractTask.execute(AbstractTask.java:284)
+    at org.raml.jaxrs.codegen.gradle.CodeGeneratorTaskSpec.test the generation of JAX-RS annotated resources from a .raml file(CodeGeneratorTaskSpec.groovy:220)
+Caused by: java.lang.NoSuchMethodError: org.yaml.snakeyaml.nodes.MappingNode.isMerged()Z
+    at org.raml.parser.visitor.NodeVisitor.doVisitMappingNode(NodeVisitor.java:126)
+    at org.raml.parser.visitor.NodeVisitor.visitDocument(NodeVisitor.java:209)
+    at org.raml.parser.visitor.YamlValidationService.validate(YamlValidationService.java:64)
+    at org.raml.parser.visitor.YamlValidationService.validate(YamlValidationService.java:95)
+    at org.raml.parser.visitor.YamlValidationService.validate(YamlValidationService.java:76)
+    at org.raml.jaxrs.codegen.core.Generator.run(Generator.java:110)
+    at org.raml.jaxrs.codegen.gradle.CodeGeneratorTask.generate_closure1(CodeGeneratorTask.groovy:80)
+    at groovy.lang.Closure.call(Closure.java:412)
+    at groovy.lang.Closure.call(Closure.java:425)
+    at org.raml.jaxrs.codegen.gradle.CodeGeneratorTask.generate(CodeGeneratorTask.groovy:79)
+    at org.gradle.internal.reflect.JavaMethod.invoke(JavaMethod.java:63)
+    at org.gradle.api.internal.project.taskfactory.AnnotationProcessingTaskFactory$StandardTaskAction.doExecute(AnnotationProcessingTaskFactory.java:219)
+    at org.gradle.api.internal.project.taskfactory.AnnotationProcessingTaskFactory$StandardTaskAction.execute(AnnotationProcessingTaskFactory.java:212)
+    at org.gradle.api.internal.project.taskfactory.AnnotationProcessingTaskFactory$StandardTaskAction.execute(AnnotationProcessingTaskFactory.java:201)
+    at org.gradle.api.internal.AbstractTask$TaskActionWrapper.execute(AbstractTask.java:533)
+    at org.gradle.api.internal.AbstractTask$TaskActionWrapper.execute(AbstractTask.java:516)
+    at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeAction(ExecuteActionsTaskExecuter.java:80)
+    at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeActions(ExecuteActionsTaskExecuter.java:61)
+    ... 11 more&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Well, that&amp;#8217;s odd.  The &lt;a href=&quot;http://raml.org&quot; target=&quot;_blank&quot;&gt;RAML&lt;/a&gt; libraries include &lt;code&gt;org.yaml:snakeyaml:1.13&lt;/code&gt; as a transitive dependency, which includes the proper version of &lt;code&gt;MappingNode&lt;/code&gt;.  Furthermore, I was able to test my
+plugin in a sample application and it works, so I figured something must be up with the &quot;test&quot; scope classpath in the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin project.  If we recall the list of dependencies above
+(which I got by printing out the contents of the &lt;code&gt;configurations.testCompile&lt;/code&gt; configuration in my build.gradle script), you can see that there is a reference to the &lt;code&gt;snakeyaml&lt;/code&gt; dependency:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint text language-text&quot;&gt;&lt;code&gt;~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/snakeyaml-1.6.jar&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Somehow, this dependency is winning out over the transitively included dependency from the &lt;a href=&quot;http://raml.org&quot; target=&quot;_blank&quot;&gt;RAML&lt;/a&gt; dependency, eventhough when printing out the resloved dependency tree via the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;
+&lt;code&gt;dependencies&lt;/code&gt; task, it shows only version 1.13.  Because there is no way (at least that I have found so far) to exclude the dependencies that are brought in by the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; API, this means
+that if you have a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin project that uses any of the dependencies that are also used by the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; API, you are effectively stuck at the versions of those dependencies that match
+what &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; currently depends on.  I have brought this issue up on the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; forum and I noticed that a few other people have asked for a feature to allow for excluding dependencies from
+the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; API.  I will keep you posted on this issue and if I get an answer and/or resolution.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Using the New Relic agent with Spring-Boot and Gradle</title>
             <link>http://jdpgrailsdev.github.io/blog//2014/04/08/spring_boot_gradle_newrelic.html</link>
@@ -619,24 +885,6 @@ beanBuilder.springConfig.beanConfigs.each {
 &lt;p&gt;All and all, this script was pretty easy to create and can be used as part of a larger process to identify, convert and/or even re-write the &lt;code&gt;resources.groovy&lt;/code&gt; file.  Additionally, this
 &lt;a href=&quot;http://spring.io/blog/2014/03/03/groovy-bean-configuration-in-spring-framework-4&quot; target=&quot;_blank&quot;&gt;DSL has now been incorporated directly into the Spring Framework&lt;/a&gt;), which means that not only can you now declare &lt;a href=&quot;http://spring.io&quot; target=&quot;_blank&quot;&gt;Spring&lt;/a&gt; beans via the &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt;
 DSL just like in &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;, but that you could use the same solution above to inspect that configuration outside of the application if the need should arise.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Grails Tattletale Plugin</title>
-            <link>http://jdpgrailsdev.github.io/blog//2014/03/12/grails_tattletale_plugin.html</link>
-            <pubDate>Wed, 12 Mar 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">/2014/03/12/grails_tattletale_plugin.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;I am pleased to announce that I have officially released the &lt;a href=&quot;http://grails.org/plugin/tattletale&quot; target=&quot;_blank&quot;&gt;Grails Tattletale plugin&lt;/a&gt; to the &lt;a href=&quot;http://grails.org/plugins/&quot; target=&quot;_blank&quot;&gt;Grails Plugins portal&lt;/a&gt;.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Full documentation can be found &lt;a href=&quot;https://github.com/jdpgrailsdev/grails-tattletale/blob/master/README.md&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
