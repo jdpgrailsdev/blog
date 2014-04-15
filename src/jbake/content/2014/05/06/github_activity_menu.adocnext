@@ -8,14 +8,132 @@ Jonathan Pearlin
 :linkattrs:
 :id: github_activity_menu
 :icons: font
+:bootstrap: http://getbootstrap.com[Bootstrap, window="_blank"]
+:github: http://github.com[GitHub, window="_blank"]
+:github_api: https://developer.github.com/v3/[GitHub API]
+:jquery: http://jquery.com[jQuery, window="_blank"]
 
-Ingredients:
+In an effort to improve my (limited) front-end foo, I decided that I wanted to add a {github} activity stream to this blog.  I figured that it would
+not be difficult to combine {jquery}, {bootstrap} and the {github_api} to add a widget that would look like a simplified version that you can see
+on your own {github} page under the https://github.com/jdpgrailsdev?tab=activity["Public Activity", window="_blank"] tab on your account.  What follows
+is a recounting of how I added the widget that you now see to the left of this article.
 
-* JQuery
-* Bootstrap 3.1.1 Panels - http://getbootstrap.com/components/#panels-list-group
-* Font Awesome 4.0.3 - http://fortawesome.github.io/Font-Awesome/
-* GitHub Events API - https://developer.github.com/v3/activity/events and https://developer.github.com/v3/activity/events/types/
-* GitHub Octicon - https://github.com/styleguide/css/7.0 + https://github.com/rummik/octicon
+=== Ingredients
+
+Let's start by first listing the specific pieces that I used to create the widget:
+
+* http://jquery.com[jQuery 1.11.0, window="_blank"]
+* http://getbootstrap.com/components/#panels-list-group[Bootstrap 3.1.1 Panels, window="_blank"]
+* http://fortawesome.github.io/Font-Awesome/[Font Awesome 4.0.3, window="_blank"]
+* https://developer.github.com/v3/activity/events[GitHub Events API, window="_blank"]
+* https://github.com/styleguide/css/7.0[GitHub Octicon, window="_blank"]
+
+My thought process was to use {jquery} to perform an AJAX call to the https://developer.github.com/v3/activity/events[GitHub Events API, window="_blank"] to get the activity list for my
+account.  Upon retrieval, I would append line items to the http://getbootstrap.com/components/#panels-list-group[Bootstrap 3.1.1 list group panel] that I had placed on the left-hand side
+of every page on my site.  Finally, I wanted to make use of the https://github.com/styleguide/css/7.0[GitHub Octicon, window="_blank"] icon fonts to make have the same icon indicators
+that appear on the activity page on my {github} account.  Once I had this plan sketched out, the next step was to see about getting the pieces implemented.
+
+=== Pretending to be a front-end developer
+
+The first thing that I did was add the example http://getbootstrap.com/components/#panels-list-group[Bootstrap list group panel] to my `menu` template just to see how it would fit
+
+[source,html]
+----
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Panel heading</div>
+  <div class="panel-body">
+    <p>...</p>
+  </div>
+
+  <!-- List group -->
+  <ul class="list-group">
+    <li class="list-group-item">Cras justo odio</li>
+    <li class="list-group-item">Dapibus ac facilisis in</li>
+    <li class="list-group-item">Morbi leo risus</li>
+    <li class="list-group-item">Porta ac consectetur ac</li>
+    <li class="list-group-item">Vestibulum at eros</li>
+  </ul>
+</div>
+
+----
+
+Right away, I noticed a bunch of formatting issues, mostly related to positioning the panel relative to the menu at the top of the page and the content in the middle of the page.  I quickly
+solved the positioning issue by surrounding the panel with a new `<div>` element and making use of the {bootstrap} `pull-left` class:
+
+[source,html]
+----
+<div id="activity" class="pull-left">
+    <div class="panel panel-default">
+      <!-- Default panel contents -->
+      <div class="panel-heading">Panel heading</div>
+      <div class="panel-body">
+        <p>...</p>
+      </div>
+
+      <!-- List group -->
+      <ul class="list-group">
+        <li class="list-group-item">Cras justo odio</li>
+        <li class="list-group-item">Dapibus ac facilisis in</li>
+        <li class="list-group-item">Morbi leo risus</li>
+        <li class="list-group-item">Porta ac consectetur ac</li>
+        <li class="list-group-item">Vestibulum at eros</li>
+      </ul>
+    </div>
+</div>
+----
+
+The next step was to get the panel to not overlap the menu and to get it to hover a bit off from the left-hand edge of the screen.  To accomplish this, I added a new CSS selector for the
+newly added `activity` ID:
+
+[source,css]
+----
+#activity {
+  padding-top: 110px;
+  padding-left: 20px;
+  width: 275px;
+}
+----
+
+I also decided to use the `panel-primary` {bootstrap}-provided style class to get the widget to be blue, closely matching {github}'s color scheme:
+
+[source,html]
+----
+<div id="activity" class="pull-left">
+    <div class="panel panel-primary">
+        ...
+    </div>
+</div>
+----
+
+It was now time to get rid of the sample content from the example.  My first thought was to start with a spinner to indicate that the panel is attempting to load (as I was going
+to use AJAX to get the data) and an empty, unordered list that would be filled by the retrieved data.  I did some searching on the internets and found that {bootstrap} has built-in
+support for a loading spinner.  With one more line of HTML, I had something that I could work with:
+
+[source,html]
+----
+<div id="activity" class="pull-left">
+    <div class="panel panel-primary">
+          <!-- Default panel contents -->
+          <div class="panel-heading">
+              <a target="_blank" href="http://github.com/jdpgrailsdev?tab=activity"><i class="fa fa-github"></i> My Recent GitHub Activity</a>
+          </div>
+          <div class="panel-body">
+              <i class='icon-spinner icon-spin icon-large'></i> Loading...
+          </div>
+          <!-- List group -->
+          <ul class="list-group">
+          </ul>
+    </div>
+</div>
+----
+
+Now that I had a professional (in my opinion) looking widget, I decided to get to work on writing the JavaScript to get the content from {github}.  {jquery} has a http://api.jquery.com/ready/[ready, window="_blank"]
+call back method that is fired when the HTML document is loaded.  By combining this with {jquery}'s https://api.jquery.com/jQuery.get/[get, window="_blank"] method, I could fire off the
+request to the {github_api} once the DOM has been loaded, ensuring the HTML that I want to replace will be present.
+
+https://developer.github.com/v3/activity/events/types/
+https://github.com/rummik/octicon
 
 Process:
 
