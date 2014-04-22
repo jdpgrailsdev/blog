@@ -6,13 +6,138 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Wed, 16 Apr 2014 07:57:21 -0400</pubDate>
-        <lastBuildDate>Wed, 16 Apr 2014 07:57:21 -0400</lastBuildDate>
+        <pubDate>Tue, 22 Apr 2014 07:32:19 -0400</pubDate>
+        <lastBuildDate>Tue, 22 Apr 2014 07:32:19 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>The Grails Gradle Plugin and Logback</title>
+            <link>http://jdpgrailsdev.github.io/blog//2014/04/22/grails_gradle_logback.html</link>
+            <pubDate>Tue, 22 Apr 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">/2014/04/22/grails_gradle_logback.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In a &lt;a href=&quot;http://jonathanpearlin.com/blog/2014/03/24/grails_logback.html&quot; target=&quot;_blank&quot;&gt;previous post&lt;/a&gt;, I discussed how to switch a &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; application to use &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; instead of Log4j for logging.  In that post, I
+covered using both the &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; support in Grails to configure the dependencies required to use &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; with &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;, as well as how to use the built in dependency management support via the
+&lt;code&gt;BuildConfig.groovy&lt;/code&gt; dependencies DSL.  I did not cover how to make this all work with &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;.  The same caveats and issues, as mentioned previously, still apply with regards to the &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; DSL
+defined in &lt;code&gt;Config.groovy&lt;/code&gt; and the use of the &lt;code&gt;logback.groovy&lt;/code&gt; file in its place, so I will not re-hash that here.  Instead, I will point out a couple of issues with regards to getting the
+dependencies configured correctly in the &lt;code&gt;build.gradle&lt;/code&gt; file.  Similar to the other approaches, you still need to provide global excludes for the Log4J related dependencies:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;build.gradle&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;configurations {
+     all*.exclude group: &apos;org.grails&apos;, module: &apos;grails-plugin-log4j&apos;		&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
+     all*.exclude group: &apos;org.slf4j&apos;, module: &apos;slf4j-log4j12&apos;			&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;(2)&lt;/b&gt;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Exclude the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; Log4J plugin, per the instructions provided by the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt;.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Exclude the Log4J SLF4J binding, as &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; provides its own SLF4J binding.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Next, include the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; as a dependency:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;build.gradle&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;dependencies {
+    compile (&apos;org.grails.plugins:logback:0.3.1&apos;) {
+        exclude(module:&apos;slf4j-api&apos;)								&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
+    }
+    compile (&apos;ch.qos.logback:logback-classic:1.1.1&apos;) {						&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;(2)&lt;/b&gt;
+        exclude(module:&apos;slf4j-api&apos;)
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Exclude the SLF4J transitive dependency so that it does not conflict with the version provided by &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;I added an explicit dependency for &lt;code&gt;logback-classic&lt;/code&gt; so that I could use a newer version than the one transitively provided by the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt;.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;I thought that this would be enough to build my application&amp;#8217;s WAR file using the &lt;code&gt;grails-war&lt;/code&gt; task of the &lt;a href=&quot;https://github.com/grails/grails-gradle-plugin/&quot; target=&quot;_blank&quot;&gt;Grails Gradle Plugin&lt;/a&gt;.  However, when I went to execute the task, the
+build failed with the following exception:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;| Error Error generating web.xml file
+org.codehaus.groovy.runtime.typehandling.GroovyCastException: Cannot cast object &apos;org.slf4j.helpers.NOPLoggerFactory@7f4cfb5&apos; with class &apos;org.slf4j.helpers.NOPLoggerFactory&apos; to class &apos;ch.qos.logback.classic.LoggerContext&apos;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;What is really strange is that this does not happen when using the &lt;code&gt;grails-run-app&lt;/code&gt; &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; task.  Additionally, the following also appears in the output when attempting to build the WAR file:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;SLF4J: Failed to load class &quot;org.slf4j.impl.StaticLoggerBinder&quot;.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;A quick search of the internets for both of these issues indicate that you are either A) do not have any SLF4J binding on your classpath, thus causing SLF$J to default to the no-op binding, or B) have an
+SLF4J binding on the classpath in addition to the one provided by &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt;.  Those two statements obviously contradict with each other.  After scratching my head for a while, I realized that the &lt;a href=&quot;https://github.com/grails/grails-gradle-plugin/&quot; target=&quot;_blank&quot;&gt;Grails Gradle Plugin&lt;/a&gt;
+has a &lt;code&gt;bootstrap&lt;/code&gt; dependency scope, which is used to provide dependencies to the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; commands, which themselves are GAnt scripts written in &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt;.  These scripts also need a logger to output
+the status of what is being executed.  I decided to add a duplicate dependency to the &lt;code&gt;build.gradle&lt;/code&gt; build file to see if that would fix the problem:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;build.gradle&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;dependencies {
+    compile (&apos;org.grails.plugins:logback:0.3.1&apos;) {
+        exclude(module:&apos;slf4j-api&apos;)
+    }
+    compile (&apos;ch.qos.logback:logback-classic:1.1.1&apos;) {
+        exclude(module:&apos;slf4j-api&apos;)
+    }
+    bootstrap &apos;ch.qos.logback:logback-classic:1.1.1&apos;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;After adding the dependency to the separate &lt;code&gt;bootstrap&lt;/code&gt; scope, I once again ran the &lt;code&gt;grails-war&lt;/code&gt; &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; task and got a much better outcome:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;| Done creating WAR build/distributions/test-1.0.0.war
+
+BUILD SUCCESSFUL
+
+Total time: 17.166 secs&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Much better.  It&amp;#8217;s important to remember that the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; build eco-system is itself a Java-based application that requires its own set of dependencies just to execute.  When using the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;
+command line arguments or building via &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt;, this classpath is management automatically.  However, when using the &lt;a href=&quot;https://github.com/grails/grails-gradle-plugin/&quot; target=&quot;_blank&quot;&gt;Grails Gradle Plugin&lt;/a&gt; plugin, you currently have to manage any additions to this yourself
+via the &lt;code&gt;bootstrap&lt;/code&gt; scope (an interesting side note here is that now &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; is using &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; for all logging, not just when executing the application).&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Gradle API and Transitive Dependencies</title>
             <link>http://jdpgrailsdev.github.io/blog//2014/04/15/gradle_api_dependencies.html</link>
@@ -811,81 +936,6 @@ file is on the classpath for &lt;a href=&quot;http://logback.qos.ch/&quot; targe
 &lt;p&gt;In retrospect, I could have easily just ditched the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; in favor of directly using the &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; dependencies, but I still would have encountered the issue with &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; compiling the
 &lt;code&gt;logback.groovy&lt;/code&gt; file.  In addition I also would have lost support for the automatic &lt;code&gt;log&lt;/code&gt; property injection in controllers, tag libraries, etc that &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; provides via an AST transformation.  In my
 spare time, I might attempt to make some modifications to the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; to handle using the DSL in non-WAR-deployed scenarios, which would elminate the need for a &lt;code&gt;logback.groovy&lt;/code&gt; file.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Parsing the Grails Spring Beans DSL with Groovy</title>
-            <link>http://jdpgrailsdev.github.io/blog//2014/03/18/grails_bean_builder.html</link>
-            <pubDate>Tue, 18 Mar 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">/2014/03/18/grails_bean_builder.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;As part of a current project, I recently had the need to determine which of my &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; applications made use of certain &lt;a href=&quot;http://spring.io&quot; target=&quot;_blank&quot;&gt;Spring&lt;/a&gt; beans in order to prepare for a migration.  While it is possible to
-use the normal XML-based configuration in a &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; application (which in turn would have made parsing the configuration fairly straight forward), &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; applications typically make use of the built-in
-&lt;a href=&quot;http://grails.org/doc/latest/guide/spring.html#springdslAdditional&quot; target=&quot;_blank&quot;&gt;Spring beans DSL&lt;/a&gt; to declare their &lt;a href=&quot;http://spring.io&quot; target=&quot;_blank&quot;&gt;Spring&lt;/a&gt; configuration.  However, because the DSL is represented in &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt;, it meant that parsing it
-would not be as easy as if it were in XML.  I decided that the best approach would be to use the &lt;code&gt;grails.spring.BeanBuilder&lt;/code&gt; outside of a &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; application in a &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; script.  I was particularly interested
-in finding beans of type &lt;code&gt;org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean&lt;/code&gt; class, which have &lt;code&gt;serviceInterface&lt;/code&gt; and &lt;code&gt;serviceUrl&lt;/code&gt; properties, so I wrote a script that loads and parses the
-DSL and then loops over each bean definition for beans that contained those properties:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;@Grapes([
-    @Grab(group=&apos;org.grails&apos;, module=&apos;grails-spring&apos;, version=&apos;2.3.6&apos;),
-    @Grab(group=&apos;org.springframework&apos;, module=&apos;spring-web&apos;, version=&apos;4.0.2.RELEASE&apos;)
-])
-
-import grails.spring.BeanBuilder
-
-// The resources.groovy file must have:
-//
-// beans {
-//
-// and not
-// beans = {
-//
-// for this script to work!
-
-BeanBuilder beanBuilder = new BeanBuilder()
-beanBuilder.setClassLoader(this.class.classLoader)
-beanBuilder.loadBeans(&apos;file:./grails-app/conf/spring/resources.groovy&apos;)
-
-beanBuilder.springConfig.beanConfigs.each {
-    if(it.value.definition.propertyValues.getPropertyValue(&apos;serviceInterface&apos;)) {
-        println &quot;${it.key} -&amp;gt; ${it.value.clazz.name}&quot;
-        println &quot;\tserviceUrl = ${it.value.definition.propertyValues.getPropertyValue(&apos;serviceUrl&apos;).value}&quot;
-        println &quot;\tserviceInterface = ${it.value.definition.propertyValues.getPropertyValue(&apos;serviceInterface&apos;).value}&quot;
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;There are a couple of important things to note in the example above:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;olist arabic&quot;&gt;
-&lt;ol class=&quot;arabic&quot;&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;grails.spring.BeanBuilder&lt;/code&gt; can be used outside of &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; applications by including the &lt;code&gt;org.grails:grails-spring&lt;/code&gt; module.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;resources.groovy&lt;/code&gt; file (or any file that contains the proper DSL syntax) must have &lt;code&gt;beans&lt;/code&gt; closure be the top level of the DSL and not be a variable (i.e. beans = { &amp;#8230; }) for the script to parse the file correctly.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;In the example above, I did not provide a full classpath for all of the possible beans in the file.  This means that you cannot create the application context from the builder without getting ClassNotFoundException errors.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Command line argument parsing could be added to allow for the script to be run from anywhere and not just the root of the Grails application, as is the case in the example above.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;All and all, this script was pretty easy to create and can be used as part of a larger process to identify, convert and/or even re-write the &lt;code&gt;resources.groovy&lt;/code&gt; file.  Additionally, this
-&lt;a href=&quot;http://spring.io/blog/2014/03/03/groovy-bean-configuration-in-spring-framework-4&quot; target=&quot;_blank&quot;&gt;DSL has now been incorporated directly into the Spring Framework&lt;/a&gt;), which means that not only can you now declare &lt;a href=&quot;http://spring.io&quot; target=&quot;_blank&quot;&gt;Spring&lt;/a&gt; beans via the &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt;
-DSL just like in &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;, but that you could use the same solution above to inspect that configuration outside of the application if the need should arise.&lt;/p&gt;
-&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
             </description>
