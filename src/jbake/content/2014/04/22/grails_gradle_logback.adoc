@@ -1,0 +1,103 @@
+= The Grails Gradle Plugin and Logback
+Jonathan Pearlin
+2014-04-22
+:jbake-type: post
+:jbake-tags: grails,gradle,logback
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: grails_gradle_logback
+:gradle: http://gradle.org[Gradle, window="_blank"]
+:grails: http://grails.org[Grails, window="_blank"]
+:grails_gradle: https://github.com/grails/grails-gradle-plugin/[Grails Gradle Plugin, window="_blank"]
+:grails_logback: http://grails.org/plugin/logback[Grails Logback Plugin, window="_blank"]
+:groovy: http://groovy.codehaus.org[Groovy, window="_blank"]
+:logback: http://logback.qos.ch/[Logback, window="_blank"]
+:maven: http://maven.apache.org/[Maven, window="_blank"]
+:icons: font
+
+In a http://jonathanpearlin.com/blog/2014/03/24/grails_logback.html[previous post, window="_blank"], I discussed how to switch a {grails} application to use {logback} instead of Log4j for logging.  In that post, I
+covered using both the {maven} support in Grails to configure the dependencies required to use {logback} with {grails}, as well as how to use the built in dependency management support via the
+`BuildConfig.groovy` dependencies DSL.  I did not cover how to make this all work with {gradle}.  The same caveats and issues, as mentioned previously, still apply with regards to the {logback} DSL
+defined in `Config.groovy` and the use of the `logback.groovy` file in its place, so I will not re-hash that here.  Instead, I will point out a couple of issues with regards to getting the
+dependencies configured correctly in the `build.gradle` file.  Similar to the other approaches, you still need to provide global excludes for the Log4J related dependencies:
+
+[source,groovy]
+.build.gradle
+----
+configurations {
+     all*.exclude group: 'org.grails', module: 'grails-plugin-log4j'		<1>
+     all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'			<2>
+}
+----
+<1> Exclude the {grails} Log4J plugin, per the instructions provided by the {grails_logback}.
+<2> Exclude the Log4J SLF4J binding, as {logback} provides its own SLF4J binding.
+
+Next, include the {grails_logback} as a dependency:
+
+[source,groovy]
+.build.gradle
+----
+dependencies {
+    compile ('org.grails.plugins:logback:0.3.1') {
+        exclude(module:'slf4j-api')								<1>
+    }
+    compile ('ch.qos.logback:logback-classic:1.1.1') {						<2>
+        exclude(module:'slf4j-api')
+    }
+}
+----
+<1> Exclude the SLF4J transitive dependency so that it does not conflict with the version provided by {grails}
+<2> I added an explicit dependency for `logback-classic` so that I could use a newer version than the one transitively provided by the {grails_logback}.
+
+I thought that this would be enough to build my application's WAR file using the `grails-war` task of the {grails_gradle}.  However, when I went to execute the task, the
+build failed with the following exception:
+
+[source]
+----
+| Error Error generating web.xml file
+org.codehaus.groovy.runtime.typehandling.GroovyCastException: Cannot cast object 'org.slf4j.helpers.NOPLoggerFactory@7f4cfb5' with class 'org.slf4j.helpers.NOPLoggerFactory' to class 'ch.qos.logback.classic.LoggerContext'
+----
+
+What is really strange is that this does not happen when using the `grails-run-app` {gradle} task.  Additionally, the following also appears in the output when attempting to build the WAR file:
+
+[source]
+----
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+----
+
+A quick search of the internets for both of these issues indicate that you are either A) do not have any SLF4J binding on your classpath, thus causing SLF$J to default to the no-op binding, or B) have an
+SLF4J binding on the classpath in addition to the one provided by {logback}.  Those two statements obviously contradict with each other.  After scratching my head for a while, I realized that the {grails_gradle}
+has a `bootstrap` dependency scope, which is used to provide dependencies to the {grails} commands, which themselves are GAnt scripts written in {groovy}.  These scripts also need a logger to output
+the status of what is being executed.  I decided to add a duplicate dependency to the `build.gradle` build file to see if that would fix the problem:
+
+[source,groovy]
+.build.gradle
+----
+dependencies {
+    compile ('org.grails.plugins:logback:0.3.1') {
+        exclude(module:'slf4j-api')
+    }
+    compile ('ch.qos.logback:logback-classic:1.1.1') {
+        exclude(module:'slf4j-api')
+    }
+    bootstrap 'ch.qos.logback:logback-classic:1.1.1'
+}
+----
+
+After adding the dependency to the separate `bootstrap` scope, I once again ran the `grails-war` {gradle} task and got a much better outcome:
+
+[source]
+----
+| Done creating WAR build/distributions/test-1.0.0.war
+
+BUILD SUCCESSFUL
+
+Total time: 17.166 secs
+----
+
+Much better.  It's important to remember that the {grails} build eco-system is itself a Java-based application that requires its own set of dependencies just to execute.  When using the {grails}
+command line arguments or building via {maven}, this classpath is management automatically.  However, when using the {grails_gradle} plugin, you currently have to manage any additions to this yourself
+via the `bootstrap` scope (an interesting side note here is that now {grails} is using {logback} for all logging, not just when executing the application).

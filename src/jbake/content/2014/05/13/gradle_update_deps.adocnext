@@ -1,0 +1,53 @@
+= Automatically Update Dependencies in Gradle Project
+Jonathan Pearlin
+2014-05-13
+:jbake-type: post
+:jbake-tags: gradle
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: gradle_dependencies_update
+:gradle: http://gradle.org[Gradle, window="_blank"]
+:groovy: http://groovy.codehaus.org[Groovy, window="_blank"]
+:maven: http://maven.apache.org/[Maven, window="_blank"]
+:maven_versions: http://mojo.codehaus.org/versions-maven-plugin/[Maven Versions Plugin, window="_blank"]
+:icons: font
+
+One feature that we use a lot that appears to be missing from {gradle} is the ability to update all dependencies of a specific group ID to their latest release version.  In {maven}, this can
+be done through the `use-latest-versions` goal of the {maven_versions}.  There is what appears to be a https://github.com/ben-manes/gradle-versions-plugin[port, window="_blank"] of the
+{maven_versions} to a {Gradle} plugin, but it only support generating a report of what is out of date and does not actually support updating the project itself.  That being said, you actually
+don't need to create a wrapper over the {maven_versions}:  you can actually achieve the same functionality with a few lines of {groovy} code:
+
+[source,groovy]
+----
+void updateDependencies(String groupId) {
+    def dependencies = project.configurations.collectMany { it.allDependencies }.findAll { it.group == groupId}
+    dependencies?.each { Dependency dep ->
+        def resolvedConfiguration = project.configurations
+                    .detachedConfiguration(project.dependencies.create("${dep.group}:${dep.name}:latest.release")).getResolvedConfiguration()
+        def latestVersion = resolvedConfiguration.getFirstLevelModuleDependencies().find { it.getModuleName() == dep.name }?.getModuleVersion()
+        if(latestVersion && latestVersion != dep.version) {
+            project.ant.replaceregexp(file: project.file('build.gradle'), match: "${dep.group}:${dep.name}:${dep.version}",
+                                        replace: "${dep.group}:${dep.name}:${latestVersion}")
+        }
+    }
+}
+----
+
+In the example above, a group ID value is used to filter the project's dependencies down to the list that are candidates for updates.  From that list, a new "detached configuration" is created for each, with the version set to use
+the `latest.release` placeholder.  The dependency is resolved using the `getResolvedConfiguration()` method, which returns a configuration that holds the dependency with its latest release version.  If a match is found and the
+new version number is not the same as the original candidate dependency's version number, then the code makes use of the `replaceregexp` method on the project's Ant object to update the dependency in the `build.gradle` file itself.
+This method could be modified to be a lot more modular.  Such changes could including taking in the entire GAV (group ID, artifact ID, target version number, etc) or taking in an optional parameter for the supported latest version
+constants with a meaningful default:
+
+[source,groovy]
+----
+void updateDependencies(String groupId, String targetVersion='latest.release') {
+    ...
+}
+----
+
+This would allow for the use of other constants that are supported by {gradle}, such as `latest.integration` (it could also be extracted to an enumeration to restrict the values that could be provided).  Finally, one other missing piece
+that I hope to implement soon is the ability to opt in or out of major version updates (this is something that the {maven_versions} supports).  This will require using something like
+https://github.com/akutz/version-maven-plugin/blob/master/src/main/java/com/lostcreations/mojos/version/Version.java[Version.java, window="_blank"] to parse the version number for comparison.  All of this code can be put into a {gradle} task
+and even into a separate plugin to share between projects!
