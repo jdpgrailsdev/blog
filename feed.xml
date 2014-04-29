@@ -6,13 +6,357 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 22 Apr 2014 07:32:19 -0400</pubDate>
-        <lastBuildDate>Tue, 22 Apr 2014 07:32:19 -0400</lastBuildDate>
+        <pubDate>Tue, 29 Apr 2014 10:31:08 -0400</pubDate>
+        <lastBuildDate>Tue, 29 Apr 2014 10:31:08 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Code Coverage with Cobertura</title>
+            <link>http://jdpgrailsdev.github.io/blog//2014/04/29/gradle_cobertura.html</link>
+            <pubDate>Tue, 29 Apr 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">/2014/04/29/gradle_cobertura.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In all of my projects, I typically like to include unit tests and unit test coverage analysis to determine the effectiveness of my tests.  While there
+are different Java code coverage packages out there, I normally use &lt;a href=&quot;http://cobertura.github.io/cobertura/&quot; target=&quot;_blank&quot;&gt;Cobertura&lt;/a&gt;, mostly due to ease of use, features and familiarity with it.  In this
+post, I am going to cover the different ways to configure and use &lt;a href=&quot;http://cobertura.github.io/cobertura/&quot; target=&quot;_blank&quot;&gt;Cobertura&lt;/a&gt; as part of &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt;, &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; and &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; projects.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_maven&quot;&gt;Maven&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In order to perform &lt;a href=&quot;http://cobertura.github.io/cobertura/&quot; target=&quot;_blank&quot;&gt;Cobertura&lt;/a&gt; instrumentation and generate coverage reports in a &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; project, the first thing that you will need to do is to
+include the &lt;a href=&quot;http://mojo.codehaus.org/cobertura-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Cobertura Maven Plugin&lt;/a&gt; in your project&amp;#8217;s &lt;code&gt;pom.xml&lt;/code&gt; file:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;pom.xml&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint xml language-xml&quot;&gt;&lt;code&gt;&amp;lt;plugin&amp;gt;
+    &amp;lt;groupId&amp;gt;org.codehaus.mojo&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;cobertura-maven-plugin&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;2.6&amp;lt;/version&amp;gt;
+    &amp;lt;configuration&amp;gt;
+        &amp;lt;formats&amp;gt;
+            &amp;lt;format&amp;gt;html&amp;lt;/format&amp;gt;		&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
+            &amp;lt;format&amp;gt;xml&amp;lt;/format&amp;gt;
+        &amp;lt;/formats&amp;gt;
+        &amp;lt;outputDirectory&amp;gt;${project.build.directory}/surefire-reports/cobertura&amp;lt;/outputDirectory&amp;gt;		&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;(2)&lt;/b&gt;
+        &amp;lt;instrumentation&amp;gt;
+            &amp;lt;ignoreTrivial&amp;gt;true&amp;lt;/ignoreTrivial&amp;gt;			&lt;i class=&quot;conum&quot; data-value=&quot;3&quot;&gt;&lt;/i&gt;&lt;b&gt;(3)&lt;/b&gt;
+            &amp;lt;ignores&amp;gt;
+                &amp;lt;ignore&amp;gt;org.slf4j.Logger.*&amp;lt;/ignore&amp;gt;		&lt;i class=&quot;conum&quot; data-value=&quot;4&quot;&gt;&lt;/i&gt;&lt;b&gt;(4)&lt;/b&gt;
+            &amp;lt;/ignores&amp;gt;
+            &amp;lt;excludes&amp;gt;
+                &amp;lt;exclude&amp;gt;**/Example.class&amp;lt;/exclude&amp;gt;		&lt;i class=&quot;conum&quot; data-value=&quot;5&quot;&gt;&lt;/i&gt;&lt;b&gt;(5)&lt;/b&gt;
+            &amp;lt;/excludes&amp;gt;
+        &amp;lt;/instrumentation&amp;gt;
+    &amp;lt;/configuration&amp;gt;
+    &amp;lt;executions&amp;gt;
+        &amp;lt;execution&amp;gt;
+            &amp;lt;phase&amp;gt;package&amp;lt;/phase&amp;gt;			&lt;i class=&quot;conum&quot; data-value=&quot;6&quot;&gt;&lt;/i&gt;&lt;b&gt;(6)&lt;/b&gt;
+            &amp;lt;goals&amp;gt;
+                &amp;lt;goal&amp;gt;cobertura&amp;lt;/goal&amp;gt;
+            &amp;lt;/goals&amp;gt;
+        &amp;lt;/execution&amp;gt;
+    &amp;lt;/executions&amp;gt;
+&amp;lt;/plugin&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Enables the output format(s) for the generated coverage report(s).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Sets the output location for the generated coverage report(s).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;3&quot;&gt;&lt;/i&gt;&lt;b&gt;3&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Instructs &lt;a href=&quot;http://cobertura.github.io/cobertura/&quot; target=&quot;_blank&quot;&gt;Cobertura&lt;/a&gt; to ignore trivial methods, such as getters and setters when producing the coverage report(s).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;4&quot;&gt;&lt;/i&gt;&lt;b&gt;4&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Instructs &lt;a href=&quot;http://cobertura.github.io/cobertura/&quot; target=&quot;_blank&quot;&gt;Cobertura&lt;/a&gt; to ignore any references to methods of the &lt;code&gt;org.slf4j.Logger&lt;/code&gt; class when producing the coverage report(s).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;5&quot;&gt;&lt;/i&gt;&lt;b&gt;5&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Provides &lt;a href=&quot;http://cobertura.github.io/cobertura/&quot; target=&quot;_blank&quot;&gt;Cobertura&lt;/a&gt; with a list of compiled class files to ignore when producing the coverage report(s).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;6&quot;&gt;&lt;/i&gt;&lt;b&gt;6&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Binds the &lt;code&gt;cobertura&lt;/code&gt; goal of the &lt;a href=&quot;http://mojo.codehaus.org/cobertura-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Cobertura Maven Plugin&lt;/a&gt; to the &lt;code&gt;package&lt;/code&gt; phase of the &lt;a href=&quot;https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference&quot; target=&quot;_blank&quot;&gt;Maven Build Lifecycle&lt;/a&gt;.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The configuration of the &lt;a href=&quot;http://mojo.codehaus.org/cobertura-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Cobertura Maven Plugin&lt;/a&gt; shown above will cause the &lt;code&gt;cobertura&lt;/code&gt; goal to execute automatically during the &lt;code&gt;package&lt;/code&gt; phase of the
+&lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; lifecycle.  For instance, if the following command is executed on a &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; project:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;literalblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre&gt;maven clean package&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;then the &lt;a href=&quot;http://mojo.codehaus.org/cobertura-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Cobertura Maven Plugin&lt;/a&gt; will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
+manually invoke the plugin by running the goal explicitly in the project:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;literalblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre&gt;maven cobertura&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;For additional information on the configuration and use of the &lt;a href=&quot;http://mojo.codehaus.org/cobertura-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Cobertura Maven Plugin&lt;/a&gt;, consult the &lt;a href=&quot;http://mojo.codehaus.org/cobertura-maven-plugin/usage.html&quot; target=&quot;_blank&quot;&gt;usage&lt;/a&gt; and
+&lt;a href=&quot;http://mojo.codehaus.org/cobertura-maven-plugin/cobertura-mojo.html&quot; target=&quot;_blank&quot;&gt;cobertura goal&lt;/a&gt; documentation.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Finally, this all assumes that you have unit tests that will execute as part of the &lt;code&gt;test&lt;/code&gt; phase of the &lt;a href=&quot;https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference&quot; target=&quot;_blank&quot;&gt;Maven Build Lifecycle&lt;/a&gt;.  Take
+a look at the &lt;a href=&quot;http://maven.apache.org/surefire/maven-surefire-plugin/&quot; target=&quot;_blank&quot;&gt;Maven Surefire Plugin&lt;/a&gt; for an example of how to execute unit tests as part of a &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; build.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_grails&quot;&gt;Grails&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Like with &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt;, there is a &lt;a href=&quot;http://cobertura.github.io/cobertura/&quot; target=&quot;_blank&quot;&gt;Cobertura&lt;/a&gt; plugin for the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; framework.  The first step to enabling the generation of &lt;a href=&quot;http://cobertura.github.io/cobertura/&quot; target=&quot;_blank&quot;&gt;Cobertura&lt;/a&gt; code coverage report(s) in a &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; project is to
+include the &lt;a href=&quot;http://grails.org/plugin/code-coverage&quot; target=&quot;_blank&quot;&gt;Cobertura Grails Plugin&lt;/a&gt; as a dependency in your &lt;code&gt;BuildConfig.groovy&lt;/code&gt;, &lt;code&gt;pom.xml&lt;/code&gt; or &lt;code&gt;build.gradle&lt;/code&gt;, depending on which build system your project uses:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;BuildConfig.groovy&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;plugins {
+    test &apos;:code-coverage:1.2.7&apos;		&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Dependencies in &lt;code&gt;BuildConfig.groovy&lt;/code&gt; without a group ID are assumed to have a &lt;code&gt;org.grails&lt;/code&gt; or &lt;code&gt;org.grails.plugins&lt;/code&gt; as a group ID, depending on which closure they are declared in.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;pom.xml&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint xml language-xml&quot;&gt;&lt;code&gt;&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;org.grails.plugins&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;code-coverage&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;1.2.7&amp;lt;/version&amp;gt;
+    &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+    &amp;lt;type&amp;gt;zip&amp;lt;/type&amp;gt;
+&amp;lt;/dependency&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;build.gradle&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;dependencies {
+    test &apos;org.grails.plugins:code-coverage:1.2.7&apos;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The next step is to configure the &lt;a href=&quot;http://grails.org/plugin/code-coverage&quot; target=&quot;_blank&quot;&gt;Cobertura Grails Plugin&lt;/a&gt;, also in &lt;code&gt;BuildConfig.groovy&lt;/code&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;BuildConfig.groovy&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;coverage {
+    enabledByDefault = true		&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
+    html = true				&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;(2)&lt;/b&gt;
+    xml = true
+
+    exclusions = [&apos;**/*Example*&apos;]	&lt;i class=&quot;conum&quot; data-value=&quot;3&quot;&gt;&lt;/i&gt;&lt;b&gt;(3)&lt;/b&gt;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Automatically instruments the code and generates the coverage report(s) when running tests.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Enables the output format(s) for the generated coverage report(s).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;3&quot;&gt;&lt;/i&gt;&lt;b&gt;3&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Provides &lt;a href=&quot;http://cobertura.github.io/cobertura/&quot; target=&quot;_blank&quot;&gt;Cobertura&lt;/a&gt; with a list of compiled class files to ignore when producing the coverage report(s).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The configuration of the &lt;a href=&quot;http://grails.org/plugin/code-coverage&quot; target=&quot;_blank&quot;&gt;Cobertura Grails Plugin&lt;/a&gt; shown above will cause the the plugin to execute automatically when running the &lt;code&gt;test-app&lt;/code&gt; &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; command.  For instance,
+if the following command is executed on a &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; project:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;literalblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre&gt;grails test-app :unit&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;then the &lt;a href=&quot;http://grails.org/plugin/code-coverage&quot; target=&quot;_blank&quot;&gt;Cobertura Grails Plugin&lt;/a&gt; will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
+manually invoke the plugin by adding an additional parameter to the &lt;code&gt;test-app&lt;/code&gt; command:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;literalblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre&gt;grails test-app :unit --coverage&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;For additional information on the configuration and use of the &lt;a href=&quot;http://grails.org/plugin/code-coverage&quot; target=&quot;_blank&quot;&gt;Cobertura Grails Plugin&lt;/a&gt;, consult the &lt;a href=&quot;https://github.com/beckje01/grails-code-coverage&quot; target=&quot;_blank&quot;&gt;Grails Code Coverage plugin&lt;/a&gt; documentation.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;As with the &lt;a href=&quot;http://mojo.codehaus.org/cobertura-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Cobertura Maven Plugin&lt;/a&gt;, the code coverage report(s) will only be generated if there are unit tests or source files that can be under test present in the project.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_gradle&quot;&gt;Gradle&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;There are multiple &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugins that provide &lt;a href=&quot;http://cobertura.github.io/cobertura/&quot; target=&quot;_blank&quot;&gt;Cobertura&lt;/a&gt; functionality to a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; project.  The one that I prefer to use is the &lt;a href=&quot;https://github.com/stevesaliman/gradle-cobertura-plugin&quot; target=&quot;_blank&quot;&gt;Cobertura Gradle Plugin&lt;/a&gt; that is maintained by Steve Saliman.
+This plugin provides much better configuration option and has much better documentation (at the time of writing) than the others.  Below is a sample &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; project file that includes the
+&lt;a href=&quot;https://github.com/stevesaliman/gradle-cobertura-plugin&quot; target=&quot;_blank&quot;&gt;Cobertura Gradle Plugin&lt;/a&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;build.gradle&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;apply plugin: &apos;groovy&apos;
+apply plugin: &apos;cobertura&apos;			&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
+
+group = &apos;com.example&apos;
+version = &apos;1.0.0-SNAPSHOT&apos;
+description = &quot;&quot;&quot;Sample project with Spock tests and Cobertura code coverage&quot;&quot;&quot;
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath &apos;net.saliman:gradle-cobertura-plugin:2.2.4&apos;			&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;(2)&lt;/b&gt;
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile group: &apos;org.codehaus.groovy&apos;, name: &apos;groovy-all&apos;, &apos;2.2.1&apos;
+
+    testCompile group: &apos;cglib&apos;, name: &apos;cglib-nodeps&apos;, version:&apos;2.2.2&apos;
+    testCompile group: &apos;junit&apos;, name: &apos;junit-dep&apos;, version:&apos;4.11&apos;
+    testCompile group: &apos;org.spockframework&apos;, name: &apos;spock-core&apos;, &apos;0.7-groovy-2.0&apos;
+    testCompile group: &apos;org.objenesis&apos;, name: &apos;objenesis&apos;, version:&apos;1.2&apos;
+}
+
+test {
+    filter {
+        includeTestsMatching &quot;*Spec&quot;
+    }
+}
+
+cobertura {
+    coverageFormats = [&apos;html&apos;, &apos;xml&apos;]				&lt;i class=&quot;conum&quot; data-value=&quot;3&quot;&gt;&lt;/i&gt;&lt;b&gt;(3)&lt;/b&gt;
+    coverageIgnoreTrivial = true					&lt;i class=&quot;conum&quot; data-value=&quot;4&quot;&gt;&lt;/i&gt;&lt;b&gt;(4)&lt;/b&gt;
+    coverageIgnores = [&apos;org.slf4j.Logger.*&apos;]			&lt;i class=&quot;conum&quot; data-value=&quot;5&quot;&gt;&lt;/i&gt;&lt;b&gt;(5)&lt;/b&gt;
+    coverageReportDir = new File(&quot;$buildDir/reports/cobertura&quot;)	&lt;i class=&quot;conum&quot; data-value=&quot;6&quot;&gt;&lt;/i&gt;&lt;b&gt;(6)&lt;/b&gt;
+}
+
+test.finalizedBy(project.tasks.cobertura)			&lt;i class=&quot;conum&quot; data-value=&quot;7&quot;&gt;&lt;/i&gt;&lt;b&gt;(7)&lt;/b&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Applies the &lt;a href=&quot;https://github.com/stevesaliman/gradle-cobertura-plugin&quot; target=&quot;_blank&quot;&gt;Cobertura Gradle Plugin&lt;/a&gt; to this build script.  This means that the tasks registered by the plugin will be available to be executed by this project.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Tells &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; to add the JAR that contains the &lt;a href=&quot;https://github.com/stevesaliman/gradle-cobertura-plugin&quot; target=&quot;_blank&quot;&gt;Cobertura Gradle Plugin&lt;/a&gt; and its tasks to the classpath for the build script.  This is required for &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; to be able to find the plugin.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;3&quot;&gt;&lt;/i&gt;&lt;b&gt;3&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Enables the output format(s) for the generated coverage report(s).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;4&quot;&gt;&lt;/i&gt;&lt;b&gt;4&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Instructs &lt;a href=&quot;http://cobertura.github.io/cobertura/&quot; target=&quot;_blank&quot;&gt;Cobertura&lt;/a&gt; to ignore trivial methods, such as getters and setters when producing the coverage report(s).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;5&quot;&gt;&lt;/i&gt;&lt;b&gt;5&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Instructs &lt;a href=&quot;http://cobertura.github.io/cobertura/&quot; target=&quot;_blank&quot;&gt;Cobertura&lt;/a&gt; to ignore any references to methods of the &lt;code&gt;org.slf4j.Logger&lt;/code&gt; class when producing the coverage report(s).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;6&quot;&gt;&lt;/i&gt;&lt;b&gt;6&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Sets the output location for the generated coverage report(s).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;7&quot;&gt;&lt;/i&gt;&lt;b&gt;7&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Tells &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; to automatically execute the &lt;code&gt;cobertura&lt;/code&gt; task after the &lt;code&gt;test&lt;/code&gt; task has completed.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The configuration of the &lt;a href=&quot;https://github.com/stevesaliman/gradle-cobertura-plugin&quot; target=&quot;_blank&quot;&gt;Cobertura Gradle Plugin&lt;/a&gt; shown above will cause the the plugin to execute automatically after the &lt;code&gt;test&lt;/code&gt; task completes.  For instance,
+if the following command is executed on a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; project:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;literalblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre&gt;./gradlew test&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;then the &lt;a href=&quot;https://github.com/stevesaliman/gradle-cobertura-plugin&quot; target=&quot;_blank&quot;&gt;Cobertura Gradle Plugin&lt;/a&gt; will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
+manually invoke the plugin by running the &lt;code&gt;cobertura&lt;/code&gt; task explicitly:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;literalblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre&gt;./gradlew cobertura&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;For additional information on the configuration and use of the plugin, consult the documentation on its &lt;a href=&quot;https://github.com/stevesaliman/gradle-cobertura-plugin&quot; target=&quot;_blank&quot;&gt;GitHub repository&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;As with the &lt;a href=&quot;http://mojo.codehaus.org/cobertura-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Cobertura Maven Plugin&lt;/a&gt; and &lt;a href=&quot;http://grails.org/plugin/code-coverage&quot; target=&quot;_blank&quot;&gt;Cobertura Grails Plugin&lt;/a&gt;, the code coverage report(s) will only be generated if there are unit tests or source files that can be under test present in the project.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_summary&quot;&gt;Summary&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The examples above illustrate how I normally configure the various plugins for use in the different build systems outlined in this post.  Once you have found a configuration that works for you, I would
+recommend looking into integration with your build system/continuous integration in order to publish reports and determine the health of a build based on additions or regressions in the amount of code
+under test for your project.  That being said, just having the ability to generate code coverage to determine the effectiveness of unit tests is still a step in the right direction towards
+ensuring the stability of any code base.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>The Grails Gradle Plugin and Logback</title>
             <link>http://jdpgrailsdev.github.io/blog//2014/04/22/grails_gradle_logback.html</link>
@@ -708,234 +1052,6 @@ add a new profile that only activates when we are building with &lt;a href=&quot
 the JVM argument.  I&amp;#8217;m sure that this is not the last of these issues that will come up with regards to changes between previous versions of Java and &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot; target=&quot;_blank&quot;&gt;Java 8&lt;/a&gt;.  Luckily, we should be able
 to apply the same profile trick for any differences until such a time that all the different code bases that you support are converted to use &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot; target=&quot;_blank&quot;&gt;Java 8&lt;/a&gt;.&lt;/p&gt;
 &lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Grails and Logback</title>
-            <link>http://jdpgrailsdev.github.io/blog//2014/03/24/grails_logback.html</link>
-            <pubDate>Mon, 24 Mar 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">/2014/03/24/grails_logback.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The other day, I decided to attempt to switch a &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; application from using Log4j (the built-in option) for logging to &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt;.  The core &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; development team
-maintains a &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; that appeared to be just what I needed.  I started by modifying my &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; application&amp;#8217;s &lt;code&gt;pom.xml&lt;/code&gt; file
-to reference the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt;:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;pom.xml&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint xml language-xml&quot;&gt;&lt;code&gt;&amp;lt;dependency&amp;gt;
-    &amp;lt;groupId&amp;gt;org.grails.plugins&amp;lt;/groupId&amp;gt;
-    &amp;lt;artifactId&amp;gt;logback&amp;lt;/artifactId&amp;gt;			&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
-    &amp;lt;version&amp;gt;0.3.1&amp;lt;/version&amp;gt;
-    &amp;lt;scope&amp;gt;compile&amp;lt;/scope&amp;gt;
-&amp;lt;/dependency&amp;gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;colist arabic&quot;&gt;
-&lt;table&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;Note that the plugin is a &lt;code&gt;binary&lt;/code&gt; plugin, so I did not need to specify the packaging as &lt;code&gt;zip&lt;/code&gt;.  If you are not using &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; support with your &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; application (or are using a version of &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; that did not yet support &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; POM files), you can include
-the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; in the &lt;code&gt;dependencies&lt;/code&gt; block of your &lt;code&gt;grails-app/conf/BuildConfig.groovy&lt;/code&gt; and &lt;strong&gt;NOT&lt;/strong&gt; in the &lt;code&gt;plugins&lt;/code&gt; block.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Additionally, I added the following global exclusions to &lt;code&gt;grails-app/conf/BuildConfig.groovy&lt;/code&gt;, per the plugin&amp;#8217;s instructions:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;grails-app/conf/BuildConfig.groovy&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;// inherit Grails&apos; default dependencies
-inherits(&quot;global&quot;) {
-    excludes &apos;grails-plugin-log4j&apos;, &apos;log4j&apos;		&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;colist arabic&quot;&gt;
-&lt;table&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;If any other dependencies have a runtime dependency on &lt;code&gt;log4j&lt;/code&gt;, you will need to remove it from the global excludes.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;sect2&quot;&gt;
-&lt;h3 id=&quot;_follow_the_instructions_they_said&quot;&gt;Follow the instructions, they said&lt;/h3&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;In my first attempt at getting this working, I next moved on to changing the &lt;code&gt;log4j&lt;/code&gt; closure in &lt;code&gt;grails-app/conf/Config.groovy&lt;/code&gt; to &lt;code&gt;logback&lt;/code&gt;, as the documentation suggests.  Subsequent
-digging uncovered that the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; only initializes &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; using the DSL from &lt;code&gt;grails-app/conf/Config.groovy&lt;/code&gt; if the application has been deployed as a WAR file
-to a container.  What this means in practical terms is that when running a &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; application locally using the &lt;code&gt;run-app&lt;/code&gt; command, you have no control over the &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; configuration
-via the DSL and thus every log statement gets printed using the default level, which is &lt;code&gt;DEBUG&lt;/code&gt; (more on this in a bit&amp;#8230;).&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Back to my first attempt.  With &lt;code&gt;grails-app/conf/Config.groovy&lt;/code&gt; modified, I attempted to run my application, after performing the requisite &lt;code&gt;clean&lt;/code&gt; called out by the documentation, but
-ran into compile errors related to code that was directly importing and using Log4j.  I fixed these by switching any code that explicitly imported and used the Log4J &lt;code&gt;Logger&lt;/code&gt; class to use the SLF4J &lt;code&gt;Logger&lt;/code&gt;
-instead.  I next ran into some AST transformation errors with classes that had the &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; logging &lt;code&gt;@Log4j&lt;/code&gt; annotation present.  I switched these to use the SLF4J logging annotation (&lt;code&gt;@SLF4J&lt;/code&gt;).  The
-last issue that I encountered in my attempts to get the application to compile and start was related to something that &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; automatically puts in &lt;code&gt;grails-app/conf/Config.groovy&lt;/code&gt; when generating a
-new application (&lt;strong&gt;NOTE&lt;/strong&gt;:  the application in question was built using &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; version 2.3.5).  By default, when you generate a new application, the following gets added to the configuration:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;grails-app/conf/Config.groovy&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;environments {
-    development {
-        grails.logging.jul.usebridge = true
-    }
-    production {
-        grails.logging.jul.usebridge = false
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;which enables the use of the SLF4J JUL bridge in the local environment.  If you run the application with &lt;code&gt;grails.logging.jul.usebridge = true&lt;/code&gt; &lt;strong&gt;AND&lt;/strong&gt; have excluded the &lt;code&gt;grails-plugin-log4j&lt;/code&gt; dependency,
-you will see the following error upon application start up:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint text language-text&quot;&gt;&lt;code&gt;| Error 2014-03-11 12:43:41,282 [localhost-startStop-1] ERROR o.c.g.g.w.c.GrailsContextLoader  - Error initializing the application: org.slf4j.bridge.SLF4JBridgeHandler
-java.lang.NoClassDefFoundError: org.slf4j.bridge.SLF4JBridgeHandler
-    at LogbackGrailsPlugin$_closure2.doCall(LogbackGrailsPlugin.groovy:45) ~[logback-0.3.1.jar:na]
-    at grails.spring.BeanBuilder.invokeBeanDefiningClosure(BeanBuilder.java:756) ~[grails-spring-2.3.5.jar:2.3.5]
-    at grails.spring.BeanBuilder.beans(BeanBuilder.java:584) ~[grails-spring-2.3.5.jar:2.3.5]
-    at grails.spring.BeanBuilder.invokeMethod(BeanBuilder.java:527) ~[grails-spring-2.3.5.jar:2.3.5]
-    at java.util.concurrent.FutureTask.run(FutureTask.java:262) [na:1.7.0_51]
-    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145) [na:1.7.0_51]
-    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615) [na:1.7.0_51]
-    at java.lang.Thread.run(Thread.java:744) [na:1.7.0_51]
-Message: org.slf4j.bridge.SLF4JBridgeHandler
-    Line | Method
--&amp;gt;&amp;gt;   45 | doCall                    in LogbackGrailsPlugin$_closure2
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|    756 | invokeBeanDefiningClosure in grails.spring.BeanBuilder
-|    584 | beans . . . . . . . . . . in     &apos;&apos;
-|    527 | invokeMethod              in     &apos;&apos;
-|    262 | run . . . . . . . . . . . in java.util.concurrent.FutureTask
-|   1145 | runWorker                 in java.util.concurrent.ThreadPoolExecutor
-|    615 | run . . . . . . . . . . . in java.util.concurrent.ThreadPoolExecutor$Worker
-^    744 | run                       in java.lang.Thread&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The fix for this is to ensure that &lt;code&gt;org.slf4j:jul-to-slf4j:1.7.5&lt;/code&gt; is included as a &lt;code&gt;runtime&lt;/code&gt; dependency.  If you are using an older version of &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;, check the &lt;code&gt;lib&lt;/code&gt; directory
-of the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; installation to determine the proper version of SLF4J to use.  Also note that if you have any dependencies that require Log4J, you may also need to add that dependency
-to the classpath or remove it from the global excludes to get your application to start.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;sect2&quot;&gt;
-&lt;h3 id=&quot;_using_logback_with_grails_run_app&quot;&gt;Using Logback with grails run-app&lt;/h3&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Let&amp;#8217;s get back to the issue of the DSL only being used when the application is deployed as a WAR file.  If you take a look at the plugin descriptor for the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt;, you will notice this
-little snippet:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;LogbackGrailsPlugin.groovy&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;def doWithSpring = {
-    if (application.config?.grails?.logging?.jul?.usebridge) {					&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
-        LogManager.logManager.readConfiguration new ByteArrayInputStream(&quot;.level=INFO&quot;.bytes)
-        SLF4JBridgeHandler.install()
-    }
-
-    if (application.warDeployed) {								&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;(2)&lt;/b&gt;
-        // only initialize here if deployed as a war since doWithWebDescriptor isn&apos;t called
-        initLogging application
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;colist arabic&quot;&gt;
-&lt;table&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;grails.logging.jul.usebridge&lt;/code&gt; is set to &lt;code&gt;true&lt;/code&gt; by default in &lt;code&gt;*Config.groovy&lt;/code&gt; when creating a new &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; application/plugin in 2.3.x and above.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;warDeployed&lt;/code&gt; comes from an entry in &lt;code&gt;application.properties&lt;/code&gt; that is added by &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; when the WAR file is built using the &lt;code&gt;grails war&lt;/code&gt; command.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Based on the code above, it appears that the DSL is only loaded when the WAR is deployed.  This explains why no matter how many changes I made to the DSL, none of those changes were getting picked up.
-Being familiar with &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt;, I knew that if you put a &lt;code&gt;logback.groovy&lt;/code&gt; file on the classpath, &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; would automatically find and use it for configuration instead of the DSL.  To test this theory,
-I put a new &lt;code&gt;logback.groovy&lt;/code&gt; file in &lt;code&gt;grails-app/conf&lt;/code&gt; to ensure it was on the classpath.  I also added the following the &lt;code&gt;grails-app/conf/BootStrap.groovy&lt;/code&gt; to verify which configuration &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; had
-selected:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;grails-app/conf/BootStrap.groovy&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;def init = { servletContext -&amp;gt;
-    StatusPrinter.print((LoggerContext) LoggerFactory.getILoggerFactory())		&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;colist arabic&quot;&gt;
-&lt;table&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;Useful line of code to enable &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; to print out which (if any) configuration file it loaded.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;After another application restart, I noticed that &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; was still not picking up my configuration.  I did a quick check of &lt;code&gt;target/classes&lt;/code&gt; to confirm a suspicion that &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; had compiled my &lt;code&gt;logback.groovy&lt;/code&gt;
-file instead of treating it like a non-source file.  Sure enough, I found &lt;code&gt;logback.class&lt;/code&gt; in &lt;code&gt;target\classes&lt;/code&gt;.  This meant that I would need to come up with a creative way to get &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; to get an
-un-compiled version of the file on the classpath.  My first thought was to put some logic in &lt;code&gt;grails-app/conf/BuildConfig.groovy&lt;/code&gt; to set the &lt;code&gt;logback.configurationFile&lt;/code&gt; system property supported by
-&lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; to the un-compiled version of &lt;code&gt;logback.groovy&lt;/code&gt;:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;grails-app/conf/BuildConfig.groovy&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;/*
- * If the application is being run locally, set the Logback configuration file
- * system property.  This is necessary as Grails will attempt to compile the .groovy
- * file instead of simply adding it to the classpath &quot;as is&quot;.  There is a corresponding
- * event handler in &apos;scripts/Events.groovy&apos; that takes care of making sure that the
- * Groovy configuration file makes it into the WAR in its un-compiled state.
- */
-if(new File(&quot;${basedir}/grails-app/conf/logback.groovy&quot;).exists()) {
-    System.setProperty(&apos;logback.configurationFile&apos;, &quot;${basedir}/grails-app/conf/logback.groovy&quot;)		&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;colist arabic&quot;&gt;
-&lt;table&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;This is a programmatic way to force &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; to use the &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt;-based configuration file.  This could also be set as an JVM argument (&lt;code&gt;-Dlogback.configurationFile=...&lt;/code&gt;).&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;After adding this code and restarting the application, &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; finally found and loaded by custom configuration file.  This little trick works great when running the application using
-the &lt;code&gt;run-app&lt;/code&gt; command, but I knew that I would have the same issue when building the WAR file.  To address getting the &lt;code&gt;logback.groovy&lt;/code&gt; file in to the built WAR file as an un-compiled
-configuration file, I added the following to &lt;code&gt;scripts/Events.groovy&lt;/code&gt;:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;scripts/Events.groovy&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;eventCreateWarStart = { warName, stagingDir -&amp;gt;
-    ant.copy file:&quot;${basedir}/grails-app/conf/logback.groovy&quot;, todir: &quot;${stagingDir}/WEB-INF/classes&quot;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;When &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; starts the process of building the WAR file, this script will now copy over the un-compiled &lt;code&gt;logback.groovy&lt;/code&gt; file to &lt;code&gt;classes&lt;/code&gt; folder in the WAR.  This will guarantee that the
-file is on the classpath for &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; to find at runtime in its un-compiled form.  After making this change, I built the WAR file and extracted it to verify the results.  Everything looked good.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;In retrospect, I could have easily just ditched the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; in favor of directly using the &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; dependencies, but I still would have encountered the issue with &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; compiling the
-&lt;code&gt;logback.groovy&lt;/code&gt; file.  In addition I also would have lost support for the automatic &lt;code&gt;log&lt;/code&gt; property injection in controllers, tag libraries, etc that &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; provides via an AST transformation.  In my
-spare time, I might attempt to make some modifications to the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; to handle using the DSL in non-WAR-deployed scenarios, which would elminate the need for a &lt;code&gt;logback.groovy&lt;/code&gt; file.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
             </description>

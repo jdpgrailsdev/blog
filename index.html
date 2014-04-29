@@ -88,6 +88,355 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog/2014/04/29/gradle_cobertura.html"><h1>Code Coverage with Cobertura</h1></a>
+                   <p>29 April 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/gradle.html">gradle</a>
+        
+                <a href="/blog/tags/cobertura.html">cobertura</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/04/29/gradle_cobertura.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/04/29/gradle_cobertura.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/04/29/gradle_cobertura.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In all of my projects, I typically like to include unit tests and unit test coverage analysis to determine the effectiveness of my tests.  While there
+are different Java code coverage packages out there, I normally use <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a>, mostly due to ease of use, features and familiarity with it.  In this
+post, I am going to cover the different ways to configure and use <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> as part of <a href="http://maven.apache.org/" target="_blank">Maven</a>, <a href="http://grails.org" target="_blank">Grails</a> and <a href="http://gradle.org" target="_blank">Gradle</a> projects.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_maven">Maven</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In order to perform <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> instrumentation and generate coverage reports in a <a href="http://maven.apache.org/" target="_blank">Maven</a> project, the first thing that you will need to do is to
+include the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank">Cobertura Maven Plugin</a> in your project&#8217;s <code>pom.xml</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="prettyprint xml language-xml"><code>&lt;plugin&gt;
+    &lt;groupId&gt;org.codehaus.mojo&lt;/groupId&gt;
+    &lt;artifactId&gt;cobertura-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;2.6&lt;/version&gt;
+    &lt;configuration&gt;
+        &lt;formats&gt;
+            &lt;format&gt;html&lt;/format&gt;		<i class="conum" data-value="1"></i><b>(1)</b>
+            &lt;format&gt;xml&lt;/format&gt;
+        &lt;/formats&gt;
+        &lt;outputDirectory&gt;${project.build.directory}/surefire-reports/cobertura&lt;/outputDirectory&gt;		<i class="conum" data-value="2"></i><b>(2)</b>
+        &lt;instrumentation&gt;
+            &lt;ignoreTrivial&gt;true&lt;/ignoreTrivial&gt;			<i class="conum" data-value="3"></i><b>(3)</b>
+            &lt;ignores&gt;
+                &lt;ignore&gt;org.slf4j.Logger.*&lt;/ignore&gt;		<i class="conum" data-value="4"></i><b>(4)</b>
+            &lt;/ignores&gt;
+            &lt;excludes&gt;
+                &lt;exclude&gt;**/Example.class&lt;/exclude&gt;		<i class="conum" data-value="5"></i><b>(5)</b>
+            &lt;/excludes&gt;
+        &lt;/instrumentation&gt;
+    &lt;/configuration&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;phase&gt;package&lt;/phase&gt;			<i class="conum" data-value="6"></i><b>(6)</b>
+            &lt;goals&gt;
+                &lt;goal&gt;cobertura&lt;/goal&gt;
+            &lt;/goals&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Enables the output format(s) for the generated coverage report(s).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Sets the output location for the generated coverage report(s).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Instructs <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> to ignore trivial methods, such as getters and setters when producing the coverage report(s).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Instructs <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> to ignore any references to methods of the <code>org.slf4j.Logger</code> class when producing the coverage report(s).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Provides <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> with a list of compiled class files to ignore when producing the coverage report(s).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Binds the <code>cobertura</code> goal of the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank">Cobertura Maven Plugin</a> to the <code>package</code> phase of the <a href="https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference" target="_blank">Maven Build Lifecycle</a>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The configuration of the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank">Cobertura Maven Plugin</a> shown above will cause the <code>cobertura</code> goal to execute automatically during the <code>package</code> phase of the
+<a href="http://maven.apache.org/" target="_blank">Maven</a> lifecycle.  For instance, if the following command is executed on a <a href="http://maven.apache.org/" target="_blank">Maven</a> project:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>maven clean package</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank">Cobertura Maven Plugin</a> will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
+manually invoke the plugin by running the goal explicitly in the project:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>maven cobertura</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For additional information on the configuration and use of the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank">Cobertura Maven Plugin</a>, consult the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/usage.html" target="_blank">usage</a> and
+<a href="http://mojo.codehaus.org/cobertura-maven-plugin/cobertura-mojo.html" target="_blank">cobertura goal</a> documentation.</p>
+</div>
+<div class="paragraph">
+<p>Finally, this all assumes that you have unit tests that will execute as part of the <code>test</code> phase of the <a href="https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference" target="_blank">Maven Build Lifecycle</a>.  Take
+a look at the <a href="http://maven.apache.org/surefire/maven-surefire-plugin/" target="_blank">Maven Surefire Plugin</a> for an example of how to execute unit tests as part of a <a href="http://maven.apache.org/" target="_blank">Maven</a> build.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_grails">Grails</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Like with <a href="http://maven.apache.org/" target="_blank">Maven</a>, there is a <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> plugin for the <a href="http://grails.org" target="_blank">Grails</a> framework.  The first step to enabling the generation of <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> code coverage report(s) in a <a href="http://grails.org" target="_blank">Grails</a> project is to
+include the <a href="http://grails.org/plugin/code-coverage" target="_blank">Cobertura Grails Plugin</a> as a dependency in your <code>BuildConfig.groovy</code>, <code>pom.xml</code> or <code>build.gradle</code>, depending on which build system your project uses:</p>
+</div>
+<div class="listingblock">
+<div class="title">BuildConfig.groovy</div>
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>plugins {
+    test ':code-coverage:1.2.7'		<i class="conum" data-value="1"></i><b>(1)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Dependencies in <code>BuildConfig.groovy</code> without a group ID are assumed to have a <code>org.grails</code> or <code>org.grails.plugins</code> as a group ID, depending on which closure they are declared in.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="prettyprint xml language-xml"><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.grails.plugins&lt;/groupId&gt;
+    &lt;artifactId&gt;code-coverage&lt;/artifactId&gt;
+    &lt;version&gt;1.2.7&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+    &lt;type&gt;zip&lt;/type&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>dependencies {
+    test 'org.grails.plugins:code-coverage:1.2.7'
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The next step is to configure the <a href="http://grails.org/plugin/code-coverage" target="_blank">Cobertura Grails Plugin</a>, also in <code>BuildConfig.groovy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">BuildConfig.groovy</div>
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>coverage {
+    enabledByDefault = true		<i class="conum" data-value="1"></i><b>(1)</b>
+    html = true				<i class="conum" data-value="2"></i><b>(2)</b>
+    xml = true
+
+    exclusions = ['**/*Example*']	<i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Automatically instruments the code and generates the coverage report(s) when running tests.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Enables the output format(s) for the generated coverage report(s).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Provides <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> with a list of compiled class files to ignore when producing the coverage report(s).</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The configuration of the <a href="http://grails.org/plugin/code-coverage" target="_blank">Cobertura Grails Plugin</a> shown above will cause the the plugin to execute automatically when running the <code>test-app</code> <a href="http://grails.org" target="_blank">Grails</a> command.  For instance,
+if the following command is executed on a <a href="http://grails.org" target="_blank">Grails</a> project:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>grails test-app :unit</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then the <a href="http://grails.org/plugin/code-coverage" target="_blank">Cobertura Grails Plugin</a> will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
+manually invoke the plugin by adding an additional parameter to the <code>test-app</code> command:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>grails test-app :unit --coverage</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For additional information on the configuration and use of the <a href="http://grails.org/plugin/code-coverage" target="_blank">Cobertura Grails Plugin</a>, consult the <a href="https://github.com/beckje01/grails-code-coverage" target="_blank">Grails Code Coverage plugin</a> documentation.</p>
+</div>
+<div class="paragraph">
+<p>As with the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank">Cobertura Maven Plugin</a>, the code coverage report(s) will only be generated if there are unit tests or source files that can be under test present in the project.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_gradle">Gradle</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There are multiple <a href="http://gradle.org" target="_blank">Gradle</a> plugins that provide <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> functionality to a <a href="http://gradle.org" target="_blank">Gradle</a> project.  The one that I prefer to use is the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank">Cobertura Gradle Plugin</a> that is maintained by Steve Saliman.
+This plugin provides much better configuration option and has much better documentation (at the time of writing) than the others.  Below is a sample <a href="http://gradle.org" target="_blank">Gradle</a> project file that includes the
+<a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank">Cobertura Gradle Plugin</a>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>apply plugin: 'groovy'
+apply plugin: 'cobertura'			<i class="conum" data-value="1"></i><b>(1)</b>
+
+group = 'com.example'
+version = '1.0.0-SNAPSHOT'
+description = """Sample project with Spock tests and Cobertura code coverage"""
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.saliman:gradle-cobertura-plugin:2.2.4'			<i class="conum" data-value="2"></i><b>(2)</b>
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.codehaus.groovy', name: 'groovy-all', '2.2.1'
+
+    testCompile group: 'cglib', name: 'cglib-nodeps', version:'2.2.2'
+    testCompile group: 'junit', name: 'junit-dep', version:'4.11'
+    testCompile group: 'org.spockframework', name: 'spock-core', '0.7-groovy-2.0'
+    testCompile group: 'org.objenesis', name: 'objenesis', version:'1.2'
+}
+
+test {
+    filter {
+        includeTestsMatching "*Spec"
+    }
+}
+
+cobertura {
+    coverageFormats = ['html', 'xml']				<i class="conum" data-value="3"></i><b>(3)</b>
+    coverageIgnoreTrivial = true					<i class="conum" data-value="4"></i><b>(4)</b>
+    coverageIgnores = ['org.slf4j.Logger.*']			<i class="conum" data-value="5"></i><b>(5)</b>
+    coverageReportDir = new File("$buildDir/reports/cobertura")	<i class="conum" data-value="6"></i><b>(6)</b>
+}
+
+test.finalizedBy(project.tasks.cobertura)			<i class="conum" data-value="7"></i><b>(7)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Applies the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank">Cobertura Gradle Plugin</a> to this build script.  This means that the tasks registered by the plugin will be available to be executed by this project.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Tells <a href="http://gradle.org" target="_blank">Gradle</a> to add the JAR that contains the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank">Cobertura Gradle Plugin</a> and its tasks to the classpath for the build script.  This is required for <a href="http://gradle.org" target="_blank">Gradle</a> to be able to find the plugin.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Enables the output format(s) for the generated coverage report(s).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Instructs <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> to ignore trivial methods, such as getters and setters when producing the coverage report(s).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Instructs <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> to ignore any references to methods of the <code>org.slf4j.Logger</code> class when producing the coverage report(s).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Sets the output location for the generated coverage report(s).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Tells <a href="http://gradle.org" target="_blank">Gradle</a> to automatically execute the <code>cobertura</code> task after the <code>test</code> task has completed.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The configuration of the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank">Cobertura Gradle Plugin</a> shown above will cause the the plugin to execute automatically after the <code>test</code> task completes.  For instance,
+if the following command is executed on a <a href="http://gradle.org" target="_blank">Gradle</a> project:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>./gradlew test</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank">Cobertura Gradle Plugin</a> will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
+manually invoke the plugin by running the <code>cobertura</code> task explicitly:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>./gradlew cobertura</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For additional information on the configuration and use of the plugin, consult the documentation on its <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank">GitHub repository</a>.</p>
+</div>
+<div class="paragraph">
+<p>As with the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank">Cobertura Maven Plugin</a> and <a href="http://grails.org/plugin/code-coverage" target="_blank">Cobertura Grails Plugin</a>, the code coverage report(s) will only be generated if there are unit tests or source files that can be under test present in the project.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_summary">Summary</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The examples above illustrate how I normally configure the various plugins for use in the different build systems outlined in this post.  Once you have found a configuration that works for you, I would
+recommend looking into integration with your build system/continuous integration in order to publish reports and determine the health of a build based on additions or regressions in the amount of code
+under test for your project.  That being said, just having the ability to generate code coverage to determine the effectiveness of unit tests is still a step in the right direction towards
+ensuring the stability of any code base.</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog/2014/04/29/gradle_cobertura.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2014/04/22/grails_gradle_logback.html"><h1>The Grails Gradle Plugin and Logback</h1></a>
                    <p>22 April 2014</p>
                 <p><em>Tags: </em>
@@ -631,182 +980,6 @@ hard-coded paths are now removed from the equation.</p>
 </div>
 </div></p>
                 <p><a href="/blog/2014/04/08/spring_boot_gradle_newrelic.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/04/03/maven_java8_javadoc.html"><h1>Maven, the JavaDoc plugin and Java 8</h1></a>
-                   <p>03 April 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/maven.html">maven</a>
-        
-                <a href="/blog/tags/java.html">java</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/04/03/maven_java8_javadoc.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/04/03/maven_java8_javadoc.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/04/03/maven_java8_javadoc.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>On March 18th, Oracle officially released <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.  Eager to start using some of the new features (in a non-beta release), I quickly downloaded and installed the JDK on my laptop.  I switched my
-system to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> by default and set upon compiling one of my projects.  To my suprise, the build failed with a bunch of errors that looked like this:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint"><code>[ERROR] Failed to execute goal org.apache.maven.plugins:maven-javadoc-plugin:2.8.1:jar (default) on project ddc-metrics-annotations: MavenReportException: Error while creating archive:
-[ERROR] Exit code: 1 - /Projects/libraries/test-library/src/main/java/com/test/Tester.java:30: warning: no @return</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>It turns out that <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> includes a much more strict set of rules for its doclint.  According to  <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html" target="_blank">Steven Colebourne</a>, the
-<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> doclint by default enforces the following rules when processing JavaDoc comments:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>No self-closed HTML tags, such as &lt;br /&gt; or &lt;a id="x" /&gt;</p>
-</li>
-<li>
-<p>No unclosed HTML tags, such as &lt;ul&gt; without matching &lt;/ul&gt;</p>
-</li>
-<li>
-<p>No invalid HTML end tags, such as &lt;/br&gt;</p>
-</li>
-<li>
-<p>No invalid HTML attributes, based on doclint&#8217;s interpretation of W3C HTML 4.01</p>
-</li>
-<li>
-<p>No duplicate HTML id attribute</p>
-</li>
-<li>
-<p>No empty HTML href attribute</p>
-</li>
-<li>
-<p>No incorrectly nested headers, such as class documentation must have &lt;h3&gt;, not &lt;h4&gt;</p>
-</li>
-<li>
-<p>No invalid HTML tags, such as List&lt;String&gt; (where you forgot to escape using &lt;)</p>
-</li>
-<li>
-<p>No broken @link references</p>
-</li>
-<li>
-<p>No broken @param references, they must match the actual parameter name</p>
-</li>
-<li>
-<p>No broken @throws references, the first word must be a class name</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>This is fine if you are starting with a green field project, but if you are like me and have to switch between new and legacy code bases, it may not be possible to correct all of these
-issues in order to get <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank">Maven JavaDoc plugin</a> generated using <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.  Per <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html" target="_blank">Steven Colebourne&#8217;s blog</a>, the solution is to
-include the <code>-Xdoclint:none</code> JVM argument in the configuration of the <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank">Maven JavaDoc plugin</a>:</p>
-</div>
-<div class="listingblock">
-<div class="title">pom.xml</div>
-<div class="content">
-<pre class="prettyprint xml language-xml"><code>...
-&lt;plugin&gt;
-    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-    &lt;artifactId&gt;maven-javadoc-plugin&lt;/artifactId&gt;
-    &lt;version&gt;2.9.1&lt;/version&gt;
-    &lt;executions&gt;
-        &lt;execution&gt;
-            &lt;phase&gt;package&lt;/phase&gt;
-            &lt;goals&gt;
-                &lt;goal&gt;jar&lt;/goal&gt;
-            &lt;/goals&gt;
-            &lt;configuration&gt;
-                &lt;additionalparam&gt;-Xdoclint:none&lt;/additionalparam&gt;
-            &lt;/configuration&gt;
-        &lt;/execution&gt;
-    &lt;/executions&gt;
-&lt;/plugin&gt;
-...</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This works great when building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.  However, if you switch back to Java 7 and attempt to build with the <code>-Xdoclint:none</code> JVM argument, the build will fail, as Java 7 does not
-recognize that JVM argument.  What can we do to support JavaDoc generation via <a href="http://maven.apache.org/" target="_blank">Maven</a> for both Java 7 and Java 8 on a legacy code base?  Use
-<a href="http://maven.apache.org/guides/introduction/introduction-to-profiles.html" target="_blank">Maven profiles</a>!  Instead of modifying the existing <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank">Maven JavaDoc plugin</a> declaration in our <code>pom.xml</code> file, let&#8217;s instead
-add a new profile that only activates when we are building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>:</p>
-</div>
-<div class="listingblock">
-<div class="title">pom.xml</div>
-<div class="content">
-<pre class="prettyprint xml language-xml"><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
-    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-    &lt;groupId&gt;com.test&lt;/groupId&gt;
-    &lt;artifactId&gt;test&lt;/artifactId&gt;
-    &lt;packaging&gt;jar&lt;/packaging&gt;
-    &lt;version&gt;1.0.0&lt;/version&gt;
-
-    &lt;build&gt;
-        ...
-        &lt;plugins&gt;
-            &lt;plugin&gt;
-                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-                &lt;artifactId&gt;maven-javadoc-plugin&lt;/artifactId&gt;
-                &lt;version&gt;2.9.1&lt;/version&gt;
-                &lt;executions&gt;
-                    &lt;execution&gt;
-                        &lt;phase&gt;package&lt;/phase&gt;
-                        &lt;goals&gt;
-                            &lt;goal&gt;jar&lt;/goal&gt;
-                        &lt;/goals&gt;
-                    &lt;/execution&gt;
-                &lt;/executions&gt;
-            &lt;/plugin&gt;
-        &lt;/plugins&gt;
-    &lt;/build&gt;
-
-    &lt;profile&gt;
-        &lt;id&gt;java8&lt;/id&gt;
-        &lt;activation&gt;
-            &lt;jdk&gt;1.8&lt;/jdk&gt;								<i class="conum" data-value="1"></i><b>(1)</b>
-        &lt;/activation&gt;
-        &lt;build&gt;
-            &lt;plugins&gt;
-                &lt;plugin&gt;
-                    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-                    &lt;artifactId&gt;maven-javadoc-plugin&lt;/artifactId&gt;
-                    &lt;version&gt;2.9.1&lt;/version&gt;
-                    &lt;executions&gt;
-                        &lt;execution&gt;
-                            &lt;phase&gt;package&lt;/phase&gt;
-                            &lt;goals&gt;
-                                &lt;goal&gt;jar&lt;/goal&gt;
-                            &lt;/goals&gt;
-                            &lt;configuration&gt;
-                                &lt;additionalparam&gt;-Xdoclint:none&lt;/additionalparam&gt;
-                            &lt;/configuration&gt;
-                        &lt;/execution&gt;
-                    &lt;/executions&gt;
-                &lt;/plugin&gt;
-            &lt;/plugins&gt;
-        &lt;/build&gt;
-    &lt;/profile&gt;
-&lt;/project&gt;</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Will activate this profile if the JRE that is executing the <a href="http://maven.apache.org/" target="_blank">Maven</a> build is version 1.8 (<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>).</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>We can now safely build our project with either Java 7 or <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> without having it fail due to either the more strict doclint rules in <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a> or the fact that Java 7 does not recognize
-the JVM argument.  I&#8217;m sure that this is not the last of these issues that will come up with regards to changes between previous versions of Java and <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.  Luckily, we should be able
-to apply the same profile trick for any differences until such a time that all the different code bases that you support are converted to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">Java 8</a>.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog/2014/04/03/maven_java8_javadoc.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
