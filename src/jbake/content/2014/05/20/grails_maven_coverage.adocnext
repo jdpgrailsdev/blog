@@ -1,0 +1,149 @@
+= Grails, Maven, Cobertura and Java 7
+Jonathan Pearlin
+2014-05-20
+:jbake-type: post
+:jbake-tags: grails,maven,java
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: gradle_maven_cobertura_java7
+:grails: http://grails.org[Grails, window="_blank"]
+:groovy: http://groovy.codehaus.org[Groovy, window="_blank"]
+:maven: http://maven.apache.org/[Maven, window="_blank"]
+:icons: font
+
+When working on upgrading a few {grails} plugins to 2.3.x and converting them to be built using the http://grails.org/doc/latest/guide/commandLine.html#4.5%20Ant%20and%20Maven[Grails Maven Plugin, window="_blank"], I ran into a weird issue when
+executing unit tests when the https://github.com/beckje01/grails-code-coverage[Grails Code Coverage Plugin, window="_blank"] is enabled:
+
+[source]
+----
+Error |
+Compilation error compiling [unit] tests: Expecting a stackmap frame at branch target 97
+Exception Details:
+  Location:
+    com/test/compiler/injection/DeletableASTTransformation.visit([Lorg/codehaus/groovy/ast/ASTNode;Lorg/codehaus/groovy/control/SourceUnit;)V @62: ifeq
+  Reason:
+    Expected stackmap frame at this location.
+  Bytecode:
+    0000000: 033e 11ff ff36 0412 1e11 0023 b800 242b
+    0000010: 0432 c000 343a 0512 1e11 0024 b800 242b
+    0000020: 0332 c000 363a 0612 1e11 0025 b800 242b
+    0000030: 0332 c100 3611 0025 3e11 0000 3604 9900
+    0000040: 2312 1e1d 1504 04b8 003a 11ff ff36 042b
+    0000050: 0432 c100 3411 0025 3e11 0001 3604 9a00
+    0000060: 481d 1100 25a0 001c 1504 1100 01a0 0014
+    0000070: 121e 1d15 0404 b800 3a11 ffff 3604 a700
+    0000080: 1615 049b 0011 121e 1d15 0403 b800 3a11
+    0000090: ffff 3604 121e 1100 26b8 0024 bb00 3c59
+    00000a0: 123e b700 41bf 1504 9b00 1112 1e1d 1504
+    00000b0: 03b8 003a 11ff ff36 0412 1e11 0029 b800
+    00000c0: 24b2 0043 1906 b600 47b6 004d 1100 293e
+    00000d0: 1100 0036 049a 0012 121e 1d15 0404 b800
+    00000e0: 3a11 ffff 3604 b115 049b 0011 121e 1d15
+    00000f0: 0403 b800 3a11 ffff 3604 121e 1100 2bb8
+    0000100: 0024 1905 c100 4f11 002b 3e11 0000 3604
+    0000110: 9900 ea1d 1100 2ba0 0019 1504 1100 00a0
+    0000120: 0011 121e 1d15 0404 b800 3a11 ffff 3604
+    0000130: 121e 1100 2cb8 0024 1905 c000 4f3a 0712
+    0000140: 1e11 002d b800 2419 07b6 0052 1254 b800
+    0000150: 5a11 002d 3e11 0000 3604 9900 331d 1100
+    0000160: 2da0 0019 1504 1100 00a0 0011 121e 1d15
+    0000170: 0404 b800 3a11 ffff 3604 121e 1100 2eb8
+    0000180: 0024 2a19 0719 06b7 005e a700 6515 049b
+    0000190: 0011 121e 1d15 0403 b800 3a11 ffff 3604
+    00001a0: 121e 1100 30b8 0024 bb00 3c59 bb00 6059
+    00001b0: b700 6112 63b6 0067 1905 b600 6ab6 006d
+    00001c0: 126f b600 67b2 0071 b600 6712 73b6 0067
+    00001d0: 1907 121e 1100 31b8 0024 b600 52b6 0077
+    00001e0: b600 6712 79b6 0067 b600 7cb7 0041 bf12
+    00001f0: 1e11 0033 b800 24a7 005d 1504 9b00 1112
+    0000200: 1e1d 1504 03b8 003a 11ff ff36 0412 1e11
+    0000210: 0034 b800 24bb 003c 59bb 0060 59b7 0061
+    0000220: 1263 b600 6719 05b6 006a b600 6d12 6fb6
+    0000230: 0067 b200 71b6 0067 127e b600 6719 0512
+    0000240: 1e11 0035 b800 24b6 0082 b600 6db6 007c
+    0000250: b700 41bf 121e 1100 37b8 0024 b1
+  Stackmap Table:
+    append_frame(@156,Object[#52],Object[#54])
+    same_frame(@193)
+    same_frame_extended(@258)
+    append_frame(@424,Object[#79])
+    chop_frame(@503,1)
+    same_frame(@533)
+    same_frame_extended(@604)
+
+    at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:291)
+    at org.apache.tools.ant.dispatch.DispatchUtils.execute(DispatchUtils.java:106)
+    at _GrailsTest$_run_closure1.doCall(_GrailsTest.groovy:102)
+    at org.codehaus.gant.GantMetaClass.invokeMethod(GantMetaClass.java:133)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16_closure18.doCall(GantBinding.groovy:185)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16_closure18.doCall(GantBinding.groovy)
+    at org.codehaus.gant.GantBinding.withTargetEvent(GantBinding.groovy:90)
+    at org.codehaus.gant.GantBinding.this$4$withTargetEvent(GantBinding.groovy)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16.doCall(GantBinding.groovy:185)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16.doCall(GantBinding.groovy)
+    at org.codehaus.gant.GantMetaClass.invokeMethod(GantMetaClass.java:133)
+    at TestApp$_run_closure1.doCall(TestApp.groovy:32)
+    at org.codehaus.gant.GantMetaClass.invokeMethod(GantMetaClass.java:133)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16_closure18.doCall(GantBinding.groovy:185)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16_closure18.doCall(GantBinding.groovy)
+    at org.codehaus.gant.GantBinding.withTargetEvent(GantBinding.groovy:90)
+    at org.codehaus.gant.GantBinding.this$4$withTargetEvent(GantBinding.groovy)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16.doCall(GantBinding.groovy:185)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16.doCall(GantBinding.groovy)
+    at gant.Gant$_dispatch_closure5.doCall(Gant.groovy:381)
+    at gant.Gant$_dispatch_closure7.doCall(Gant.groovy:415)
+    at gant.Gant$_dispatch_closure7.doCall(Gant.groovy)
+    at gant.Gant.withBuildListeners(Gant.groovy:427)
+    at gant.Gant.this$2$withBuildListeners(Gant.groovy)
+    at gant.Gant$this$2$withBuildListeners.callCurrent(Unknown Source)
+    at gant.Gant.dispatch(Gant.groovy:415)
+    at gant.Gant.this$2$dispatch(Gant.groovy)
+    at gant.Gant.invokeMethod(Gant.groovy)
+    at gant.Gant.executeTargets(Gant.groovy:591)
+    at gant.Gant.executeTargets(Gant.groovy:590)
+    at org.grails.launcher.GrailsLauncher.launch(GrailsLauncher.java:144)
+    at org.grails.maven.plugin.tools.ForkedGrailsRuntime.main(ForkedGrailsRuntime.java:168)
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 59.895 s
+[INFO] Finished at: 2014-05-05T07:49:39-05:00
+[INFO] Final Memory: 17M/75M
+----
+
+I should point out that the same exact unit tests (without any modifications) passed, even with instrumentation for the code coverage calculation, prior to upgrading from {grails} 2.0.x to 2.3.x.  Could this be one of those subtle
+{groovy} low-level changes that causes code that once ran fine to all of a sudden be incorrect?  After doing some searching on the internets, I discovered that Java 7 introduced much stricter verification than previous Java versions.
+As I was using Java 7 with {grails} 2.0.x, my guess is that something in the underlying {groovy} code in the updated version of {grails} does not contain a valid stack map for the method(s) in question.  Luckily, the verifier can be
+disabled until the issue is resolved by the framework.  The `-Xverify:none` JVM argument can be used to tell the Java 7 verifier not to do its thing.  In order to tell the http://grails.org/doc/latest/guide/commandLine.html#4.5%20Ant%20and%20Maven[Grails Maven Plugin, window="_blank"]
+to pass this JVM argument to the forked {grails} process, I had to make the following tweak to my Maven POM file:
+
+[source,xml]
+.pom.xml
+----
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.grails</groupId>
+                <artifactId>grails-maven-plugin</artifactId>
+                <version>${grails.version}</version>
+                <configuration>
+                    <fork>true</fork>
+                    <forkedVmArgs>
+                        <!-- Disable verifier to avoid issues with Java 7 verifier and code
+                            instrumentation -->
+                        <forkedVmArg>-Xverify:none</forkedVmArg>
+                    </forkedVmArgs>
+                    <nonInteractive>true</nonInteractive>
+                    <showStacktrace>true</showStacktrace>
+                    <pluginsDir>${project.build.directory}/plugins</pluginsDir>
+                </configuration>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
+----
+
+After add the argument and re-running the tests, everything passed as expected.  I am still not sure if the problem lies with {grails}, {groovy} or the instrumentation provided by the https://github.com/beckje01/grails-code-coverage[Grails Code Coverage Plugin, window="_blank"] or
+some combination of all of those.  I will continue to keep an eye out for updates that appear to affect this issue in the hopes that the verifier can be re-enabled in the future.
