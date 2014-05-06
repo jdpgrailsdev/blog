@@ -62,4 +62,6 @@ modelRequest.setSystemProperties(System.properties)
 modelRequest.setModelResolver(new GrailsModelResolver(repositorySystem, session, repositories))
 ----
 
-After re-testing with the modified code, the {grails} happily accepted the JDK-based {maven} profile without exception.  I have created a https://github.com/grails/grails-core/pull/492[pull request, window="_blank"] to address this permanently in future versions of {grails}.
+After re-testing with the modified code, the {grails} happily accepted the JDK-based {maven} profile without exception.  I have created a https://github.com/grails/grails-core/pull/492[pull request, window="_blank"], which has been merged into the
+2.4.x version of {grails}.  If you need access to this fix earlier, I would suggest creating a branch off of the tagged version of {grails} that you are currently using and cherry-picking the commit that contains the change.  You can then build
+the `grails-aether` JAR and drop it into the `dist` folder of your {grails} installation to consume the change.
