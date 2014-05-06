@@ -62,4 +62,4 @@ modelRequest.setSystemProperties(System.properties)
 modelRequest.setModelResolver(new GrailsModelResolver(repositorySystem, session, repositories))
 ----
 
-After re-testing with the modified code, the {grails} happily accepted the JDK-based {maven} profile without exception.  I have created a [pull request, window="_blank"] to address this permanently in future versions of {grails}.
+After re-testing with the modified code, the {grails} happily accepted the JDK-based {maven} profile without exception.  I have created a https://github.com/grails/grails-core/pull/492[pull request, window="_blank"] to address this permanently in future versions of {grails}.
