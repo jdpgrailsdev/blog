@@ -1,0 +1,65 @@
+= Grails, Maven and JDK-based Profile Activation
+Jonathan Pearlin
+2014-05-27
+:jbake-type: post
+:jbake-tags: grails,maven,java
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: gradle_maven_jdk_profile
+:grails: http://grails.org[Grails, window="_blank"]
+:maven: http://maven.apache.org/[Maven, window="_blank"]
+:icons: font
+
+Recently, I have been spending my time converting {grails} applications to use {maven} POM files for dependency management.  For the last couple releases, {grails} has included the ability to
+rely on a POM file for dependencies, instead of declaring the repositories and dependencies directly in your `grails-app/conf/BuildConfig.groovy`.  This works exactly as expected -- that is {grails}
+retrieves the dependency declarations from the POM file and uses them to build/run the application when using the {grails} CLI.  However, there is a bug in the way {grails} dynamically validates and
+uses the POM file.  I came across this issue when attempting to use the JDK version-based profile activation that I discussed in http://jonathanpearlin.com/blog/2014/04/03/maven_java8_javadoc.html[a previous post, window="_blank"].
+When a JDK-activated profile is present in the POM file used by {grails}, the application will report the following error:
+
+[source]
+----
+[ERROR] Failed to determine Java version for profile java8 @ <GAV of the POM file containing the profile>
+        at org.apache.maven.model.building.DefaultModelProblemCollector.newModelBuildingException(DefaultModelProblemCollector.java:195)
+        at org.apache.maven.model.building.DefaultModelBuilder.build(DefaultModelBuilder.java:416)
+        at org.apache.maven.model.building.DefaultModelBuilder.build(DefaultModelBuilder.java:368)
+        at org.apache.maven.model.building.DefaultModelBuilder.build(DefaultModelBuilder.java:359)
+        at grails.util.BuildSettings.doResolve(BuildSettings.groovy:513)
+        at grails.util.BuildSettings.doResolve(BuildSettings.groovy)
+        at grails.util.BuildSettings$_getDefaultBuildDependencies_closure17.doCall(BuildSettings.groovy:774)
+        at grails.util.BuildSettings$_getDefaultBuildDependencies_closure17.doCall(BuildSettings.groovy)
+        at grails.util.BuildSettings.getDefaultBuildDependencies(BuildSettings.groovy:768)
+        at grails.util.BuildSettings.getBuildDependencies(BuildSettings.groovy:673)
+----
+
+At first, I was confused.  This same error does not happen if you use the https://github.com/grails/grails-maven[Grails Maven Plugin, window="_blank"] to build/run your application -- it only happens when using the
+{grails} CLI.  I also know that {grails} does not currently support Java 8, so maybe it was related to that?  After looking at the {grails} source (and the stacktrace), I found some interesting code in the
+https://github.com/apache/maven/blob/maven-3.1.1/maven-model-builder/src/main/java/org/apache/maven/model/profile/activation/JdkVersionProfileActivator.java[JdkVersionProfileActivator, window="_blank"]:
+
+[source,java]
+----
+String version = context.getSystemProperties().get( "java.version" );
+
+if ( version == null || version.length() <= 0 )
+{
+    problems.add( new ModelProblemCollectorRequest( Severity.ERROR, Version.BASE )
+            .setMessage( "Failed to determine Java version for profile " + profile.getId() )
+            .setLocation( activation.getLocation( "jdk" ) ) );
+    return false;
+}
+----
+
+The {maven} code checks the `java.version` system property to determine which version of the JDK is in use to see if it matches up with the requested profile.  After some additional digging in the {grails} source, I discovered that the
+https://github.com/grails/grails-core/blob/master/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy[AetherDependencyManager, window="_blank"] programmatically builds a
+{maven} `DefaultModelBuildingRequest`, but does **not** pass the system properties from the JVM to the request.  Therefore, when the `JdkVersionProfileActivator` attempts to look at the value of the `java.version` system property, there
+are no properties to inspect!  I made a quick change to the `AetherDependencyManager` class to add the setting of the system properties:
+
+[source,groovy]
+----
+final modelRequest = new DefaultModelBuildingRequest()
+modelRequest.setPomFile(pomFile)
+modelRequest.setSystemProperties(System.properties)
+modelRequest.setModelResolver(new GrailsModelResolver(repositorySystem, session, repositories))
+----
+
+After re-testing with the modified code, the {grails} happily accepted the JDK-based {maven} profile without exception.  I have created a [pull request, window="_blank"] to address this permanently in future versions of {grails}.
