@@ -6,13 +6,345 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 29 Apr 2014 10:31:08 -0400</pubDate>
-        <lastBuildDate>Tue, 29 Apr 2014 10:31:08 -0400</lastBuildDate>
+        <pubDate>Tue, 6 May 2014 07:46:47 -0400</pubDate>
+        <lastBuildDate>Tue, 6 May 2014 07:46:47 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Add a custom GitHub activity stream to your blog</title>
+            <link>http://jdpgrailsdev.github.io/blog//2014/05/06/github_activity_menu.html</link>
+            <pubDate>Tue, 6 May 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">/2014/05/06/github_activity_menu.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In an effort to improve my (limited) front-end foo, I decided that I wanted to add a &lt;a href=&quot;http://github.com&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt; activity stream to this blog.  I figured that it would
+not be difficult to combine &lt;a href=&quot;http://jquery.com&quot; target=&quot;_blank&quot;&gt;jQuery&lt;/a&gt;, &lt;a href=&quot;http://getbootstrap.com&quot; target=&quot;_blank&quot;&gt;Bootstrap&lt;/a&gt; and the &lt;a href=&quot;https://developer.github.com/v3/&quot; target=&quot;_blank&quot;&gt;GitHub API&lt;/a&gt; to add a widget that would look like a simplified version that you can see
+on your own &lt;a href=&quot;http://github.com&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt; page under the &lt;a href=&quot;https://github.com/jdpgrailsdev?tab=activity&quot; target=&quot;_blank&quot;&gt;Public Activity&lt;/a&gt; tab on your account.  What follows
+is a recounting of how I added the widget that you now see to the left of this article.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_ingredients&quot;&gt;Ingredients&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Let&amp;#8217;s start by first listing the specific pieces that I used to create the widget:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;ulist&quot;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;http://jquery.com&quot; target=&quot;_blank&quot;&gt;jQuery 1.11.0&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;http://getbootstrap.com/components/#panels-list-group&quot; target=&quot;_blank&quot;&gt;Bootstrap 3.1.1 Panels&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;http://fortawesome.github.io/Font-Awesome/&quot; target=&quot;_blank&quot;&gt;Font Awesome 4.0.3&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://developer.github.com/v3/activity/events&quot; target=&quot;_blank&quot;&gt;GitHub Events API&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/styleguide/css/7.0&quot; target=&quot;_blank&quot;&gt;GitHub Octicon&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;My thought process was to use &lt;a href=&quot;http://jquery.com&quot; target=&quot;_blank&quot;&gt;jQuery&lt;/a&gt; to perform an AJAX call to the &lt;a href=&quot;https://developer.github.com/v3/activity/events&quot; target=&quot;_blank&quot;&gt;GitHub Events API&lt;/a&gt; to get the activity list for my
+account.  Upon retrieval, I would append line items to the &lt;a href=&quot;http://getbootstrap.com/components/#panels-list-group&quot;&gt;Bootstrap 3.1.1 list group panel&lt;/a&gt; that I had placed on the left-hand side
+of every page on my site.  Finally, I wanted to make use of the &lt;a href=&quot;https://github.com/styleguide/css/7.0&quot; target=&quot;_blank&quot;&gt;GitHub Octicon&lt;/a&gt; icon fonts to make have the same icon indicators
+that appear on the activity page on my &lt;a href=&quot;http://github.com&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt; account.  Once I had this plan sketched out, the next step was to see about getting the pieces implemented.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_pretending_to_be_a_front_end_developer&quot;&gt;Pretending to be a front-end developer&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The first thing that I did was add the example &lt;a href=&quot;http://getbootstrap.com/components/#panels-list-group&quot;&gt;Bootstrap list group panel&lt;/a&gt; to my &lt;code&gt;menu&lt;/code&gt; template just to see how it would fit:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint html language-html&quot;&gt;&lt;code&gt;&amp;lt;div class=&quot;panel panel-default&quot;&amp;gt;
+  &amp;lt;!-- Default panel contents --&amp;gt;
+  &amp;lt;div class=&quot;panel-heading&quot;&amp;gt;Panel heading&amp;lt;/div&amp;gt;
+  &amp;lt;div class=&quot;panel-body&quot;&amp;gt;
+    &amp;lt;p&amp;gt;...&amp;lt;/p&amp;gt;
+  &amp;lt;/div&amp;gt;
+
+  &amp;lt;!-- List group --&amp;gt;
+  &amp;lt;ul class=&quot;list-group&quot;&amp;gt;
+    &amp;lt;li class=&quot;list-group-item&quot;&amp;gt;Cras justo odio&amp;lt;/li&amp;gt;
+    &amp;lt;li class=&quot;list-group-item&quot;&amp;gt;Dapibus ac facilisis in&amp;lt;/li&amp;gt;
+    &amp;lt;li class=&quot;list-group-item&quot;&amp;gt;Morbi leo risus&amp;lt;/li&amp;gt;
+    &amp;lt;li class=&quot;list-group-item&quot;&amp;gt;Porta ac consectetur ac&amp;lt;/li&amp;gt;
+    &amp;lt;li class=&quot;list-group-item&quot;&amp;gt;Vestibulum at eros&amp;lt;/li&amp;gt;
+  &amp;lt;/ul&amp;gt;
+&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Right away, I noticed a bunch of formatting issues, mostly related to positioning the panel relative to the menu at the top of the page and the content in the middle of the page.  I quickly
+solved the positioning issue by surrounding the panel with a new &lt;code&gt;&amp;lt;div&amp;gt;&lt;/code&gt; element and making use of the &lt;a href=&quot;http://getbootstrap.com&quot; target=&quot;_blank&quot;&gt;Bootstrap&lt;/a&gt; &lt;code&gt;pull-left&lt;/code&gt; class:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint html language-html&quot;&gt;&lt;code&gt;&amp;lt;div id=&quot;activity&quot; class=&quot;pull-left&quot;&amp;gt;
+    &amp;lt;div class=&quot;panel panel-default&quot;&amp;gt;
+      &amp;lt;!-- Default panel contents --&amp;gt;
+      &amp;lt;div class=&quot;panel-heading&quot;&amp;gt;Panel heading&amp;lt;/div&amp;gt;
+      &amp;lt;div class=&quot;panel-body&quot;&amp;gt;
+        &amp;lt;p&amp;gt;...&amp;lt;/p&amp;gt;
+      &amp;lt;/div&amp;gt;
+
+      &amp;lt;!-- List group --&amp;gt;
+      &amp;lt;ul class=&quot;list-group&quot;&amp;gt;
+        &amp;lt;li class=&quot;list-group-item&quot;&amp;gt;Cras justo odio&amp;lt;/li&amp;gt;
+        &amp;lt;li class=&quot;list-group-item&quot;&amp;gt;Dapibus ac facilisis in&amp;lt;/li&amp;gt;
+        &amp;lt;li class=&quot;list-group-item&quot;&amp;gt;Morbi leo risus&amp;lt;/li&amp;gt;
+        &amp;lt;li class=&quot;list-group-item&quot;&amp;gt;Porta ac consectetur ac&amp;lt;/li&amp;gt;
+        &amp;lt;li class=&quot;list-group-item&quot;&amp;gt;Vestibulum at eros&amp;lt;/li&amp;gt;
+      &amp;lt;/ul&amp;gt;
+    &amp;lt;/div&amp;gt;
+&amp;lt;/div&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The next step was to get the panel to not overlap the menu and to get it to hover a bit off from the left-hand edge of the screen.  To accomplish this, I added a new CSS selector for the
+newly added &lt;code&gt;activity&lt;/code&gt; ID:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint css language-css&quot;&gt;&lt;code&gt;#activity {
+  padding-top: 110px;
+  padding-left: 20px;
+  width: 275px;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;I also decided to use the &lt;code&gt;panel-primary&lt;/code&gt; &lt;a href=&quot;http://getbootstrap.com&quot; target=&quot;_blank&quot;&gt;Bootstrap&lt;/a&gt;-provided style class to get the widget to be blue, closely matching &lt;a href=&quot;http://github.com&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt;&apos;s color scheme:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint html language-html&quot;&gt;&lt;code&gt;&amp;lt;div id=&quot;activity&quot; class=&quot;pull-left&quot;&amp;gt;
+    &amp;lt;div class=&quot;panel panel-primary&quot;&amp;gt;
+        ...
+    &amp;lt;/div&amp;gt;
+&amp;lt;/div&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;It was now time to get rid of the sample content from the example.  My first thought was to start with a spinner to indicate that the panel is attempting to load (as I was going
+to use AJAX to get the data) and an empty, unordered list that would be filled by the retrieved data.  I did some searching on the internets and found that &lt;a href=&quot;http://getbootstrap.com&quot; target=&quot;_blank&quot;&gt;Bootstrap&lt;/a&gt; has built-in
+support for a loading spinner.  With one more line of HTML, I had something that I could work with:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint html language-html&quot;&gt;&lt;code&gt;&amp;lt;div id=&quot;activity&quot; class=&quot;pull-left&quot;&amp;gt;
+    &amp;lt;div class=&quot;panel panel-primary&quot;&amp;gt;
+          &amp;lt;!-- Default panel contents --&amp;gt;
+          &amp;lt;div class=&quot;panel-heading&quot;&amp;gt;
+              &amp;lt;a target=&quot;_blank&quot; href=&quot;http://github.com/jdpgrailsdev?tab=activity&quot;&amp;gt;&amp;lt;i class=&quot;fa fa-github&quot;&amp;gt;&amp;lt;/i&amp;gt; My Recent GitHub Activity&amp;lt;/a&amp;gt;
+          &amp;lt;/div&amp;gt;
+          &amp;lt;div class=&quot;panel-body&quot;&amp;gt;
+              &amp;lt;i class=&apos;icon-spinner icon-spin icon-large&apos;&amp;gt;&amp;lt;/i&amp;gt; Loading...
+          &amp;lt;/div&amp;gt;
+          &amp;lt;!-- List group --&amp;gt;
+          &amp;lt;ul class=&quot;list-group&quot;&amp;gt;
+          &amp;lt;/ul&amp;gt;
+    &amp;lt;/div&amp;gt;
+&amp;lt;/div&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;At this point, I had my target all set up and ready to receive real data from &lt;a href=&quot;http://github.com&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_time_for_some_javascript&quot;&gt;Time for some JavaScript&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Now that I had a professional (in my opinion) looking widget, I decided to get to work on writing the JavaScript to get the content from &lt;a href=&quot;http://github.com&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt;.  &lt;a href=&quot;http://jquery.com&quot; target=&quot;_blank&quot;&gt;jQuery&lt;/a&gt; has a &lt;a href=&quot;http://api.jquery.com/ready/&quot; target=&quot;_blank&quot;&gt;ready&lt;/a&gt;
+call back method that is fired when the HTML document is loaded.  By combining this with &lt;a href=&quot;http://jquery.com&quot; target=&quot;_blank&quot;&gt;jQuery&lt;/a&gt;&apos;s &lt;a href=&quot;https://api.jquery.com/jQuery.get/&quot; target=&quot;_blank&quot;&gt;get&lt;/a&gt; method, I could fire off the
+request to the &lt;a href=&quot;https://developer.github.com/v3/&quot; target=&quot;_blank&quot;&gt;GitHub API&lt;/a&gt; once the DOM has been loaded, ensuring the HTML that I want to replace will be present:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint javascript language-javascript&quot;&gt;&lt;code&gt;// Load the GitHub activity widget on the document ready event.
+$(document).ready(function() {
+    $.get(&quot;https://api.github.com/users/jdpgrailsdev/events&quot;, function(data) {
+        // Remove the &quot;Loading...&quot; place holder.
+        $(&apos;#wrap &amp;gt; #activity &amp;gt; .panel &amp;gt; .panel-body&apos;).remove();
+
+        // Find the activity list from the DOM.
+        var activityList = $(&apos;#wrap &amp;gt; #activity &amp;gt; .panel &amp;gt; ul&apos;);
+
+        // Counter used to determine when we have found the desired number of events for display.
+        var count = 0;
+
+        // TODO Handle data returned by GitHub here!
+
+        // If no events were found, display the &quot;No recent activity&quot; message.
+        if(count == 0) {
+            activityList.append(&quot;&amp;lt;li class=\&quot;list-group-item\&quot;&amp;gt;&amp;lt;div&amp;gt;&amp;lt;span class=\&quot;octicon octicon-x\&quot;&amp;gt;&amp;lt;/span&amp;gt;&quot; +
+                &quot;&amp;lt;a href=\&quot;https://github.com/jdpgrailsdev?tab=activity\&quot; target=\&quot;_blank\&quot;&amp;gt; No recent activity&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&quot;);
+        }
+
+        // Add a link to the end of the list to see all of the activity on GitHub.com.
+        activityList.append(&quot;&amp;lt;li class=\&quot;list-group-item\&quot;&amp;gt;&amp;lt;div&amp;gt;&amp;lt;span class=\&quot;octicon octicon-rss\&quot;&amp;gt;&amp;lt;/span&amp;gt;&quot; +
+            &quot;&amp;lt;a href=\&quot;https://github.com/jdpgrailsdev?tab=activity\&quot; target=\&quot;_blank\&quot;&amp;gt; See all activity @ GitHub&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&quot;);
+    }).fail(function() {
+        $(&apos;#wrap &amp;gt; #activity &amp;gt; .panel &amp;gt; .panel-body&apos;).remove();
+        $(&apos;#wrap &amp;gt; #activity &amp;gt; .panel &amp;gt; ul&apos;).append(&quot;&amp;lt;li class=\&quot;list-group-item\&quot;&amp;gt;&amp;lt;span class=\&quot;octicon octicon-alert\&quot;&amp;gt;&amp;lt;/span&amp;gt;GitHub activity could not be retrieved.&amp;lt;/li&amp;gt;&quot;);
+    });
+});&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The code example above makes an AJAX request to &lt;a href=&quot;http://github.com&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt; for my account&amp;#8217;s activity.  If the request is successful, the placeholder text is removed from the view and each event is processed
+for display.  If a failure occurs, the &lt;code&gt;fail&lt;/code&gt; function is invoked, which prints out a nice error message indicating the failure.  The next step was to actually implement the event handling code.
+I only wanted to handle a subset of &lt;a href=&quot;https://developer.github.com/v3/activity/events/types/&quot; target=&quot;_blank&quot;&gt;GitHub Event Types&lt;/a&gt; exposed by the &lt;a href=&quot;https://developer.github.com/v3/&quot; target=&quot;_blank&quot;&gt;GitHub API&lt;/a&gt;, so I decided to explicitly list out the event types that I was looking for.  Below is the code that handles the data returned
+by the &lt;a href=&quot;https://developer.github.com/v3/&quot; target=&quot;_blank&quot;&gt;GitHub API&lt;/a&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint javascript language-javascript&quot;&gt;&lt;code&gt;// Loop over each retrieved GitHub event and process.
+$.each(data, function(i, githubEvent) {
+    // The icon font to be displayed with the event.
+    var octicon = &quot;&quot;;
+    // The hyper link to be applied to the displayed event.
+    var link = &quot;&quot;;
+    // The text to be displayed with the event.
+    var text = &quot;&quot;;
+
+    // Only show 10 events.  Not all types of GitHub events are implemented here.
+    // for the full list, see https://developer.github.com/v3/activity/events/types/
+    if(count &amp;lt; 10) {
+        if(githubEvent.type == &apos;CommitCommentEvent&apos;) {
+            octicon = &quot;octicon-comment&quot;;
+            link = githubEvent.payload.comment.html_url;
+            text = &quot;Commented on &quot; + githubEvent.repo.name + &quot;/commit/&quot; + githubEvent.payload.comment.commit_id;
+        } else if(githubEvent.type == &apos;CreateEvent&apos;) {
+            octicon = &quot;octicon-repo-create&quot;;
+            link = &quot;http://github.com/&quot; + githubEvent.repo.name;
+            text = &quot;Created repository &quot; + githubEvent.repo.name;
+        } else if(githubEvent.type == &apos;ForkEvent&apos;) {
+            octicon = &quot;octicon-repo-forked&quot;;
+            link = githubEvent.payload.forkee.html_url;
+            text = &quot;Forked repository &quot; + githubEvent.repo.name;
+        } else if(githubEvent.type == &apos;IssuesEvent&apos;) {
+            octicon = &quot;octicon-issue-&quot; + githubEvent.payload.action;
+            link = githubEvent.payload.issue.html_url;
+            text = githubEvent.payload.action.capitalize() + &quot; issue &quot; + githubEvent.repo.name
+                + &quot;#&quot; + githubEvent.payload.issue.number;
+        } else if(githubEvent.type == &apos;IssueCommentEvent&apos;) {
+            octicon = &quot;octicon-comment-discussion&quot;;
+            link = githubEvent.payload.issue.html_url;
+            text = &quot;Commented on &quot; + (githubEvent.payload.issue.pull_request.url != null ? &quot;pull request&quot; : &quot;issue&quot;) +
+                &quot; &quot; + githubEvent.repo.name + &quot;#&quot; + githubEvent.payload.issue.number;
+        } else if(githubEvent.type == &apos;PullRequestEvent&apos;) {
+            octicon = &apos;octicon-git-pull-request&apos;;
+            link = githubEvent.payload.pull_request.html_url;
+            text = githubEvent.payload.action.capitalize() + &quot; pull request &quot; + githubEvent.repo.name
+                + &quot;#&quot; + githubEvent.payload.number;
+        } else if(githubEvent.type == &apos;PullRequestReviewCommentEvent&apos;) {
+            octicon = &quot;octicon-comment&quot;;
+            link = githubEvent.payload.comment.html_url;
+            text = &quot;Commented on pull request &quot; + githubEvent.repo.name + &quot;#&quot;
+                + extractPullRequestNumber(githubEvent.payload.comment.pull_request_url);
+        } else if(githubEvent.type == &apos;PushEvent&apos; &amp;amp;&amp;amp; !(githubEvent.repo.name == &quot;jdpgrailsdev/blog&quot;)) {
+            octicon = &quot;octicon-git-commit&quot;;
+            link = &quot;http://github.com/&quot; + githubEvent.repo.name + &quot;/commit/&quot; + githubEvent.payload.head;
+            text = &quot;Pushed to &quot; + normalizeBranch(githubEvent.payload.ref) + &quot; at &quot; + githubEvent.repo.name;
+        }
+
+        // If the event is one of the supported types, add a new line item to the HTML panel.
+        if(text) {
+            var eventDateHtml = createEventDateHtml(githubEvent.created_at);
+            activityList.append(&quot;&amp;lt;li id=\&quot;&quot; + githubEvent.id + &quot;\&quot; class=\&quot;list-group-item\&quot;&amp;gt;&amp;lt;div&amp;gt;&amp;lt;span class=\&quot;octicon &quot; +
+                octicon + &quot;\&quot;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;a href=\&quot;&quot; + link + &quot;\&quot; target=\&quot;_blank\&quot;&amp;gt; &quot; + text + &quot;&amp;lt;/a&amp;gt;&amp;lt;/div&amp;gt;&quot; + eventDateHtml + &quot;&amp;lt;/li&amp;gt;&quot;);
+            count++;
+        }
+    }
+});&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The code above sets the icon, link and text for each event found in the response, up to the number of events that I want displayed.  Once the data has been computed for a given event,
+it is injected into the HTML as a new list item via the &lt;code&gt;append&lt;/code&gt; function on the container list.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_octicon&quot;&gt;Octicon&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In order to make the widget look and feel just like the activity stream on &lt;a href=&quot;http://github.com&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt;, I decided that I wanted to use the {github_octicon} font icons.  Unfortunately, the CSS for these font icons
+does not appear to be publically available from &lt;a href=&quot;http://github.com&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt;.  Luckily, I came across &lt;a href=&quot;https://github.com/rummik/octicon&quot; target=&quot;_blank&quot;&gt;someone&lt;/a&gt;, which is a port of the
+{github_octicon} font icons to a CSS file that can be included in your web application.  Armed with the CSS files from this port, I was able to make use of the CSS classes listed in the
+{github_octicon} style guide in my widget.  In order to not make a network call out to the &lt;a href=&quot;http://github.com&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt; account that hosts the port, I downloaded these files and included them in my web resources.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_final_tweaks&quot;&gt;Final tweaks&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;After making the changes outlined so far in this post, I thought that I had a pretty solid solution.  However, as soon as I went to look at my site with different resolutions, I noticed that
+the widget was not always being displayed correctly.  I needed to find a way to make sure that the widget always stuck to the left-hand side of the page and did not encroach on the content
+displayed to the right of the widget.  After playing around with the CSS, I came up with the following solution:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint css language-css&quot;&gt;&lt;code&gt;#activity {
+  padding-top: 110px;
+  padding-left: 20px;
+  width: 275px;
+}
+
+#wrap &amp;gt; #activity &amp;gt; .panel &amp;gt; ul {
+  margin-left: 0px;
+}
+
+#wrap &amp;gt; #activity &amp;gt; .panel &amp;gt; .panel-heading &amp;gt; a {
+    color: #ffffff;
+}
+
+#wrap &amp;gt; .container {
+  padding-top: 60px;
+  padding-left: 30px;
+  display: inline-block;		&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
+  width: 70%;			&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;(2)&lt;/b&gt;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Displays the DIV inline next to the div that contains the &lt;a href=&quot;http://github.com&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt; widget&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;Ensures that some space is left for the widget&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;If you remember from the beginning of the post, the &lt;a href=&quot;http://github.com&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt; widget applies the &lt;code&gt;pull-left&lt;/code&gt; class, which ensures that it is left-aligned on the page.  The trick here is to make sure that
+the DIV that contains the main content (the blog posts themselves) is aligned side-by-side with the widget.  From the example above, you can see that it now uses the &lt;code&gt;inline-block&lt;/code&gt; display
+attribute to achieve this.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_summary&quot;&gt;Summary&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;I do not claim to be an user interface developer, nor do I play one on TV.  This little side project certainly helped me to get a little bit more familiar with &lt;a href=&quot;http://getbootstrap.com&quot; target=&quot;_blank&quot;&gt;Bootstrap&lt;/a&gt;, &lt;a href=&quot;http://jquery.com&quot; target=&quot;_blank&quot;&gt;jQuery&lt;/a&gt;,
+the &lt;a href=&quot;https://developer.github.com/v3/&quot; target=&quot;_blank&quot;&gt;GitHub API&lt;/a&gt;, CSS and icon fonts.  I&amp;#8217;m sure that there are improvements that can be made to both the approach and the code.  Hopefully, I will be able to come back to this widget in the
+future as my skills in the area of front-end development grow.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Code Coverage with Cobertura</title>
             <link>http://jdpgrailsdev.github.io/blog//2014/04/29/gradle_cobertura.html</link>
@@ -880,177 +1212,6 @@ project.tasks.run.dependsOn([copyAgent])			&lt;i class=&quot;conum&quot; data-va
 &lt;p&gt;Finally, the last thing that I did was set up a symbolic link from my project&amp;#8217;s directory to where my &lt;a href=&quot;http://newrelic.com&quot; target=&quot;_blank&quot;&gt;New Relic&lt;/a&gt; YAML file resides.  The &lt;a href=&quot;http://newrelic.com&quot; target=&quot;_blank&quot;&gt;New Relic&lt;/a&gt; agent will
 automatically look for the &lt;code&gt;newrelic.yml&lt;/code&gt; file in the same location as the agent JAR or in the current working directory.  With this last piece in place, all
 hard-coded paths are now removed from the equation.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Maven, the JavaDoc plugin and Java 8</title>
-            <link>http://jdpgrailsdev.github.io/blog//2014/04/03/maven_java8_javadoc.html</link>
-            <pubDate>Thu, 3 Apr 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">/2014/04/03/maven_java8_javadoc.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;On March 18th, Oracle officially released &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot; target=&quot;_blank&quot;&gt;Java 8&lt;/a&gt;.  Eager to start using some of the new features (in a non-beta release), I quickly downloaded and installed the JDK on my laptop.  I switched my
-system to use &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot; target=&quot;_blank&quot;&gt;Java 8&lt;/a&gt; by default and set upon compiling one of my projects.  To my suprise, the build failed with a bunch of errors that looked like this:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;[ERROR] Failed to execute goal org.apache.maven.plugins:maven-javadoc-plugin:2.8.1:jar (default) on project ddc-metrics-annotations: MavenReportException: Error while creating archive:
-[ERROR] Exit code: 1 - /Projects/libraries/test-library/src/main/java/com/test/Tester.java:30: warning: no @return&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;It turns out that &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot; target=&quot;_blank&quot;&gt;Java 8&lt;/a&gt; includes a much more strict set of rules for its doclint.  According to  &lt;a href=&quot;http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html&quot; target=&quot;_blank&quot;&gt;Steven Colebourne&lt;/a&gt;, the
-&lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot; target=&quot;_blank&quot;&gt;Java 8&lt;/a&gt; doclint by default enforces the following rules when processing JavaDoc comments:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;ulist&quot;&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;No self-closed HTML tags, such as &amp;lt;br /&amp;gt; or &amp;lt;a id=&quot;x&quot; /&amp;gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;No unclosed HTML tags, such as &amp;lt;ul&amp;gt; without matching &amp;lt;/ul&amp;gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;No invalid HTML end tags, such as &amp;lt;/br&amp;gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;No invalid HTML attributes, based on doclint&amp;#8217;s interpretation of W3C HTML 4.01&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;No duplicate HTML id attribute&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;No empty HTML href attribute&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;No incorrectly nested headers, such as class documentation must have &amp;lt;h3&amp;gt;, not &amp;lt;h4&amp;gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;No invalid HTML tags, such as List&amp;lt;String&amp;gt; (where you forgot to escape using &amp;lt;)&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;No broken @link references&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;No broken @param references, they must match the actual parameter name&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;No broken @throws references, the first word must be a class name&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;This is fine if you are starting with a green field project, but if you are like me and have to switch between new and legacy code bases, it may not be possible to correct all of these
-issues in order to get &lt;a href=&quot;http://maven.apache.org/plugins/maven-javadoc-plugin/&quot; target=&quot;_blank&quot;&gt;Maven JavaDoc plugin&lt;/a&gt; generated using &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot; target=&quot;_blank&quot;&gt;Java 8&lt;/a&gt;.  Per &lt;a href=&quot;http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html&quot; target=&quot;_blank&quot;&gt;Steven Colebourne&amp;#8217;s blog&lt;/a&gt;, the solution is to
-include the &lt;code&gt;-Xdoclint:none&lt;/code&gt; JVM argument in the configuration of the &lt;a href=&quot;http://maven.apache.org/plugins/maven-javadoc-plugin/&quot; target=&quot;_blank&quot;&gt;Maven JavaDoc plugin&lt;/a&gt;:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;pom.xml&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint xml language-xml&quot;&gt;&lt;code&gt;...
-&amp;lt;plugin&amp;gt;
-    &amp;lt;groupId&amp;gt;org.apache.maven.plugins&amp;lt;/groupId&amp;gt;
-    &amp;lt;artifactId&amp;gt;maven-javadoc-plugin&amp;lt;/artifactId&amp;gt;
-    &amp;lt;version&amp;gt;2.9.1&amp;lt;/version&amp;gt;
-    &amp;lt;executions&amp;gt;
-        &amp;lt;execution&amp;gt;
-            &amp;lt;phase&amp;gt;package&amp;lt;/phase&amp;gt;
-            &amp;lt;goals&amp;gt;
-                &amp;lt;goal&amp;gt;jar&amp;lt;/goal&amp;gt;
-            &amp;lt;/goals&amp;gt;
-            &amp;lt;configuration&amp;gt;
-                &amp;lt;additionalparam&amp;gt;-Xdoclint:none&amp;lt;/additionalparam&amp;gt;
-            &amp;lt;/configuration&amp;gt;
-        &amp;lt;/execution&amp;gt;
-    &amp;lt;/executions&amp;gt;
-&amp;lt;/plugin&amp;gt;
-...&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;This works great when building with &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot; target=&quot;_blank&quot;&gt;Java 8&lt;/a&gt;.  However, if you switch back to Java 7 and attempt to build with the &lt;code&gt;-Xdoclint:none&lt;/code&gt; JVM argument, the build will fail, as Java 7 does not
-recognize that JVM argument.  What can we do to support JavaDoc generation via &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; for both Java 7 and Java 8 on a legacy code base?  Use
-&lt;a href=&quot;http://maven.apache.org/guides/introduction/introduction-to-profiles.html&quot; target=&quot;_blank&quot;&gt;Maven profiles&lt;/a&gt;!  Instead of modifying the existing &lt;a href=&quot;http://maven.apache.org/plugins/maven-javadoc-plugin/&quot; target=&quot;_blank&quot;&gt;Maven JavaDoc plugin&lt;/a&gt; declaration in our &lt;code&gt;pom.xml&lt;/code&gt; file, let&amp;#8217;s instead
-add a new profile that only activates when we are building with &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot; target=&quot;_blank&quot;&gt;Java 8&lt;/a&gt;:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;pom.xml&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint xml language-xml&quot;&gt;&lt;code&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&amp;gt;
-&amp;lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;
-         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;&amp;gt;
-    &amp;lt;modelVersion&amp;gt;4.0.0&amp;lt;/modelVersion&amp;gt;
-    &amp;lt;groupId&amp;gt;com.test&amp;lt;/groupId&amp;gt;
-    &amp;lt;artifactId&amp;gt;test&amp;lt;/artifactId&amp;gt;
-    &amp;lt;packaging&amp;gt;jar&amp;lt;/packaging&amp;gt;
-    &amp;lt;version&amp;gt;1.0.0&amp;lt;/version&amp;gt;
-
-    &amp;lt;build&amp;gt;
-        ...
-        &amp;lt;plugins&amp;gt;
-            &amp;lt;plugin&amp;gt;
-                &amp;lt;groupId&amp;gt;org.apache.maven.plugins&amp;lt;/groupId&amp;gt;
-                &amp;lt;artifactId&amp;gt;maven-javadoc-plugin&amp;lt;/artifactId&amp;gt;
-                &amp;lt;version&amp;gt;2.9.1&amp;lt;/version&amp;gt;
-                &amp;lt;executions&amp;gt;
-                    &amp;lt;execution&amp;gt;
-                        &amp;lt;phase&amp;gt;package&amp;lt;/phase&amp;gt;
-                        &amp;lt;goals&amp;gt;
-                            &amp;lt;goal&amp;gt;jar&amp;lt;/goal&amp;gt;
-                        &amp;lt;/goals&amp;gt;
-                    &amp;lt;/execution&amp;gt;
-                &amp;lt;/executions&amp;gt;
-            &amp;lt;/plugin&amp;gt;
-        &amp;lt;/plugins&amp;gt;
-    &amp;lt;/build&amp;gt;
-
-    &amp;lt;profile&amp;gt;
-        &amp;lt;id&amp;gt;java8&amp;lt;/id&amp;gt;
-        &amp;lt;activation&amp;gt;
-            &amp;lt;jdk&amp;gt;1.8&amp;lt;/jdk&amp;gt;								&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
-        &amp;lt;/activation&amp;gt;
-        &amp;lt;build&amp;gt;
-            &amp;lt;plugins&amp;gt;
-                &amp;lt;plugin&amp;gt;
-                    &amp;lt;groupId&amp;gt;org.apache.maven.plugins&amp;lt;/groupId&amp;gt;
-                    &amp;lt;artifactId&amp;gt;maven-javadoc-plugin&amp;lt;/artifactId&amp;gt;
-                    &amp;lt;version&amp;gt;2.9.1&amp;lt;/version&amp;gt;
-                    &amp;lt;executions&amp;gt;
-                        &amp;lt;execution&amp;gt;
-                            &amp;lt;phase&amp;gt;package&amp;lt;/phase&amp;gt;
-                            &amp;lt;goals&amp;gt;
-                                &amp;lt;goal&amp;gt;jar&amp;lt;/goal&amp;gt;
-                            &amp;lt;/goals&amp;gt;
-                            &amp;lt;configuration&amp;gt;
-                                &amp;lt;additionalparam&amp;gt;-Xdoclint:none&amp;lt;/additionalparam&amp;gt;
-                            &amp;lt;/configuration&amp;gt;
-                        &amp;lt;/execution&amp;gt;
-                    &amp;lt;/executions&amp;gt;
-                &amp;lt;/plugin&amp;gt;
-            &amp;lt;/plugins&amp;gt;
-        &amp;lt;/build&amp;gt;
-    &amp;lt;/profile&amp;gt;
-&amp;lt;/project&amp;gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;colist arabic&quot;&gt;
-&lt;table&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;Will activate this profile if the JRE that is executing the &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; build is version 1.8 (&lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot; target=&quot;_blank&quot;&gt;Java 8&lt;/a&gt;).&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;We can now safely build our project with either Java 7 or &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot; target=&quot;_blank&quot;&gt;Java 8&lt;/a&gt; without having it fail due to either the more strict doclint rules in &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot; target=&quot;_blank&quot;&gt;Java 8&lt;/a&gt; or the fact that Java 7 does not recognize
-the JVM argument.  I&amp;#8217;m sure that this is not the last of these issues that will come up with regards to changes between previous versions of Java and &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot; target=&quot;_blank&quot;&gt;Java 8&lt;/a&gt;.  Luckily, we should be able
-to apply the same profile trick for any differences until such a time that all the different code bases that you support are converted to use &lt;a href=&quot;http://www.oracle.com/technetwork/java/javase/downloads/index.html&quot; target=&quot;_blank&quot;&gt;Java 8&lt;/a&gt;.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

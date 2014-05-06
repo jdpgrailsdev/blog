@@ -88,6 +88,347 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog/2014/05/06/github_activity_menu.html"><h1>Add a custom GitHub activity stream to your blog</h1></a>
+                   <p>06 May 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/github.html">github</a>
+        
+                <a href="/blog/tags/jquery.html">jquery</a>
+        
+                <a href="/blog/tags/bootstrap.html">bootstrap</a>
+        
+                <a href="/blog/tags/blog.html">blog</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/05/06/github_activity_menu.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/05/06/github_activity_menu.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/05/06/github_activity_menu.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In an effort to improve my (limited) front-end foo, I decided that I wanted to add a <a href="http://github.com" target="_blank">GitHub</a> activity stream to this blog.  I figured that it would
+not be difficult to combine <a href="http://jquery.com" target="_blank">jQuery</a>, <a href="http://getbootstrap.com" target="_blank">Bootstrap</a> and the <a href="https://developer.github.com/v3/" target="_blank">GitHub API</a> to add a widget that would look like a simplified version that you can see
+on your own <a href="http://github.com" target="_blank">GitHub</a> page under the <a href="https://github.com/jdpgrailsdev?tab=activity" target="_blank">Public Activity</a> tab on your account.  What follows
+is a recounting of how I added the widget that you now see to the left of this article.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ingredients">Ingredients</h3>
+<div class="paragraph">
+<p>Let&#8217;s start by first listing the specific pieces that I used to create the widget:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://jquery.com" target="_blank">jQuery 1.11.0</a></p>
+</li>
+<li>
+<p><a href="http://getbootstrap.com/components/#panels-list-group" target="_blank">Bootstrap 3.1.1 Panels</a></p>
+</li>
+<li>
+<p><a href="http://fortawesome.github.io/Font-Awesome/" target="_blank">Font Awesome 4.0.3</a></p>
+</li>
+<li>
+<p><a href="https://developer.github.com/v3/activity/events" target="_blank">GitHub Events API</a></p>
+</li>
+<li>
+<p><a href="https://github.com/styleguide/css/7.0" target="_blank">GitHub Octicon</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>My thought process was to use <a href="http://jquery.com" target="_blank">jQuery</a> to perform an AJAX call to the <a href="https://developer.github.com/v3/activity/events" target="_blank">GitHub Events API</a> to get the activity list for my
+account.  Upon retrieval, I would append line items to the <a href="http://getbootstrap.com/components/#panels-list-group">Bootstrap 3.1.1 list group panel</a> that I had placed on the left-hand side
+of every page on my site.  Finally, I wanted to make use of the <a href="https://github.com/styleguide/css/7.0" target="_blank">GitHub Octicon</a> icon fonts to make have the same icon indicators
+that appear on the activity page on my <a href="http://github.com" target="_blank">GitHub</a> account.  Once I had this plan sketched out, the next step was to see about getting the pieces implemented.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_pretending_to_be_a_front_end_developer">Pretending to be a front-end developer</h3>
+<div class="paragraph">
+<p>The first thing that I did was add the example <a href="http://getbootstrap.com/components/#panels-list-group">Bootstrap list group panel</a> to my <code>menu</code> template just to see how it would fit:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint html language-html"><code>&lt;div class="panel panel-default"&gt;
+  &lt;!-- Default panel contents --&gt;
+  &lt;div class="panel-heading"&gt;Panel heading&lt;/div&gt;
+  &lt;div class="panel-body"&gt;
+    &lt;p&gt;...&lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;!-- List group --&gt;
+  &lt;ul class="list-group"&gt;
+    &lt;li class="list-group-item"&gt;Cras justo odio&lt;/li&gt;
+    &lt;li class="list-group-item"&gt;Dapibus ac facilisis in&lt;/li&gt;
+    &lt;li class="list-group-item"&gt;Morbi leo risus&lt;/li&gt;
+    &lt;li class="list-group-item"&gt;Porta ac consectetur ac&lt;/li&gt;
+    &lt;li class="list-group-item"&gt;Vestibulum at eros&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Right away, I noticed a bunch of formatting issues, mostly related to positioning the panel relative to the menu at the top of the page and the content in the middle of the page.  I quickly
+solved the positioning issue by surrounding the panel with a new <code>&lt;div&gt;</code> element and making use of the <a href="http://getbootstrap.com" target="_blank">Bootstrap</a> <code>pull-left</code> class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint html language-html"><code>&lt;div id="activity" class="pull-left"&gt;
+    &lt;div class="panel panel-default"&gt;
+      &lt;!-- Default panel contents --&gt;
+      &lt;div class="panel-heading"&gt;Panel heading&lt;/div&gt;
+      &lt;div class="panel-body"&gt;
+        &lt;p&gt;...&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;!-- List group --&gt;
+      &lt;ul class="list-group"&gt;
+        &lt;li class="list-group-item"&gt;Cras justo odio&lt;/li&gt;
+        &lt;li class="list-group-item"&gt;Dapibus ac facilisis in&lt;/li&gt;
+        &lt;li class="list-group-item"&gt;Morbi leo risus&lt;/li&gt;
+        &lt;li class="list-group-item"&gt;Porta ac consectetur ac&lt;/li&gt;
+        &lt;li class="list-group-item"&gt;Vestibulum at eros&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The next step was to get the panel to not overlap the menu and to get it to hover a bit off from the left-hand edge of the screen.  To accomplish this, I added a new CSS selector for the
+newly added <code>activity</code> ID:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint css language-css"><code>#activity {
+  padding-top: 110px;
+  padding-left: 20px;
+  width: 275px;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>I also decided to use the <code>panel-primary</code> <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>-provided style class to get the widget to be blue, closely matching <a href="http://github.com" target="_blank">GitHub</a>'s color scheme:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint html language-html"><code>&lt;div id="activity" class="pull-left"&gt;
+    &lt;div class="panel panel-primary"&gt;
+        ...
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It was now time to get rid of the sample content from the example.  My first thought was to start with a spinner to indicate that the panel is attempting to load (as I was going
+to use AJAX to get the data) and an empty, unordered list that would be filled by the retrieved data.  I did some searching on the internets and found that <a href="http://getbootstrap.com" target="_blank">Bootstrap</a> has built-in
+support for a loading spinner.  With one more line of HTML, I had something that I could work with:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint html language-html"><code>&lt;div id="activity" class="pull-left"&gt;
+    &lt;div class="panel panel-primary"&gt;
+          &lt;!-- Default panel contents --&gt;
+          &lt;div class="panel-heading"&gt;
+              &lt;a target="_blank" href="http://github.com/jdpgrailsdev?tab=activity"&gt;&lt;i class="fa fa-github"&gt;&lt;/i&gt; My Recent GitHub Activity&lt;/a&gt;
+          &lt;/div&gt;
+          &lt;div class="panel-body"&gt;
+              &lt;i class='icon-spinner icon-spin icon-large'&gt;&lt;/i&gt; Loading...
+          &lt;/div&gt;
+          &lt;!-- List group --&gt;
+          &lt;ul class="list-group"&gt;
+          &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>At this point, I had my target all set up and ready to receive real data from <a href="http://github.com" target="_blank">GitHub</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_time_for_some_javascript">Time for some JavaScript</h3>
+<div class="paragraph">
+<p>Now that I had a professional (in my opinion) looking widget, I decided to get to work on writing the JavaScript to get the content from <a href="http://github.com" target="_blank">GitHub</a>.  <a href="http://jquery.com" target="_blank">jQuery</a> has a <a href="http://api.jquery.com/ready/" target="_blank">ready</a>
+call back method that is fired when the HTML document is loaded.  By combining this with <a href="http://jquery.com" target="_blank">jQuery</a>'s <a href="https://api.jquery.com/jQuery.get/" target="_blank">get</a> method, I could fire off the
+request to the <a href="https://developer.github.com/v3/" target="_blank">GitHub API</a> once the DOM has been loaded, ensuring the HTML that I want to replace will be present:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint javascript language-javascript"><code>// Load the GitHub activity widget on the document ready event.
+$(document).ready(function() {
+    $.get("https://api.github.com/users/jdpgrailsdev/events", function(data) {
+        // Remove the "Loading..." place holder.
+        $('#wrap &gt; #activity &gt; .panel &gt; .panel-body').remove();
+
+        // Find the activity list from the DOM.
+        var activityList = $('#wrap &gt; #activity &gt; .panel &gt; ul');
+
+        // Counter used to determine when we have found the desired number of events for display.
+        var count = 0;
+
+        // TODO Handle data returned by GitHub here!
+
+        // If no events were found, display the "No recent activity" message.
+        if(count == 0) {
+            activityList.append("&lt;li class=\"list-group-item\"&gt;&lt;div&gt;&lt;span class=\"octicon octicon-x\"&gt;&lt;/span&gt;" +
+                "&lt;a href=\"https://github.com/jdpgrailsdev?tab=activity\" target=\"_blank\"&gt; No recent activity&lt;/a&gt;&lt;/li&gt;");
+        }
+
+        // Add a link to the end of the list to see all of the activity on GitHub.com.
+        activityList.append("&lt;li class=\"list-group-item\"&gt;&lt;div&gt;&lt;span class=\"octicon octicon-rss\"&gt;&lt;/span&gt;" +
+            "&lt;a href=\"https://github.com/jdpgrailsdev?tab=activity\" target=\"_blank\"&gt; See all activity @ GitHub&lt;/a&gt;&lt;/li&gt;");
+    }).fail(function() {
+        $('#wrap &gt; #activity &gt; .panel &gt; .panel-body').remove();
+        $('#wrap &gt; #activity &gt; .panel &gt; ul').append("&lt;li class=\"list-group-item\"&gt;&lt;span class=\"octicon octicon-alert\"&gt;&lt;/span&gt;GitHub activity could not be retrieved.&lt;/li&gt;");
+    });
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The code example above makes an AJAX request to <a href="http://github.com" target="_blank">GitHub</a> for my account&#8217;s activity.  If the request is successful, the placeholder text is removed from the view and each event is processed
+for display.  If a failure occurs, the <code>fail</code> function is invoked, which prints out a nice error message indicating the failure.  The next step was to actually implement the event handling code.
+I only wanted to handle a subset of <a href="https://developer.github.com/v3/activity/events/types/" target="_blank">GitHub Event Types</a> exposed by the <a href="https://developer.github.com/v3/" target="_blank">GitHub API</a>, so I decided to explicitly list out the event types that I was looking for.  Below is the code that handles the data returned
+by the <a href="https://developer.github.com/v3/" target="_blank">GitHub API</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint javascript language-javascript"><code>// Loop over each retrieved GitHub event and process.
+$.each(data, function(i, githubEvent) {
+    // The icon font to be displayed with the event.
+    var octicon = "";
+    // The hyper link to be applied to the displayed event.
+    var link = "";
+    // The text to be displayed with the event.
+    var text = "";
+
+    // Only show 10 events.  Not all types of GitHub events are implemented here.
+    // for the full list, see https://developer.github.com/v3/activity/events/types/
+    if(count &lt; 10) {
+        if(githubEvent.type == 'CommitCommentEvent') {
+            octicon = "octicon-comment";
+            link = githubEvent.payload.comment.html_url;
+            text = "Commented on " + githubEvent.repo.name + "/commit/" + githubEvent.payload.comment.commit_id;
+        } else if(githubEvent.type == 'CreateEvent') {
+            octicon = "octicon-repo-create";
+            link = "http://github.com/" + githubEvent.repo.name;
+            text = "Created repository " + githubEvent.repo.name;
+        } else if(githubEvent.type == 'ForkEvent') {
+            octicon = "octicon-repo-forked";
+            link = githubEvent.payload.forkee.html_url;
+            text = "Forked repository " + githubEvent.repo.name;
+        } else if(githubEvent.type == 'IssuesEvent') {
+            octicon = "octicon-issue-" + githubEvent.payload.action;
+            link = githubEvent.payload.issue.html_url;
+            text = githubEvent.payload.action.capitalize() + " issue " + githubEvent.repo.name
+                + "#" + githubEvent.payload.issue.number;
+        } else if(githubEvent.type == 'IssueCommentEvent') {
+            octicon = "octicon-comment-discussion";
+            link = githubEvent.payload.issue.html_url;
+            text = "Commented on " + (githubEvent.payload.issue.pull_request.url != null ? "pull request" : "issue") +
+                " " + githubEvent.repo.name + "#" + githubEvent.payload.issue.number;
+        } else if(githubEvent.type == 'PullRequestEvent') {
+            octicon = 'octicon-git-pull-request';
+            link = githubEvent.payload.pull_request.html_url;
+            text = githubEvent.payload.action.capitalize() + " pull request " + githubEvent.repo.name
+                + "#" + githubEvent.payload.number;
+        } else if(githubEvent.type == 'PullRequestReviewCommentEvent') {
+            octicon = "octicon-comment";
+            link = githubEvent.payload.comment.html_url;
+            text = "Commented on pull request " + githubEvent.repo.name + "#"
+                + extractPullRequestNumber(githubEvent.payload.comment.pull_request_url);
+        } else if(githubEvent.type == 'PushEvent' &amp;&amp; !(githubEvent.repo.name == "jdpgrailsdev/blog")) {
+            octicon = "octicon-git-commit";
+            link = "http://github.com/" + githubEvent.repo.name + "/commit/" + githubEvent.payload.head;
+            text = "Pushed to " + normalizeBranch(githubEvent.payload.ref) + " at " + githubEvent.repo.name;
+        }
+
+        // If the event is one of the supported types, add a new line item to the HTML panel.
+        if(text) {
+            var eventDateHtml = createEventDateHtml(githubEvent.created_at);
+            activityList.append("&lt;li id=\"" + githubEvent.id + "\" class=\"list-group-item\"&gt;&lt;div&gt;&lt;span class=\"octicon " +
+                octicon + "\"&gt;&lt;/span&gt;&lt;a href=\"" + link + "\" target=\"_blank\"&gt; " + text + "&lt;/a&gt;&lt;/div&gt;" + eventDateHtml + "&lt;/li&gt;");
+            count++;
+        }
+    }
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The code above sets the icon, link and text for each event found in the response, up to the number of events that I want displayed.  Once the data has been computed for a given event,
+it is injected into the HTML as a new list item via the <code>append</code> function on the container list.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_octicon">Octicon</h3>
+<div class="paragraph">
+<p>In order to make the widget look and feel just like the activity stream on <a href="http://github.com" target="_blank">GitHub</a>, I decided that I wanted to use the {github_octicon} font icons.  Unfortunately, the CSS for these font icons
+does not appear to be publically available from <a href="http://github.com" target="_blank">GitHub</a>.  Luckily, I came across <a href="https://github.com/rummik/octicon" target="_blank">someone</a>, which is a port of the
+{github_octicon} font icons to a CSS file that can be included in your web application.  Armed with the CSS files from this port, I was able to make use of the CSS classes listed in the
+{github_octicon} style guide in my widget.  In order to not make a network call out to the <a href="http://github.com" target="_blank">GitHub</a> account that hosts the port, I downloaded these files and included them in my web resources.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_final_tweaks">Final tweaks</h3>
+<div class="paragraph">
+<p>After making the changes outlined so far in this post, I thought that I had a pretty solid solution.  However, as soon as I went to look at my site with different resolutions, I noticed that
+the widget was not always being displayed correctly.  I needed to find a way to make sure that the widget always stuck to the left-hand side of the page and did not encroach on the content
+displayed to the right of the widget.  After playing around with the CSS, I came up with the following solution:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint css language-css"><code>#activity {
+  padding-top: 110px;
+  padding-left: 20px;
+  width: 275px;
+}
+
+#wrap &gt; #activity &gt; .panel &gt; ul {
+  margin-left: 0px;
+}
+
+#wrap &gt; #activity &gt; .panel &gt; .panel-heading &gt; a {
+    color: #ffffff;
+}
+
+#wrap &gt; .container {
+  padding-top: 60px;
+  padding-left: 30px;
+  display: inline-block;		<i class="conum" data-value="1"></i><b>(1)</b>
+  width: 70%;			<i class="conum" data-value="2"></i><b>(2)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Displays the DIV inline next to the div that contains the <a href="http://github.com" target="_blank">GitHub</a> widget</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Ensures that some space is left for the widget</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you remember from the beginning of the post, the <a href="http://github.com" target="_blank">GitHub</a> widget applies the <code>pull-left</code> class, which ensures that it is left-aligned on the page.  The trick here is to make sure that
+the DIV that contains the main content (the blog posts themselves) is aligned side-by-side with the widget.  From the example above, you can see that it now uses the <code>inline-block</code> display
+attribute to achieve this.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_summary">Summary</h3>
+<div class="paragraph">
+<p>I do not claim to be an user interface developer, nor do I play one on TV.  This little side project certainly helped me to get a little bit more familiar with <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>, <a href="http://jquery.com" target="_blank">jQuery</a>,
+the <a href="https://developer.github.com/v3/" target="_blank">GitHub API</a>, CSS and icon fonts.  I&#8217;m sure that there are improvements that can be made to both the approach and the code.  Hopefully, I will be able to come back to this widget in the
+future as my skills in the area of front-end development grow.</p>
+</div>
+</div></p>
+                <p><a href="/blog/2014/05/06/github_activity_menu.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2014/04/29/gradle_cobertura.html"><h1>Code Coverage with Cobertura</h1></a>
                    <p>29 April 2014</p>
                 <p><em>Tags: </em>
@@ -838,148 +1179,6 @@ the <a href="http://gradle.org" target="_blank">Gradle</a> API.  I will keep you
 </div>
 </div></p>
                 <p><a href="/blog/2014/04/15/gradle_api_dependencies.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/04/08/spring_boot_gradle_newrelic.html"><h1>Using the New Relic agent with Spring-Boot and Gradle</h1></a>
-                   <p>08 April 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/gradle.html">gradle</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/04/08/spring_boot_gradle_newrelic.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/04/08/spring_boot_gradle_newrelic.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/04/08/spring_boot_gradle_newrelic.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>I wanted to play around with <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> the other day and found it pretty easy to get up and running using their <a href="http://gradle.org" target="_blank">Gradle</a> plugin.  After only a few minutes, I had a sample Spring-based
-web application running as a stand-alone process.  Next, I thought I would add in <a href="http://newrelic.com" target="_blank">New Relic</a> support so I could see some performance stats.  Normally, you would install the <a href="http://newrelic.com" target="_blank">New Relic</a> agent
-in your application container or add a <code>javaagent</code> JVM option pointing at the <a href="http://newrelic.com" target="_blank">New Relic</a> agent to enable metrics gathering.  In my first attempt, I added the <code>javaagent</code> JVM option pointing
-at the <a href="http://newrelic.com" target="_blank">New Relic</a> agent to the <code>DEFAULT_JVM_OPTS</code> variable in my <code>gradlew</code> script and restarted the application.  It failed with a weird error about not being able to find some of the
-classes provided by the <a href="http://newrelic.com" target="_blank">New Relic</a> agent after claiming that it started the agent and found the YAML configuration file.  It seemed like there was obviously some issue between <a href="http://gradle.org" target="_blank">Gradle</a> and
-the Java agent.  After a few quick minutes searching on the internets, I found that the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <a href="http://gradle.org" target="_blank">Gradle</a> plugin supports passing an agent to the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> process.  I made the
-following change to my <code>build.gradle</code> file:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>apply plugin: 'spring-boot'
-
-...
-
-springBoot {
-    mainClass = 'com.sample.Application'
-    agent = file('/opt/newrelic/newrelic.jar')			<i class="conum" data-value="1"></i><b>(1)</b>
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This is the path to where ever you downloaded and the <a href="http://newrelic.com" target="_blank">New Relic</a> agent JAR to that should include your customized YAML configuration file.</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>I restarted my application using the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <a href="http://gradle.org" target="_blank">Gradle</a> task (<code>run</code>) and metrics started flowing!  This is great, but it depends on a hard-coded path to the installed <a href="http://newrelic.com" target="_blank">New Relic</a> agent (yuck).
-Because you can do anything with <a href="http://gradle.org" target="_blank">Gradle</a> (slight exaggeration), I figured that with some <a href="http://gradle.org" target="_blank">Gradle</a>-foo, I could include the <a href="http://newrelic.com" target="_blank">New Relic</a> agent as a dependency, download it and point to the
-downloaded file for the <code>javaagent</code> JVM option.  After a little playing around, I came up with the following:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>apply plugin: 'groovy'
-apply plugin: 'spring-boot'
-
-group = 'com.test'
-version = '1.0.0-SNAPSHOT'
-
-description = """Test application"""
-
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven { url "http://repo.spring.io/snapshot" }
-        maven { url "http://repo.spring.io/milestone" }
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.1.BUILD-SNAPSHOT")
-    }
-}
-
-configurations {
-    newrelic	// Custom configuration to allow for the copying of the New Relic agent at run time.
-}
-
-ext {
-    groovyVersion='2.2.1'
-    newrelicVersion='3.5.1'
-    springBootVersion='1.0.1.RELEASE'
-    springVersion='4.0.3.RELEASE'
-}
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-
-dependencies {
-    newrelic "com.newrelic.agent.java:newrelic-agent:${newrelicVersion}"
-
-    compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
-    compile("org.springframework:spring-beans:${springVersion}")
-    compile("org.springframework:spring-context:${springVersion}")
-    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
-
-    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
-}
-
-task copyAgent(type: Copy) {
-    from {
-        configurations.newrelic				<i class="conum" data-value="1"></i><b>(1)</b>
-    }
-    into "$buildDir/lib"
-    rename ("newrelic-agent-${newrelicVersion}.jar", 'newrelic.jar')
-}
-
-springBoot {
-    mainClass = 'com.test.sample.Application'
-    agent = file("$buildDir/lib/newrelic.jar")		<i class="conum" data-value="2"></i><b>(2)</b>
-}
-
-project.tasks.run.dependsOn([copyAgent])			<i class="conum" data-value="3"></i><b>(3)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Per the <code>dependencies</code> block, the only file in the <code>newrelic</code> configuration is the agent JAR itself.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Tell <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> to use the the downloaded, copied <a href="http://newrelic.com" target="_blank">New Relic</a> agent JAR instead of the previously hard-coded value.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Make the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <code>run</code> task depend on the copy task to ensure that the agent is copied before we attempt to launch the application.</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Finally, the last thing that I did was set up a symbolic link from my project&#8217;s directory to where my <a href="http://newrelic.com" target="_blank">New Relic</a> YAML file resides.  The <a href="http://newrelic.com" target="_blank">New Relic</a> agent will
-automatically look for the <code>newrelic.yml</code> file in the same location as the agent JAR or in the current working directory.  With this last piece in place, all
-hard-coded paths are now removed from the equation.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog/2014/04/08/spring_boot_gradle_newrelic.html#disqus_thread">Comments</a></p>
 
                 <hr />
 

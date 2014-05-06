@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <title>The Flowers Are Still Standing :: Add a custom GitHub activity stream to your blog</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta name="author" content="Jonathan Pearlin" />
+        <meta name="keywords" content="" />
+        <meta name="generator" content="JBake" />
+
+        <!-- Le styles -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+        <link href="/blog/css/asciidoctor.css" rel="stylesheet">
+        <link href="/blog/css/base.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+        <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
+		<link href='/blog/css/octicons.min.css' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+              <script src="/blog/js/html5shiv.js"></script>
+        <![endif]-->
+
+        <!-- Fav and touch icons -->
+        <!--
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png" />
+        <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png" />
+        -->
+        <link rel="shortcut icon" href="/blog/favicon.ico" />
+    </head>
+    <body>
+        <div id="wrap">
+            <!-- Fixed navbar -->
+            <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/blog/index.html">Jonathan Pearlin's Blog</a>
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="/blog/about.html">About</a></li>
+                            <li><a href="/blog/resume.html">Résumé</a></li>
+                            <li><a href="/blog/friends.html">Friends</a></li>
+                            <li class="dropdown">
+                                <a data-toggle="dropdown" href="#">Tags<b class="caret"></b></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="/blog/tags/gradle.html">Gradle</a></li>
+                                    <li><a href="/blog/tags/grails.html">Grails</a></li>
+                                    <li><a href="/blog/tags/groovy.html">Groovy</a></li>
+                                    <li><a href="/blog/tags/java.html">Java</a></li>
+                                    <li><a href="/blog/tags/maven.html">Maven</a></li>
+                                    <li><a href="/blog/tags/spring.html">Spring</a></li>
+                                    <li><a href="/blog/tags/zookeeper.html">ZooKeeper</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="/blog/feed.xml">Feed</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="https://github.com/jdpgrailsdev" target="_blank"><i class="fa fa-github"></i></a></li>
+                            <li><a href="http://www.linkedin.com/pub/jonathan-pearlin/4/946/9a0" style="text-decoration:none;" target="_blank"><i class="fa fa-linkedin-square"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+			<div id="activity" class="pull-left">
+	            <div class="panel panel-primary">
+	                  <!-- Default panel contents -->
+	                  <div class="panel-heading"><a target="_blank" href="http://github.com/jdpgrailsdev?tab=activity"><i class="fa fa-github"></i> My Recent GitHub Activity</a></div>
+					  <div class="panel-body">
+					      <i class='icon-spinner icon-spin icon-large'></i> Loading...
+					  </div>
+	                  <!-- List group -->
+                      <ul class="list-group">
+	                  </ul>
+	            </div>
+			</div>
+            <div class="container">
+    <div class="page-header">
+        <h1>Add a custom GitHub activity stream to your blog</h1>
+    </div>
+
+    <p><em>06 May 2014</em></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog//2014/05/06/github_activity_menu.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2014/05/06/github_activity_menu.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2014/05/06/github_activity_menu.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In an effort to improve my (limited) front-end foo, I decided that I wanted to add a <a href="http://github.com" target="_blank">GitHub</a> activity stream to this blog.  I figured that it would
+not be difficult to combine <a href="http://jquery.com" target="_blank">jQuery</a>, <a href="http://getbootstrap.com" target="_blank">Bootstrap</a> and the <a href="https://developer.github.com/v3/" target="_blank">GitHub API</a> to add a widget that would look like a simplified version that you can see
+on your own <a href="http://github.com" target="_blank">GitHub</a> page under the <a href="https://github.com/jdpgrailsdev?tab=activity" target="_blank">Public Activity</a> tab on your account.  What follows
+is a recounting of how I added the widget that you now see to the left of this article.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ingredients">Ingredients</h3>
+<div class="paragraph">
+<p>Let&#8217;s start by first listing the specific pieces that I used to create the widget:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://jquery.com" target="_blank">jQuery 1.11.0</a></p>
+</li>
+<li>
+<p><a href="http://getbootstrap.com/components/#panels-list-group" target="_blank">Bootstrap 3.1.1 Panels</a></p>
+</li>
+<li>
+<p><a href="http://fortawesome.github.io/Font-Awesome/" target="_blank">Font Awesome 4.0.3</a></p>
+</li>
+<li>
+<p><a href="https://developer.github.com/v3/activity/events" target="_blank">GitHub Events API</a></p>
+</li>
+<li>
+<p><a href="https://github.com/styleguide/css/7.0" target="_blank">GitHub Octicon</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>My thought process was to use <a href="http://jquery.com" target="_blank">jQuery</a> to perform an AJAX call to the <a href="https://developer.github.com/v3/activity/events" target="_blank">GitHub Events API</a> to get the activity list for my
+account.  Upon retrieval, I would append line items to the <a href="http://getbootstrap.com/components/#panels-list-group">Bootstrap 3.1.1 list group panel</a> that I had placed on the left-hand side
+of every page on my site.  Finally, I wanted to make use of the <a href="https://github.com/styleguide/css/7.0" target="_blank">GitHub Octicon</a> icon fonts to make have the same icon indicators
+that appear on the activity page on my <a href="http://github.com" target="_blank">GitHub</a> account.  Once I had this plan sketched out, the next step was to see about getting the pieces implemented.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_pretending_to_be_a_front_end_developer">Pretending to be a front-end developer</h3>
+<div class="paragraph">
+<p>The first thing that I did was add the example <a href="http://getbootstrap.com/components/#panels-list-group">Bootstrap list group panel</a> to my <code>menu</code> template just to see how it would fit:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint html language-html"><code>&lt;div class="panel panel-default"&gt;
+  &lt;!-- Default panel contents --&gt;
+  &lt;div class="panel-heading"&gt;Panel heading&lt;/div&gt;
+  &lt;div class="panel-body"&gt;
+    &lt;p&gt;...&lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;!-- List group --&gt;
+  &lt;ul class="list-group"&gt;
+    &lt;li class="list-group-item"&gt;Cras justo odio&lt;/li&gt;
+    &lt;li class="list-group-item"&gt;Dapibus ac facilisis in&lt;/li&gt;
+    &lt;li class="list-group-item"&gt;Morbi leo risus&lt;/li&gt;
+    &lt;li class="list-group-item"&gt;Porta ac consectetur ac&lt;/li&gt;
+    &lt;li class="list-group-item"&gt;Vestibulum at eros&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Right away, I noticed a bunch of formatting issues, mostly related to positioning the panel relative to the menu at the top of the page and the content in the middle of the page.  I quickly
+solved the positioning issue by surrounding the panel with a new <code>&lt;div&gt;</code> element and making use of the <a href="http://getbootstrap.com" target="_blank">Bootstrap</a> <code>pull-left</code> class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint html language-html"><code>&lt;div id="activity" class="pull-left"&gt;
+    &lt;div class="panel panel-default"&gt;
+      &lt;!-- Default panel contents --&gt;
+      &lt;div class="panel-heading"&gt;Panel heading&lt;/div&gt;
+      &lt;div class="panel-body"&gt;
+        &lt;p&gt;...&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;!-- List group --&gt;
+      &lt;ul class="list-group"&gt;
+        &lt;li class="list-group-item"&gt;Cras justo odio&lt;/li&gt;
+        &lt;li class="list-group-item"&gt;Dapibus ac facilisis in&lt;/li&gt;
+        &lt;li class="list-group-item"&gt;Morbi leo risus&lt;/li&gt;
+        &lt;li class="list-group-item"&gt;Porta ac consectetur ac&lt;/li&gt;
+        &lt;li class="list-group-item"&gt;Vestibulum at eros&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The next step was to get the panel to not overlap the menu and to get it to hover a bit off from the left-hand edge of the screen.  To accomplish this, I added a new CSS selector for the
+newly added <code>activity</code> ID:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint css language-css"><code>#activity {
+  padding-top: 110px;
+  padding-left: 20px;
+  width: 275px;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>I also decided to use the <code>panel-primary</code> <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>-provided style class to get the widget to be blue, closely matching <a href="http://github.com" target="_blank">GitHub</a>'s color scheme:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint html language-html"><code>&lt;div id="activity" class="pull-left"&gt;
+    &lt;div class="panel panel-primary"&gt;
+        ...
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It was now time to get rid of the sample content from the example.  My first thought was to start with a spinner to indicate that the panel is attempting to load (as I was going
+to use AJAX to get the data) and an empty, unordered list that would be filled by the retrieved data.  I did some searching on the internets and found that <a href="http://getbootstrap.com" target="_blank">Bootstrap</a> has built-in
+support for a loading spinner.  With one more line of HTML, I had something that I could work with:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint html language-html"><code>&lt;div id="activity" class="pull-left"&gt;
+    &lt;div class="panel panel-primary"&gt;
+          &lt;!-- Default panel contents --&gt;
+          &lt;div class="panel-heading"&gt;
+              &lt;a target="_blank" href="http://github.com/jdpgrailsdev?tab=activity"&gt;&lt;i class="fa fa-github"&gt;&lt;/i&gt; My Recent GitHub Activity&lt;/a&gt;
+          &lt;/div&gt;
+          &lt;div class="panel-body"&gt;
+              &lt;i class='icon-spinner icon-spin icon-large'&gt;&lt;/i&gt; Loading...
+          &lt;/div&gt;
+          &lt;!-- List group --&gt;
+          &lt;ul class="list-group"&gt;
+          &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>At this point, I had my target all set up and ready to receive real data from <a href="http://github.com" target="_blank">GitHub</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_time_for_some_javascript">Time for some JavaScript</h3>
+<div class="paragraph">
+<p>Now that I had a professional (in my opinion) looking widget, I decided to get to work on writing the JavaScript to get the content from <a href="http://github.com" target="_blank">GitHub</a>.  <a href="http://jquery.com" target="_blank">jQuery</a> has a <a href="http://api.jquery.com/ready/" target="_blank">ready</a>
+call back method that is fired when the HTML document is loaded.  By combining this with <a href="http://jquery.com" target="_blank">jQuery</a>'s <a href="https://api.jquery.com/jQuery.get/" target="_blank">get</a> method, I could fire off the
+request to the <a href="https://developer.github.com/v3/" target="_blank">GitHub API</a> once the DOM has been loaded, ensuring the HTML that I want to replace will be present:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint javascript language-javascript"><code>// Load the GitHub activity widget on the document ready event.
+$(document).ready(function() {
+    $.get("https://api.github.com/users/jdpgrailsdev/events", function(data) {
+        // Remove the "Loading..." place holder.
+        $('#wrap &gt; #activity &gt; .panel &gt; .panel-body').remove();
+
+        // Find the activity list from the DOM.
+        var activityList = $('#wrap &gt; #activity &gt; .panel &gt; ul');
+
+        // Counter used to determine when we have found the desired number of events for display.
+        var count = 0;
+
+        // TODO Handle data returned by GitHub here!
+
+        // If no events were found, display the "No recent activity" message.
+        if(count == 0) {
+            activityList.append("&lt;li class=\"list-group-item\"&gt;&lt;div&gt;&lt;span class=\"octicon octicon-x\"&gt;&lt;/span&gt;" +
+                "&lt;a href=\"https://github.com/jdpgrailsdev?tab=activity\" target=\"_blank\"&gt; No recent activity&lt;/a&gt;&lt;/li&gt;");
+        }
+
+        // Add a link to the end of the list to see all of the activity on GitHub.com.
+        activityList.append("&lt;li class=\"list-group-item\"&gt;&lt;div&gt;&lt;span class=\"octicon octicon-rss\"&gt;&lt;/span&gt;" +
+            "&lt;a href=\"https://github.com/jdpgrailsdev?tab=activity\" target=\"_blank\"&gt; See all activity @ GitHub&lt;/a&gt;&lt;/li&gt;");
+    }).fail(function() {
+        $('#wrap &gt; #activity &gt; .panel &gt; .panel-body').remove();
+        $('#wrap &gt; #activity &gt; .panel &gt; ul').append("&lt;li class=\"list-group-item\"&gt;&lt;span class=\"octicon octicon-alert\"&gt;&lt;/span&gt;GitHub activity could not be retrieved.&lt;/li&gt;");
+    });
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The code example above makes an AJAX request to <a href="http://github.com" target="_blank">GitHub</a> for my account&#8217;s activity.  If the request is successful, the placeholder text is removed from the view and each event is processed
+for display.  If a failure occurs, the <code>fail</code> function is invoked, which prints out a nice error message indicating the failure.  The next step was to actually implement the event handling code.
+I only wanted to handle a subset of <a href="https://developer.github.com/v3/activity/events/types/" target="_blank">GitHub Event Types</a> exposed by the <a href="https://developer.github.com/v3/" target="_blank">GitHub API</a>, so I decided to explicitly list out the event types that I was looking for.  Below is the code that handles the data returned
+by the <a href="https://developer.github.com/v3/" target="_blank">GitHub API</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint javascript language-javascript"><code>// Loop over each retrieved GitHub event and process.
+$.each(data, function(i, githubEvent) {
+    // The icon font to be displayed with the event.
+    var octicon = "";
+    // The hyper link to be applied to the displayed event.
+    var link = "";
+    // The text to be displayed with the event.
+    var text = "";
+
+    // Only show 10 events.  Not all types of GitHub events are implemented here.
+    // for the full list, see https://developer.github.com/v3/activity/events/types/
+    if(count &lt; 10) {
+        if(githubEvent.type == 'CommitCommentEvent') {
+            octicon = "octicon-comment";
+            link = githubEvent.payload.comment.html_url;
+            text = "Commented on " + githubEvent.repo.name + "/commit/" + githubEvent.payload.comment.commit_id;
+        } else if(githubEvent.type == 'CreateEvent') {
+            octicon = "octicon-repo-create";
+            link = "http://github.com/" + githubEvent.repo.name;
+            text = "Created repository " + githubEvent.repo.name;
+        } else if(githubEvent.type == 'ForkEvent') {
+            octicon = "octicon-repo-forked";
+            link = githubEvent.payload.forkee.html_url;
+            text = "Forked repository " + githubEvent.repo.name;
+        } else if(githubEvent.type == 'IssuesEvent') {
+            octicon = "octicon-issue-" + githubEvent.payload.action;
+            link = githubEvent.payload.issue.html_url;
+            text = githubEvent.payload.action.capitalize() + " issue " + githubEvent.repo.name
+                + "#" + githubEvent.payload.issue.number;
+        } else if(githubEvent.type == 'IssueCommentEvent') {
+            octicon = "octicon-comment-discussion";
+            link = githubEvent.payload.issue.html_url;
+            text = "Commented on " + (githubEvent.payload.issue.pull_request.url != null ? "pull request" : "issue") +
+                " " + githubEvent.repo.name + "#" + githubEvent.payload.issue.number;
+        } else if(githubEvent.type == 'PullRequestEvent') {
+            octicon = 'octicon-git-pull-request';
+            link = githubEvent.payload.pull_request.html_url;
+            text = githubEvent.payload.action.capitalize() + " pull request " + githubEvent.repo.name
+                + "#" + githubEvent.payload.number;
+        } else if(githubEvent.type == 'PullRequestReviewCommentEvent') {
+            octicon = "octicon-comment";
+            link = githubEvent.payload.comment.html_url;
+            text = "Commented on pull request " + githubEvent.repo.name + "#"
+                + extractPullRequestNumber(githubEvent.payload.comment.pull_request_url);
+        } else if(githubEvent.type == 'PushEvent' &amp;&amp; !(githubEvent.repo.name == "jdpgrailsdev/blog")) {
+            octicon = "octicon-git-commit";
+            link = "http://github.com/" + githubEvent.repo.name + "/commit/" + githubEvent.payload.head;
+            text = "Pushed to " + normalizeBranch(githubEvent.payload.ref) + " at " + githubEvent.repo.name;
+        }
+
+        // If the event is one of the supported types, add a new line item to the HTML panel.
+        if(text) {
+            var eventDateHtml = createEventDateHtml(githubEvent.created_at);
+            activityList.append("&lt;li id=\"" + githubEvent.id + "\" class=\"list-group-item\"&gt;&lt;div&gt;&lt;span class=\"octicon " +
+                octicon + "\"&gt;&lt;/span&gt;&lt;a href=\"" + link + "\" target=\"_blank\"&gt; " + text + "&lt;/a&gt;&lt;/div&gt;" + eventDateHtml + "&lt;/li&gt;");
+            count++;
+        }
+    }
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The code above sets the icon, link and text for each event found in the response, up to the number of events that I want displayed.  Once the data has been computed for a given event,
+it is injected into the HTML as a new list item via the <code>append</code> function on the container list.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_octicon">Octicon</h3>
+<div class="paragraph">
+<p>In order to make the widget look and feel just like the activity stream on <a href="http://github.com" target="_blank">GitHub</a>, I decided that I wanted to use the {github_octicon} font icons.  Unfortunately, the CSS for these font icons
+does not appear to be publically available from <a href="http://github.com" target="_blank">GitHub</a>.  Luckily, I came across <a href="https://github.com/rummik/octicon" target="_blank">someone</a>, which is a port of the
+{github_octicon} font icons to a CSS file that can be included in your web application.  Armed with the CSS files from this port, I was able to make use of the CSS classes listed in the
+{github_octicon} style guide in my widget.  In order to not make a network call out to the <a href="http://github.com" target="_blank">GitHub</a> account that hosts the port, I downloaded these files and included them in my web resources.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_final_tweaks">Final tweaks</h3>
+<div class="paragraph">
+<p>After making the changes outlined so far in this post, I thought that I had a pretty solid solution.  However, as soon as I went to look at my site with different resolutions, I noticed that
+the widget was not always being displayed correctly.  I needed to find a way to make sure that the widget always stuck to the left-hand side of the page and did not encroach on the content
+displayed to the right of the widget.  After playing around with the CSS, I came up with the following solution:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint css language-css"><code>#activity {
+  padding-top: 110px;
+  padding-left: 20px;
+  width: 275px;
+}
+
+#wrap &gt; #activity &gt; .panel &gt; ul {
+  margin-left: 0px;
+}
+
+#wrap &gt; #activity &gt; .panel &gt; .panel-heading &gt; a {
+    color: #ffffff;
+}
+
+#wrap &gt; .container {
+  padding-top: 60px;
+  padding-left: 30px;
+  display: inline-block;		<i class="conum" data-value="1"></i><b>(1)</b>
+  width: 70%;			<i class="conum" data-value="2"></i><b>(2)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Displays the DIV inline next to the div that contains the <a href="http://github.com" target="_blank">GitHub</a> widget</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Ensures that some space is left for the widget</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you remember from the beginning of the post, the <a href="http://github.com" target="_blank">GitHub</a> widget applies the <code>pull-left</code> class, which ensures that it is left-aligned on the page.  The trick here is to make sure that
+the DIV that contains the main content (the blog posts themselves) is aligned side-by-side with the widget.  From the example above, you can see that it now uses the <code>inline-block</code> display
+attribute to achieve this.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_summary">Summary</h3>
+<div class="paragraph">
+<p>I do not claim to be an user interface developer, nor do I play one on TV.  This little side project certainly helped me to get a little bit more familiar with <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>, <a href="http://jquery.com" target="_blank">jQuery</a>,
+the <a href="https://developer.github.com/v3/" target="_blank">GitHub API</a>, CSS and icon fonts.  I&#8217;m sure that there are improvements that can be made to both the approach and the code.  Hopefully, I will be able to come back to this widget in the
+future as my skills in the area of front-end development grow.</p>
+</div>
+</div></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog/2014/05/06/github_activity_menu.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2014/05/06/github_activity_menu.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2014/05/06/github_activity_menu.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '/2014/05/06/github_activity_menu.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    <hr>
+
+            </div>
+            <div id="push"></div>
+        </div>
+
+        <div id="footer">
+              <div class="container">
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+              </div>
+        </div>
+
+        <!-- Le javascript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="https://code.jquery.com/jquery.js" type="text/javascript"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js" type="text/javascript"></script>
+        <script src="/blog/js/run_prettify.js" type="text/javascript"></script>
+        <script src="/blog/js/github_activity.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'jdpearlin'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <script type="text/javascript">
+              window.___gcfg = {lang: 'en'};
+
+              (function() {
+                var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+                po.src = 'https://apis.google.com/js/plusone.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+              })();
+        </script>
+        <script type="text/javascript">
+            (function(d, s, id) {
+                  var js, fjs = d.getElementsByTagName(s)[0];
+                  if (d.getElementById(id)) return;
+                  js = d.createElement(s); js.id = id;
+                  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+                  fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+        </script>
+        <script src="//platform.linkedin.com/in.js" type="text/javascript"></script>
+        <script type="text/javascript">
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-47885115-1', 'jdpgrailsdev.github.io');
+          ga('send', 'pageview');
+        </script>
+    </body>
+</html>
