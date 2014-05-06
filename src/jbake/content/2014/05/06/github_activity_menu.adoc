@@ -1,0 +1,292 @@
+= Add a custom GitHub activity stream to your blog
+Jonathan Pearlin
+2014-05-06
+:jbake-type: post
+:jbake-tags: github,jquery,bootstrap,blog
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: github_activity_menu
+:icons: font
+:bootstrap: http://getbootstrap.com[Bootstrap, window="_blank"]
+:github: http://github.com[GitHub, window="_blank"]
+:github_api: https://developer.github.com/v3/[GitHub API, window="_blank"]
+:github_events: https://developer.github.com/v3/activity/events/types/[GitHub Event Types, window="_blank"]
+:github_octicons: https://github.com/styleguide/css/7.0[Github Octicons, window="_blank"]
+:octicon: https://github.com/rummik/octicon[Octicon, window="_blank"]
+:jquery: http://jquery.com[jQuery, window="_blank"]
+
+In an effort to improve my (limited) front-end foo, I decided that I wanted to add a {github} activity stream to this blog.  I figured that it would
+not be difficult to combine {jquery}, {bootstrap} and the {github_api} to add a widget that would look like a simplified version that you can see
+on your own {github} page under the https://github.com/jdpgrailsdev?tab=activity["Public Activity", window="_blank"] tab on your account.  What follows
+is a recounting of how I added the widget that you now see to the left of this article.
+
+=== Ingredients
+
+Let's start by first listing the specific pieces that I used to create the widget:
+
+* http://jquery.com[jQuery 1.11.0, window="_blank"]
+* http://getbootstrap.com/components/#panels-list-group[Bootstrap 3.1.1 Panels, window="_blank"]
+* http://fortawesome.github.io/Font-Awesome/[Font Awesome 4.0.3, window="_blank"]
+* https://developer.github.com/v3/activity/events[GitHub Events API, window="_blank"]
+* https://github.com/styleguide/css/7.0[GitHub Octicon, window="_blank"]
+
+My thought process was to use {jquery} to perform an AJAX call to the https://developer.github.com/v3/activity/events[GitHub Events API, window="_blank"] to get the activity list for my
+account.  Upon retrieval, I would append line items to the http://getbootstrap.com/components/#panels-list-group[Bootstrap 3.1.1 list group panel] that I had placed on the left-hand side
+of every page on my site.  Finally, I wanted to make use of the https://github.com/styleguide/css/7.0[GitHub Octicon, window="_blank"] icon fonts to make have the same icon indicators
+that appear on the activity page on my {github} account.  Once I had this plan sketched out, the next step was to see about getting the pieces implemented.
+
+=== Pretending to be a front-end developer
+
+The first thing that I did was add the example http://getbootstrap.com/components/#panels-list-group[Bootstrap list group panel] to my `menu` template just to see how it would fit:
+
+[source,html]
+----
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Panel heading</div>
+  <div class="panel-body">
+    <p>...</p>
+  </div>
+
+  <!-- List group -->
+  <ul class="list-group">
+    <li class="list-group-item">Cras justo odio</li>
+    <li class="list-group-item">Dapibus ac facilisis in</li>
+    <li class="list-group-item">Morbi leo risus</li>
+    <li class="list-group-item">Porta ac consectetur ac</li>
+    <li class="list-group-item">Vestibulum at eros</li>
+  </ul>
+</div>
+
+----
+
+Right away, I noticed a bunch of formatting issues, mostly related to positioning the panel relative to the menu at the top of the page and the content in the middle of the page.  I quickly
+solved the positioning issue by surrounding the panel with a new `<div>` element and making use of the {bootstrap} `pull-left` class:
+
+[source,html]
+----
+<div id="activity" class="pull-left">
+    <div class="panel panel-default">
+      <!-- Default panel contents -->
+      <div class="panel-heading">Panel heading</div>
+      <div class="panel-body">
+        <p>...</p>
+      </div>
+
+      <!-- List group -->
+      <ul class="list-group">
+        <li class="list-group-item">Cras justo odio</li>
+        <li class="list-group-item">Dapibus ac facilisis in</li>
+        <li class="list-group-item">Morbi leo risus</li>
+        <li class="list-group-item">Porta ac consectetur ac</li>
+        <li class="list-group-item">Vestibulum at eros</li>
+      </ul>
+    </div>
+</div>
+----
+
+The next step was to get the panel to not overlap the menu and to get it to hover a bit off from the left-hand edge of the screen.  To accomplish this, I added a new CSS selector for the
+newly added `activity` ID:
+
+[source,css]
+----
+#activity {
+  padding-top: 110px;
+  padding-left: 20px;
+  width: 275px;
+}
+----
+
+I also decided to use the `panel-primary` {bootstrap}-provided style class to get the widget to be blue, closely matching {github}'s color scheme:
+
+[source,html]
+----
+<div id="activity" class="pull-left">
+    <div class="panel panel-primary">
+        ...
+    </div>
+</div>
+----
+
+It was now time to get rid of the sample content from the example.  My first thought was to start with a spinner to indicate that the panel is attempting to load (as I was going
+to use AJAX to get the data) and an empty, unordered list that would be filled by the retrieved data.  I did some searching on the internets and found that {bootstrap} has built-in
+support for a loading spinner.  With one more line of HTML, I had something that I could work with:
+
+[source,html]
+----
+<div id="activity" class="pull-left">
+    <div class="panel panel-primary">
+          <!-- Default panel contents -->
+          <div class="panel-heading">
+              <a target="_blank" href="http://github.com/jdpgrailsdev?tab=activity"><i class="fa fa-github"></i> My Recent GitHub Activity</a>
+          </div>
+          <div class="panel-body">
+              <i class='icon-spinner icon-spin icon-large'></i> Loading...
+          </div>
+          <!-- List group -->
+          <ul class="list-group">
+          </ul>
+    </div>
+</div>
+----
+
+At this point, I had my target all set up and ready to receive real data from {github}.
+
+=== Time for some JavaScript
+
+Now that I had a professional (in my opinion) looking widget, I decided to get to work on writing the JavaScript to get the content from {github}.  {jquery} has a http://api.jquery.com/ready/[ready, window="_blank"]
+call back method that is fired when the HTML document is loaded.  By combining this with {jquery}'s https://api.jquery.com/jQuery.get/[get, window="_blank"] method, I could fire off the
+request to the {github_api} once the DOM has been loaded, ensuring the HTML that I want to replace will be present:
+
+[source,javascript]
+----
+// Load the GitHub activity widget on the document ready event.
+$(document).ready(function() {
+    $.get("https://api.github.com/users/jdpgrailsdev/events", function(data) {
+        // Remove the "Loading..." place holder.
+        $('#wrap > #activity > .panel > .panel-body').remove();
+
+        // Find the activity list from the DOM.
+        var activityList = $('#wrap > #activity > .panel > ul');
+
+        // Counter used to determine when we have found the desired number of events for display.
+        var count = 0;
+
+        // TODO Handle data returned by GitHub here!
+
+        // If no events were found, display the "No recent activity" message.
+        if(count == 0) {
+            activityList.append("<li class=\"list-group-item\"><div><span class=\"octicon octicon-x\"></span>" +
+                "<a href=\"https://github.com/jdpgrailsdev?tab=activity\" target=\"_blank\"> No recent activity</a></li>");
+        }
+
+        // Add a link to the end of the list to see all of the activity on GitHub.com.
+        activityList.append("<li class=\"list-group-item\"><div><span class=\"octicon octicon-rss\"></span>" +
+            "<a href=\"https://github.com/jdpgrailsdev?tab=activity\" target=\"_blank\"> See all activity @ GitHub</a></li>");
+    }).fail(function() {
+        $('#wrap > #activity > .panel > .panel-body').remove();
+        $('#wrap > #activity > .panel > ul').append("<li class=\"list-group-item\"><span class=\"octicon octicon-alert\"></span>GitHub activity could not be retrieved.</li>");
+    });
+});
+----
+
+The code example above makes an AJAX request to {github} for my account's activity.  If the request is successful, the placeholder text is removed from the view and each event is processed
+for display.  If a failure occurs, the `fail` function is invoked, which prints out a nice error message indicating the failure.  The next step was to actually implement the event handling code.
+I only wanted to handle a subset of {github_events} exposed by the {github_api}, so I decided to explicitly list out the event types that I was looking for.  Below is the code that handles the data returned
+by the {github_api}:
+
+[source,javascript]
+----
+// Loop over each retrieved GitHub event and process.
+$.each(data, function(i, githubEvent) {
+    // The icon font to be displayed with the event.
+    var octicon = "";
+    // The hyper link to be applied to the displayed event.
+    var link = "";
+    // The text to be displayed with the event.
+    var text = "";
+
+    // Only show 10 events.  Not all types of GitHub events are implemented here.
+    // for the full list, see https://developer.github.com/v3/activity/events/types/
+    if(count < 10) {
+        if(githubEvent.type == 'CommitCommentEvent') {
+            octicon = "octicon-comment";
+            link = githubEvent.payload.comment.html_url;
+            text = "Commented on " + githubEvent.repo.name + "/commit/" + githubEvent.payload.comment.commit_id;
+        } else if(githubEvent.type == 'CreateEvent') {
+            octicon = "octicon-repo-create";
+            link = "http://github.com/" + githubEvent.repo.name;
+            text = "Created repository " + githubEvent.repo.name;
+        } else if(githubEvent.type == 'ForkEvent') {
+            octicon = "octicon-repo-forked";
+            link = githubEvent.payload.forkee.html_url;
+            text = "Forked repository " + githubEvent.repo.name;
+        } else if(githubEvent.type == 'IssuesEvent') {
+            octicon = "octicon-issue-" + githubEvent.payload.action;
+            link = githubEvent.payload.issue.html_url;
+            text = githubEvent.payload.action.capitalize() + " issue " + githubEvent.repo.name
+                + "#" + githubEvent.payload.issue.number;
+        } else if(githubEvent.type == 'IssueCommentEvent') {
+            octicon = "octicon-comment-discussion";
+            link = githubEvent.payload.issue.html_url;
+            text = "Commented on " + (githubEvent.payload.issue.pull_request.url != null ? "pull request" : "issue") +
+                " " + githubEvent.repo.name + "#" + githubEvent.payload.issue.number;
+        } else if(githubEvent.type == 'PullRequestEvent') {
+            octicon = 'octicon-git-pull-request';
+            link = githubEvent.payload.pull_request.html_url;
+            text = githubEvent.payload.action.capitalize() + " pull request " + githubEvent.repo.name
+                + "#" + githubEvent.payload.number;
+        } else if(githubEvent.type == 'PullRequestReviewCommentEvent') {
+            octicon = "octicon-comment";
+            link = githubEvent.payload.comment.html_url;
+            text = "Commented on pull request " + githubEvent.repo.name + "#"
+                + extractPullRequestNumber(githubEvent.payload.comment.pull_request_url);
+        } else if(githubEvent.type == 'PushEvent' && !(githubEvent.repo.name == "jdpgrailsdev/blog")) {
+            octicon = "octicon-git-commit";
+            link = "http://github.com/" + githubEvent.repo.name + "/commit/" + githubEvent.payload.head;
+            text = "Pushed to " + normalizeBranch(githubEvent.payload.ref) + " at " + githubEvent.repo.name;
+        }
+
+        // If the event is one of the supported types, add a new line item to the HTML panel.
+        if(text) {
+            var eventDateHtml = createEventDateHtml(githubEvent.created_at);
+            activityList.append("<li id=\"" + githubEvent.id + "\" class=\"list-group-item\"><div><span class=\"octicon " +
+                octicon + "\"></span><a href=\"" + link + "\" target=\"_blank\"> " + text + "</a></div>" + eventDateHtml + "</li>");
+            count++;
+        }
+    }
+});
+----
+
+The code above sets the icon, link and text for each event found in the response, up to the number of events that I want displayed.  Once the data has been computed for a given event,
+it is injected into the HTML as a new list item via the `append` function on the container list.
+
+=== Octicon
+
+In order to make the widget look and feel just like the activity stream on {github}, I decided that I wanted to use the {github_octicon} font icons.  Unfortunately, the CSS for these font icons
+does not appear to be publically available from {github}.  Luckily, I came across https://github.com/rummik/octicon[someone, window="_blank"], which is a port of the
+{github_octicon} font icons to a CSS file that can be included in your web application.  Armed with the CSS files from this port, I was able to make use of the CSS classes listed in the
+{github_octicon} style guide in my widget.  In order to not make a network call out to the {github} account that hosts the port, I downloaded these files and included them in my web resources.
+
+=== Final tweaks
+
+After making the changes outlined so far in this post, I thought that I had a pretty solid solution.  However, as soon as I went to look at my site with different resolutions, I noticed that
+the widget was not always being displayed correctly.  I needed to find a way to make sure that the widget always stuck to the left-hand side of the page and did not encroach on the content
+displayed to the right of the widget.  After playing around with the CSS, I came up with the following solution:
+
+[source,css]
+----
+#activity {
+  padding-top: 110px;
+  padding-left: 20px;
+  width: 275px;
+}
+
+#wrap > #activity > .panel > ul {
+  margin-left: 0px;
+}
+
+#wrap > #activity > .panel > .panel-heading > a {
+    color: #ffffff;
+}
+
+#wrap > .container {
+  padding-top: 60px;
+  padding-left: 30px;
+  display: inline-block;		<1>
+  width: 70%;			<2>
+}
+----
+<1> Displays the DIV inline next to the div that contains the {github} widget
+<2> Ensures that some space is left for the widget
+
+If you remember from the beginning of the post, the {github} widget applies the `pull-left` class, which ensures that it is left-aligned on the page.  The trick here is to make sure that
+the DIV that contains the main content (the blog posts themselves) is aligned side-by-side with the widget.  From the example above, you can see that it now uses the `inline-block` display
+attribute to achieve this.
+
+=== Summary
+
+I do not claim to be an user interface developer, nor do I play one on TV.  This little side project certainly helped me to get a little bit more familiar with {bootstrap}, {jquery},
+the {github_api}, CSS and icon fonts.  I'm sure that there are improvements that can be made to both the approach and the code.  Hopefully, I will be able to come back to this widget in the
+future as my skills in the area of front-end development grow.
