@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
-        <title>The Flowers Are Still Standing</title>
+        <title>The Flowers Are Still Standing :: Automatically Update Dependencies in Gradle Project</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -85,15 +85,81 @@
 			</div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: cloud9ide.com</h1>
+        <h1>Automatically Update Dependencies in Gradle Project</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>August 2011</h4>
-            <ul>
+    <p><em>13 May 2014</em></p>
 
-        <li>14 - <a href="/blog//2011/08/14/war_of_the_worlds.html">War of the Worlds</a></li>
-    </ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog//2014/05/13/gradle_update_deps.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2014/05/13/gradle_update_deps.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2014/05/13/gradle_update_deps.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>One feature that we use a lot that appears to be missing from <a href="http://gradle.org" target="_blank">Gradle</a> is the ability to update all dependencies of a specific group ID to their latest release version.  In <a href="http://maven.apache.org/" target="_blank">Maven</a>, this can
+be done through the <code>use-latest-versions</code> goal of the <a href="http://mojo.codehaus.org/versions-maven-plugin/" target="_blank">Maven Versions Plugin</a>.  There is what appears to be a <a href="https://github.com/ben-manes/gradle-versions-plugin" target="_blank">port</a> of the
+<a href="http://mojo.codehaus.org/versions-maven-plugin/" target="_blank">Maven Versions Plugin</a> to a <a href="http://gradle.org" target="_blank">Gradle</a> plugin, but it only support generating a report of what is out of date and does not actually support updating the project itself.  That being said, you actually
+don&#8217;t need to create a wrapper over the <a href="http://mojo.codehaus.org/versions-maven-plugin/" target="_blank">Maven Versions Plugin</a>:  you can actually achieve the same functionality with a few lines of <a href="http://groovy.codehaus.org" target="_blank">Groovy</a> code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>void updateDependencies(String groupId) {
+    def dependencies = project.configurations.collectMany { it.allDependencies }.findAll { it.group == groupId}
+    dependencies?.each { Dependency dep -&gt;
+        def resolvedConfiguration = project.configurations
+                    .detachedConfiguration(project.dependencies.create("${dep.group}:${dep.name}:latest.release")).getResolvedConfiguration()
+        def latestVersion = resolvedConfiguration.getFirstLevelModuleDependencies().find { it.getModuleName() == dep.name }?.getModuleVersion()
+        if(latestVersion &amp;&amp; latestVersion != dep.version) {
+            project.ant.replaceregexp(file: project.file('build.gradle'), match: "${dep.group}:${dep.name}:${dep.version}",
+                                        replace: "${dep.group}:${dep.name}:${latestVersion}")
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the example above, a group ID value is used to filter the project&#8217;s dependencies down to the list that are candidates for updates.  From that list, a new "detached configuration" is created for each, with the version set to use
+the <code>latest.release</code> placeholder.  The dependency is resolved using the <code>getResolvedConfiguration()</code> method, which returns a configuration that holds the dependency with its latest release version.  If a match is found and the
+new version number is not the same as the original candidate dependency&#8217;s version number, then the code makes use of the <code>replaceregexp</code> method on the project&#8217;s Ant object to update the dependency in the <code>build.gradle</code> file itself.
+This method could be modified to be a lot more modular.  Such changes could including taking in the entire GAV (group ID, artifact ID, target version number, etc) or taking in an optional parameter for the supported latest version
+constants with a meaningful default:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>void updateDependencies(String groupId, String targetVersion='latest.release') {
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This would allow for the use of other constants that are supported by <a href="http://gradle.org" target="_blank">Gradle</a>, such as <code>latest.integration</code> (it could also be extracted to an enumeration to restrict the values that could be provided).  Finally, one other missing piece
+that I hope to implement soon is the ability to opt in or out of major version updates (this is something that the <a href="http://mojo.codehaus.org/versions-maven-plugin/" target="_blank">Maven Versions Plugin</a> supports).  This will require using something like
+<a href="https://github.com/akutz/version-maven-plugin/blob/master/src/main/java/com/lostcreations/mojos/version/Version.java" target="_blank">Version.java</a> to parse the version number for comparison.  All of this code can be put into a <a href="http://gradle.org" target="_blank">Gradle</a> task
+and even into a separate plugin to share between projects!</p>
+</div>
+</div>
+</div></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog/2014/05/13/gradle_update_deps.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2014/05/13/gradle_update_deps.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2014/05/13/gradle_update_deps.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '/2014/05/13/gradle_update_deps.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    <hr>
 
             </div>
             <div id="push"></div>

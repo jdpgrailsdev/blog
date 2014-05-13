@@ -6,13 +6,67 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 6 May 2014 07:46:47 -0400</pubDate>
-        <lastBuildDate>Tue, 6 May 2014 07:46:47 -0400</lastBuildDate>
+        <pubDate>Tue, 13 May 2014 07:56:46 -0400</pubDate>
+        <lastBuildDate>Tue, 13 May 2014 07:56:46 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Automatically Update Dependencies in Gradle Project</title>
+            <link>http://jdpgrailsdev.github.io/blog//2014/05/13/gradle_update_deps.html</link>
+            <pubDate>Tue, 13 May 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">/2014/05/13/gradle_update_deps.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;One feature that we use a lot that appears to be missing from &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; is the ability to update all dependencies of a specific group ID to their latest release version.  In &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt;, this can
+be done through the &lt;code&gt;use-latest-versions&lt;/code&gt; goal of the &lt;a href=&quot;http://mojo.codehaus.org/versions-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Maven Versions Plugin&lt;/a&gt;.  There is what appears to be a &lt;a href=&quot;https://github.com/ben-manes/gradle-versions-plugin&quot; target=&quot;_blank&quot;&gt;port&lt;/a&gt; of the
+&lt;a href=&quot;http://mojo.codehaus.org/versions-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Maven Versions Plugin&lt;/a&gt; to a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin, but it only support generating a report of what is out of date and does not actually support updating the project itself.  That being said, you actually
+don&amp;#8217;t need to create a wrapper over the &lt;a href=&quot;http://mojo.codehaus.org/versions-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Maven Versions Plugin&lt;/a&gt;:  you can actually achieve the same functionality with a few lines of &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; code:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;void updateDependencies(String groupId) {
+    def dependencies = project.configurations.collectMany { it.allDependencies }.findAll { it.group == groupId}
+    dependencies?.each { Dependency dep -&amp;gt;
+        def resolvedConfiguration = project.configurations
+                    .detachedConfiguration(project.dependencies.create(&quot;${dep.group}:${dep.name}:latest.release&quot;)).getResolvedConfiguration()
+        def latestVersion = resolvedConfiguration.getFirstLevelModuleDependencies().find { it.getModuleName() == dep.name }?.getModuleVersion()
+        if(latestVersion &amp;amp;&amp;amp; latestVersion != dep.version) {
+            project.ant.replaceregexp(file: project.file(&apos;build.gradle&apos;), match: &quot;${dep.group}:${dep.name}:${dep.version}&quot;,
+                                        replace: &quot;${dep.group}:${dep.name}:${latestVersion}&quot;)
+        }
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In the example above, a group ID value is used to filter the project&amp;#8217;s dependencies down to the list that are candidates for updates.  From that list, a new &quot;detached configuration&quot; is created for each, with the version set to use
+the &lt;code&gt;latest.release&lt;/code&gt; placeholder.  The dependency is resolved using the &lt;code&gt;getResolvedConfiguration()&lt;/code&gt; method, which returns a configuration that holds the dependency with its latest release version.  If a match is found and the
+new version number is not the same as the original candidate dependency&amp;#8217;s version number, then the code makes use of the &lt;code&gt;replaceregexp&lt;/code&gt; method on the project&amp;#8217;s Ant object to update the dependency in the &lt;code&gt;build.gradle&lt;/code&gt; file itself.
+This method could be modified to be a lot more modular.  Such changes could including taking in the entire GAV (group ID, artifact ID, target version number, etc) or taking in an optional parameter for the supported latest version
+constants with a meaningful default:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;void updateDependencies(String groupId, String targetVersion=&apos;latest.release&apos;) {
+    ...
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;This would allow for the use of other constants that are supported by &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;, such as &lt;code&gt;latest.integration&lt;/code&gt; (it could also be extracted to an enumeration to restrict the values that could be provided).  Finally, one other missing piece
+that I hope to implement soon is the ability to opt in or out of major version updates (this is something that the &lt;a href=&quot;http://mojo.codehaus.org/versions-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Maven Versions Plugin&lt;/a&gt; supports).  This will require using something like
+&lt;a href=&quot;https://github.com/akutz/version-maven-plugin/blob/master/src/main/java/com/lostcreations/mojos/version/Version.java&quot; target=&quot;_blank&quot;&gt;Version.java&lt;/a&gt; to parse the version number for comparison.  All of this code can be put into a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; task
+and even into a separate plugin to share between projects!&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Add a custom GitHub activity stream to your blog</title>
             <link>http://jdpgrailsdev.github.io/blog//2014/05/06/github_activity_menu.html</link>
@@ -1075,143 +1129,6 @@ plugin in a sample application and it works, so I figured something must be up w
 that if you have a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin project that uses any of the dependencies that are also used by the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; API, you are effectively stuck at the versions of those dependencies that match
 what &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; currently depends on.  I have brought this issue up on the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; forum and I noticed that a few other people have asked for a feature to allow for excluding dependencies from
 the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; API.  I will keep you posted on this issue and if I get an answer and/or resolution.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Using the New Relic agent with Spring-Boot and Gradle</title>
-            <link>http://jdpgrailsdev.github.io/blog//2014/04/08/spring_boot_gradle_newrelic.html</link>
-            <pubDate>Tue, 8 Apr 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">/2014/04/08/spring_boot_gradle_newrelic.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;I wanted to play around with &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; the other day and found it pretty easy to get up and running using their &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin.  After only a few minutes, I had a sample Spring-based
-web application running as a stand-alone process.  Next, I thought I would add in &lt;a href=&quot;http://newrelic.com&quot; target=&quot;_blank&quot;&gt;New Relic&lt;/a&gt; support so I could see some performance stats.  Normally, you would install the &lt;a href=&quot;http://newrelic.com&quot; target=&quot;_blank&quot;&gt;New Relic&lt;/a&gt; agent
-in your application container or add a &lt;code&gt;javaagent&lt;/code&gt; JVM option pointing at the &lt;a href=&quot;http://newrelic.com&quot; target=&quot;_blank&quot;&gt;New Relic&lt;/a&gt; agent to enable metrics gathering.  In my first attempt, I added the &lt;code&gt;javaagent&lt;/code&gt; JVM option pointing
-at the &lt;a href=&quot;http://newrelic.com&quot; target=&quot;_blank&quot;&gt;New Relic&lt;/a&gt; agent to the &lt;code&gt;DEFAULT_JVM_OPTS&lt;/code&gt; variable in my &lt;code&gt;gradlew&lt;/code&gt; script and restarted the application.  It failed with a weird error about not being able to find some of the
-classes provided by the &lt;a href=&quot;http://newrelic.com&quot; target=&quot;_blank&quot;&gt;New Relic&lt;/a&gt; agent after claiming that it started the agent and found the YAML configuration file.  It seemed like there was obviously some issue between &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; and
-the Java agent.  After a few quick minutes searching on the internets, I found that the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin supports passing an agent to the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; process.  I made the
-following change to my &lt;code&gt;build.gradle&lt;/code&gt; file:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;build.gradle&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;apply plugin: &apos;spring-boot&apos;
-
-...
-
-springBoot {
-    mainClass = &apos;com.sample.Application&apos;
-    agent = file(&apos;/opt/newrelic/newrelic.jar&apos;)			&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;colist arabic&quot;&gt;
-&lt;table&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;This is the path to where ever you downloaded and the &lt;a href=&quot;http://newrelic.com&quot; target=&quot;_blank&quot;&gt;New Relic&lt;/a&gt; agent JAR to that should include your customized YAML configuration file.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;I restarted my application using the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; task (&lt;code&gt;run&lt;/code&gt;) and metrics started flowing!  This is great, but it depends on a hard-coded path to the installed &lt;a href=&quot;http://newrelic.com&quot; target=&quot;_blank&quot;&gt;New Relic&lt;/a&gt; agent (yuck).
-Because you can do anything with &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; (slight exaggeration), I figured that with some &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;-foo, I could include the &lt;a href=&quot;http://newrelic.com&quot; target=&quot;_blank&quot;&gt;New Relic&lt;/a&gt; agent as a dependency, download it and point to the
-downloaded file for the &lt;code&gt;javaagent&lt;/code&gt; JVM option.  After a little playing around, I came up with the following:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;build.gradle&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;apply plugin: &apos;groovy&apos;
-apply plugin: &apos;spring-boot&apos;
-
-group = &apos;com.test&apos;
-version = &apos;1.0.0-SNAPSHOT&apos;
-
-description = &quot;&quot;&quot;Test application&quot;&quot;&quot;
-
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven { url &quot;http://repo.spring.io/snapshot&quot; }
-        maven { url &quot;http://repo.spring.io/milestone&quot; }
-    }
-    dependencies {
-        classpath(&quot;org.springframework.boot:spring-boot-gradle-plugin:1.0.1.BUILD-SNAPSHOT&quot;)
-    }
-}
-
-configurations {
-    newrelic	// Custom configuration to allow for the copying of the New Relic agent at run time.
-}
-
-ext {
-    groovyVersion=&apos;2.2.1&apos;
-    newrelicVersion=&apos;3.5.1&apos;
-    springBootVersion=&apos;1.0.1.RELEASE&apos;
-    springVersion=&apos;4.0.3.RELEASE&apos;
-}
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-
-dependencies {
-    newrelic &quot;com.newrelic.agent.java:newrelic-agent:${newrelicVersion}&quot;
-
-    compile(&quot;org.codehaus.groovy:groovy-all:${groovyVersion}&quot;)
-    compile(&quot;org.springframework:spring-beans:${springVersion}&quot;)
-    compile(&quot;org.springframework:spring-context:${springVersion}&quot;)
-    compile(&quot;org.springframework.boot:spring-boot-starter-web:${springBootVersion}&quot;)
-
-    testCompile(&quot;org.springframework.boot:spring-boot-starter-test:${springBootVersion}&quot;)
-}
-
-task copyAgent(type: Copy) {
-    from {
-        configurations.newrelic				&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
-    }
-    into &quot;$buildDir/lib&quot;
-    rename (&quot;newrelic-agent-${newrelicVersion}.jar&quot;, &apos;newrelic.jar&apos;)
-}
-
-springBoot {
-    mainClass = &apos;com.test.sample.Application&apos;
-    agent = file(&quot;$buildDir/lib/newrelic.jar&quot;)		&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;(2)&lt;/b&gt;
-}
-
-project.tasks.run.dependsOn([copyAgent])			&lt;i class=&quot;conum&quot; data-value=&quot;3&quot;&gt;&lt;/i&gt;&lt;b&gt;(3)&lt;/b&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;colist arabic&quot;&gt;
-&lt;table&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;Per the &lt;code&gt;dependencies&lt;/code&gt; block, the only file in the &lt;code&gt;newrelic&lt;/code&gt; configuration is the agent JAR itself.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;Tell &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; to use the the downloaded, copied &lt;a href=&quot;http://newrelic.com&quot; target=&quot;_blank&quot;&gt;New Relic&lt;/a&gt; agent JAR instead of the previously hard-coded value.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;3&quot;&gt;&lt;/i&gt;&lt;b&gt;3&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;Make the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; &lt;code&gt;run&lt;/code&gt; task depend on the copy task to ensure that the agent is copied before we attempt to launch the application.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Finally, the last thing that I did was set up a symbolic link from my project&amp;#8217;s directory to where my &lt;a href=&quot;http://newrelic.com&quot; target=&quot;_blank&quot;&gt;New Relic&lt;/a&gt; YAML file resides.  The &lt;a href=&quot;http://newrelic.com&quot; target=&quot;_blank&quot;&gt;New Relic&lt;/a&gt; agent will
-automatically look for the &lt;code&gt;newrelic.yml&lt;/code&gt; file in the same location as the agent JAR or in the current working directory.  With this last piece in place, all
-hard-coded paths are now removed from the equation.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
