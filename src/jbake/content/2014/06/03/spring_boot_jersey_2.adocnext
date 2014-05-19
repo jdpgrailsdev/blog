@@ -1,0 +1,43 @@
+= Spring Boot, Jersey and Lazy Initialization
+Jonathan Pearlin
+2014-06-03
+:jbake-type: post
+:jbake-tags: spring,jersey
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: gradle_maven_jdk_profile
+:icons: font
+
+Configuration to use Spring-Jersey integration:
+
+    @Bean
+    public ServletRegistrationBean jerseyServlet() {
+        final ServletRegistrationBean registration = new ServletRegistrationBean(new ServletContainer(), "/api/*");
+        registration.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS, JerseyConfig.class.getName());
+        return registration;
+    }
+
+App starts up, but
+
+2014-05-19 12:08:30.062  INFO 8626 --- [lication.main()] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080/http
+2014-05-19 12:08:30.065  INFO 8626 --- [lication.main()] com.test.Application        		      : Started Application in 13.461 seconds (JVM running for 21.588)
+2014-05-19 12:10:29.363  INFO 8626 --- [lication.main()] o.g.jersey.server.ApplicationHandler     : Initiating Jersey application, version Jersey: 2.7 2014-03-12 18:11:31...
+
+does not print out until first request is made to the application.
+
+The solution:
+
+    @Bean
+    public ServletRegistrationBean jerseyServlet() {
+        final ServletRegistrationBean registration = new ServletRegistrationBean(new ServletContainer(), "/api/*");
+        registration.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS, JerseyConfig.class.getName());
+        registration.setLoadOnStartup(1);
+        return registration;
+    }
+
+Now, Jersey application is initialized prior to application start:
+
+2014-05-19 12:10:29.363  INFO 8626 --- [lication.main()] o.g.jersey.server.ApplicationHandler     : Initiating Jersey application, version Jersey: 2.7 2014-03-12 18:11:31...
+2014-05-19 12:10:30.062  INFO 8626 --- [lication.main()] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080/http
+2014-05-19 12:10:30.065  INFO 8626 --- [lication.main()] com.test.Application        		      : Started Application in 13.461 seconds (JVM running for 21.588)
