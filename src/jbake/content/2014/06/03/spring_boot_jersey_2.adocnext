@@ -9,6 +9,9 @@ Jonathan Pearlin
 :id: gradle_maven_jdk_profile
 :icons: font
 
+https://github.com/dsyer/spring-boot-jersey
+http://geowarin.github.io/spring-boot/jersey/2014/01/31/a-simple-spring-boot-and-jersey-application.html
+
 Configuration to use Spring-Jersey integration:
 
     @Bean

@@ -13,7 +13,7 @@ Jonathan Pearlin
 :icons: font
 
 When working on upgrading a few {grails} plugins to 2.3.x and converting them to be built using the http://grails.org/doc/latest/guide/commandLine.html#4.5%20Ant%20and%20Maven[Grails Maven Plugin, window="_blank"], I ran into a weird issue when
-executing unit tests when the https://github.com/beckje01/grails-code-coverage[Grails Code Coverage Plugin, window="_blank"] is enabled:
+executing unit tests with the https://github.com/beckje01/grails-code-coverage[Grails Code Coverage Plugin, window="_blank"] installed and enabled:
 
 [source]
 ----
@@ -115,7 +115,7 @@ Exception Details:
 
 I should point out that the same exact unit tests (without any modifications) passed, even with instrumentation for the code coverage calculation, prior to upgrading from {grails} 2.0.x to 2.3.x.  Could this be one of those subtle
 {groovy} low-level changes that causes code that once ran fine to all of a sudden be incorrect?  After doing some searching on the internets, I discovered that Java 7 introduced much stricter verification than previous Java versions.
-As I was using Java 7 with {grails} 2.0.x, my guess is that something in the underlying {groovy} code in the updated version of {grails} does not contain a valid stack map for the method(s) in question.  Luckily, the verifier can be
+As I was using Java 7 with {grails} 2.0.x, my guess is that something in the underlying {groovy} code in the updated version of {grails} does not contain a valid stack map (in Java 7's eyes) for the method(s) in question.  Luckily, the verifier can be
 disabled until the issue is resolved by the framework.  The `-Xverify:none` JVM argument can be used to tell the Java 7 verifier not to do its thing.  In order to tell the http://grails.org/doc/latest/guide/commandLine.html#4.5%20Ant%20and%20Maven[Grails Maven Plugin, window="_blank"]
 to pass this JVM argument to the forked {grails} process, I had to make the following tweak to my Maven POM file:
 
