@@ -88,6 +88,164 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog/2014/05/20/grails_maven_coverage.html"><h1>Grails, Maven, Cobertura and Java 7</h1></a>
+                   <p>20 May 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/grails.html">grails</a>
+        
+                <a href="/blog/tags/maven.html">maven</a>
+        
+                <a href="/blog/tags/java.html">java</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/05/20/grails_maven_coverage.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/05/20/grails_maven_coverage.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/05/20/grails_maven_coverage.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>When working on upgrading a few <a href="http://grails.org" target="_blank">Grails</a> plugins to 2.3.x and converting them to be built using the <a href="http://grails.org/doc/latest/guide/commandLine.html#4.5%20Ant%20and%20Maven" target="_blank">Grails Maven Plugin</a>, I ran into a weird issue when
+executing unit tests with the <a href="https://github.com/beckje01/grails-code-coverage" target="_blank">Grails Code Coverage Plugin</a> installed and enabled:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint"><code>Error |
+Compilation error compiling [unit] tests: Expecting a stackmap frame at branch target 97
+Exception Details:
+  Location:
+    com/test/compiler/injection/DeletableASTTransformation.visit([Lorg/codehaus/groovy/ast/ASTNode;Lorg/codehaus/groovy/control/SourceUnit;)V @62: ifeq
+  Reason:
+    Expected stackmap frame at this location.
+  Bytecode:
+    0000000: 033e 11ff ff36 0412 1e11 0023 b800 242b
+    0000010: 0432 c000 343a 0512 1e11 0024 b800 242b
+    0000020: 0332 c000 363a 0612 1e11 0025 b800 242b
+    0000030: 0332 c100 3611 0025 3e11 0000 3604 9900
+    0000040: 2312 1e1d 1504 04b8 003a 11ff ff36 042b
+    0000050: 0432 c100 3411 0025 3e11 0001 3604 9a00
+    0000060: 481d 1100 25a0 001c 1504 1100 01a0 0014
+    0000070: 121e 1d15 0404 b800 3a11 ffff 3604 a700
+    0000080: 1615 049b 0011 121e 1d15 0403 b800 3a11
+    0000090: ffff 3604 121e 1100 26b8 0024 bb00 3c59
+    00000a0: 123e b700 41bf 1504 9b00 1112 1e1d 1504
+    00000b0: 03b8 003a 11ff ff36 0412 1e11 0029 b800
+    00000c0: 24b2 0043 1906 b600 47b6 004d 1100 293e
+    00000d0: 1100 0036 049a 0012 121e 1d15 0404 b800
+    00000e0: 3a11 ffff 3604 b115 049b 0011 121e 1d15
+    00000f0: 0403 b800 3a11 ffff 3604 121e 1100 2bb8
+    0000100: 0024 1905 c100 4f11 002b 3e11 0000 3604
+    0000110: 9900 ea1d 1100 2ba0 0019 1504 1100 00a0
+    0000120: 0011 121e 1d15 0404 b800 3a11 ffff 3604
+    0000130: 121e 1100 2cb8 0024 1905 c000 4f3a 0712
+    0000140: 1e11 002d b800 2419 07b6 0052 1254 b800
+    0000150: 5a11 002d 3e11 0000 3604 9900 331d 1100
+    0000160: 2da0 0019 1504 1100 00a0 0011 121e 1d15
+    0000170: 0404 b800 3a11 ffff 3604 121e 1100 2eb8
+    0000180: 0024 2a19 0719 06b7 005e a700 6515 049b
+    0000190: 0011 121e 1d15 0403 b800 3a11 ffff 3604
+    00001a0: 121e 1100 30b8 0024 bb00 3c59 bb00 6059
+    00001b0: b700 6112 63b6 0067 1905 b600 6ab6 006d
+    00001c0: 126f b600 67b2 0071 b600 6712 73b6 0067
+    00001d0: 1907 121e 1100 31b8 0024 b600 52b6 0077
+    00001e0: b600 6712 79b6 0067 b600 7cb7 0041 bf12
+    00001f0: 1e11 0033 b800 24a7 005d 1504 9b00 1112
+    0000200: 1e1d 1504 03b8 003a 11ff ff36 0412 1e11
+    0000210: 0034 b800 24bb 003c 59bb 0060 59b7 0061
+    0000220: 1263 b600 6719 05b6 006a b600 6d12 6fb6
+    0000230: 0067 b200 71b6 0067 127e b600 6719 0512
+    0000240: 1e11 0035 b800 24b6 0082 b600 6db6 007c
+    0000250: b700 41bf 121e 1100 37b8 0024 b1
+  Stackmap Table:
+    append_frame(@156,Object[#52],Object[#54])
+    same_frame(@193)
+    same_frame_extended(@258)
+    append_frame(@424,Object[#79])
+    chop_frame(@503,1)
+    same_frame(@533)
+    same_frame_extended(@604)
+
+    at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:291)
+    at org.apache.tools.ant.dispatch.DispatchUtils.execute(DispatchUtils.java:106)
+    at _GrailsTest$_run_closure1.doCall(_GrailsTest.groovy:102)
+    at org.codehaus.gant.GantMetaClass.invokeMethod(GantMetaClass.java:133)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16_closure18.doCall(GantBinding.groovy:185)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16_closure18.doCall(GantBinding.groovy)
+    at org.codehaus.gant.GantBinding.withTargetEvent(GantBinding.groovy:90)
+    at org.codehaus.gant.GantBinding.this$4$withTargetEvent(GantBinding.groovy)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16.doCall(GantBinding.groovy:185)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16.doCall(GantBinding.groovy)
+    at org.codehaus.gant.GantMetaClass.invokeMethod(GantMetaClass.java:133)
+    at TestApp$_run_closure1.doCall(TestApp.groovy:32)
+    at org.codehaus.gant.GantMetaClass.invokeMethod(GantMetaClass.java:133)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16_closure18.doCall(GantBinding.groovy:185)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16_closure18.doCall(GantBinding.groovy)
+    at org.codehaus.gant.GantBinding.withTargetEvent(GantBinding.groovy:90)
+    at org.codehaus.gant.GantBinding.this$4$withTargetEvent(GantBinding.groovy)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16.doCall(GantBinding.groovy:185)
+    at org.codehaus.gant.GantBinding$_initializeGantBinding_closure5_closure16.doCall(GantBinding.groovy)
+    at gant.Gant$_dispatch_closure5.doCall(Gant.groovy:381)
+    at gant.Gant$_dispatch_closure7.doCall(Gant.groovy:415)
+    at gant.Gant$_dispatch_closure7.doCall(Gant.groovy)
+    at gant.Gant.withBuildListeners(Gant.groovy:427)
+    at gant.Gant.this$2$withBuildListeners(Gant.groovy)
+    at gant.Gant$this$2$withBuildListeners.callCurrent(Unknown Source)
+    at gant.Gant.dispatch(Gant.groovy:415)
+    at gant.Gant.this$2$dispatch(Gant.groovy)
+    at gant.Gant.invokeMethod(Gant.groovy)
+    at gant.Gant.executeTargets(Gant.groovy:591)
+    at gant.Gant.executeTargets(Gant.groovy:590)
+    at org.grails.launcher.GrailsLauncher.launch(GrailsLauncher.java:144)
+    at org.grails.maven.plugin.tools.ForkedGrailsRuntime.main(ForkedGrailsRuntime.java:168)
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 59.895 s
+[INFO] Finished at: 2014-05-05T07:49:39-05:00
+[INFO] Final Memory: 17M/75M</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>I should point out that the same exact unit tests (without any modifications) passed, even with instrumentation for the code coverage calculation, prior to upgrading from <a href="http://grails.org" target="_blank">Grails</a> 2.0.x to 2.3.x.  Could this be one of those subtle
+<a href="http://groovy.codehaus.org" target="_blank">Groovy</a> low-level changes that causes code that once ran fine to all of a sudden be incorrect?  After doing some searching on the internets, I discovered that Java 7 introduced much stricter verification than previous Java versions.
+As I was using Java 7 with <a href="http://grails.org" target="_blank">Grails</a> 2.0.x, my guess is that something in the underlying <a href="http://groovy.codehaus.org" target="_blank">Groovy</a> code in the updated version of <a href="http://grails.org" target="_blank">Grails</a> does not contain a valid stack map (in Java 7&#8217;s eyes) for the method(s) in question.  Luckily, the verifier can be
+disabled until the issue is resolved by the framework.  The <code>-Xverify:none</code> JVM argument can be used to tell the Java 7 verifier not to do its thing.  In order to tell the <a href="http://grails.org/doc/latest/guide/commandLine.html#4.5%20Ant%20and%20Maven" target="_blank">Grails Maven Plugin</a>
+to pass this JVM argument to the forked <a href="http://grails.org" target="_blank">Grails</a> process, I had to make the following tweak to my Maven POM file:</p>
+</div>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="prettyprint xml language-xml"><code>    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.grails&lt;/groupId&gt;
+                &lt;artifactId&gt;grails-maven-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${grails.version}&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;fork&gt;true&lt;/fork&gt;
+                    &lt;forkedVmArgs&gt;
+                        &lt;!-- Disable verifier to avoid issues with Java 7 verifier and code
+                            instrumentation --&gt;
+                        &lt;forkedVmArg&gt;-Xverify:none&lt;/forkedVmArg&gt;
+                    &lt;/forkedVmArgs&gt;
+                    &lt;nonInteractive&gt;true&lt;/nonInteractive&gt;
+                    &lt;showStacktrace&gt;true&lt;/showStacktrace&gt;
+                    &lt;pluginsDir&gt;${project.build.directory}/plugins&lt;/pluginsDir&gt;
+                &lt;/configuration&gt;
+                &lt;extensions&gt;true&lt;/extensions&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After add the argument and re-running the tests, everything passed as expected.  I am still not sure if the problem lies with <a href="http://grails.org" target="_blank">Grails</a>, <a href="http://groovy.codehaus.org" target="_blank">Groovy</a> or the instrumentation provided by the <a href="https://github.com/beckje01/grails-code-coverage" target="_blank">Grails Code Coverage Plugin</a> or
+some combination of all of those.  I will continue to keep an eye out for updates that appear to affect this issue in the hopes that the verifier can be re-enabled in the future.</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog/2014/05/20/grails_maven_coverage.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2014/05/13/gradle_update_deps.html"><h1>Automatically Update Dependencies in Gradle Project</h1></a>
                    <p>13 May 2014</p>
                 <p><em>Tags: </em>
@@ -835,138 +993,6 @@ ensuring the stability of any code base.</p>
 </div>
 </div></p>
                 <p><a href="/blog/2014/04/29/gradle_cobertura.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/04/22/grails_gradle_logback.html"><h1>The Grails Gradle Plugin and Logback</h1></a>
-                   <p>22 April 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/grails.html">grails</a>
-        
-                <a href="/blog/tags/gradle.html">gradle</a>
-        
-                <a href="/blog/tags/logback.html">logback</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/04/22/grails_gradle_logback.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/04/22/grails_gradle_logback.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/04/22/grails_gradle_logback.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>In a <a href="http://jonathanpearlin.com/blog/2014/03/24/grails_logback.html" target="_blank">previous post</a>, I discussed how to switch a <a href="http://grails.org" target="_blank">Grails</a> application to use <a href="http://logback.qos.ch/" target="_blank">Logback</a> instead of Log4j for logging.  In that post, I
-covered using both the <a href="http://maven.apache.org/" target="_blank">Maven</a> support in Grails to configure the dependencies required to use <a href="http://logback.qos.ch/" target="_blank">Logback</a> with <a href="http://grails.org" target="_blank">Grails</a>, as well as how to use the built in dependency management support via the
-<code>BuildConfig.groovy</code> dependencies DSL.  I did not cover how to make this all work with <a href="http://gradle.org" target="_blank">Gradle</a>.  The same caveats and issues, as mentioned previously, still apply with regards to the <a href="http://logback.qos.ch/" target="_blank">Logback</a> DSL
-defined in <code>Config.groovy</code> and the use of the <code>logback.groovy</code> file in its place, so I will not re-hash that here.  Instead, I will point out a couple of issues with regards to getting the
-dependencies configured correctly in the <code>build.gradle</code> file.  Similar to the other approaches, you still need to provide global excludes for the Log4J related dependencies:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>configurations {
-     all*.exclude group: 'org.grails', module: 'grails-plugin-log4j'		<i class="conum" data-value="1"></i><b>(1)</b>
-     all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'			<i class="conum" data-value="2"></i><b>(2)</b>
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Exclude the <a href="http://grails.org" target="_blank">Grails</a> Log4J plugin, per the instructions provided by the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a>.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Exclude the Log4J SLF4J binding, as <a href="http://logback.qos.ch/" target="_blank">Logback</a> provides its own SLF4J binding.</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Next, include the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a> as a dependency:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>dependencies {
-    compile ('org.grails.plugins:logback:0.3.1') {
-        exclude(module:'slf4j-api')								<i class="conum" data-value="1"></i><b>(1)</b>
-    }
-    compile ('ch.qos.logback:logback-classic:1.1.1') {						<i class="conum" data-value="2"></i><b>(2)</b>
-        exclude(module:'slf4j-api')
-    }
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Exclude the SLF4J transitive dependency so that it does not conflict with the version provided by <a href="http://grails.org" target="_blank">Grails</a></td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>I added an explicit dependency for <code>logback-classic</code> so that I could use a newer version than the one transitively provided by the <a href="http://grails.org/plugin/logback" target="_blank">Grails Logback Plugin</a>.</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>I thought that this would be enough to build my application&#8217;s WAR file using the <code>grails-war</code> task of the <a href="https://github.com/grails/grails-gradle-plugin/" target="_blank">Grails Gradle Plugin</a>.  However, when I went to execute the task, the
-build failed with the following exception:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint"><code>| Error Error generating web.xml file
-org.codehaus.groovy.runtime.typehandling.GroovyCastException: Cannot cast object 'org.slf4j.helpers.NOPLoggerFactory@7f4cfb5' with class 'org.slf4j.helpers.NOPLoggerFactory' to class 'ch.qos.logback.classic.LoggerContext'</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>What is really strange is that this does not happen when using the <code>grails-run-app</code> <a href="http://gradle.org" target="_blank">Gradle</a> task.  Additionally, the following also appears in the output when attempting to build the WAR file:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint"><code>SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
-SLF4J: Defaulting to no-operation (NOP) logger implementation
-SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>A quick search of the internets for both of these issues indicate that you are either A) do not have any SLF4J binding on your classpath, thus causing SLF$J to default to the no-op binding, or B) have an
-SLF4J binding on the classpath in addition to the one provided by <a href="http://logback.qos.ch/" target="_blank">Logback</a>.  Those two statements obviously contradict with each other.  After scratching my head for a while, I realized that the <a href="https://github.com/grails/grails-gradle-plugin/" target="_blank">Grails Gradle Plugin</a>
-has a <code>bootstrap</code> dependency scope, which is used to provide dependencies to the <a href="http://grails.org" target="_blank">Grails</a> commands, which themselves are GAnt scripts written in <a href="http://groovy.codehaus.org" target="_blank">Groovy</a>.  These scripts also need a logger to output
-the status of what is being executed.  I decided to add a duplicate dependency to the <code>build.gradle</code> build file to see if that would fix the problem:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>dependencies {
-    compile ('org.grails.plugins:logback:0.3.1') {
-        exclude(module:'slf4j-api')
-    }
-    compile ('ch.qos.logback:logback-classic:1.1.1') {
-        exclude(module:'slf4j-api')
-    }
-    bootstrap 'ch.qos.logback:logback-classic:1.1.1'
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>After adding the dependency to the separate <code>bootstrap</code> scope, I once again ran the <code>grails-war</code> <a href="http://gradle.org" target="_blank">Gradle</a> task and got a much better outcome:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint"><code>| Done creating WAR build/distributions/test-1.0.0.war
-
-BUILD SUCCESSFUL
-
-Total time: 17.166 secs</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Much better.  It&#8217;s important to remember that the <a href="http://grails.org" target="_blank">Grails</a> build eco-system is itself a Java-based application that requires its own set of dependencies just to execute.  When using the <a href="http://grails.org" target="_blank">Grails</a>
-command line arguments or building via <a href="http://maven.apache.org/" target="_blank">Maven</a>, this classpath is management automatically.  However, when using the <a href="https://github.com/grails/grails-gradle-plugin/" target="_blank">Grails Gradle Plugin</a> plugin, you currently have to manage any additions to this yourself
-via the <code>bootstrap</code> scope (an interesting side note here is that now <a href="http://grails.org" target="_blank">Grails</a> is using <a href="http://logback.qos.ch/" target="_blank">Logback</a> for all logging, not just when executing the application).</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog/2014/04/22/grails_gradle_logback.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
