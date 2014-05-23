@@ -1,0 +1,82 @@
+Using the grails logback plugin does not appear to properly attach appenders to loggers.  The plugin depends on version 1.0.12 of Logback, which is about 3-4 releases behind.
+
+logback.groovy
+
+import static ch.qos.logback.classic.Level.ERROR
+import static ch.qos.logback.classic.Level.INFO
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder
+import ch.qos.logback.core.ConsoleAppender
+import ch.qos.logback.core.rolling.FixedWindowRollingPolicy
+import ch.qos.logback.core.rolling.RollingFileAppender
+import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy
+import ch.qos.logback.core.status.OnConsoleStatusListener
+
+def BASE_DIR = System.getProperty('catalina.base') ?: System.getProperty('user.dir')
+
+statusListener OnConsoleStatusListener
+jmxConfigurator('tripoli:type=LoggerManager')
+
+appender('STDOUT', ConsoleAppender) {
+    encoder(PatternLayoutEncoder) {
+        pattern = '%-50(%date{ISO8601} [%thread]) %-5level %logger{50} - %msg%n%rEx'
+    }
+}
+
+logger('org.codehaus.groovy.grails', ERROR, ['STDOUT'], false)
+logger('org.springframework', ERROR, ['STDOUT'], false)
+logger('org.hibernate', ERROR, ['STDOUT'], false)
+logger('net.sf.ehcache', ERROR, ['STDOUT'], false)
+logger('grails.plugin', ERROR, ['STDOUT'], false)
+logger('org.grails.plugin', ERROR, ['STDOUT'], false)
+logger('grails.app', INFO, ['STDOUT'], false)
+
+root(INFO, ['STDOUT'])
+
+When starting the application with this configuration, the only output reported by Logback is the following:
+
+13:27:25,368 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@61b99295 - Added status listener of type [ch.qos.logback.core.status.OnConsoleStatusListener]
+13:27:25,549 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@61b99295 - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+13:27:25,550 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@61b99295 - Naming appender as [STDOUT]
+
+This is very strange, as Logback is not reporting that any loggers were created or that those loggers have been associated with one or more appenders.  After some digging through
+the logback ch.qos.logback.classic.gaffer.ConfigurationDelegate class, which handles the DSL, I noticed that the most recent version of Logback (1.1.2) has much better output during startup.
+I decided to change my Grails application to explicitly depend on the latest Logback version:
+
+    plugins {
+        compile ':logback:0.3.1'
+    }
+
+    dependencies {
+        compile 'ch.qos.logback:logback-core:1.1.2'
+        compile 'ch.qos.logback:logback-classic:1.1.2'
+    }
+
+Now when I started the Grails application:
+
+13:32:36,412 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Added status listener of type [ch.qos.logback.core.status.OnConsoleStatusListener]
+13:32:36,556 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+13:32:36,557 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Naming appender as [STDOUT]
+13:32:36,981 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [org.codehaus.groovy.grails] to ERROR
+13:32:36,989 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[org.codehaus.groovy.grails]
+13:32:37,070 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [org.springframework] to ERROR
+13:32:37,070 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[org.springframework]
+13:32:37,071 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [org.hibernate] to ERROR
+13:32:37,071 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[org.hibernate]
+13:32:37,071 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [net.sf.ehcache] to ERROR
+13:32:37,071 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[net.sf.ehcache]
+13:32:37,072 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [grails.plugin] to ERROR
+13:32:37,072 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[grails.plugin]
+13:32:37,072 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [org.grails.plugin] to ERROR
+13:32:37,072 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[org.grails.plugin]
+13:32:37,073 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [grails.app] to INFO
+13:32:37,073 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[grails.app]
+13:32:37,074 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [ROOT] to INFO
+13:32:37,074 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[ROOT]
+
+Sweet.  This appeared to be working.  After clicking around my application and not seeing anything log to the console, I became very suspicious.  I decided to print out the appenders associated with one
+of the loggers to verify that the ConfigurationDelegate actually set thing sup properly:
+
+println "Appenders = ${LoggerFactory.getLogger('grails.app').aai.appenderList"
+
+The line above printed out an empty list.  After some head scratching, I determined that the Grails Logback plugin was somehow overwriting/replacing the logback configuration set up by the logback.groovy file.
+I realized that I did not need the Grails logback plugin, as I am not using the DSL from grails-app/conf/Config.groovy. After removing the plugin entirely, everything worked as expected!

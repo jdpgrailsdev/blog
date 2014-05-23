@@ -6,9 +6,6 @@ import ch.qos.logback.core.util.StatusPrinter
 class BootStrap {
 
     def init = { servletContext ->
-        // Print out the logging configuration
-        StatusPrinter.print((LoggerContext) LoggerFactory.getILoggerFactory())
-
         // Remove the Grails stack trace log appender, as it does not use a rolling appender.
         removeStackTraceLogAppender()
     }
