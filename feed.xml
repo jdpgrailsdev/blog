@@ -6,13 +6,84 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 20 May 2014 07:39:14 -0400</pubDate>
-        <lastBuildDate>Tue, 20 May 2014 07:39:14 -0400</lastBuildDate>
+        <pubDate>Tue, 27 May 2014 07:50:51 -0400</pubDate>
+        <lastBuildDate>Tue, 27 May 2014 07:50:51 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Grails, Maven and JDK-based Profile Activation</title>
+            <link>http://jdpgrailsdev.github.io/blog//2014/05/27/grails_maven_jdk_profile.html</link>
+            <pubDate>Tue, 27 May 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">/2014/05/27/grails_maven_jdk_profile.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Recently, I have been spending my time converting &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; applications to use &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; POM files for dependency management.  For the last couple releases, &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; has included the ability to
+rely on a POM file for dependencies, instead of declaring the repositories and dependencies directly in your &lt;code&gt;grails-app/conf/BuildConfig.groovy&lt;/code&gt;.  This works exactly as expected&amp;#8201;&amp;#8212;&amp;#8201;that is &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;
+retrieves the dependency declarations from the POM file and uses them to build/run the application when using the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; CLI.  However, there is a bug in the way &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; dynamically validates and
+uses the POM file.  I came across this issue when attempting to use the JDK version-based profile activation that I discussed in &lt;a href=&quot;http://jonathanpearlin.com/blog/2014/04/03/maven_java8_javadoc.html&quot; target=&quot;_blank&quot;&gt;a previous post&lt;/a&gt;.
+When a JDK-activated profile is present in the POM file used by &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;, the application will report the following error:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;[ERROR] Failed to determine Java version for profile java8 @ &amp;lt;GAV of the POM file containing the profile&amp;gt;
+        at org.apache.maven.model.building.DefaultModelProblemCollector.newModelBuildingException(DefaultModelProblemCollector.java:195)
+        at org.apache.maven.model.building.DefaultModelBuilder.build(DefaultModelBuilder.java:416)
+        at org.apache.maven.model.building.DefaultModelBuilder.build(DefaultModelBuilder.java:368)
+        at org.apache.maven.model.building.DefaultModelBuilder.build(DefaultModelBuilder.java:359)
+        at grails.util.BuildSettings.doResolve(BuildSettings.groovy:513)
+        at grails.util.BuildSettings.doResolve(BuildSettings.groovy)
+        at grails.util.BuildSettings$_getDefaultBuildDependencies_closure17.doCall(BuildSettings.groovy:774)
+        at grails.util.BuildSettings$_getDefaultBuildDependencies_closure17.doCall(BuildSettings.groovy)
+        at grails.util.BuildSettings.getDefaultBuildDependencies(BuildSettings.groovy:768)
+        at grails.util.BuildSettings.getBuildDependencies(BuildSettings.groovy:673)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;At first, I was confused.  This same error does not happen if you use the &lt;a href=&quot;https://github.com/grails/grails-maven&quot; target=&quot;_blank&quot;&gt;Grails Maven Plugin&lt;/a&gt; to build/run your application&amp;#8201;&amp;#8212;&amp;#8201;it only happens when using the
+&lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; CLI.  I also know that &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; &amp;#8656; 2.3.X does not support Java 8, so maybe it was related to that?  After looking at the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; source (and the stacktrace), I found some interesting code in the
+&lt;a href=&quot;https://github.com/apache/maven/blob/maven-3.1.1/maven-model-builder/src/main/java/org/apache/maven/model/profile/activation/JdkVersionProfileActivator.java&quot; target=&quot;_blank&quot;&gt;JdkVersionProfileActivator&lt;/a&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;String version = context.getSystemProperties().get( &quot;java.version&quot; );
+
+if ( version == null || version.length() &amp;lt;= 0 )
+{
+    problems.add( new ModelProblemCollectorRequest( Severity.ERROR, Version.BASE )
+            .setMessage( &quot;Failed to determine Java version for profile &quot; + profile.getId() )
+            .setLocation( activation.getLocation( &quot;jdk&quot; ) ) );
+    return false;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; code checks the &lt;code&gt;java.version&lt;/code&gt; system property to determine which version of the JDK is in use to see if it matches up with the requested profile.  After some additional digging in the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; source, I discovered that the
+&lt;a href=&quot;https://github.com/grails/grails-core/blob/master/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy&quot; target=&quot;_blank&quot;&gt;AetherDependencyManager&lt;/a&gt; programmatically builds a
+&lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; &lt;code&gt;DefaultModelBuildingRequest&lt;/code&gt;, but does &lt;strong&gt;not&lt;/strong&gt; pass the system properties from the JVM to the request.  Therefore, when the &lt;code&gt;JdkVersionProfileActivator&lt;/code&gt; attempts to look at the value of the &lt;code&gt;java.version&lt;/code&gt; system property, there
+are no properties to inspect!  I made a quick change to the &lt;code&gt;AetherDependencyManager&lt;/code&gt; class to add the setting of the system properties:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;final modelRequest = new DefaultModelBuildingRequest()
+modelRequest.setPomFile(pomFile)
+modelRequest.setSystemProperties(System.properties)
+modelRequest.setModelResolver(new GrailsModelResolver(repositorySystem, session, repositories))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;After re-testing with the modified code, the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; happily accepted the JDK-based &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; profile without exception.  I have created a &lt;a href=&quot;https://github.com/grails/grails-core/pull/492&quot; target=&quot;_blank&quot;&gt;pull request&lt;/a&gt;, which has been merged into the
+2.4.x version of &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;.  If you need access to this fix earlier, I would suggest creating a branch off of the tagged version of &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; that you are currently using and cherry-picking the commit that contains the change.  You can then build
+the &lt;code&gt;grails-aether&lt;/code&gt; JAR and drop it into the &lt;code&gt;dist&lt;/code&gt; folder of your &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; installation to consume the change.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Grails, Maven, Cobertura and Java 7</title>
             <link>http://jdpgrailsdev.github.io/blog//2014/05/20/grails_maven_coverage.html</link>
@@ -889,131 +960,6 @@ manually invoke the plugin by running the &lt;code&gt;cobertura&lt;/code&gt; tas
 recommend looking into integration with your build system/continuous integration in order to publish reports and determine the health of a build based on additions or regressions in the amount of code
 under test for your project.  That being said, just having the ability to generate code coverage to determine the effectiveness of unit tests is still a step in the right direction towards
 ensuring the stability of any code base.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>The Grails Gradle Plugin and Logback</title>
-            <link>http://jdpgrailsdev.github.io/blog//2014/04/22/grails_gradle_logback.html</link>
-            <pubDate>Tue, 22 Apr 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">/2014/04/22/grails_gradle_logback.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;In a &lt;a href=&quot;http://jonathanpearlin.com/blog/2014/03/24/grails_logback.html&quot; target=&quot;_blank&quot;&gt;previous post&lt;/a&gt;, I discussed how to switch a &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; application to use &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; instead of Log4j for logging.  In that post, I
-covered using both the &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; support in Grails to configure the dependencies required to use &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; with &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;, as well as how to use the built in dependency management support via the
-&lt;code&gt;BuildConfig.groovy&lt;/code&gt; dependencies DSL.  I did not cover how to make this all work with &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;.  The same caveats and issues, as mentioned previously, still apply with regards to the &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; DSL
-defined in &lt;code&gt;Config.groovy&lt;/code&gt; and the use of the &lt;code&gt;logback.groovy&lt;/code&gt; file in its place, so I will not re-hash that here.  Instead, I will point out a couple of issues with regards to getting the
-dependencies configured correctly in the &lt;code&gt;build.gradle&lt;/code&gt; file.  Similar to the other approaches, you still need to provide global excludes for the Log4J related dependencies:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;build.gradle&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;configurations {
-     all*.exclude group: &apos;org.grails&apos;, module: &apos;grails-plugin-log4j&apos;		&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
-     all*.exclude group: &apos;org.slf4j&apos;, module: &apos;slf4j-log4j12&apos;			&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;(2)&lt;/b&gt;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;colist arabic&quot;&gt;
-&lt;table&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;Exclude the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; Log4J plugin, per the instructions provided by the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt;.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;Exclude the Log4J SLF4J binding, as &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; provides its own SLF4J binding.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Next, include the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; as a dependency:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;build.gradle&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;dependencies {
-    compile (&apos;org.grails.plugins:logback:0.3.1&apos;) {
-        exclude(module:&apos;slf4j-api&apos;)								&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
-    }
-    compile (&apos;ch.qos.logback:logback-classic:1.1.1&apos;) {						&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;(2)&lt;/b&gt;
-        exclude(module:&apos;slf4j-api&apos;)
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;colist arabic&quot;&gt;
-&lt;table&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;Exclude the SLF4J transitive dependency so that it does not conflict with the version provided by &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;2&quot;&gt;&lt;/i&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;I added an explicit dependency for &lt;code&gt;logback-classic&lt;/code&gt; so that I could use a newer version than the one transitively provided by the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt;.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;I thought that this would be enough to build my application&amp;#8217;s WAR file using the &lt;code&gt;grails-war&lt;/code&gt; task of the &lt;a href=&quot;https://github.com/grails/grails-gradle-plugin/&quot; target=&quot;_blank&quot;&gt;Grails Gradle Plugin&lt;/a&gt;.  However, when I went to execute the task, the
-build failed with the following exception:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;| Error Error generating web.xml file
-org.codehaus.groovy.runtime.typehandling.GroovyCastException: Cannot cast object &apos;org.slf4j.helpers.NOPLoggerFactory@7f4cfb5&apos; with class &apos;org.slf4j.helpers.NOPLoggerFactory&apos; to class &apos;ch.qos.logback.classic.LoggerContext&apos;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;What is really strange is that this does not happen when using the &lt;code&gt;grails-run-app&lt;/code&gt; &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; task.  Additionally, the following also appears in the output when attempting to build the WAR file:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;SLF4J: Failed to load class &quot;org.slf4j.impl.StaticLoggerBinder&quot;.
-SLF4J: Defaulting to no-operation (NOP) logger implementation
-SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;A quick search of the internets for both of these issues indicate that you are either A) do not have any SLF4J binding on your classpath, thus causing SLF$J to default to the no-op binding, or B) have an
-SLF4J binding on the classpath in addition to the one provided by &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt;.  Those two statements obviously contradict with each other.  After scratching my head for a while, I realized that the &lt;a href=&quot;https://github.com/grails/grails-gradle-plugin/&quot; target=&quot;_blank&quot;&gt;Grails Gradle Plugin&lt;/a&gt;
-has a &lt;code&gt;bootstrap&lt;/code&gt; dependency scope, which is used to provide dependencies to the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; commands, which themselves are GAnt scripts written in &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt;.  These scripts also need a logger to output
-the status of what is being executed.  I decided to add a duplicate dependency to the &lt;code&gt;build.gradle&lt;/code&gt; build file to see if that would fix the problem:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;build.gradle&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;dependencies {
-    compile (&apos;org.grails.plugins:logback:0.3.1&apos;) {
-        exclude(module:&apos;slf4j-api&apos;)
-    }
-    compile (&apos;ch.qos.logback:logback-classic:1.1.1&apos;) {
-        exclude(module:&apos;slf4j-api&apos;)
-    }
-    bootstrap &apos;ch.qos.logback:logback-classic:1.1.1&apos;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;After adding the dependency to the separate &lt;code&gt;bootstrap&lt;/code&gt; scope, I once again ran the &lt;code&gt;grails-war&lt;/code&gt; &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; task and got a much better outcome:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;| Done creating WAR build/distributions/test-1.0.0.war
-
-BUILD SUCCESSFUL
-
-Total time: 17.166 secs&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Much better.  It&amp;#8217;s important to remember that the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; build eco-system is itself a Java-based application that requires its own set of dependencies just to execute.  When using the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;
-command line arguments or building via &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt;, this classpath is management automatically.  However, when using the &lt;a href=&quot;https://github.com/grails/grails-gradle-plugin/&quot; target=&quot;_blank&quot;&gt;Grails Gradle Plugin&lt;/a&gt; plugin, you currently have to manage any additions to this yourself
-via the &lt;code&gt;bootstrap&lt;/code&gt; scope (an interesting side note here is that now &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; is using &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; for all logging, not just when executing the application).&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
