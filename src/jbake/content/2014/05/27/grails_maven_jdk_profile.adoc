@@ -33,7 +33,7 @@ When a JDK-activated profile is present in the POM file used by {grails}, the ap
 ----
 
 At first, I was confused.  This same error does not happen if you use the https://github.com/grails/grails-maven[Grails Maven Plugin, window="_blank"] to build/run your application -- it only happens when using the
-{grails} CLI.  I also know that {grails} does not currently support Java 8, so maybe it was related to that?  After looking at the {grails} source (and the stacktrace), I found some interesting code in the
+{grails} CLI.  I also know that {grails} <= 2.3.X does not support Java 8, so maybe it was related to that?  After looking at the {grails} source (and the stacktrace), I found some interesting code in the
 https://github.com/apache/maven/blob/maven-3.1.1/maven-model-builder/src/main/java/org/apache/maven/model/profile/activation/JdkVersionProfileActivator.java[JdkVersionProfileActivator, window="_blank"]:
 
 [source,java]
