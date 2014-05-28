@@ -1,7 +1,27 @@
-Using the grails logback plugin does not appear to properly attach appenders to loggers.  The plugin depends on version 1.0.12 of Logback, which is about 3-4 releases behind.
+= Grails and Logback Revisited
+Jonathan Pearlin
+2014-06-24
+:jbake-type: post
+:jbake-tags: grails,logback
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: grails_logback_revisted
+:grails: http://grails.org[Grails, window="_blank"]
+:grails_logback: http://grails.org/plugin/logback[Grails Logback Plugin, window="_blank"]
+:groovy: http://groovy.codehaus.org[Groovy, window="_blank"]
+:logback: http://logback.qos.ch/[Logback, window="_blank"]
+:icons: font
 
-logback.groovy
+http://jonathanpearlin.com/2014/03/24/grails_logback.html[Previously, window="_blank"], I blogged about using {logback} with {grails}.  While the contents of that post are mostly accurate, I have uncovered a few issues
+with that approach, mostly related to the use of the {grails_loback}.  The {grails_loback} is intended to only work the `logback` DSL in `grails-app/conf/*Config.groovy`.  If you attempt to use your own custom `logback.xml`
+or `logback.groovy`, it is ignored, eventhough {logback} may report that it was loaded.  My suspicion is that the {grails_loback} plugin is re-initializing {logback} after the fact, thus erasing any configuration loaded
+from the configuration files.  Additionally, the {grails_loback} depends on version 1.0.12 of {logback}, which is about 3 to 4 release behind the latest release.  I arrived at the conclusion that the {grails_loback} was interferring with
+my configuration files by using the following {logback} configuration:
 
+[source,groovy]
+.logback.groovy
+----
 import static ch.qos.logback.classic.Level.ERROR
 import static ch.qos.logback.classic.Level.INFO
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
@@ -14,7 +34,7 @@ import ch.qos.logback.core.status.OnConsoleStatusListener
 def BASE_DIR = System.getProperty('catalina.base') ?: System.getProperty('user.dir')
 
 statusListener OnConsoleStatusListener
-jmxConfigurator('tripoli:type=LoggerManager')
+jmxConfigurator('myapp:type=LoggerManager')
 
 appender('STDOUT', ConsoleAppender) {
     encoder(PatternLayoutEncoder) {
@@ -31,28 +51,38 @@ logger('org.grails.plugin', ERROR, ['STDOUT'], false)
 logger('grails.app', INFO, ['STDOUT'], false)
 
 root(INFO, ['STDOUT'])
+----
 
-When starting the application with this configuration, the only output reported by Logback is the following:
+When starting the application with this configuration, the only output reported by {logback} is the following:
 
+[source]
+----
 13:27:25,368 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@61b99295 - Added status listener of type [ch.qos.logback.core.status.OnConsoleStatusListener]
 13:27:25,549 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@61b99295 - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
 13:27:25,550 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@61b99295 - Naming appender as [STDOUT]
+----
 
-This is very strange, as Logback is not reporting that any loggers were created or that those loggers have been associated with one or more appenders.  After some digging through
-the logback ch.qos.logback.classic.gaffer.ConfigurationDelegate class, which handles the DSL, I noticed that the most recent version of Logback (1.1.2) has much better output during startup.
-I decided to change my Grails application to explicitly depend on the latest Logback version:
+This is very strange, as {logback} was not reporting that any loggers were created or that those loggers have been associated with one or more appenders.  After some digging through
+the {logback} `ch.qos.logback.classic.gaffer.ConfigurationDelegate` class, which handles the DSL from the above configuration, I noticed that the most recent version of {logback} (1.1.2)
+has much better output during startup.  I decided to change my {grails} application to explicitly depend on the latest {logback} version:
 
-    plugins {
-        compile ':logback:0.3.1'
-    }
+[source,groovy]
+.BuildConfig.groovy
+----
+plugins {
+    compile ':logback:0.3.1'
+}
 
-    dependencies {
-        compile 'ch.qos.logback:logback-core:1.1.2'
-        compile 'ch.qos.logback:logback-classic:1.1.2'
-    }
+dependencies {
+    compile 'ch.qos.logback:logback-core:1.1.2'
+    compile 'ch.qos.logback:logback-classic:1.1.2'
+}
+----
 
-Now when I started the Grails application:
+After restarting the {grails} application, I saw the following output:
 
+[source]
+----
 13:32:36,412 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Added status listener of type [ch.qos.logback.core.status.OnConsoleStatusListener]
 13:32:36,556 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
 13:32:36,557 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Naming appender as [STDOUT]
@@ -72,11 +102,18 @@ Now when I started the Grails application:
 13:32:37,073 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[grails.app]
 13:32:37,074 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [ROOT] to INFO
 13:32:37,074 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[ROOT]
+----
 
-Sweet.  This appeared to be working.  After clicking around my application and not seeing anything log to the console, I became very suspicious.  I decided to print out the appenders associated with one
-of the loggers to verify that the ConfigurationDelegate actually set thing sup properly:
+Sweet.  {logback} appeared to be configured and working as expected.  After clicking around my application and not seeing anything log to the console, I became very suspicious that I had solved the problem simply
+by updating the version of {logback} used by the application.  I decided to print out the appenders associated with one of the loggers to verify that the `ConfigurationDelegate` actually set things up properly:
 
-println "Appenders = ${LoggerFactory.getLogger('grails.app').aai.appenderList"
+[source,groovy]
+.Bootstrap.groovy
+----
+def init = { servletContext ->
+    println "Appenders = ${LoggerFactory.getLogger('grails.app').aai.appenderList"
+}
+----
 
-The line above printed out an empty list.  After some head scratching, I determined that the Grails Logback plugin was somehow overwriting/replacing the logback configuration set up by the logback.groovy file.
-I realized that I did not need the Grails logback plugin, as I am not using the DSL from grails-app/conf/Config.groovy. After removing the plugin entirely, everything worked as expected!
+The code above printed out an empty list.  After some head scratching, I determined that the {grails_logback} was somehow overwriting/replacing the {logback} configuration set up by the `logback.groovy` file.  I decided
+to remove the dependency on the {grails_logback} from `grails-app/conf/BuildConfig.groovy` as I am not using the DSL from `grails-app/conf/*Config.groovy`. After removing the {grails_logback} entirely, everything worked as expected!

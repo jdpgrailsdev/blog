@@ -105,7 +105,7 @@ public class ApplicationConfig {
 }
 ----
 
-Now, Jersey application is initialized prior to application start:
+After the change above, the Jersey application is initialized prior to application start:
 
 [source]
 ----

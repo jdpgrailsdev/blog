@@ -1,3 +1,24 @@
+= A Tomcat Rolling File Appender with Logback
+Jonathan Pearlin
+2014-06-17
+:jbake-type: post
+:jbake-tags: logback,groovy,tomcat
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: tomcat_logback
+:logback: http://logback.qos.ch/[Logback, window="_blank"]
+:icons: font
+
+Recently, I needed to add a {logback} configuration to an application that is deployed in http://tomcat.apache.org/[Apache Tomcat, window="_blank"].  I wanted to
+ensure that my log files did not grow in an unbounded manner.  To protect against this, I decided to use the `RollingFileAppender` provided by {logback}.  That is an
+obvious choice to solve this problem, but I wanted to ensure that when running the application in http://tomcat.apache.org/[Apache Tomcat, window="_blank"], the generated
+log files end up in `${catalina.base}/logs` and when running locally via something like the http://tomcat.apache.org/maven-plugin-trunk/tomcat7-maven-plugin/[Maven Apache Tomcat Plugin, window="_blank"]
+it chose an appropriate output directory.  I arrive at the following http://groovy.codehaus.org/[Groovy, window="_blank"]-based {logback} configuration file:
+
+[source,groovy]
+.logback.groovy
+----
 import static ch.qos.logback.classic.Level.INFO
 
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
@@ -9,7 +30,7 @@ import ch.qos.logback.core.status.OnConsoleStatusListener
 // Print out the Logback configuration information at startup.
 statusListener OnConsoleStatusListener
 
-def BASE_DIR = System.getProperty('catalina.base') ?: System.getProperty('user.dir')
+def BASE_DIR = System.getProperty('catalina.base') ?: System.getProperty('user.dir')	<1>
 
 appender("WEBAPP", RollingFileAppender) {
     file = "${BASE_DIR}/logs/application.log"
@@ -26,3 +47,9 @@ appender("WEBAPP", RollingFileAppender) {
 }
 
 root(INFO, ["WEBAPP"])
+----
+<1> If the `catalina.base` property is present and not blank, use it.  Otherwise, use the current user's directory as the base for the log file.
+
+The configuration above ensures that not only will the log files be rotated based on size, but that the files will be created in the appropriate location based
+on the inspection of the `catalina.base` and `user.dir` system properties.  Because the configuration is written in http://groovy.codehaus.org/[Groovy, window="_blank"], we can
+use any sort of logic we want to manipulate the {logback} configuration at runtime to ensure the proper setup for the logging infrastructure in our application.
