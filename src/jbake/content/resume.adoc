@@ -18,6 +18,7 @@ Jonathan Pearlin
 :maven: http://maven.apache.org[Maven, window="_blank"]
 :mongo: http://www.mongodb.org[MongoDB, window="_blank"]
 :mysql: http://www.mysql.com/[MySQL, window="_blank"]
+:new_relic: http://newrelic.com/[New Relic, window="_blank"]
 :phi_beta_kappa: http://pbk.org[Phi Beta Kappa, window="_blank"]
 :rabbit: http://www.rabbitmq.com[RabbitMQ, window="_blank"]
 :red_sox: http://boston.redsox.mlb.com/index.jsp?c_id=bos[The Boston Red Sox, window="_blank"]
@@ -63,9 +64,13 @@ with others.
 
 == Experience
 
+[big]*{new_relic} - https://goo.gl/maps/xorI1["Portland, OR", window="blank"]* +
+*__Senior Software Engineer__* +
+June 2014 - Present
+
 [big]*{dealer} - https://www.google.com/maps/place/Dealer.Com/@44.4662738,-73.2141733,18z/data=!3m1!4b1!4m2!3m1!1s0x4cca7baab44f0923:0x24999beb5fd91ff1["Burlington, VT", window="_blank"]* +
 *__Technical Lead - Frameworks__* +
-July 2011 – Present
+July 2011 – June 2014
 
 * Responsible for design and implementation of cross-cutting, framework level software for use in {dealer}’s http://en.wikipedia.org/wiki/Software_as_a_service[SaaS, window="_blank"] architecture. Projects include metrics reporting and gathering framework, centralized configuration system utilizing {zookeeper} and upgrades and upkeep of {grails}-based software suite.
 * Provide code reviews, analysis and consultation for members of product development teams with engineering, including mentoring of junior staff.
