@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
-        <title>The Flowers Are Still Standing :: Grails web.xml Generation Magic</title>
+        <title>The Flowers Are Still Standing</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -90,9 +90,9 @@
 
     <p><em>18 July 2011</em></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog//2011/07/18/grails_web_xml.html"></div>
-    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2011/07/18/grails_web_xml.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2011/07/18/grails_web_xml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2011/07/18/grails_web_xml.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2011/07/18/grails_web_xml.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2011/07/18/grails_web_xml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><p>Grails provides a nice feature in each plugin's descriptor file that allows the plugin to make modifications to the web.xml file created by Grails application that includes the plugin at build time. This can be done by implementing the <code>doWithWebDescriptor</code> closure in the plugin's descriptor file (see the Grails documentation for more information). This works fine if you have a limited number of Grails plugins in your application that want to modify the web.xml file or have plugins whose changes to the <code>web.xml</code> file do not require some sort of order. I recently ran into an issue where we needed to make sure that a custom Grails plugin added a servlet filter to the web.xml that came BEFORE the filters added by the Spring Security plugin. I did not want to modify the Spring Security plugin to make sure its modifications to the web.xml came after the custom plugin's modifications, nor did I want to assume that the plugins would be installed in a particular order by Grails when building the main application. </p><h2>The Solution</h2><p>After realizing that I could not rely on the order that each plugin's <code>doWithWebDescriptor</code> closure would be called, I decided to use the Grails application's <code>BuildConfig.groovy</code> file to make sure that the web.xml file was modified AFTER all plugins had modified the <code>web.xml</code> file. This would allow the build to re-organize the servlet filters in the <code>web.xml</code> file to ensure they were in the right order (and would also cover the case where one or more of the filters was not added to the <code>web.xml</code> file -- i.e. this solution would work if one or both of the filters are missing from the generated web.xml file). The trick is to make use of the grails.war.resources closure in the <code>BuildConfig.groovy</code> file. This closure is called right before the WAR file is created, ensuring that nothing else will modify the web.xml file. This takes care of the timing issue. However, I still needed to write some code to actually modify the order of the servlet filters in the <code>web.xml</code> file. To do this, I made use of the Groovy shell and binding classes:</p>
 <pre><code>grails.war.resources = { stagingDir, args -&gt;
@@ -122,14 +122,14 @@ if(webXml.exists()) {
 }
 </code></pre><p>This solution allowed me to create a script that could re-order the contents of the <code>web.xml</code> file and handle all cases with regards to whether or not the servlet filter entries in question are present or not in the <code>web.xml</code> file used as input. It is also important to note that this solution can be extended to help in any other situation where you need to make last second modifications to files to be included in the WAR file at build time. </p></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog/2011/07/18/grails_web_xml.html"></div>
-    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2011/07/18/grails_web_xml.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2011/07/18/grails_web_xml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2011/07/18/grails_web_xml.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2011/07/18/grails_web_xml.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2011/07/18/grails_web_xml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <div id="disqus_thread"></div>
     <script type="text/javascript">
         var disqus_shortname = 'jdpgrailsdevblog';
-        var disqus_identifier = '/2011/07/18/grails_web_xml.html';
+        var disqus_identifier = '2011/07/18/grails_web_xml.html';
         /* * * DON'T EDIT BELOW THIS LINE * * */
         (function() {
             var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
@@ -148,7 +148,7 @@ if(webXml.exists()) {
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

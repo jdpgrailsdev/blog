@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
-        <title>The Flowers Are Still Standing :: Where's My Exceptions, Spring Data MongoDB?</title>
+        <title>The Flowers Are Still Standing</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -90,9 +90,9 @@
 
     <p><em>19 November 2011</em></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog//2011/11/19/spring_data_mongodb_exceptions.html"></div>
-    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2011/11/19/spring_data_mongodb_exceptions.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2011/11/19/spring_data_mongodb_exceptions.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2011/11/19/spring_data_mongodb_exceptions.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2011/11/19/spring_data_mongodb_exceptions.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2011/11/19/spring_data_mongodb_exceptions.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><p>To be fair, the Spring Data MongoDB project is currently only at Milestone releases (as of writing, they are up to M5). Unlike most open source projects, they do have fairly good reference documentation. Recently, we decided to add some unique contraints to a document by adding a compound index. The Spring Data MongoDB project provides a couple mechanisms to be able to do this:</p>
 <ol>
@@ -253,14 +253,14 @@ Caused by: com.mongodb.MongoException$DuplicateKey: E11000 duplicate key error i
     at com.mongodb.DBCollection.insert(DBCollection.java:71)
 </code></pre><p> at com.mongodb.DBCollection.save(DBCollection.java:633)<br/> at org.springframework.data.mongodb.core.MongoTemplate$13.doInCollection(MongoTemplate.java:745)<br/> at org.springframework.data.mongodb.core.MongoTemplate.execute(MongoTemplate.java:331)<br/> ... 41 more</p><p>So, it is really hard to blame the Spring Data MongoDB guys for this issue, as it is really a configuration option of the underlying MongoDB Java Driver. However, the MongoTemplate class does have a setWriteConcern method for this very reason and it would have saved me some time if the reference documentation had mentioned this and/or had some examples on how to change the setting. I guess that will be in the "release" :).</p></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog/2011/11/19/spring_data_mongodb_exceptions.html"></div>
-    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog//2011/11/19/spring_data_mongodb_exceptions.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog//2011/11/19/spring_data_mongodb_exceptions.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2011/11/19/spring_data_mongodb_exceptions.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2011/11/19/spring_data_mongodb_exceptions.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2011/11/19/spring_data_mongodb_exceptions.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <div id="disqus_thread"></div>
     <script type="text/javascript">
         var disqus_shortname = 'jdpgrailsdevblog';
-        var disqus_identifier = '/2011/11/19/spring_data_mongodb_exceptions.html';
+        var disqus_identifier = '2011/11/19/spring_data_mongodb_exceptions.html';
         /* * * DON'T EDIT BELOW THIS LINE * * */
         (function() {
             var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
@@ -279,7 +279,7 @@ Caused by: com.mongodb.MongoException$DuplicateKey: E11000 duplicate key error i
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0-SNAPSHOT</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 
