@@ -1,0 +1,57 @@
+= Setting system properties/environment variables with Spring Boot and Gradle
+Jonathan Pearlin
+2014-07-08
+:jbake-type: post
+:jbake-tags: spring,gradle
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: spring_boot_env_vars
+:icons: font
+:gradle: http://gradle.org[Gradle, window="_blank"]
+:spring_boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
+
+Out of the box, {spring_boot} ships with a {gradle} plugin that supports running your application, as well as building an executable JAR or WAR file.  The plugin
+extends off the stock {gradle} http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html[JavaExec Task, window="_blank"], which means that you can
+use any of the task's configuration properties to customize how your application runs when launching it via {gradle} (e.g. `./gradlew run`).  For instance, if you
+would like to set some system properties, environment variables and/or other any other support JVM properties/arguments, you simply need to define an additional `run`
+configuration block in your `build.gradle` build script:
+
+[source,groovy]
+.build.gradle
+---
+apply plugin: 'java'
+apply plugin: 'spring-boot'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath('org.springframework.boot:spring-boot-gradle-plugin:1.1.1.RELEASE')
+    }
+}
+
+run {
+    environment = ['ENV' : 'dev']
+    maxHeapSize = '512M'
+    systemProperties = ['serverPort':'8085']
+}
+
+springBoot {
+    mainClass = 'com.test.Application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    ...
+}
+
+---
+
+For a complete list of the properties of the http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html[JavaExec Task, window="_blank"] that can be
+set, see the http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html#N1E1D1["Properties", window="_blank"] of the
+http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html[JavaExec Task Gradle Documentation, window="_blank"].

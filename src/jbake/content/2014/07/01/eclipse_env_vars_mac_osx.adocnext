@@ -1,6 +1,6 @@
 = Eclipse, Environment Variables and Mac OSX
 Jonathan Pearlin
-2014-07-201
+2014-07-01
 :jbake-type: post
 :jbake-tags: eclipse,mac
 :jbake-status: published
@@ -32,8 +32,8 @@ Select "Application" from the document wizard.
 Search for and select "Run Shell Script" from the "Actions" search box.
 Enter the following into the text box in the "Run Shell Script" section:
 
-	/Applications/eclipse/eclipse.sh
-	
+    /Applications/eclipse/eclipse.sh
+
 Select "as arguments" in the "Pass Input" selector.
 
 You can test the new automator from the tool before saving by clicking on the "Run" button in the upper right-hand corner of the Automator window.
