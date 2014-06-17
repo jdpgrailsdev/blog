@@ -6,13 +6,78 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 10 Jun 2014 09:25:02 -0400</pubDate>
-        <lastBuildDate>Tue, 10 Jun 2014 09:25:02 -0400</lastBuildDate>
+        <pubDate>Mon, 16 Jun 2014 09:55:55 -0400</pubDate>
+        <lastBuildDate>Mon, 16 Jun 2014 09:55:55 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>A Tomcat Rolling File Appender with Logback</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/06/17/logback_tomcat_rolling_appender.html</link>
+            <pubDate>Tue, 17 Jun 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">2014/06/17/logback_tomcat_rolling_appender.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Recently, I needed to add a &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; configuration to an application that is deployed in &lt;a href=&quot;http://tomcat.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Tomcat&lt;/a&gt;.  I wanted to
+ensure that my log files did not grow in an unbounded manner.  To protect against this, I decided to use the &lt;code&gt;RollingFileAppender&lt;/code&gt; provided by &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt;.  That is an
+obvious choice to solve this problem, but I wanted to ensure that when running the application in &lt;a href=&quot;http://tomcat.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Tomcat&lt;/a&gt;, the generated
+log files end up in &lt;code&gt;${catalina.base}/logs&lt;/code&gt; and when running locally via something like the &lt;a href=&quot;http://tomcat.apache.org/maven-plugin-trunk/tomcat7-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Maven Apache Tomcat Plugin&lt;/a&gt;
+it chose an appropriate output directory.  I arrive at the following &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt;-based &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; configuration file:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;logback.groovy&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;import static ch.qos.logback.classic.Level.INFO
+
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder
+import ch.qos.logback.core.rolling.FixedWindowRollingPolicy
+import ch.qos.logback.core.rolling.RollingFileAppender
+import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy
+import ch.qos.logback.core.status.OnConsoleStatusListener
+
+// Print out the Logback configuration information at startup.
+statusListener OnConsoleStatusListener
+
+def BASE_DIR = System.getProperty(&apos;catalina.base&apos;) ?: System.getProperty(&apos;user.dir&apos;)	&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
+
+appender(&quot;WEBAPP&quot;, RollingFileAppender) {
+    file = &quot;${BASE_DIR}/logs/application.log&quot;
+    encoder(PatternLayoutEncoder) {
+        pattern = &quot;%-50(%date{ISO8601} [%thread]) %-5level %logger{50} - %msg%n%rEx&quot;
+    }
+    triggeringPolicy(SizeBasedTriggeringPolicy) {
+        maxFileSize = &apos;10MB&apos;
+    }
+    rollingPolicy(FixedWindowRollingPolicy) {
+        fileNamePattern = &quot;${BASE_DIR}/logs/application-%d{yyyyMMdd_hhmmss}.%i.gz&quot;
+        maxIndex = 10
+    }
+}
+
+root(INFO, [&quot;WEBAPP&quot;])&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
+&lt;td&gt;If the &lt;code&gt;catalina.base&lt;/code&gt; property is present and not blank, use it.  Otherwise, use the current user&amp;#8217;s directory as the base for the log file.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The configuration above ensures that not only will the log files be rotated based on size, but that the files will be created in the appropriate location based
+on the inspection of the &lt;code&gt;catalina.base&lt;/code&gt; and &lt;code&gt;user.dir&lt;/code&gt; system properties.  Because the configuration is written in &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt;, we can
+use any sort of logic we want to manipulate the &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; configuration at runtime to ensure the proper setup for the logging infrastructure in our application.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Grails and stacktrace.log</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/06/10/grails_stracetrace_log.html</link>
@@ -416,60 +481,6 @@ to pass this JVM argument to the forked &lt;a href=&quot;http://grails.org&quot;
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;After add the argument and re-running the tests, everything passed as expected.  I am still not sure if the problem lies with &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;, &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; or the instrumentation provided by the &lt;a href=&quot;https://github.com/beckje01/grails-code-coverage&quot; target=&quot;_blank&quot;&gt;Grails Code Coverage Plugin&lt;/a&gt; or
 some combination of all of those.  I will continue to keep an eye out for updates that appear to affect this issue in the hopes that the verifier can be re-enabled in the future.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Automatically Update Dependencies in Gradle Project</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/05/13/gradle_update_deps.html</link>
-            <pubDate>Tue, 13 May 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">2014/05/13/gradle_update_deps.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;One feature that we use a lot that appears to be missing from &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; is the ability to update all dependencies of a specific group ID to their latest release version.  In &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt;, this can
-be done through the &lt;code&gt;use-latest-versions&lt;/code&gt; goal of the &lt;a href=&quot;http://mojo.codehaus.org/versions-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Maven Versions Plugin&lt;/a&gt;.  There is what appears to be a &lt;a href=&quot;https://github.com/ben-manes/gradle-versions-plugin&quot; target=&quot;_blank&quot;&gt;port&lt;/a&gt; of the
-&lt;a href=&quot;http://mojo.codehaus.org/versions-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Maven Versions Plugin&lt;/a&gt; to a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin, but it only support generating a report of what is out of date and does not actually support updating the project itself.  That being said, you actually
-don&amp;#8217;t need to create a wrapper over the &lt;a href=&quot;http://mojo.codehaus.org/versions-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Maven Versions Plugin&lt;/a&gt;:  you can actually achieve the same functionality with a few lines of &lt;a href=&quot;http://groovy.codehaus.org&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; code:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;void updateDependencies(String groupId) {
-    def dependencies = project.configurations.collectMany { it.allDependencies }.findAll { it.group == groupId}
-    dependencies?.each { Dependency dep -&amp;gt;
-        def resolvedConfiguration = project.configurations
-                    .detachedConfiguration(project.dependencies.create(&quot;${dep.group}:${dep.name}:latest.release&quot;)).getResolvedConfiguration()
-        def latestVersion = resolvedConfiguration.getFirstLevelModuleDependencies().find { it.getModuleName() == dep.name }?.getModuleVersion()
-        if(latestVersion &amp;amp;&amp;amp; latestVersion != dep.version) {
-            project.ant.replaceregexp(file: project.file(&apos;build.gradle&apos;), match: &quot;${dep.group}:${dep.name}:${dep.version}&quot;,
-                                        replace: &quot;${dep.group}:${dep.name}:${latestVersion}&quot;)
-        }
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;In the example above, a group ID value is used to filter the project&amp;#8217;s dependencies down to the list that are candidates for updates.  From that list, a new &quot;detached configuration&quot; is created for each, with the version set to use
-the &lt;code&gt;latest.release&lt;/code&gt; placeholder.  The dependency is resolved using the &lt;code&gt;getResolvedConfiguration()&lt;/code&gt; method, which returns a configuration that holds the dependency with its latest release version.  If a match is found and the
-new version number is not the same as the original candidate dependency&amp;#8217;s version number, then the code makes use of the &lt;code&gt;replaceregexp&lt;/code&gt; method on the project&amp;#8217;s Ant object to update the dependency in the &lt;code&gt;build.gradle&lt;/code&gt; file itself.
-This method could be modified to be a lot more modular.  Such changes could including taking in the entire GAV (group ID, artifact ID, target version number, etc) or taking in an optional parameter for the supported latest version
-constants with a meaningful default:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;void updateDependencies(String groupId, String targetVersion=&apos;latest.release&apos;) {
-    ...
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;This would allow for the use of other constants that are supported by &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;, such as &lt;code&gt;latest.integration&lt;/code&gt; (it could also be extracted to an enumeration to restrict the values that could be provided).  Finally, one other missing piece
-that I hope to implement soon is the ability to opt in or out of major version updates (this is something that the &lt;a href=&quot;http://mojo.codehaus.org/versions-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Maven Versions Plugin&lt;/a&gt; supports).  This will require using something like
-&lt;a href=&quot;https://github.com/akutz/version-maven-plugin/blob/master/src/main/java/com/lostcreations/mojos/version/Version.java&quot; target=&quot;_blank&quot;&gt;Version.java&lt;/a&gt; to parse the version number for comparison.  All of this code can be put into a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; task
-and even into a separate plugin to share between projects!&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
