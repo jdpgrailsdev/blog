@@ -84,23 +84,17 @@
 	            </div>
 			</div>
             <div class="container">
-                <div class="page-header">
-                    <h1>The Flowers Are Still Standing</h1>
-                </div>
+    <div class="page-header">
+        <h1>Grails and Logback Revisited</h1>
+    </div>
 
-                   <a href="/blog2014/06/24/logback_grails.html"><h1>Grails and Logback Revisited</h1></a>
-                   <p>24 June 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/grails.html">grails</a>
-        
-                <a href="/blog/tags/logback.html">logback</a>
-        </p>
+    <p><em>24 June 2014</em></p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/06/24/logback_grails.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/06/24/logback_grails.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/06/24/logback_grails.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/06/24/logback_grails.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/06/24/logback_grails.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/06/24/logback_grails.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div id="preamble">
+    <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p><a href="http://jonathanpearlin.com/2014/03/24/grails_logback.html" target="_blank">Previously</a>, I blogged about using <a href="http://logback.qos.ch/" target="_blank">Logback</a> with <a href="http://grails.org" target="_blank">Grails</a>.  While the contents of that post are mostly accurate, I have uncovered a few issues
@@ -215,277 +209,26 @@ to remove the dependency on the <a href="http://grails.org/plugin/logback" targe
 </div>
 </div>
 </div></p>
-                <p><a href="/blog2014/06/24/logback_grails.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/06/17/logback_tomcat_rolling_appender.html"><h1>A Tomcat Rolling File Appender with Logback</h1></a>
-                   <p>17 June 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/logback.html">logback</a>
-        
-                <a href="/blog/tags/groovy.html">groovy</a>
-        
-                <a href="/blog/tags/tomcat.html">tomcat</a>
-        </p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/06/17/logback_tomcat_rolling_appender.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/06/17/logback_tomcat_rolling_appender.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/06/17/logback_tomcat_rolling_appender.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/06/24/logback_grails.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/06/24/logback_grails.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/06/24/logback_grails.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>Recently, I needed to add a <a href="http://logback.qos.ch/" target="_blank">Logback</a> configuration to an application that is deployed in <a href="http://tomcat.apache.org/" target="_blank">Apache Tomcat</a>.  I wanted to
-ensure that my log files did not grow in an unbounded manner.  To protect against this, I decided to use the <code>RollingFileAppender</code> provided by <a href="http://logback.qos.ch/" target="_blank">Logback</a>.  That is an
-obvious choice to solve this problem, but I wanted to ensure that when running the application in <a href="http://tomcat.apache.org/" target="_blank">Apache Tomcat</a>, the generated
-log files end up in <code>${catalina.base}/logs</code> and when running locally via something like the <a href="http://tomcat.apache.org/maven-plugin-trunk/tomcat7-maven-plugin/" target="_blank">Maven Apache Tomcat Plugin</a>
-it chose an appropriate output directory.  I arrive at the following <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a>-based <a href="http://logback.qos.ch/" target="_blank">Logback</a> configuration file:</p>
-</div>
-<div class="listingblock">
-<div class="title">logback.groovy</div>
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>import static ch.qos.logback.classic.Level.INFO
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2014/06/24/logback_grails.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder
-import ch.qos.logback.core.rolling.FixedWindowRollingPolicy
-import ch.qos.logback.core.rolling.RollingFileAppender
-import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy
-import ch.qos.logback.core.status.OnConsoleStatusListener
-
-// Print out the Logback configuration information at startup.
-statusListener OnConsoleStatusListener
-
-def BASE_DIR = System.getProperty('catalina.base') ?: System.getProperty('user.dir')	<i class="conum" data-value="1"></i><b>(1)</b>
-
-appender("WEBAPP", RollingFileAppender) {
-    file = "${BASE_DIR}/logs/application.log"
-    encoder(PatternLayoutEncoder) {
-        pattern = "%-50(%date{ISO8601} [%thread]) %-5level %logger{50} - %msg%n%rEx"
-    }
-    triggeringPolicy(SizeBasedTriggeringPolicy) {
-        maxFileSize = '10MB'
-    }
-    rollingPolicy(FixedWindowRollingPolicy) {
-        fileNamePattern = "${BASE_DIR}/logs/application-%d{yyyyMMdd_hhmmss}.%i.gz"
-        maxIndex = 10
-    }
-}
-
-root(INFO, ["WEBAPP"])</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>If the <code>catalina.base</code> property is present and not blank, use it.  Otherwise, use the current user&#8217;s directory as the base for the log file.</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>The configuration above ensures that not only will the log files be rotated based on size, but that the files will be created in the appropriate location based
-on the inspection of the <code>catalina.base</code> and <code>user.dir</code> system properties.  Because the configuration is written in <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a>, we can
-use any sort of logic we want to manipulate the <a href="http://logback.qos.ch/" target="_blank">Logback</a> configuration at runtime to ensure the proper setup for the logging infrastructure in our application.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/06/17/logback_tomcat_rolling_appender.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/06/10/grails_stracetrace_log.html"><h1>Grails and stacktrace.log</h1></a>
-                   <p>10 June 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/grails.html">grails</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/06/10/grails_stracetrace_log.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/06/10/grails_stracetrace_log.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/06/10/grails_stracetrace_log.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>Out of the box, the <a href="http://grails.org" target="_blank">Grails</a> framework programmatically configures a file-based logging appender that produces a log file named <code>stacktrace.log</code>.  This log contains any errors generated by the <a href="http://grails.org" target="_blank">Grails</a> application.  One of its problems
-is that this appender does not use a rolling file appender and therefore can grow without bound.  Typically, I configure my own applications to use a rolling file appender
-which makes the <code>stacktrace.log</code> file superfluous, as all errors are also logged to my custom appender.  You can remove this appender at runtime by adding some magic to your application&#8217;s <code>grails-app/conf/Bootstrap.groovy</code> file:</p>
-</div>
-<div class="listingblock">
-<div class="title">Boostrap.groovy</div>
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>import org.slf4j.LoggerFactory
-
-import ch.qos.logback.classic.LoggerContext
-import ch.qos.logback.core.util.StatusPrinter
-
-class BootStrap {
-
-    def init = { servletContext -&gt;
-        // Remove the Grails stack trace log appender, as it does not use a rolling appender.
-        removeStackTraceLogAppender()
-    }
-
-    def destroy = {
-    }
-
-    /**
-     * Removes the 'stacktraceLog' appender added by Grails.  This appender does NOT use a
-     * rolling file appender and can grow to astronomical sizes if left unattended.  Removing
-     * this log file does not remove any data, as the errors logged to it also get logged
-     * to the console appender.
-     */
-    private def removeStackTraceLogAppender() {
-        def logger = LoggerFactory.getLogger('StackTrace')
-        if(logger) {
-            def stackTraceAppender = logger.getAppender('stacktraceLog')
-            if(stackTraceAppender) {
-                if(logger.detachAppender(stackTraceAppender)) {
-                    println "Grails 'stacktraceLog' log appender removed from configuration."
-                }
-            }
-        }
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The code above asks the <a href="http://www.slf4j.org/" target="blank">SLF4J</a> API for the <code>StackTrace</code> logger, which is created programmatically by the <a href="http://grails.org" target="_blank">Grails</a> framework.  From that logger, the <code>stacktraceLog</code> appender
-is retrieved and detached, to ensure that any information sent to the <code>StackTrace</code> logger does not get appended to the <code>stacktrace.log</code> file.  This helps to prevent this log file from growing in an unbounded manner.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/06/10/grails_stracetrace_log.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/06/03/spring_boot_jersey_2.html"><h1>Spring Boot, Jersey and Lazy Initialization</h1></a>
-                   <p>03 June 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/jersey.html">jersey</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/06/03/spring_boot_jersey_2.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/06/03/spring_boot_jersey_2.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/06/03/spring_boot_jersey_2.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>It is pretty simple to spin up a micro REST service using <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> and <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a>.  In fact, there are various tutorials out there that show how this can be done with very little code/configuration:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://github.com/dsyer/spring-boot-jersey" target="_blank">Spring Boot Jersey module</a></p>
-</li>
-<li>
-<p><a href="http://geowarin.github.io/spring-boot/jersey/2014/01/31/a-simple-spring-boot-and-jersey-application.html" target="_blank">A Simple Spring Boot and Jersey Application</a></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a> also provides a nice <a href="https://jersey.java.net/documentation/latest/spring.html" target="_blank">Spring support module</a>, which makes it easy to register <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a> resources as Spring components.  The first step
-is to create a Spring-based <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a> resource configuration:</p>
-</div>
-<div class="listingblock">
-<div class="title">JerseyConfig.java</div>
-<div class="content">
-<pre class="prettyprint java language-java"><code>import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.spring.SpringComponentProvider;
-import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
-import org.springframework.stereotype.Component;
-
-@Component
-public class JerseyConfig extends ResourceConfig {
-
-    public JerseyConfig() {
-        register(MyResource.class);
-        register(RequestContextFilter.class);
-        register(LoggingFilter.class);
-        register(SpringComponentProvider.class);
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Once you have the configuration created (and Spring set up to component scan it at startup up), you also need to create a servlet to register the configuration with <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a>:</p>
-</div>
-<div class="listingblock">
-<div class="title">ApplicationConfig.java</div>
-<div class="content">
-<pre class="prettyprint java language-java"><code>import java.io.IOException;
-
-import org.glassfish.jersey.servlet.ServletContainer;
-import org.glassfish.jersey.servlet.ServletProperties;
-import org.springframework.boot.context.embedded.ServletRegistrationBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-@ComponentScan({"com.test"})
-public class ApplicationConfig {
-
-    @Bean
-    public ServletRegistrationBean jerseyServlet() {
-        final ServletRegistrationBean registration = new ServletRegistrationBean(new ServletContainer(), "/api/*");
-        registration.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS, JerseyConfig.class.getName());
-        return registration;
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This is pretty simple, but when you start up the application and then make a call to your REST resource, you may notice that <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a> is not initialized until this first call:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint"><code>2014-05-19 12:08:30.062  INFO 8626 --- [lication.main()] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080/http
-2014-05-19 12:08:30.065  INFO 8626 --- [lication.main()] com.test.Application        		      : Started Application in 13.461 seconds (JVM running for 21.588)
-2014-05-19 12:10:29.363  INFO 8626 --- [lication.main()] o.g.jersey.server.ApplicationHandler     : Initiating Jersey application, version Jersey: 2.7 2014-03-12 18:11:31...</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This means that the first request to your service incurs the cost of initializing <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a>.  Luckily, there is a simple fix that will ensure that <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a> is initialized on startup.  We can add
-a call to the <code>setLoadOnStartup()</code> method of the <code>ServletRegistration</code> instance in our Spring configuration to ensure that <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a> is initialized upon application start up:</p>
-</div>
-<div class="listingblock">
-<div class="title">ApplicationConfig.java</div>
-<div class="content">
-<pre class="prettyprint java language-java"><code>import java.io.IOException;
-
-import org.glassfish.jersey.servlet.ServletContainer;
-import org.glassfish.jersey.servlet.ServletProperties;
-import org.springframework.boot.context.embedded.ServletRegistrationBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-@ComponentScan({"com.test"})
-public class ApplicationConfig {
-
-    @Bean
-    public ServletRegistrationBean jerseyServlet() {
-        final ServletRegistrationBean registration = new ServletRegistrationBean(new ServletContainer(), "/api/*");
-        registration.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS, JerseyConfig.class.getName());
-        registration.setLoadOnStartup(1);
-        return registration;
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>After the change above, the Jersey application is initialized prior to application start:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint"><code>2014-05-19 12:10:29.363  INFO 8626 --- [lication.main()] o.g.jersey.server.ApplicationHandler     : Initiating Jersey application, version Jersey: 2.7 2014-03-12 18:11:31...
-2014-05-19 12:10:30.062  INFO 8626 --- [lication.main()] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080/http
-2014-05-19 12:10:30.065  INFO 8626 --- [lication.main()] com.test.Application        		      : Started Application in 13.461 seconds (JVM running for 21.588)</code></pre>
-</div>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/06/03/spring_boot_jersey_2.html#disqus_thread">Comments</a></p>
-
-                <hr />
-
-                <p>Older posts are available in the <a href="/blog/archive.html">archive</a>.</p>
+    <hr>
 
             </div>
             <div id="push"></div>
