@@ -14,9 +14,9 @@ Jonathan Pearlin
 :icons: font
 
 http://jonathanpearlin.com/2014/03/24/grails_logback.html[Previously, window="_blank"], I blogged about using {logback} with {grails}.  While the contents of that post are mostly accurate, I have uncovered a few issues
-with that approach, mostly related to the use of the {grails_loback}.  The {grails_loback} is intended to only work the `logback` DSL in `grails-app/conf/*Config.groovy`.  If you attempt to use your own custom `logback.xml`
-or `logback.groovy`, it is ignored, eventhough {logback} may report that it was loaded.  My suspicion is that the {grails_loback} plugin is re-initializing {logback} after the fact, thus erasing any configuration loaded
-from the configuration files.  Additionally, the {grails_loback} depends on version 1.0.12 of {logback}, which is about 3 to 4 release behind the latest release.  I arrived at the conclusion that the {grails_loback} was interferring with
+with that approach, mostly related to the use of the {grails_logback}.  The {grails_logback} is intended to only work the `logback` DSL in `grails-app/conf/*Config.groovy`.  If you attempt to use your own custom `logback.xml`
+or `logback.groovy`, it is ignored, even though {logback} may report that it was loaded.  My suspicion is that the {grails_logback} plugin is re-initializing {logback} after the fact, thus erasing any configuration loaded
+from the configuration files.  Additionally, the {grails_logback} depends on version 1.0.12 of {logback}, which is about 3 to 4 release behind the latest release.  I arrived at the conclusion that the {grails_logback} was interferring with
 my configuration files by using the following {logback} configuration:
 
 [source,groovy]
