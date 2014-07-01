@@ -84,105 +84,107 @@
 	            </div>
 			</div>
             <div class="container">
-                <div class="page-header">
-                    <h1>The Flowers Are Still Standing</h1>
-                </div>
+    <div class="page-header">
+        <h1>Eclipse, Environment Variables and Mac OSX</h1>
+    </div>
 
-                    <h4>July 2014</h4>
-                <ul>
+    <p><em>01 July 2014</em></p>
 
-                    <li>01 - <a href="/blog2014/07/01/eclipse_env_vars_mac_osx.html">Eclipse, Environment Variables and Mac OSX</a></li>
-                </ul>
-                <h4>June 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/07/01/eclipse_env_vars_mac_osx.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/07/01/eclipse_env_vars_mac_osx.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/01/eclipse_env_vars_mac_osx.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                    <li>24 - <a href="/blog2014/06/24/logback_grails.html">Grails and Logback Revisited</a></li>
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>I ran into an issue the other day when attempting to run a <a href="http://gradle.org" target="_blank">Gradle</a> build script that invokes a process from within Eclipse.  For whatever reason, Eclipse does not pick up
+environment variables from the shell when launching on Mac OSX.  If you attempt to reference a command on your path from within Eclipse, you will most likely see
+an error similar to this one:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint"><code>java.io.IOException: Cannot run program "thrift": error=2, No such file or directory</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Just to prove that I was not crazy and the <code>thrift</code> binary was indeed present on my path, I ran the following command from a terminal window:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint"><code>~$ thrift -version
+Thrift version 0.9.1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To correct this problem on Mac OSX, you can create a basic bash script to export the variables that you need (in my case, the binary was aleady included
+on my PATH environment variable) and then launch Eclipse:</p>
+</div>
+<div class="listingblock">
+<div class="title">eclipseLauncher.sh</div>
+<div class="content">
+<pre class="prettyprint"><code>#!/bin/bash
+source ~/.profile
+/Applications/eclipse/eclipse</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, create an <code>Automator</code> that can launch the new script.  To do so, follow these steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>From the dock in Mac OSX, open Applications &gt; Automator</p>
+</li>
+<li>
+<p>Select "Application" from the document wizard.</p>
+</li>
+<li>
+<p>Search for and select "Run Shell Script" from the "Actions" search box.</p>
+</li>
+<li>
+<p>Enter the following into the text box in the "Run Shell Script" section:</p>
+<div class="literalblock">
+<div class="content">
+<pre>/Applications/eclipse/eclipseLauncher.sh</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Select "as arguments" in the "Pass Input" selector.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>You can test the new script from the Automator application before saving by clicking on the "Run" button in the upper right-hand corner of the Automator window.
+When you are ready, select "File &gt; Save&#8230;" to save the new application automator script.  I recommend saving it in <code>/Applications/eclipse</code>.  <strong>MAKE SURE THAT YOU DO
+NOT OVERWRITE THE EXISTING "Eclipse" APPLICATION</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Next up, add it to the dock by launching it via the Applications menu.  You can also open the <code>/Applications/eclipse</code> folder in the Finder, select the new application and right-click select "Get Info" if you want to change the icon.
+In the info window, click on the icon at the top of the window so that a blue halo appears around it.  In the finder window, select the original Eclipse application file and drag it over the icon in the info window to change the new application to use the Eclipse icon.</p>
+</div>
+</div>
+</div></p>
 
-                    <li>17 - <a href="/blog2014/06/17/logback_tomcat_rolling_appender.html">A Tomcat Rolling File Appender with Logback</a></li>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/07/01/eclipse_env_vars_mac_osx.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/07/01/eclipse_env_vars_mac_osx.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/01/eclipse_env_vars_mac_osx.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                    <li>10 - <a href="/blog2014/06/10/grails_stracetrace_log.html">Grails and stacktrace.log</a></li>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2014/07/01/eclipse_env_vars_mac_osx.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-                    <li>03 - <a href="/blog2014/06/03/spring_boot_jersey_2.html">Spring Boot, Jersey and Lazy Initialization</a></li>
-                </ul>
-                <h4>May 2014</h4>
-                <ul>
-
-                    <li>27 - <a href="/blog2014/05/27/grails_maven_jdk_profile.html">Grails, Maven and JDK-based Profile Activation</a></li>
-
-                    <li>20 - <a href="/blog2014/05/20/grails_maven_coverage.html">Grails, Maven, Cobertura and Java 7</a></li>
-
-                    <li>13 - <a href="/blog2014/05/13/gradle_update_deps.html">Automatically Update Dependencies in Gradle Project</a></li>
-
-                    <li>06 - <a href="/blog2014/05/06/github_activity_menu.html">Add a custom GitHub activity stream to your blog</a></li>
-                </ul>
-                <h4>April 2014</h4>
-                <ul>
-
-                    <li>29 - <a href="/blog2014/04/29/gradle_cobertura.html">Code Coverage with Cobertura</a></li>
-
-                    <li>22 - <a href="/blog2014/04/22/grails_gradle_logback.html">The Grails Gradle Plugin and Logback</a></li>
-
-                    <li>15 - <a href="/blog2014/04/15/gradle_api_dependencies.html">Gradle API and Transitive Dependencies</a></li>
-
-                    <li>08 - <a href="/blog2014/04/08/spring_boot_gradle_newrelic.html">Using the New Relic agent with Spring-Boot and Gradle</a></li>
-
-                    <li>03 - <a href="/blog2014/04/03/maven_java8_javadoc.html">Maven, the JavaDoc plugin and Java 8</a></li>
-                </ul>
-                <h4>March 2014</h4>
-                <ul>
-
-                    <li>24 - <a href="/blog2014/03/24/grails_logback.html">Grails and Logback</a></li>
-
-                    <li>18 - <a href="/blog2014/03/18/grails_bean_builder.html">Parsing the Grails Spring Beans DSL with Groovy</a></li>
-
-                    <li>12 - <a href="/blog2014/03/12/grails_tattletale_plugin.html">Grails Tattletale Plugin</a></li>
-
-                    <li>11 - <a href="/blog2014/03/11/grails_test_system_properties.html">Setting system properties when running Grails tests</a></li>
-
-                    <li>04 - <a href="/blog2014/03/04/grails_tattletale.html">Integrating JBoss tattletale with Grails</a></li>
-                </ul>
-                <h4>February 2014</h4>
-                <ul>
-
-                    <li>25 - <a href="/blog2014/02/25/grails_gant_ckeditor.html">Programmatically building CKEditor source in Grails</a></li>
-
-                    <li>19 - <a href="/blog2014/02/19/spring_curator.html">Spring and Apache Curator</a></li>
-
-                    <li>10 - <a href="/blog2014/02/10/grails_maven_local_repo.html">Grails 2.3, Maven and Local Repositories</a></li>
-
-                    <li>08 - <a href="/blog2014/02/06/redesign.html">Blog Makeover</a></li>
-                </ul>
-                <h4>December 2012</h4>
-                <ul>
-
-                    <li>08 - <a href="/blog2012/12/08/relocation.html">Relocation</a></li>
-                </ul>
-                <h4>November 2011</h4>
-                <ul>
-
-                    <li>19 - <a href="/blog2011/11/19/spring_data_mongodb_exceptions.html">Where&apos;s My Exceptions, Spring Data MongoDB?</a></li>
-                </ul>
-                <h4>September 2011</h4>
-                <ul>
-
-                    <li>26 - <a href="/blog2011/09/26/trains_planes_auto.html">Planes, Trains, and Automobiles</a></li>
-
-                    <li>13 - <a href="/blog2011/09/13/spring_integration_jmx.html">I Don&apos;t Need To Read The Manual...Spring Integration and JMX</a></li>
-                </ul>
-                <h4>August 2011</h4>
-                <ul>
-
-                    <li>14 - <a href="/blog2011/08/14/war_of_the_worlds.html">War of the Worlds</a></li>
-                </ul>
-                <h4>July 2011</h4>
-                <ul>
-
-                    <li>31 - <a href="/blog2011/07/31/groovy_whitespace.html">Keep Your Hands Off of My Whitespace!</a></li>
-
-                    <li>27 - <a href="/blog2011/07/27/grails_rename_war.html">Maven Trick to Rename Grails War</a></li>
-
-                    <li>18 - <a href="/blog2011/07/18/grails_web_xml.html">Grails web.xml Generation Magic</a></li>
-                </ul>
+    <hr>
 
             </div>
             <div id="push"></div>

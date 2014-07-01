@@ -6,13 +6,92 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 24 Jun 2014 09:15:38 -0400</pubDate>
-        <lastBuildDate>Tue, 24 Jun 2014 09:15:38 -0400</lastBuildDate>
+        <pubDate>Tue, 1 Jul 2014 09:22:00 -0400</pubDate>
+        <lastBuildDate>Tue, 1 Jul 2014 09:22:00 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Eclipse, Environment Variables and Mac OSX</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/07/01/eclipse_env_vars_mac_osx.html</link>
+            <pubDate>Tue, 1 Jul 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">2014/07/01/eclipse_env_vars_mac_osx.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;I ran into an issue the other day when attempting to run a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; build script that invokes a process from within Eclipse.  For whatever reason, Eclipse does not pick up
+environment variables from the shell when launching on Mac OSX.  If you attempt to reference a command on your path from within Eclipse, you will most likely see
+an error similar to this one:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;java.io.IOException: Cannot run program &quot;thrift&quot;: error=2, No such file or directory&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Just to prove that I was not crazy and the &lt;code&gt;thrift&lt;/code&gt; binary was indeed present on my path, I ran the following command from a terminal window:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;~$ thrift -version
+Thrift version 0.9.1&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;To correct this problem on Mac OSX, you can create a basic bash script to export the variables that you need (in my case, the binary was aleady included
+on my PATH environment variable) and then launch Eclipse:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;eclipseLauncher.sh&lt;/div&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;#!/bin/bash
+source ~/.profile
+/Applications/eclipse/eclipse&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Next, create an &lt;code&gt;Automator&lt;/code&gt; that can launch the new script.  To do so, follow these steps:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;olist arabic&quot;&gt;
+&lt;ol class=&quot;arabic&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;From the dock in Mac OSX, open Applications &amp;gt; Automator&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Select &quot;Application&quot; from the document wizard.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Search for and select &quot;Run Shell Script&quot; from the &quot;Actions&quot; search box.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Enter the following into the text box in the &quot;Run Shell Script&quot; section:&lt;/p&gt;
+&lt;div class=&quot;literalblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre&gt;/Applications/eclipse/eclipseLauncher.sh&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Select &quot;as arguments&quot; in the &quot;Pass Input&quot; selector.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;You can test the new script from the Automator application before saving by clicking on the &quot;Run&quot; button in the upper right-hand corner of the Automator window.
+When you are ready, select &quot;File &amp;gt; Save&amp;#8230;&quot; to save the new application automator script.  I recommend saving it in &lt;code&gt;/Applications/eclipse&lt;/code&gt;.  &lt;strong&gt;MAKE SURE THAT YOU DO
+NOT OVERWRITE THE EXISTING &quot;Eclipse&quot; APPLICATION&lt;/strong&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Next up, add it to the dock by launching it via the Applications menu.  You can also open the &lt;code&gt;/Applications/eclipse&lt;/code&gt; folder in the Finder, select the new application and right-click select &quot;Get Info&quot; if you want to change the icon.
+In the info window, click on the icon at the top of the window so that a blue halo appears around it.  In the finder window, select the original Eclipse application file and drag it over the icon in the info window to change the new application to use the Eclipse icon.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Grails and Logback Revisited</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/06/24/logback_grails.html</link>
@@ -382,77 +461,6 @@ public class ApplicationConfig {
 2014-05-19 12:10:30.062  INFO 8626 --- [lication.main()] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080/http
 2014-05-19 12:10:30.065  INFO 8626 --- [lication.main()] com.test.Application        		      : Started Application in 13.461 seconds (JVM running for 21.588)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Grails, Maven and JDK-based Profile Activation</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/05/27/grails_maven_jdk_profile.html</link>
-            <pubDate>Tue, 27 May 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">2014/05/27/grails_maven_jdk_profile.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Recently, I have been spending my time converting &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; applications to use &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; POM files for dependency management.  For the last couple releases, &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; has included the ability to
-rely on a POM file for dependencies, instead of declaring the repositories and dependencies directly in your &lt;code&gt;grails-app/conf/BuildConfig.groovy&lt;/code&gt;.  This works exactly as expected&amp;#8201;&amp;#8212;&amp;#8201;that is &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;
-retrieves the dependency declarations from the POM file and uses them to build/run the application when using the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; CLI.  However, there is a bug in the way &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; dynamically validates and
-uses the POM file.  I came across this issue when attempting to use the JDK version-based profile activation that I discussed in &lt;a href=&quot;http://jonathanpearlin.com/blog/2014/04/03/maven_java8_javadoc.html&quot; target=&quot;_blank&quot;&gt;a previous post&lt;/a&gt;.
-When a JDK-activated profile is present in the POM file used by &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;, the application will report the following error:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;[ERROR] Failed to determine Java version for profile java8 @ &amp;lt;GAV of the POM file containing the profile&amp;gt;
-        at org.apache.maven.model.building.DefaultModelProblemCollector.newModelBuildingException(DefaultModelProblemCollector.java:195)
-        at org.apache.maven.model.building.DefaultModelBuilder.build(DefaultModelBuilder.java:416)
-        at org.apache.maven.model.building.DefaultModelBuilder.build(DefaultModelBuilder.java:368)
-        at org.apache.maven.model.building.DefaultModelBuilder.build(DefaultModelBuilder.java:359)
-        at grails.util.BuildSettings.doResolve(BuildSettings.groovy:513)
-        at grails.util.BuildSettings.doResolve(BuildSettings.groovy)
-        at grails.util.BuildSettings$_getDefaultBuildDependencies_closure17.doCall(BuildSettings.groovy:774)
-        at grails.util.BuildSettings$_getDefaultBuildDependencies_closure17.doCall(BuildSettings.groovy)
-        at grails.util.BuildSettings.getDefaultBuildDependencies(BuildSettings.groovy:768)
-        at grails.util.BuildSettings.getBuildDependencies(BuildSettings.groovy:673)&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;At first, I was confused.  This same error does not happen if you use the &lt;a href=&quot;https://github.com/grails/grails-maven&quot; target=&quot;_blank&quot;&gt;Grails Maven Plugin&lt;/a&gt; to build/run your application&amp;#8201;&amp;#8212;&amp;#8201;it only happens when using the
-&lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; CLI.  I also know that &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; &amp;#8656; 2.3.X does not support Java 8, so maybe it was related to that?  After looking at the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; source (and the stacktrace), I found some interesting code in the
-&lt;a href=&quot;https://github.com/apache/maven/blob/maven-3.1.1/maven-model-builder/src/main/java/org/apache/maven/model/profile/activation/JdkVersionProfileActivator.java&quot; target=&quot;_blank&quot;&gt;JdkVersionProfileActivator&lt;/a&gt;:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;String version = context.getSystemProperties().get( &quot;java.version&quot; );
-
-if ( version == null || version.length() &amp;lt;= 0 )
-{
-    problems.add( new ModelProblemCollectorRequest( Severity.ERROR, Version.BASE )
-            .setMessage( &quot;Failed to determine Java version for profile &quot; + profile.getId() )
-            .setLocation( activation.getLocation( &quot;jdk&quot; ) ) );
-    return false;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; code checks the &lt;code&gt;java.version&lt;/code&gt; system property to determine which version of the JDK is in use to see if it matches up with the requested profile.  After some additional digging in the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; source, I discovered that the
-&lt;a href=&quot;https://github.com/grails/grails-core/blob/master/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy&quot; target=&quot;_blank&quot;&gt;AetherDependencyManager&lt;/a&gt; programmatically builds a
-&lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; &lt;code&gt;DefaultModelBuildingRequest&lt;/code&gt;, but does &lt;strong&gt;not&lt;/strong&gt; pass the system properties from the JVM to the request.  Therefore, when the &lt;code&gt;JdkVersionProfileActivator&lt;/code&gt; attempts to look at the value of the &lt;code&gt;java.version&lt;/code&gt; system property, there
-are no properties to inspect!  I made a quick change to the &lt;code&gt;AetherDependencyManager&lt;/code&gt; class to add the setting of the system properties:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;final modelRequest = new DefaultModelBuildingRequest()
-modelRequest.setPomFile(pomFile)
-modelRequest.setSystemProperties(System.properties)
-modelRequest.setModelResolver(new GrailsModelResolver(repositorySystem, session, repositories))&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;After re-testing with the modified code, the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; happily accepted the JDK-based &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; profile without exception.  I have created a &lt;a href=&quot;https://github.com/grails/grails-core/pull/492&quot; target=&quot;_blank&quot;&gt;pull request&lt;/a&gt;, which has been merged into the
-2.4.x version of &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;.  If you need access to this fix earlier, I would suggest creating a branch off of the tagged version of &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; that you are currently using and cherry-picking the commit that contains the change.  You can then build
-the &lt;code&gt;grails-aether&lt;/code&gt; JAR and drop it into the &lt;code&gt;dist&lt;/code&gt; folder of your &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; installation to consume the change.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
