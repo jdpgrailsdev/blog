@@ -1,0 +1,62 @@
+= Eclipse, Environment Variables and Mac OSX
+Jonathan Pearlin
+2014-07-01
+:jbake-type: post
+:jbake-tags: eclipse,mac
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: eclipse_env_vars_mac_osx
+:icons: font
+:gradle: http://gradle.org[Gradle, window="_blank"]
+
+I ran into an issue the other day when attempting to run a {gradle} build script that invokes a process from within Eclipse.  For whatever reason, Eclipse does not pick up
+environment variables from the shell when launching on Mac OSX.  If you attempt to reference a command on your path from within Eclipse, you will most likely see
+an error similar to this one:
+
+[source]
+----
+java.io.IOException: Cannot run program "thrift": error=2, No such file or directory
+----
+
+
+Just to prove that I was not crazy and the `thrift` binary was indeed present on my path, I ran the following command from a terminal window:
+
+
+[source]
+----
+~$ thrift -version
+Thrift version 0.9.1
+----
+
+
+To correct this problem on Mac OSX, you can create a basic bash script to export the variables that you need (in my case, the binary was aleady included
+on my PATH environment variable) and then launch Eclipse:
+
+[source]
+.eclipseLauncher.sh
+----
+#!/bin/bash
+source ~/.profile
+/Applications/eclipse/eclipse
+----
+
+
+Next, create an `Automator` that can launch the new script.  To do so, follow these steps:
+
+. From the dock in Mac OSX, open Applications > Automator
+. Select "Application" from the document wizard.
+. Search for and select "Run Shell Script" from the "Actions" search box.
+. Enter the following into the text box in the "Run Shell Script" section:
+
+    /Applications/eclipse/eclipseLauncher.sh
+
+. Select "as arguments" in the "Pass Input" selector.
+
+You can test the new script from the Automator application before saving by clicking on the "Run" button in the upper right-hand corner of the Automator window.
+When you are ready, select "File > Save..." to save the new application automator script.  I recommend saving it in `/Applications/eclipse`.  **MAKE SURE THAT YOU DO
+NOT OVERWRITE THE EXISTING "Eclipse" APPLICATION**.
+
+Next up, add it to the dock by launching it via the Applications menu.  You can also open the `/Applications/eclipse` folder in the Finder, select the new application and right-click select "Get Info" if you want to change the icon.
+In the info window, click on the icon at the top of the window so that a blue halo appears around it.  In the finder window, select the original Eclipse application file and drag it over the icon in the info window to change the new application to use the Eclipse icon.
+
