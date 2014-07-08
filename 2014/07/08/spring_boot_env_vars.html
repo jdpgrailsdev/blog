@@ -85,31 +85,86 @@
 			</div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: gradle</h1>
+        <h1>Setting system properties/environment variables with Spring Boot and Gradle</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>July 2014</h4>
-            <ul>
+    <p><em>08 July 2014</em></p>
 
-        <li>08 - <a href="/blog/2014/07/08/spring_boot_env_vars.html">Setting system properties/environment variables with Spring Boot and Gradle</a></li>
-                </ul>
-                <h4>May 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/07/08/spring_boot_env_vars.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/07/08/spring_boot_env_vars.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/08/spring_boot_env_vars.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>13 - <a href="/blog/2014/05/13/gradle_update_deps.html">Automatically Update Dependencies in Gradle Project</a></li>
-                </ul>
-                <h4>April 2014</h4>
-                <ul>
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Out of the box, <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> ships with a <a href="http://gradle.org" target="_blank">Gradle</a> plugin that supports running your application, as well as building an executable JAR or WAR file.  The plugin
+extends off the stock <a href="http://gradle.org" target="_blank">Gradle</a> <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html" target="_blank">JavaExec Task</a>, which means that you can
+use any of the task&#8217;s configuration properties to customize how your application runs when launching it via <a href="http://gradle.org" target="_blank">Gradle</a> (e.g. <code>./gradlew run</code>).  For instance, if you
+would like to set some system properties, environment variables and/or other any other support JVM properties/arguments, you simply need to define an additional <code>run</code>
+configuration block in your <code>build.gradle</code> build script:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>apply plugin: 'java'
+apply plugin: 'spring-boot'
 
-        <li>29 - <a href="/blog/2014/04/29/gradle_cobertura.html">Code Coverage with Cobertura</a></li>
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath('org.springframework.boot:spring-boot-gradle-plugin:1.1.4.RELEASE')
+    }
+}
 
-        <li>22 - <a href="/blog/2014/04/22/grails_gradle_logback.html">The Grails Gradle Plugin and Logback</a></li>
+run {
+    environment = ['ENV' : 'dev']
+    maxHeapSize = '512M'
+    systemProperties = ['serverPort':'8085']
+}
 
-        <li>15 - <a href="/blog/2014/04/15/gradle_api_dependencies.html">Gradle API and Transitive Dependencies</a></li>
+springBoot {
+    mainClass = 'com.test.Application'
+}
 
-        <li>08 - <a href="/blog/2014/04/08/spring_boot_gradle_newrelic.html">Using the New Relic agent with Spring-Boot and Gradle</a></li>
-    </ul>
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    ...
+}
+</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For a complete list of the properties of the <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html" target="_blank">JavaExec Task</a> that can be
+set, see the <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html#N1E1D1" target="_blank">Properties</a> of the
+<a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html" target="_blank">JavaExec Task Gradle Documentation</a>.</p>
+</div>
+</div>
+</div></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/07/08/spring_boot_env_vars.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/07/08/spring_boot_env_vars.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/08/spring_boot_env_vars.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2014/07/08/spring_boot_env_vars.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    <hr>
 
             </div>
             <div id="push"></div>
