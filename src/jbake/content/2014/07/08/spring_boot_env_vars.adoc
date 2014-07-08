@@ -19,7 +19,7 @@ configuration block in your `build.gradle` build script:
 
 [source,groovy]
 .build.gradle
----
+----
 apply plugin: 'java'
 apply plugin: 'spring-boot'
 
@@ -28,7 +28,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('org.springframework.boot:spring-boot-gradle-plugin:1.1.1.RELEASE')
+        classpath('org.springframework.boot:spring-boot-gradle-plugin:1.1.4.RELEASE')
     }
 }
 
@@ -50,7 +50,7 @@ dependencies {
     ...
 }
 
----
+----
 
 For a complete list of the properties of the http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html[JavaExec Task, window="_blank"] that can be
 set, see the http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html#N1E1D1["Properties", window="_blank"] of the
