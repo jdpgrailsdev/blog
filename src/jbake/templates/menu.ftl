@@ -17,6 +17,7 @@
                             <li class="dropdown">
                                 <a data-toggle="dropdown" href="#">Tags<b class="caret"></b></a>
                                 <ul class="dropdown-menu" role="menu">
+                                    <li><a href="/blog/tags/docker.html">Docker</a></li>
                                     <li><a href="/blog/tags/gradle.html">Gradle</a></li>
                                     <li><a href="/blog/tags/grails.html">Grails</a></li>
                                     <li><a href="/blog/tags/groovy.html">Groovy</a></li>
@@ -35,16 +36,16 @@
                     </div>
                 </div>
             </div>
-			<div id="activity" class="pull-left">
-	            <div class="panel panel-primary">
-	                  <!-- Default panel contents -->
-	                  <div class="panel-heading"><a target="_blank" href="http://github.com/jdpgrailsdev?tab=activity"><i class="fa fa-github"></i> My Recent GitHub Activity</a></div>
-					  <div class="panel-body">
-					      <i class='icon-spinner icon-spin icon-large'></i> Loading...
-					  </div>
-	                  <!-- List group -->
+            <div id="activity" class="pull-left">
+                <div class="panel panel-primary">
+                      <!-- Default panel contents -->
+                      <div class="panel-heading"><a target="_blank" href="http://github.com/jdpgrailsdev?tab=activity"><i class="fa fa-github"></i> My Recent GitHub Activity</a></div>
+                      <div class="panel-body">
+                          <i class='icon-spinner icon-spin icon-large'></i> Loading...
+                      </div>
+                      <!-- List group -->
                       <ul class="list-group">
-	                  </ul>
-	            </div>
-			</div>
+                      </ul>
+                </div>
+            </div>
             <div class="container">
