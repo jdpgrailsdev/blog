@@ -38,4 +38,4 @@ root@laptop-mbp:~/sample_app$ ./gradlew run
 Listening for transport dt_socket at address: 4000
 ----
 
-Once the debugger is attached, it will halt execution when it comes across any break points set in the debugger.
+Once the debugger is attached, execution will continue on normally, halting only when it comes across any break points set in the debugger.
