@@ -85,15 +85,71 @@
 			</div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag:  eclipse</h1>
+        <h1>Remote debugging a Spring Boot application launched by the Gradle plugin</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>August 2011</h4>
-            <ul>
+    <p><em>15 July 2014</em></p>
 
-        <li>14 - <a href="/blog/2011/08/14/war_of_the_worlds.html">War of the Worlds</a></li>
-    </ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/07/15/spring_boot_remote_debug.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/07/15/spring_boot_remote_debug.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/15/spring_boot_remote_debug.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>It is very helpful to be able to set break points in your IDE and attach to a running application to debug what is going on.  Java provides this functionality via
+the <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/jpda/conninv.html" target="_blank">JPDA Transport</a>.  Additionally, because the <a href="http://docs.spring.io/spring-boot/docs/1.1.1.RELEASE/reference/html/build-tool-plugins-gradle-plugin.html" target="_blank">Spring Boot Gradle Plugin</a>
+is built on top of the existing <a href="http://www.gradle.org/docs/current/userguide/application_plugin.html" target="_run">Gradle Application Plugin</a>, it is easy to provide JVM
+arguments to the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application launcher from your <a href="http://gradle.org" target="_blank">Gradle</a> build script:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>run {
+    jvmArgs = ['-Xdebug', '-Xrunjdwp:server=y,transport=dt_socket,address=4000,suspend=y']
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When running the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application from <a href="http://gradle.org" target="_blank">Gradle</a>, the application will wait on start up until a remote debugger (such as from your IDE) connects to the
+process on port 4000 via the JPDA Transport protocol:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint"><code>root@laptop-mbp:~/sample_app$ ./gradlew run
+:compileJava
+:compileGroovy UP-TO-DATE
+:processResources UP-TO-DATE
+:classes
+:findMainClass
+:run
+Listening for transport dt_socket at address: 4000</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once the debugger is attached, execution will continue on normally, halting only when it comes across any break points set in the debugger.</p>
+</div>
+</div>
+</div></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/07/15/spring_boot_remote_debug.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/07/15/spring_boot_remote_debug.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/15/spring_boot_remote_debug.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2014/07/15/spring_boot_remote_debug.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    <hr>
 
             </div>
             <div id="push"></div>
