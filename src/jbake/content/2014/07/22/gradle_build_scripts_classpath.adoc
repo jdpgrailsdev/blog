@@ -2,7 +2,7 @@
 Jonathan Pearlin
 2014-07-22
 :jbake-type: post
-:jbake-tags: gradle
+:jbake-tags: spring,gradle
 :jbake-status: published
 :source-highlighter: prettify
 :linkattrs:
