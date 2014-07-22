@@ -6,13 +6,125 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 15 Jul 2014 11:10:16 -0400</pubDate>
-        <lastBuildDate>Tue, 15 Jul 2014 11:10:16 -0400</lastBuildDate>
+        <pubDate>Tue, 22 Jul 2014 08:54:08 -0400</pubDate>
+        <lastBuildDate>Tue, 22 Jul 2014 08:54:08 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Discovering Gradle build scripts from classpath</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/07/22/gradle_build_scripts_classpath.html</link>
+            <pubDate>Tue, 22 Jul 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">2014/07/22/gradle_build_scripts_classpath.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; currently supports two different way to reference other &lt;code&gt;.gradle&lt;/code&gt; files from a build script:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;olist arabic&quot;&gt;
+&lt;ol class=&quot;arabic&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;Apply a script from file via &lt;code&gt;apply from: &apos;path/to/some/script.gradle&apos;&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Apply a script from URL via &lt;code&gt;apply from: &apos;http://some/url/script.gradle&apos;&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The first is great for one-off scripts in your project, but is not really helpful when you want to share &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; scripts among projects.  The second
+approach would work for sharing, but is really limited with regards to the supported functionality (e.g. you cannot specify HTTP headers to handle login/security
+concerns, etc).  While you can obviously create a plugin that approximates the logic in the script that you want to share, its a pain to have to create a new
+project and push it to your artifact repository each time you want to share build logic.  The solution?  Create a single &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin that is capable of scanning
+the build script classpath at execution time to find and apply &lt;code&gt;.gradle&lt;/code&gt; files to the current project.  This approach uses the &lt;code&gt;PathMatchingResourcePatternResolver&lt;/code&gt;
+class from the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt;  to locate each &lt;code&gt;.gradle&lt;/code&gt; file.  Once the files have been located, the
+files are read from the classpath and extracted to a temporary &lt;code&gt;scripts&lt;/code&gt; folder under the project&amp;#8217;s build directory and then applied to the current project via
+the file-based approach outlined above.  Here is the entire plugin code:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;class BuildScriptSupportPlugin implements Plugin&amp;lt;Project&amp;gt; {
+
+    /**
+     * Spring {@link PathMatchingResourcePatternResolver} used to find all Gradle scripts
+     * on the classpath.
+     */
+    private PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver(getClass().getClassLoader());
+
+    @Override
+    public void apply(Project project) {
+        project.logger?.debug(&quot;Applying Build Script Support Plugin to ${project.name}...&quot;)
+
+        // Make sure the output directory for the extracted scripts exists.
+        File outputDirectory = new File(project.buildDir, &apos;scripts&apos;)
+        outputDirectory.mkdirs()
+
+        // Find all .gradle files in the &quot;scripts&quot; package on the class path.
+        Resource[] resources = resourceResolver.findPathMatchingResources(&apos;classpath:/scripts/*.gradle&apos;)
+
+        // For each script, copy it from the class path to the output directory and then apply it to the project.
+        resources.each { Resource resource -&amp;gt;
+            try {
+                File output = new File(outputDirectory, resource.getFilename())
+                output.withWriter { writer -&amp;gt;
+                    writer.write(new InputStreamReader(resource.getInputStream()).getText())
+                }
+                project.apply([from: &quot;${outputDirectory}/${resource.getFilename()}&quot;])
+            } catch (e) {
+                project.logger?.error(&quot;Unable to retrieve and apply bulid script &apos;${resource.getFilename()}&apos;: ${e.getMessage()}&quot;)
+            }
+        }
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;By convention, the plugin looks for the extra scripts in the &lt;code&gt;scripts&lt;/code&gt; package on the classpath.  In practice, I put the scripts in &lt;code&gt;src/main/resources/scripts&lt;/code&gt;
+in the projects/libraries that I use to bundle up the shared scripts.  To use the plugin and any libraries that may contain build scripts in your project, simply add
+them to your &lt;code&gt;build.gradle&lt;/code&gt; script in the &lt;code&gt;buildScript&lt;/code&gt; section:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;apply plugin: &apos;build-script-support&apos;
+
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url &apos;your local repo URL&apos; }
+    }
+    dependencies {
+        classpath(&apos;org.gradle.plugins:gradle-build-script-support-plugin:1.0.0-SNAPSHOT&apos;)
+        classpath(&apos;com.example:custom-gradle-scripts:1.0.0-SNAPSHOT&apos;)
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Future enhancements to this plugin will/could include the following:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;ulist&quot;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Include/Exclude patterns for script names when scanning&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Script name disambiguation to avoid two scripts from two different JAR&amp;#8217;s with the same name clobbering each other.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Ability to explicitly specify location of script on classpath to scan (to support situations where a script cannot be moved to the conventional place).&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;It should be noted that the code above was written and used with &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; 1.12 and has not yet been tested with 2.0, though I don&amp;#8217;t expect any issues.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Remote debugging a Spring Boot application launched by the Gradle plugin</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/07/15/spring_boot_remote_debug.html</link>
@@ -313,71 +425,6 @@ by updating the version of &lt;a href=&quot;http://logback.qos.ch/&quot; target=
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;The code above printed out an empty list.  After some head scratching, I determined that the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; was somehow overwriting/replacing the &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; configuration set up by the &lt;code&gt;logback.groovy&lt;/code&gt; file.  I decided
 to remove the dependency on the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; from &lt;code&gt;grails-app/conf/BuildConfig.groovy&lt;/code&gt; as I am not using the DSL from &lt;code&gt;grails-app/conf/*Config.groovy&lt;/code&gt;. After removing the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; entirely, everything worked as expected!&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>A Tomcat Rolling File Appender with Logback</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/06/17/logback_tomcat_rolling_appender.html</link>
-            <pubDate>Tue, 17 Jun 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">2014/06/17/logback_tomcat_rolling_appender.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Recently, I needed to add a &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; configuration to an application that is deployed in &lt;a href=&quot;http://tomcat.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Tomcat&lt;/a&gt;.  I wanted to
-ensure that my log files did not grow in an unbounded manner.  To protect against this, I decided to use the &lt;code&gt;RollingFileAppender&lt;/code&gt; provided by &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt;.  That is an
-obvious choice to solve this problem, but I wanted to ensure that when running the application in &lt;a href=&quot;http://tomcat.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Tomcat&lt;/a&gt;, the generated
-log files end up in &lt;code&gt;${catalina.base}/logs&lt;/code&gt; and when running locally via something like the &lt;a href=&quot;http://tomcat.apache.org/maven-plugin-trunk/tomcat7-maven-plugin/&quot; target=&quot;_blank&quot;&gt;Maven Apache Tomcat Plugin&lt;/a&gt;
-it chose an appropriate output directory.  I arrive at the following &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt;-based &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; configuration file:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;logback.groovy&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;import static ch.qos.logback.classic.Level.INFO
-
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder
-import ch.qos.logback.core.rolling.FixedWindowRollingPolicy
-import ch.qos.logback.core.rolling.RollingFileAppender
-import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy
-import ch.qos.logback.core.status.OnConsoleStatusListener
-
-// Print out the Logback configuration information at startup.
-statusListener OnConsoleStatusListener
-
-def BASE_DIR = System.getProperty(&apos;catalina.base&apos;) ?: System.getProperty(&apos;user.dir&apos;)	&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;(1)&lt;/b&gt;
-
-appender(&quot;WEBAPP&quot;, RollingFileAppender) {
-    file = &quot;${BASE_DIR}/logs/application.log&quot;
-    encoder(PatternLayoutEncoder) {
-        pattern = &quot;%-50(%date{ISO8601} [%thread]) %-5level %logger{50} - %msg%n%rEx&quot;
-    }
-    triggeringPolicy(SizeBasedTriggeringPolicy) {
-        maxFileSize = &apos;10MB&apos;
-    }
-    rollingPolicy(FixedWindowRollingPolicy) {
-        fileNamePattern = &quot;${BASE_DIR}/logs/application-%d{yyyyMMdd_hhmmss}.%i.gz&quot;
-        maxIndex = 10
-    }
-}
-
-root(INFO, [&quot;WEBAPP&quot;])&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;colist arabic&quot;&gt;
-&lt;table&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;i class=&quot;conum&quot; data-value=&quot;1&quot;&gt;&lt;/i&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;
-&lt;td&gt;If the &lt;code&gt;catalina.base&lt;/code&gt; property is present and not blank, use it.  Otherwise, use the current user&amp;#8217;s directory as the base for the log file.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The configuration above ensures that not only will the log files be rotated based on size, but that the files will be created in the appropriate location based
-on the inspection of the &lt;code&gt;catalina.base&lt;/code&gt; and &lt;code&gt;user.dir&lt;/code&gt; system properties.  Because the configuration is written in &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt;, we can
-use any sort of logic we want to manipulate the &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; configuration at runtime to ensure the proper setup for the logging infrastructure in our application.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
