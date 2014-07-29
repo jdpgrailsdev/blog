@@ -6,17 +6,78 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 22 Jul 2014 08:57:51 -0400</pubDate>
-        <lastBuildDate>Tue, 22 Jul 2014 08:57:51 -0400</lastBuildDate>
+        <pubDate>Tue, 29 Jul 2014 07:42:46 -0700</pubDate>
+        <lastBuildDate>Tue, 29 Jul 2014 07:42:46 -0700</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
         <item>
+            <title>Leveraging Spring Boot Starters in Unit/Integration Tests</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html</link>
+            <pubDate>Tue, 29 Jul 2014 00:00:00 -0700</pubDate>
+            <guid isPermaLink="false">2014/07/29/spring_boot_integration_tests.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; provides a nice &lt;a href=&quot;http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner&quot; target=&quot;_blank&quot;&gt;JUnit integration&lt;/a&gt;, which allows one to write integration-style tests that make use of a fully loaded and configured Spring context.
+This is great help when writing an integration test suite to test something like a database, as you do not need to manually create all the code required to interact
+with the database.  Instead, you can rely upon Spring to configure the beans just as it would at runtime.  Recently, I found myself in a situation where I needed to
+write just such an integration test, though this time for an application that uses &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;.  You do not need to do anything special to leverage the &lt;a href=&quot;http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner&quot; target=&quot;_blank&quot;&gt;JUnit integration&lt;/a&gt;
+integration, as that is provided by the &lt;a href=&quot;https://github.com/spring-projects/spring-framework/tree/master/spring-test&quot; target=&quot;_blank&quot;&gt;Spring Test module&lt;/a&gt; of the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt;
+project.  What you do not get by default, is all of the auto-configuration magic that &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; provides, including logging configuration.  With the release of &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;
+1.1.4, it is now possible to add the following to your &lt;code&gt;application.properties&lt;/code&gt; or &lt;code&gt;application.yml&lt;/code&gt; configuration file to control the logging output:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;logging.level.org.springframework: ERROR&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Additionally, I wanted to be able to turn on SQL logging when executing my integration tests via the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; JPA configuration:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;spring.jpa.properties.hibernate.show_sql: true&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;However, simply using the &lt;a href=&quot;http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner&quot; target=&quot;_blank&quot;&gt;JUnit integration&lt;/a&gt; does not cause &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; to load the configuration or perform any of the auto-configuration that it does when running the application.
+To enable &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; to work its magic when running unit/integration tests that load a context, the first step is to include the &lt;code&gt;spring-boot-starter-test&lt;/code&gt; dependency:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;testCompile &apos;org.springframework.boot:spring-boot-starter-test:1.1.4.RELEASE&apos;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The presence of this dependency will cause &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; to perform all the normal start-up auto-configuration that occurs when running the application.  However, in order for this to
+actually happen, you need to tell JUnit to use the &lt;code&gt;SpringApplicationContextLoader&lt;/code&gt; when loading the context:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes={TestConfiguration.class}, loader = SpringApplicationContextLoader.class)
+public class DatabaseIntegrationTests {
+    ...
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;When the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; loads the test configuration, it does so via &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;&apos;s &lt;code&gt;SpringApplicationContextLoader&lt;/code&gt;, which is provided by the &lt;code&gt;spring-boot-starter-test&lt;/code&gt;.  This
+context loader supports all of the auto-configuration magic that we know and love in &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;.  Now, you can adjust logging levels, provide configuration and have your contexts
+make use of the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; auto-configuration annotations as part of your test suite!&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
+        <item>
             <title>Discovering Gradle build scripts from classpath</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/07/22/gradle_build_scripts_classpath.html</link>
-            <pubDate>Tue, 22 Jul 2014 00:00:00 -0400</pubDate>
+            <pubDate>Tue, 22 Jul 2014 00:00:00 -0700</pubDate>
             <guid isPermaLink="false">2014/07/22/gradle_build_scripts_classpath.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -128,7 +189,7 @@ buildscript {
         <item>
             <title>Remote debugging a Spring Boot application launched by the Gradle plugin</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/07/15/spring_boot_remote_debug.html</link>
-            <pubDate>Tue, 15 Jul 2014 00:00:00 -0400</pubDate>
+            <pubDate>Tue, 15 Jul 2014 00:00:00 -0700</pubDate>
             <guid isPermaLink="false">2014/07/15/spring_boot_remote_debug.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -172,7 +233,7 @@ Listening for transport dt_socket at address: 4000&lt;/code&gt;&lt;/pre&gt;
         <item>
             <title>Setting system properties/environment variables with Spring Boot and Gradle</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/07/08/spring_boot_env_vars.html</link>
-            <pubDate>Tue, 8 Jul 2014 00:00:00 -0400</pubDate>
+            <pubDate>Tue, 8 Jul 2014 00:00:00 -0700</pubDate>
             <guid isPermaLink="false">2014/07/08/spring_boot_env_vars.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -231,7 +292,7 @@ set, see the &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.
         <item>
             <title>Eclipse, Environment Variables and Mac OSX</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/07/01/eclipse_env_vars_mac_osx.html</link>
-            <pubDate>Tue, 1 Jul 2014 00:00:00 -0400</pubDate>
+            <pubDate>Tue, 1 Jul 2014 00:00:00 -0700</pubDate>
             <guid isPermaLink="false">2014/07/01/eclipse_env_vars_mac_osx.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -302,129 +363,6 @@ NOT OVERWRITE THE EXISTING &quot;Eclipse&quot; APPLICATION&lt;/strong&gt;.&lt;/p
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;Next up, add it to the dock by launching it via the Applications menu.  You can also open the &lt;code&gt;/Applications/eclipse&lt;/code&gt; folder in the Finder, select the new application and right-click select &quot;Get Info&quot; if you want to change the icon.
 In the info window, click on the icon at the top of the window so that a blue halo appears around it.  In the finder window, select the original Eclipse application file and drag it over the icon in the info window to change the new application to use the Eclipse icon.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Grails and Logback Revisited</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/06/24/logback_grails.html</link>
-            <pubDate>Tue, 24 Jun 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">2014/06/24/logback_grails.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;&lt;a href=&quot;http://jonathanpearlin.com/2014/03/24/grails_logback.html&quot; target=&quot;_blank&quot;&gt;Previously&lt;/a&gt;, I blogged about using &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; with &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt;.  While the contents of that post are mostly accurate, I have uncovered a few issues
-with that approach, mostly related to the use of the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt;.  The &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; is intended to only work the &lt;code&gt;logback&lt;/code&gt; DSL in &lt;code&gt;grails-app/conf/*Config.groovy&lt;/code&gt;.  If you attempt to use your own custom &lt;code&gt;logback.xml&lt;/code&gt;
-or &lt;code&gt;logback.groovy&lt;/code&gt;, it is ignored, even though &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; may report that it was loaded.  My suspicion is that the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; plugin is re-initializing &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; after the fact, thus erasing any configuration loaded
-from the configuration files.  Additionally, the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; depends on version 1.0.12 of &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt;, which is about 3 to 4 release behind the latest release.  I arrived at the conclusion that the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; was interferring with
-my configuration files by using the following &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; configuration:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;logback.groovy&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;import static ch.qos.logback.classic.Level.ERROR
-import static ch.qos.logback.classic.Level.INFO
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder
-import ch.qos.logback.core.ConsoleAppender
-import ch.qos.logback.core.rolling.FixedWindowRollingPolicy
-import ch.qos.logback.core.rolling.RollingFileAppender
-import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy
-import ch.qos.logback.core.status.OnConsoleStatusListener
-
-def BASE_DIR = System.getProperty(&apos;catalina.base&apos;) ?: System.getProperty(&apos;user.dir&apos;)
-
-statusListener OnConsoleStatusListener
-jmxConfigurator(&apos;myapp:type=LoggerManager&apos;)
-
-appender(&apos;STDOUT&apos;, ConsoleAppender) {
-    encoder(PatternLayoutEncoder) {
-        pattern = &apos;%-50(%date{ISO8601} [%thread]) %-5level %logger{50} - %msg%n%rEx&apos;
-    }
-}
-
-logger(&apos;org.codehaus.groovy.grails&apos;, ERROR, [&apos;STDOUT&apos;], false)
-logger(&apos;org.springframework&apos;, ERROR, [&apos;STDOUT&apos;], false)
-logger(&apos;org.hibernate&apos;, ERROR, [&apos;STDOUT&apos;], false)
-logger(&apos;net.sf.ehcache&apos;, ERROR, [&apos;STDOUT&apos;], false)
-logger(&apos;grails.plugin&apos;, ERROR, [&apos;STDOUT&apos;], false)
-logger(&apos;org.grails.plugin&apos;, ERROR, [&apos;STDOUT&apos;], false)
-logger(&apos;grails.app&apos;, INFO, [&apos;STDOUT&apos;], false)
-
-root(INFO, [&apos;STDOUT&apos;])&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;When starting the application with this configuration, the only output reported by &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; is the following:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;13:27:25,368 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@61b99295 - Added status listener of type [ch.qos.logback.core.status.OnConsoleStatusListener]
-13:27:25,549 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@61b99295 - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
-13:27:25,550 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@61b99295 - Naming appender as [STDOUT]&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;This is very strange, as &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; was not reporting that any loggers were created or that those loggers have been associated with one or more appenders.  After some digging through
-the &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; &lt;code&gt;ch.qos.logback.classic.gaffer.ConfigurationDelegate&lt;/code&gt; class, which handles the DSL from the above configuration, I noticed that the most recent version of &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; (1.1.2)
-has much better output during startup.  I decided to change my &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; application to explicitly depend on the latest &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; version:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;BuildConfig.groovy&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;plugins {
-    compile &apos;:logback:0.3.1&apos;
-}
-
-dependencies {
-    compile &apos;ch.qos.logback:logback-core:1.1.2&apos;
-    compile &apos;ch.qos.logback:logback-classic:1.1.2&apos;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;After restarting the &lt;a href=&quot;http://grails.org&quot; target=&quot;_blank&quot;&gt;Grails&lt;/a&gt; application, I saw the following output:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;13:32:36,412 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Added status listener of type [ch.qos.logback.core.status.OnConsoleStatusListener]
-13:32:36,556 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
-13:32:36,557 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Naming appender as [STDOUT]
-13:32:36,981 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [org.codehaus.groovy.grails] to ERROR
-13:32:36,989 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[org.codehaus.groovy.grails]
-13:32:37,070 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [org.springframework] to ERROR
-13:32:37,070 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[org.springframework]
-13:32:37,071 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [org.hibernate] to ERROR
-13:32:37,071 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[org.hibernate]
-13:32:37,071 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [net.sf.ehcache] to ERROR
-13:32:37,071 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[net.sf.ehcache]
-13:32:37,072 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [grails.plugin] to ERROR
-13:32:37,072 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[grails.plugin]
-13:32:37,072 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [org.grails.plugin] to ERROR
-13:32:37,072 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[org.grails.plugin]
-13:32:37,073 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [grails.app] to INFO
-13:32:37,073 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[grails.app]
-13:32:37,074 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [ROOT] to INFO
-13:32:37,074 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[ROOT]&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Sweet.  &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; appeared to be configured and working as expected.  After clicking around my application and not seeing anything log to the console, I became very suspicious that I had solved the problem simply
-by updating the version of &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; used by the application.  I decided to print out the appenders associated with one of the loggers to verify that the &lt;code&gt;ConfigurationDelegate&lt;/code&gt; actually set things up properly:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;Bootstrap.groovy&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;def init = { servletContext -&amp;gt;
-    println &quot;Appenders = ${LoggerFactory.getLogger(&apos;grails.app&apos;).aai.appenderList&quot;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The code above printed out an empty list.  After some head scratching, I determined that the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; was somehow overwriting/replacing the &lt;a href=&quot;http://logback.qos.ch/&quot; target=&quot;_blank&quot;&gt;Logback&lt;/a&gt; configuration set up by the &lt;code&gt;logback.groovy&lt;/code&gt; file.  I decided
-to remove the dependency on the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; from &lt;code&gt;grails-app/conf/BuildConfig.groovy&lt;/code&gt; as I am not using the DSL from &lt;code&gt;grails-app/conf/*Config.groovy&lt;/code&gt;. After removing the &lt;a href=&quot;http://grails.org/plugin/logback&quot; target=&quot;_blank&quot;&gt;Grails Logback Plugin&lt;/a&gt; entirely, everything worked as expected!&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

@@ -87,41 +87,88 @@
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: spring</h1>
+        <h1>Leveraging Spring Boot Starters in Unit/Integration Tests</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>July 2014</h4>
-            <ul>
+    <p><em>29 July 2014</em></p>
 
-        <li>29 - <a href="/blog/2014/07/29/spring_boot_integration_tests.html">Leveraging Spring Boot Starters in Unit/Integration Tests</a></li>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>22 - <a href="/blog/2014/07/22/gradle_build_scripts_classpath.html">Discovering Gradle build scripts from classpath</a></li>
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> provides a nice <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank">JUnit integration</a>, which allows one to write integration-style tests that make use of a fully loaded and configured Spring context.
+This is great help when writing an integration test suite to test something like a database, as you do not need to manually create all the code required to interact
+with the database.  Instead, you can rely upon Spring to configure the beans just as it would at runtime.  Recently, I found myself in a situation where I needed to
+write just such an integration test, though this time for an application that uses <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  You do not need to do anything special to leverage the <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank">JUnit integration</a>
+integration, as that is provided by the <a href="https://github.com/spring-projects/spring-framework/tree/master/spring-test" target="_blank">Spring Test module</a> of the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a>
+project.  What you do not get by default, is all of the auto-configuration magic that <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> provides, including logging configuration.  With the release of <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>
+1.1.4, it is now possible to add the following to your <code>application.properties</code> or <code>application.yml</code> configuration file to control the logging output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint"><code>logging.level.org.springframework: ERROR</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Additionally, I wanted to be able to turn on SQL logging when executing my integration tests via the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> JPA configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint"><code>spring.jpa.properties.hibernate.show_sql: true</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, simply using the <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank">JUnit integration</a> does not cause <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> to load the configuration or perform any of the auto-configuration that it does when running the application.
+To enable <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> to work its magic when running unit/integration tests that load a context, the first step is to include the <code>spring-boot-starter-test</code> dependency:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>testCompile 'org.springframework.boot:spring-boot-starter-test:1.1.4.RELEASE'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The presence of this dependency will cause <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> to perform all the normal start-up auto-configuration that occurs when running the application.  However, in order for this to
+actually happen, you need to tell JUnit to use the <code>SpringApplicationContextLoader</code> when loading the context:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint java language-java"><code>@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes={TestConfiguration.class}, loader = SpringApplicationContextLoader.class)
+public class DatabaseIntegrationTests {
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> loads the test configuration, it does so via <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>'s <code>SpringApplicationContextLoader</code>, which is provided by the <code>spring-boot-starter-test</code>.  This
+context loader supports all of the auto-configuration magic that we know and love in <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  Now, you can adjust logging levels, provide configuration and have your contexts
+make use of the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> auto-configuration annotations as part of your test suite!</p>
+</div>
+</div>
+</div></p>
 
-        <li>15 - <a href="/blog/2014/07/15/spring_boot_remote_debug.html">Remote debugging a Spring Boot application launched by the Gradle plugin</a></li>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/07/29/spring_boot_integration_tests.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>08 - <a href="/blog/2014/07/08/spring_boot_env_vars.html">Setting system properties/environment variables with Spring Boot and Gradle</a></li>
-                </ul>
-                <h4>June 2014</h4>
-                <ul>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2014/07/29/spring_boot_integration_tests.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-        <li>03 - <a href="/blog/2014/06/03/spring_boot_jersey_2.html">Spring Boot, Jersey and Lazy Initialization</a></li>
-                </ul>
-                <h4>April 2014</h4>
-                <ul>
-
-        <li>08 - <a href="/blog/2014/04/08/spring_boot_gradle_newrelic.html">Using the New Relic agent with Spring-Boot and Gradle</a></li>
-                </ul>
-                <h4>March 2014</h4>
-                <ul>
-
-        <li>18 - <a href="/blog/2014/03/18/grails_bean_builder.html">Parsing the Grails Spring Beans DSL with Groovy</a></li>
-                </ul>
-                <h4>February 2014</h4>
-                <ul>
-
-        <li>19 - <a href="/blog/2014/02/19/spring_curator.html">Spring and Apache Curator</a></li>
-    </ul>
+    <hr>
 
             </div>
             <div id="push"></div>
