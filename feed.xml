@@ -6,17 +6,100 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 29 Jul 2014 07:42:46 -0700</pubDate>
-        <lastBuildDate>Tue, 29 Jul 2014 07:42:46 -0700</lastBuildDate>
+        <pubDate>Tue, 5 Aug 2014 10:06:02 -0400</pubDate>
+        <lastBuildDate>Tue, 5 Aug 2014 10:06:02 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
         <item>
+            <title>Updating to the latest Docker/Boot2Docker version</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/08/05/docker_upgrade.html</link>
+            <pubDate>Tue, 5 Aug 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">2014/08/05/docker_upgrade.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Not too long ago, the &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; project released 1.0 release, which among many improvements includes a new default port for &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt;.  To update from &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt;
+ &amp;lt; 1.0 to &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; &amp;gt;= 1.0, you may run into issues as the port that &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; listens on by default has changed from 4243 to 2375.  While things
+may appear to start correctly after an upgrade, you may see the following error when attempting to run any &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; client command:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;$ boot2docker up
+
+Cannot connect to the Docker daemon. Is &apos;docker -d&apos; running on this host?&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;This is because your &lt;a href=&quot;https://www.virtualbox.org/&quot; target=&quot;_blank&quot;&gt;Virtual Box&lt;/a&gt; &quot;boot2docker-vm&quot; image is still listening on the old port and therefore is not receiving the forwarded commands.  You can verify this by
+starting up &lt;a href=&quot;https://github.com/boot2docker/boot2docker&quot; target=&quot;_blank&quot;&gt;Boot2Docker&lt;/a&gt; and ssh&amp;#8217;ing (&lt;code&gt;boot2docker ssh&lt;/code&gt;) into the VM to check the port that docker is listening on:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;docker@boot2docker:~$ sudo netstat -ntpl | grep docker
+tcp        0      0 :::4243                :::*                    LISTEN      627/docker&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;To fix this, use the following steps:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;olist arabic&quot;&gt;
+&lt;ol class=&quot;arabic&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;Update to latest &lt;a href=&quot;https://github.com/boot2docker/boot2docker&quot; target=&quot;_blank&quot;&gt;Boot2Docker&lt;/a&gt; and &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; via &lt;a href=&quot;http://brew.sh/&quot; target=&quot;_blank&quot;&gt;Homebrew&lt;/a&gt; (installing &lt;a href=&quot;https://github.com/boot2docker/boot2docker&quot; target=&quot;_blank&quot;&gt;Boot2Docker&lt;/a&gt; will automatically install/update &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; to the corresponding version).&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Run &lt;code&gt;boot2docker delete&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Delete the existing &lt;code&gt;~/.boot2docker&lt;/code&gt; directory.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Run &lt;code&gt;boot2docker init&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Open &lt;a href=&quot;https://www.virtualbox.org/&quot; target=&quot;_blank&quot;&gt;Virtual Box&lt;/a&gt;, select the &lt;code&gt;boot2docker-vm&lt;/code&gt; and click on the &quot;Settings&quot; button.&lt;/p&gt;
+&lt;div class=&quot;olist loweralpha&quot;&gt;
+&lt;ol class=&quot;loweralpha&quot; type=&quot;a&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;Click on the &quot;Network button&quot; in the settings window, expand the &quot;Advanced&quot; area and click on the &quot;Port Forwarding&quot; button.  Verify that 2375 and 2022 are in the list.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Run &lt;code&gt;boot2docker up&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Run &lt;code&gt;boot2docker ssh&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;In the VM, run the following command to verify that &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; is listening on port 2375:&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;sudo netstat -ntpl | grep docker
+
+docker@boot2docker:~$ sudo netstat -ntpl | grep docker
+tcp        0      0 :::2375                 :::*                    LISTEN      627/docker&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;You should now be able to connect to &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; and use the command line client and the REST API!&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
+        <item>
             <title>Leveraging Spring Boot Starters in Unit/Integration Tests</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html</link>
-            <pubDate>Tue, 29 Jul 2014 00:00:00 -0700</pubDate>
+            <pubDate>Tue, 29 Jul 2014 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2014/07/29/spring_boot_integration_tests.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -77,7 +160,7 @@ make use of the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; ta
         <item>
             <title>Discovering Gradle build scripts from classpath</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/07/22/gradle_build_scripts_classpath.html</link>
-            <pubDate>Tue, 22 Jul 2014 00:00:00 -0700</pubDate>
+            <pubDate>Tue, 22 Jul 2014 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2014/07/22/gradle_build_scripts_classpath.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -124,7 +207,7 @@ the file-based approach outlined above.  Here is the entire plugin code:&lt;/p&g
         outputDirectory.mkdirs()
 
         // Find all .gradle files in the &quot;scripts&quot; package on the class path.
-        Resource[] resources = resourceResolver.findPathMatchingResources(&apos;classpath:/scripts/*.gradle&apos;)
+        Resource[] resources = resourceResolver.findPathMatchingResources(&apos;classpath*:/scripts/*.gradle&apos;)
 
         // For each script, copy it from the class path to the output directory and then apply it to the project.
         resources.each { Resource resource -&amp;gt;
@@ -189,7 +272,7 @@ buildscript {
         <item>
             <title>Remote debugging a Spring Boot application launched by the Gradle plugin</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/07/15/spring_boot_remote_debug.html</link>
-            <pubDate>Tue, 15 Jul 2014 00:00:00 -0700</pubDate>
+            <pubDate>Tue, 15 Jul 2014 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2014/07/15/spring_boot_remote_debug.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -233,7 +316,7 @@ Listening for transport dt_socket at address: 4000&lt;/code&gt;&lt;/pre&gt;
         <item>
             <title>Setting system properties/environment variables with Spring Boot and Gradle</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/07/08/spring_boot_env_vars.html</link>
-            <pubDate>Tue, 8 Jul 2014 00:00:00 -0700</pubDate>
+            <pubDate>Tue, 8 Jul 2014 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2014/07/08/spring_boot_env_vars.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -284,85 +367,6 @@ dependencies {
 &lt;p&gt;For a complete list of the properties of the &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html&quot; target=&quot;_blank&quot;&gt;JavaExec Task&lt;/a&gt; that can be
 set, see the &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html#N1E1D1&quot; target=&quot;_blank&quot;&gt;Properties&lt;/a&gt; of the
 &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html&quot; target=&quot;_blank&quot;&gt;JavaExec Task Gradle Documentation&lt;/a&gt;.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Eclipse, Environment Variables and Mac OSX</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/07/01/eclipse_env_vars_mac_osx.html</link>
-            <pubDate>Tue, 1 Jul 2014 00:00:00 -0700</pubDate>
-            <guid isPermaLink="false">2014/07/01/eclipse_env_vars_mac_osx.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;I ran into an issue the other day when attempting to run a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; build script that invokes a process from within Eclipse.  For whatever reason, Eclipse does not pick up
-environment variables from the shell when launching on Mac OSX.  If you attempt to reference a command on your path from within Eclipse, you will most likely see
-an error similar to this one:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;java.io.IOException: Cannot run program &quot;thrift&quot;: error=2, No such file or directory&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Just to prove that I was not crazy and the &lt;code&gt;thrift&lt;/code&gt; binary was indeed present on my path, I ran the following command from a terminal window:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;~$ thrift -version
-Thrift version 0.9.1&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;To correct this problem on Mac OSX, you can create a basic bash script to export the variables that you need (in my case, the binary was aleady included
-on my PATH environment variable) and then launch Eclipse:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;eclipseLauncher.sh&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;#!/bin/bash
-source ~/.profile
-/Applications/eclipse/eclipse&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Next, create an &lt;code&gt;Automator&lt;/code&gt; that can launch the new script.  To do so, follow these steps:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;olist arabic&quot;&gt;
-&lt;ol class=&quot;arabic&quot;&gt;
-&lt;li&gt;
-&lt;p&gt;From the dock in Mac OSX, open Applications &amp;gt; Automator&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Select &quot;Application&quot; from the document wizard.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Search for and select &quot;Run Shell Script&quot; from the &quot;Actions&quot; search box.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Enter the following into the text box in the &quot;Run Shell Script&quot; section:&lt;/p&gt;
-&lt;div class=&quot;literalblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre&gt;/Applications/eclipse/eclipseLauncher.sh&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Select &quot;as arguments&quot; in the &quot;Pass Input&quot; selector.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;You can test the new script from the Automator application before saving by clicking on the &quot;Run&quot; button in the upper right-hand corner of the Automator window.
-When you are ready, select &quot;File &amp;gt; Save&amp;#8230;&quot; to save the new application automator script.  I recommend saving it in &lt;code&gt;/Applications/eclipse&lt;/code&gt;.  &lt;strong&gt;MAKE SURE THAT YOU DO
-NOT OVERWRITE THE EXISTING &quot;Eclipse&quot; APPLICATION&lt;/strong&gt;.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Next up, add it to the dock by launching it via the Applications menu.  You can also open the &lt;code&gt;/Applications/eclipse&lt;/code&gt; folder in the Finder, select the new application and right-click select &quot;Get Info&quot; if you want to change the icon.
-In the info window, click on the icon at the top of the window so that a blue halo appears around it.  In the finder window, select the original Eclipse application file and drag it over the icon in the info window to change the new application to use the Eclipse icon.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

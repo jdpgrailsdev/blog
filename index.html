@@ -90,6 +90,94 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog2014/08/05/docker_upgrade.html"><h1>Updating to the latest Docker/Boot2Docker version</h1></a>
+                   <p>05 August 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/docker.html">docker</a>
+        
+                <a href="/blog/tags/boot2docker.html">boot2docker</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/08/05/docker_upgrade.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/08/05/docker_upgrade.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/08/05/docker_upgrade.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Not too long ago, the <a href="http://www.docker.com/" target="_blank">Docker</a> project released 1.0 release, which among many improvements includes a new default port for <a href="http://www.docker.com/" target="_blank">Docker</a>.  To update from <a href="http://www.docker.com/" target="_blank">Docker</a>
+ &lt; 1.0 to <a href="http://www.docker.com/" target="_blank">Docker</a> &gt;= 1.0, you may run into issues as the port that <a href="http://www.docker.com/" target="_blank">Docker</a> listens on by default has changed from 4243 to 2375.  While things
+may appear to start correctly after an upgrade, you may see the following error when attempting to run any <a href="http://www.docker.com/" target="_blank">Docker</a> client command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint"><code>$ boot2docker up
+
+Cannot connect to the Docker daemon. Is 'docker -d' running on this host?</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is because your <a href="https://www.virtualbox.org/" target="_blank">Virtual Box</a> "boot2docker-vm" image is still listening on the old port and therefore is not receiving the forwarded commands.  You can verify this by
+starting up <a href="https://github.com/boot2docker/boot2docker" target="_blank">Boot2Docker</a> and ssh&#8217;ing (<code>boot2docker ssh</code>) into the VM to check the port that docker is listening on:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint"><code>docker@boot2docker:~$ sudo netstat -ntpl | grep docker
+tcp        0      0 :::4243                :::*                    LISTEN      627/docker</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To fix this, use the following steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Update to latest <a href="https://github.com/boot2docker/boot2docker" target="_blank">Boot2Docker</a> and <a href="http://www.docker.com/" target="_blank">Docker</a> via <a href="http://brew.sh/" target="_blank">Homebrew</a> (installing <a href="https://github.com/boot2docker/boot2docker" target="_blank">Boot2Docker</a> will automatically install/update <a href="http://www.docker.com/" target="_blank">Docker</a> to the corresponding version).</p>
+</li>
+<li>
+<p>Run <code>boot2docker delete</code>.</p>
+</li>
+<li>
+<p>Delete the existing <code>~/.boot2docker</code> directory.</p>
+</li>
+<li>
+<p>Run <code>boot2docker init</code></p>
+</li>
+<li>
+<p>Open <a href="https://www.virtualbox.org/" target="_blank">Virtual Box</a>, select the <code>boot2docker-vm</code> and click on the "Settings" button.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Click on the "Network button" in the settings window, expand the "Advanced" area and click on the "Port Forwarding" button.  Verify that 2375 and 2022 are in the list.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Run <code>boot2docker up</code></p>
+</li>
+<li>
+<p>Run <code>boot2docker ssh</code></p>
+</li>
+<li>
+<p>In the VM, run the following command to verify that <a href="http://www.docker.com/" target="_blank">Docker</a> is listening on port 2375:</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint"><code>sudo netstat -ntpl | grep docker
+
+docker@boot2docker:~$ sudo netstat -ntpl | grep docker
+tcp        0      0 :::2375                 :::*                    LISTEN      627/docker</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should now be able to connect to <a href="http://www.docker.com/" target="_blank">Docker</a> and use the command line client and the REST API!</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog2014/08/05/docker_upgrade.html#disqus_thread">Comments</a></p>
                    <a href="/blog2014/07/29/spring_boot_integration_tests.html"><h1>Leveraging Spring Boot Starters in Unit/Integration Tests</h1></a>
                    <p>29 July 2014</p>
                 <p><em>Tags: </em>
@@ -210,7 +298,7 @@ the file-based approach outlined above.  Here is the entire plugin code:</p>
         outputDirectory.mkdirs()
 
         // Find all .gradle files in the "scripts" package on the class path.
-        Resource[] resources = resourceResolver.findPathMatchingResources('classpath:/scripts/*.gradle')
+        Resource[] resources = resourceResolver.findPathMatchingResources('classpath*:/scripts/*.gradle')
 
         // For each script, copy it from the class path to the output directory and then apply it to the project.
         resources.each { Resource resource -&gt;
@@ -320,70 +408,6 @@ Listening for transport dt_socket at address: 4000</code></pre>
 </div>
 </div></p>
                 <p><a href="/blog2014/07/15/spring_boot_remote_debug.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/07/08/spring_boot_env_vars.html"><h1>Setting system properties/environment variables with Spring Boot and Gradle</h1></a>
-                   <p>08 July 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/gradle.html">gradle</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/07/08/spring_boot_env_vars.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/07/08/spring_boot_env_vars.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/07/08/spring_boot_env_vars.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>Out of the box, <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> ships with a <a href="http://gradle.org" target="_blank">Gradle</a> plugin that supports running your application, as well as building an executable JAR or WAR file.  The plugin
-extends off the stock <a href="http://gradle.org" target="_blank">Gradle</a> <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html" target="_blank">JavaExec Task</a>, which means that you can
-use any of the task&#8217;s configuration properties to customize how your application runs when launching it via <a href="http://gradle.org" target="_blank">Gradle</a> (e.g. <code>./gradlew run</code>).  For instance, if you
-would like to set some system properties, environment variables and/or other any other support JVM properties/arguments, you simply need to define an additional <code>run</code>
-configuration block in your <code>build.gradle</code> build script:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>apply plugin: 'java'
-apply plugin: 'spring-boot'
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath('org.springframework.boot:spring-boot-gradle-plugin:1.1.4.RELEASE')
-    }
-}
-
-run {
-    environment = ['ENV' : 'dev']
-    maxHeapSize = '512M'
-    systemProperties = ['serverPort':'8085']
-}
-
-springBoot {
-    mainClass = 'com.test.Application'
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    ...
-}
-</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>For a complete list of the properties of the <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html" target="_blank">JavaExec Task</a> that can be
-set, see the <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html#N1E1D1" target="_blank">Properties</a> of the
-<a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html" target="_blank">JavaExec Task Gradle Documentation</a>.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/07/08/spring_boot_env_vars.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
