@@ -43,7 +43,7 @@ class BuildScriptSupportPlugin implements Plugin<Project> {
         outputDirectory.mkdirs()
 
         // Find all .gradle files in the "scripts" package on the class path.
-        Resource[] resources = resourceResolver.findPathMatchingResources('classpath:/scripts/*.gradle')
+        Resource[] resources = resourceResolver.findPathMatchingResources('classpath*:/scripts/*.gradle')
 
         // For each script, copy it from the class path to the output directory and then apply it to the project.
         resources.each { Resource resource ->
