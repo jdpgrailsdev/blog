@@ -6,13 +6,71 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 5 Aug 2014 10:06:02 -0400</pubDate>
-        <lastBuildDate>Tue, 5 Aug 2014 10:06:02 -0400</lastBuildDate>
+        <pubDate>Tue, 12 Aug 2014 10:44:18 -0400</pubDate>
+        <lastBuildDate>Tue, 12 Aug 2014 10:44:18 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Dynamically Build JavaExec Classpath from BuildScript Dependencies in Gradle</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/08/12/gradle_javaexec_classpath.html</link>
+            <pubDate>Tue, 12 Aug 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">2014/08/12/gradle_javaexec_classpath.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Recently, I have been working on a few &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugins that use the &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html&quot; target=&quot;_blank&quot;&gt;Gradle JavaExec Task&lt;/a&gt;
+to execute a Java main class from within the plugin.  This is pretty straightforward and not at all interesting.  However, in testing the plugin, I realized that I did not
+want to expose the required dependencies needed to run the main class outside of the plugin.  If I did, I would require each project that applies my plugin to list the
+dependencies in its &lt;code&gt;dependencies&lt;/code&gt; block.  This is obviously a leaky abstraction, so I decided to see if I could programmatically set the classpath of the &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html&quot; target=&quot;_blank&quot;&gt;Gradle JavaExec Task&lt;/a&gt;
+to us use the plugin&amp;#8217;s dependencies:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;task generate(type: JavaExec) {
+    main = &apos;com.example.Generator&apos;
+    args = [&apos;arg1&apos;, &apos;arg2&apos;]
+    classpath = buildscript.configurations.classpath
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In the example above, the task&amp;#8217;s classpath is set to the classpath created by the &lt;code&gt;buildscript&lt;/code&gt; DSL, which includes my plugin dependency and all of its transitive dependencies (unless
+you disable transitive resolution when you define the plugin dependency).  This worked great until I used my plugin as part of a multi-module project, where the plugin dependency
+is declared and applied in the root project, but the task is executed on the sub-project.  What happened is that the above example only loaded the build script classpath for
+the current project (the sub-project), which did not have the plugin dependency on its classpath (apparently, the build script classpath is not additive/transitive).  I addressed
+this by writing a little recursive function to traverse up the project tree and add the dependencies from each build script:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;task generate(type: JavaExec) {
+    main = &apos;com.example.Generator&apos;
+    args = [&apos;arg1&apos;, &apos;arg2&apos;]
+    classpath = files(getClasspath(project))
+}
+
+private List&amp;lt;File&amp;gt; getClasspath(project, classpath=[]) {
+    if(project == null || project == project.rootProject) {
+        classpath
+    } else {
+        classpath.addAll(project.buildscript.configurations.classpath.getFiles())
+        getClasspath(project.rootProject, classpath)
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The above example starts with the current project, adds its build script dependencies to the classpath and then recursively looks at the project&amp;#8217;s root project.  This continues
+until the project does not have a root project or the root project is the project itself.  The result is then converted to a &lt;code&gt;FileCollection&lt;/code&gt; and the classpath is set, ensuring
+that the &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html&quot; target=&quot;_blank&quot;&gt;Gradle JavaExec Task&lt;/a&gt; has the dependencies provided by the custom plugin.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Updating to the latest Docker/Boot2Docker version</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/08/05/docker_upgrade.html</link>
@@ -308,65 +366,6 @@ Listening for transport dt_socket at address: 4000&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;Once the debugger is attached, execution will continue on normally, halting only when it comes across any break points set in the debugger.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Setting system properties/environment variables with Spring Boot and Gradle</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/07/08/spring_boot_env_vars.html</link>
-            <pubDate>Tue, 8 Jul 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">2014/07/08/spring_boot_env_vars.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Out of the box, &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; ships with a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin that supports running your application, as well as building an executable JAR or WAR file.  The plugin
-extends off the stock &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html&quot; target=&quot;_blank&quot;&gt;JavaExec Task&lt;/a&gt;, which means that you can
-use any of the task&amp;#8217;s configuration properties to customize how your application runs when launching it via &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; (e.g. &lt;code&gt;./gradlew run&lt;/code&gt;).  For instance, if you
-would like to set some system properties, environment variables and/or other any other support JVM properties/arguments, you simply need to define an additional &lt;code&gt;run&lt;/code&gt;
-configuration block in your &lt;code&gt;build.gradle&lt;/code&gt; build script:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;title&quot;&gt;build.gradle&lt;/div&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;apply plugin: &apos;java&apos;
-apply plugin: &apos;spring-boot&apos;
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath(&apos;org.springframework.boot:spring-boot-gradle-plugin:1.1.4.RELEASE&apos;)
-    }
-}
-
-run {
-    environment = [&apos;ENV&apos; : &apos;dev&apos;]
-    maxHeapSize = &apos;512M&apos;
-    systemProperties = [&apos;serverPort&apos;:&apos;8085&apos;]
-}
-
-springBoot {
-    mainClass = &apos;com.test.Application&apos;
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    ...
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;For a complete list of the properties of the &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html&quot; target=&quot;_blank&quot;&gt;JavaExec Task&lt;/a&gt; that can be
-set, see the &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html#N1E1D1&quot; target=&quot;_blank&quot;&gt;Properties&lt;/a&gt; of the
-&lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html&quot; target=&quot;_blank&quot;&gt;JavaExec Task Gradle Documentation&lt;/a&gt;.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

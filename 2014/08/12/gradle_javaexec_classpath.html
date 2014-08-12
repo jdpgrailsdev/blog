@@ -87,37 +87,85 @@
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: java</h1>
+        <h1>Dynamically Build JavaExec Classpath from BuildScript Dependencies in Gradle</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>August 2014</h4>
-            <ul>
+    <p><em>12 August 2014</em></p>
 
-        <li>12 - <a href="/blog/2014/08/12/gradle_javaexec_classpath.html">Dynamically Build JavaExec Classpath from BuildScript Dependencies in Gradle</a></li>
-                </ul>
-                <h4>May 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/08/12/gradle_javaexec_classpath.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/08/12/gradle_javaexec_classpath.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/08/12/gradle_javaexec_classpath.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>27 - <a href="/blog/2014/05/27/grails_maven_jdk_profile.html">Grails, Maven and JDK-based Profile Activation</a></li>
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Recently, I have been working on a few <a href="http://gradle.org" target="_blank">Gradle</a> plugins that use the <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html" target="_blank">Gradle JavaExec Task</a>
+to execute a Java main class from within the plugin.  This is pretty straightforward and not at all interesting.  However, in testing the plugin, I realized that I did not
+want to expose the required dependencies needed to run the main class outside of the plugin.  If I did, I would require each project that applies my plugin to list the
+dependencies in its <code>dependencies</code> block.  This is obviously a leaky abstraction, so I decided to see if I could programmatically set the classpath of the <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html" target="_blank">Gradle JavaExec Task</a>
+to us use the plugin&#8217;s dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>task generate(type: JavaExec) {
+    main = 'com.example.Generator'
+    args = ['arg1', 'arg2']
+    classpath = buildscript.configurations.classpath
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the example above, the task&#8217;s classpath is set to the classpath created by the <code>buildscript</code> DSL, which includes my plugin dependency and all of its transitive dependencies (unless
+you disable transitive resolution when you define the plugin dependency).  This worked great until I used my plugin as part of a multi-module project, where the plugin dependency
+is declared and applied in the root project, but the task is executed on the sub-project.  What happened is that the above example only loaded the build script classpath for
+the current project (the sub-project), which did not have the plugin dependency on its classpath (apparently, the build script classpath is not additive/transitive).  I addressed
+this by writing a little recursive function to traverse up the project tree and add the dependencies from each build script:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>task generate(type: JavaExec) {
+    main = 'com.example.Generator'
+    args = ['arg1', 'arg2']
+    classpath = files(getClasspath(project))
+}
 
-        <li>20 - <a href="/blog/2014/05/20/grails_maven_coverage.html">Grails, Maven, Cobertura and Java 7</a></li>
-                </ul>
-                <h4>April 2014</h4>
-                <ul>
+private List&lt;File&gt; getClasspath(project, classpath=[]) {
+    if(project == null || project == project.rootProject) {
+        classpath
+    } else {
+        classpath.addAll(project.buildscript.configurations.classpath.getFiles())
+        getClasspath(project.rootProject, classpath)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example starts with the current project, adds its build script dependencies to the classpath and then recursively looks at the project&#8217;s root project.  This continues
+until the project does not have a root project or the root project is the project itself.  The result is then converted to a <code>FileCollection</code> and the classpath is set, ensuring
+that the <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html" target="_blank">Gradle JavaExec Task</a> has the dependencies provided by the custom plugin.</p>
+</div>
+</div>
+</div></p>
 
-        <li>03 - <a href="/blog/2014/04/03/maven_java8_javadoc.html">Maven, the JavaDoc plugin and Java 8</a></li>
-                </ul>
-                <h4>February 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/08/12/gradle_javaexec_classpath.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/08/12/gradle_javaexec_classpath.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/08/12/gradle_javaexec_classpath.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>19 - <a href="/blog/2014/02/19/spring_curator.html">Spring and Apache Curator</a></li>
-                </ul>
-                <h4>November 2011</h4>
-                <ul>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2014/08/12/gradle_javaexec_classpath.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-        <li>19 - <a href="/blog/2011/11/19/spring_data_mongodb_exceptions.html">Where's My Exceptions, Spring Data MongoDB?</a></li>
-    </ul>
+    <hr>
 
             </div>
             <div id="push"></div>
