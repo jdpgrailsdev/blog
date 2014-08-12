@@ -1,0 +1,34 @@
+= Execute Gradle Tasks Based on Other Tasks
+Jonathan Pearlin
+2014-08-26
+:jbake-type: post
+:jbake-tags: gradle
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: gradle_dependent_tasks
+:icons: font
+:gradle: http://gradle.org[Gradle, window="_blank"]
+
+As discussed in a previous post, {gradle} supports multiple ways to perform incremental builds, such as caching based on task inputs, the use of the
+http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/TaskOutputs.html#upToDateWhen(groovy.lang.Closure)[upToDateWhen, window="_blank"] closure on a
+task's outputs or the use of the task's `onlyIf()` method to control execution, to name a few.  Sometimes, however, you want a task to only execute if another
+cachable task has executed.  For instance, maybe you want to create an archive of some generated source, but only if the source has been updated/re-generated.
+One such way to do this is to make use of the http://www.gradle.org/docs/current/groovydoc/org/gradle/api/Task.html#getDidWork()[getDidWork(), window="_blank"]
+method of the task to determine if the task actually executed or was skipped/up-to-date:
+
+[source,groovy]
+----
+class CustomTask extends DefaultTask {
+
+    @TaskAction
+    void doSomething() {
+        if(project.tasks.getByName('otherTask').getDidWork()) {
+            // Do this task's work here!
+        }
+    }
+}
+----
+
+ By using the `getDidWork` method on the other task to determine if it executed, we can avoid having to rely upon the input/output of the task to determine if
+ the downstream task should execute, thus giving us better control over what triggers the tasks in our project.
