@@ -90,6 +90,63 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog2014/08/19/gradle_tests_jenkins.html"><h1>Gradle, Task Caching, Tests and Jenkins</h1></a>
+                   <p>19 August 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/gradle.html">gradle</a>
+        
+                <a href="/blog/tags/jenkins.html">jenkins</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/08/19/gradle_tests_jenkins.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/08/19/gradle_tests_jenkins.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/08/19/gradle_tests_jenkins.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>One of the nice features of <a href="http://gradle.org" target="_blank">Gradle</a> is the task execution caching, which prevent tasks whose inputs/outputs have not changed since the last successful execution from
+executing in order to speed up build times.  Sometimes, however this causes issues when integrating your <a href="http://gradle.org" target="_blank">Gradle</a> build into other systems.  I ran into one such issue
+when building a <a href="http://gradle.org" target="_blank">Gradle</a> application from <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a>.  The <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> build job is configured to publish the results of the <code>test</code> task (the test reports output by <a href="http://gradle.org" target="_blank">Gradle</a>).
+It did not occur to me that if I did not invoke the <code>clean</code> task and let <a href="http://gradle.org" target="_blank">Gradle</a> only re-generate the test reports if any of the compiled code had changed (other file changes
+to the project would trigger the CI build) that <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> would fail the build due to stale test reports.  However, that is exactly what happened:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint"><code>BUILD SUCCESSFUL
+
+Total time: 15.323 secs
+Build step 'Invoke Gradle script' changed build result to SUCCESS
+Test reports were found but none of them are new. Did tests run?
+For example, /var/jenkins/jobs/test-job/workspace/build/test-results/TEST-com.example.TestSpec.xml is 12 hours 15 minutes old
+
+Build step 'Publish JUnit test result report' changed build result to FAILURE
+Finished: FAILURE</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By not cleaning out the previously compiled code, the caching mechanism for the <code>test</code> task kicked in and left the previous test results in place, as it properly detected that
+nothing had changed and therefore is no need to re-run the tests.  However, Jenkins apparently bases its ability to publish the results of the tests based on a timestamp and not
+just the presence of the tests results in the directory specified in the job&#8217;s configuration.  One easy fix is to always run the <code>clean</code> task, but that eliminates a lot of <a href="http://gradle.org" target="_blank">Gradle</a>'s
+performance enhancements around only running task incrementally, based on their inputs/outputs.  Another option is to add the <code>--rerun-tasks</code> option, which effectively does the same
+thing as the <code>clean</code> task, except it doesn&#8217;t remove any artifacts&#8201;&#8212;&#8201;it just simply forces <a href="http://gradle.org" target="_blank">Gradle</a> to run each task regardless of the caching status.  Neither of these options really
+get us what we want.  One other alternative is to make use of the <code>upToDateWhen</code> configuration closure on a tasks declared outputs to control caching on a per-task basis:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>    // Always execute the tests -- needed for Jenkins to be happy
+    test.outputs.upToDateWhen { false }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The example above directs <a href="http://gradle.org" target="_blank">Gradle</a> to always run the <code>test</code> task regardless of what the task cache tells <a href="http://gradle.org" target="_blank">Gradle</a> about it.  This gives us fine grained control over which tasks
+that we want to take advantage of caching and which ones we want to always run.  By adding the one line above to my project&#8217;s <code>build.gradle</code> script, I was able to make <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a>
+happy with always providing up-to-date unit tests results, regardless of which files (source or otherwise) have changed in my project.  This also means that <a href="http://gradle.org" target="_blank">Gradle</a> will take
+advantage of task caching for other tasks in the project (such as compilation, packaging, etc), which helps to reduce build time.</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog2014/08/19/gradle_tests_jenkins.html#disqus_thread">Comments</a></p>
                    <a href="/blog2014/08/12/gradle_javaexec_classpath.html"><h1>Dynamically Build JavaExec Classpath from BuildScript Dependencies in Gradle</h1></a>
                    <p>12 August 2014</p>
                 <p><em>Tags: </em>
@@ -305,123 +362,6 @@ make use of the <a href="http://projects.spring.io/spring-boot/" target="_blank"
 </div>
 </div></p>
                 <p><a href="/blog2014/07/29/spring_boot_integration_tests.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/07/22/gradle_build_scripts_classpath.html"><h1>Discovering Gradle build scripts from classpath</h1></a>
-                   <p>22 July 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/gradle.html">gradle</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/07/22/gradle_build_scripts_classpath.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/07/22/gradle_build_scripts_classpath.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/07/22/gradle_build_scripts_classpath.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p><a href="http://gradle.org" target="_blank">Gradle</a> currently supports two different way to reference other <code>.gradle</code> files from a build script:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Apply a script from file via <code>apply from: 'path/to/some/script.gradle'</code></p>
-</li>
-<li>
-<p>Apply a script from URL via <code>apply from: 'http://some/url/script.gradle'</code></p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>The first is great for one-off scripts in your project, but is not really helpful when you want to share <a href="http://gradle.org" target="_blank">Gradle</a> scripts among projects.  The second
-approach would work for sharing, but is really limited with regards to the supported functionality (e.g. you cannot specify HTTP headers to handle login/security
-concerns, etc).  While you can obviously create a plugin that approximates the logic in the script that you want to share, its a pain to have to create a new
-project and push it to your artifact repository each time you want to share build logic.  The solution?  Create a single <a href="http://gradle.org" target="_blank">Gradle</a> plugin that is capable of scanning
-the build script classpath at execution time to find and apply <code>.gradle</code> files to the current project.  This approach uses the <code>PathMatchingResourcePatternResolver</code>
-class from the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a>  to locate each <code>.gradle</code> file.  Once the files have been located, the
-files are read from the classpath and extracted to a temporary <code>scripts</code> folder under the project&#8217;s build directory and then applied to the current project via
-the file-based approach outlined above.  Here is the entire plugin code:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>class BuildScriptSupportPlugin implements Plugin&lt;Project&gt; {
-
-    /**
-     * Spring {@link PathMatchingResourcePatternResolver} used to find all Gradle scripts
-     * on the classpath.
-     */
-    private PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver(getClass().getClassLoader());
-
-    @Override
-    public void apply(Project project) {
-        project.logger?.debug("Applying Build Script Support Plugin to ${project.name}...")
-
-        // Make sure the output directory for the extracted scripts exists.
-        File outputDirectory = new File(project.buildDir, 'scripts')
-        outputDirectory.mkdirs()
-
-        // Find all .gradle files in the "scripts" package on the class path.
-        Resource[] resources = resourceResolver.findPathMatchingResources('classpath*:/scripts/*.gradle')
-
-        // For each script, copy it from the class path to the output directory and then apply it to the project.
-        resources.each { Resource resource -&gt;
-            try {
-                File output = new File(outputDirectory, resource.getFilename())
-                output.withWriter { writer -&gt;
-                    writer.write(new InputStreamReader(resource.getInputStream()).getText())
-                }
-                project.apply([from: "${outputDirectory}/${resource.getFilename()}"])
-            } catch (e) {
-                project.logger?.error("Unable to retrieve and apply bulid script '${resource.getFilename()}': ${e.getMessage()}")
-            }
-        }
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>By convention, the plugin looks for the extra scripts in the <code>scripts</code> package on the classpath.  In practice, I put the scripts in <code>src/main/resources/scripts</code>
-in the projects/libraries that I use to bundle up the shared scripts.  To use the plugin and any libraries that may contain build scripts in your project, simply add
-them to your <code>build.gradle</code> script in the <code>buildScript</code> section:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>apply plugin: 'build-script-support'
-
-buildscript {
-    repositories {
-        mavenLocal()
-        maven { url 'your local repo URL' }
-    }
-    dependencies {
-        classpath('org.gradle.plugins:gradle-build-script-support-plugin:1.0.0-SNAPSHOT')
-        classpath('com.example:custom-gradle-scripts:1.0.0-SNAPSHOT')
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Future enhancements to this plugin will/could include the following:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Include/Exclude patterns for script names when scanning</p>
-</li>
-<li>
-<p>Script name disambiguation to avoid two scripts from two different JAR&#8217;s with the same name clobbering each other.</p>
-</li>
-<li>
-<p>Ability to explicitly specify location of script on classpath to scan (to support situations where a script cannot be moved to the conventional place).</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>It should be noted that the code above was written and used with <a href="http://gradle.org" target="_blank">Gradle</a> 1.12 and has not yet been tested with 2.0, though I don&#8217;t expect any issues.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/07/22/gradle_build_scripts_classpath.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
