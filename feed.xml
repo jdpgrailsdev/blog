@@ -6,17 +6,54 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 19 Aug 2014 09:27:14 -0400</pubDate>
-        <lastBuildDate>Tue, 19 Aug 2014 09:27:14 -0400</lastBuildDate>
+        <pubDate>Tue, 26 Aug 2014 07:42:32 -0700</pubDate>
+        <lastBuildDate>Tue, 26 Aug 2014 07:42:32 -0700</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
         <item>
+            <title>Execute Gradle Tasks Based on Other Tasks</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/08/26/gradle_dependent_tasks.html</link>
+            <pubDate>Tue, 26 Aug 2014 00:00:00 -0700</pubDate>
+            <guid isPermaLink="false">2014/08/26/gradle_dependent_tasks.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;As discussed in a previous post, &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; supports multiple ways to perform incremental builds, such as caching based on task inputs, the use of the
+&lt;a href=&quot;http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/TaskOutputs.html#upToDateWhen(groovy.lang.Closure)&quot; target=&quot;_blank&quot;&gt;upToDateWhen&lt;/a&gt; closure on a
+task&amp;#8217;s outputs or the use of the task&amp;#8217;s &lt;code&gt;onlyIf()&lt;/code&gt; method to control execution, to name a few.  Sometimes, however, you want a task to only execute if another
+cachable task has executed.  For instance, maybe you want to create an archive of some generated source, but only if the source has been updated/re-generated.
+One such way to do this is to make use of the &lt;a href=&quot;http://www.gradle.org/docs/current/groovydoc/org/gradle/api/Task.html#getDidWork()&quot; target=&quot;_blank&quot;&gt;getDidWork()&lt;/a&gt;
+method of the task to determine if the task actually executed or was skipped/up-to-date:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;class CustomTask extends DefaultTask {
+
+    @TaskAction
+    void doSomething() {
+        if(project.tasks.getByName(&apos;otherTask&apos;).getDidWork()) {
+            // Do this task&apos;s work here!
+        }
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;By using the &lt;code&gt;getDidWork&lt;/code&gt; method on the other task to determine if it executed, we can avoid having to rely upon the input/output of the task to determine if
+the downstream task should execute, thus giving us better control over what triggers the tasks in our project.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
+        <item>
             <title>Gradle, Task Caching, Tests and Jenkins</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/08/19/gradle_tests_jenkins.html</link>
-            <pubDate>Tue, 19 Aug 2014 00:00:00 -0400</pubDate>
+            <pubDate>Tue, 19 Aug 2014 00:00:00 -0700</pubDate>
             <guid isPermaLink="false">2014/08/19/gradle_tests_jenkins.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -68,7 +105,7 @@ advantage of task caching for other tasks in the project (such as compilation, p
         <item>
             <title>Dynamically Build JavaExec Classpath from BuildScript Dependencies in Gradle</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/08/12/gradle_javaexec_classpath.html</link>
-            <pubDate>Tue, 12 Aug 2014 00:00:00 -0400</pubDate>
+            <pubDate>Tue, 12 Aug 2014 00:00:00 -0700</pubDate>
             <guid isPermaLink="false">2014/08/12/gradle_javaexec_classpath.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -126,7 +163,7 @@ that the &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.
         <item>
             <title>Updating to the latest Docker/Boot2Docker version</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/08/05/docker_upgrade.html</link>
-            <pubDate>Tue, 5 Aug 2014 00:00:00 -0400</pubDate>
+            <pubDate>Tue, 5 Aug 2014 00:00:00 -0700</pubDate>
             <guid isPermaLink="false">2014/08/05/docker_upgrade.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -209,7 +246,7 @@ tcp        0      0 :::2375                 :::*                    LISTEN      
         <item>
             <title>Leveraging Spring Boot Starters in Unit/Integration Tests</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html</link>
-            <pubDate>Tue, 29 Jul 2014 00:00:00 -0400</pubDate>
+            <pubDate>Tue, 29 Jul 2014 00:00:00 -0700</pubDate>
             <guid isPermaLink="false">2014/07/29/spring_boot_integration_tests.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -262,118 +299,6 @@ public class DatabaseIntegrationTests {
 &lt;p&gt;When the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; loads the test configuration, it does so via &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;&apos;s &lt;code&gt;SpringApplicationContextLoader&lt;/code&gt;, which is provided by the &lt;code&gt;spring-boot-starter-test&lt;/code&gt;.  This
 context loader supports all of the auto-configuration magic that we know and love in &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;.  Now, you can adjust logging levels, provide configuration and have your contexts
 make use of the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; auto-configuration annotations as part of your test suite!&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Discovering Gradle build scripts from classpath</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/07/22/gradle_build_scripts_classpath.html</link>
-            <pubDate>Tue, 22 Jul 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">2014/07/22/gradle_build_scripts_classpath.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;&lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; currently supports two different way to reference other &lt;code&gt;.gradle&lt;/code&gt; files from a build script:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;olist arabic&quot;&gt;
-&lt;ol class=&quot;arabic&quot;&gt;
-&lt;li&gt;
-&lt;p&gt;Apply a script from file via &lt;code&gt;apply from: &apos;path/to/some/script.gradle&apos;&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Apply a script from URL via &lt;code&gt;apply from: &apos;http://some/url/script.gradle&apos;&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The first is great for one-off scripts in your project, but is not really helpful when you want to share &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; scripts among projects.  The second
-approach would work for sharing, but is really limited with regards to the supported functionality (e.g. you cannot specify HTTP headers to handle login/security
-concerns, etc).  While you can obviously create a plugin that approximates the logic in the script that you want to share, its a pain to have to create a new
-project and push it to your artifact repository each time you want to share build logic.  The solution?  Create a single &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin that is capable of scanning
-the build script classpath at execution time to find and apply &lt;code&gt;.gradle&lt;/code&gt; files to the current project.  This approach uses the &lt;code&gt;PathMatchingResourcePatternResolver&lt;/code&gt;
-class from the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt;  to locate each &lt;code&gt;.gradle&lt;/code&gt; file.  Once the files have been located, the
-files are read from the classpath and extracted to a temporary &lt;code&gt;scripts&lt;/code&gt; folder under the project&amp;#8217;s build directory and then applied to the current project via
-the file-based approach outlined above.  Here is the entire plugin code:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;class BuildScriptSupportPlugin implements Plugin&amp;lt;Project&amp;gt; {
-
-    /**
-     * Spring {@link PathMatchingResourcePatternResolver} used to find all Gradle scripts
-     * on the classpath.
-     */
-    private PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver(getClass().getClassLoader());
-
-    @Override
-    public void apply(Project project) {
-        project.logger?.debug(&quot;Applying Build Script Support Plugin to ${project.name}...&quot;)
-
-        // Make sure the output directory for the extracted scripts exists.
-        File outputDirectory = new File(project.buildDir, &apos;scripts&apos;)
-        outputDirectory.mkdirs()
-
-        // Find all .gradle files in the &quot;scripts&quot; package on the class path.
-        Resource[] resources = resourceResolver.findPathMatchingResources(&apos;classpath*:/scripts/*.gradle&apos;)
-
-        // For each script, copy it from the class path to the output directory and then apply it to the project.
-        resources.each { Resource resource -&amp;gt;
-            try {
-                File output = new File(outputDirectory, resource.getFilename())
-                output.withWriter { writer -&amp;gt;
-                    writer.write(new InputStreamReader(resource.getInputStream()).getText())
-                }
-                project.apply([from: &quot;${outputDirectory}/${resource.getFilename()}&quot;])
-            } catch (e) {
-                project.logger?.error(&quot;Unable to retrieve and apply bulid script &apos;${resource.getFilename()}&apos;: ${e.getMessage()}&quot;)
-            }
-        }
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;By convention, the plugin looks for the extra scripts in the &lt;code&gt;scripts&lt;/code&gt; package on the classpath.  In practice, I put the scripts in &lt;code&gt;src/main/resources/scripts&lt;/code&gt;
-in the projects/libraries that I use to bundle up the shared scripts.  To use the plugin and any libraries that may contain build scripts in your project, simply add
-them to your &lt;code&gt;build.gradle&lt;/code&gt; script in the &lt;code&gt;buildScript&lt;/code&gt; section:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;apply plugin: &apos;build-script-support&apos;
-
-buildscript {
-    repositories {
-        mavenLocal()
-        maven { url &apos;your local repo URL&apos; }
-    }
-    dependencies {
-        classpath(&apos;org.gradle.plugins:gradle-build-script-support-plugin:1.0.0-SNAPSHOT&apos;)
-        classpath(&apos;com.example:custom-gradle-scripts:1.0.0-SNAPSHOT&apos;)
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Future enhancements to this plugin will/could include the following:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;ulist&quot;&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Include/Exclude patterns for script names when scanning&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Script name disambiguation to avoid two scripts from two different JAR&amp;#8217;s with the same name clobbering each other.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Ability to explicitly specify location of script on classpath to scan (to support situations where a script cannot be moved to the conventional place).&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;It should be noted that the code above was written and used with &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; 1.12 and has not yet been tested with 2.0, though I don&amp;#8217;t expect any issues.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

@@ -87,44 +87,64 @@
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: gradle</h1>
+        <h1>Execute Gradle Tasks Based on Other Tasks</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>August 2014</h4>
-            <ul>
+    <p><em>26 August 2014</em></p>
 
-        <li>26 - <a href="/blog/2014/08/26/gradle_dependent_tasks.html">Execute Gradle Tasks Based on Other Tasks</a></li>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/08/26/gradle_dependent_tasks.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/08/26/gradle_dependent_tasks.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/08/26/gradle_dependent_tasks.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>19 - <a href="/blog/2014/08/19/gradle_tests_jenkins.html">Gradle, Task Caching, Tests and Jenkins</a></li>
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>As discussed in a previous post, <a href="http://gradle.org" target="_blank">Gradle</a> supports multiple ways to perform incremental builds, such as caching based on task inputs, the use of the
+<a href="http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/TaskOutputs.html#upToDateWhen(groovy.lang.Closure)" target="_blank">upToDateWhen</a> closure on a
+task&#8217;s outputs or the use of the task&#8217;s <code>onlyIf()</code> method to control execution, to name a few.  Sometimes, however, you want a task to only execute if another
+cachable task has executed.  For instance, maybe you want to create an archive of some generated source, but only if the source has been updated/re-generated.
+One such way to do this is to make use of the <a href="http://www.gradle.org/docs/current/groovydoc/org/gradle/api/Task.html#getDidWork()" target="_blank">getDidWork()</a>
+method of the task to determine if the task actually executed or was skipped/up-to-date:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>class CustomTask extends DefaultTask {
 
-        <li>12 - <a href="/blog/2014/08/12/gradle_javaexec_classpath.html">Dynamically Build JavaExec Classpath from BuildScript Dependencies in Gradle</a></li>
-                </ul>
-                <h4>July 2014</h4>
-                <ul>
+    @TaskAction
+    void doSomething() {
+        if(project.tasks.getByName('otherTask').getDidWork()) {
+            // Do this task's work here!
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By using the <code>getDidWork</code> method on the other task to determine if it executed, we can avoid having to rely upon the input/output of the task to determine if
+the downstream task should execute, thus giving us better control over what triggers the tasks in our project.</p>
+</div>
+</div>
+</div></p>
 
-        <li>22 - <a href="/blog/2014/07/22/gradle_build_scripts_classpath.html">Discovering Gradle build scripts from classpath</a></li>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/08/26/gradle_dependent_tasks.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/08/26/gradle_dependent_tasks.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/08/26/gradle_dependent_tasks.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>15 - <a href="/blog/2014/07/15/spring_boot_remote_debug.html">Remote debugging a Spring Boot application launched by the Gradle plugin</a></li>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2014/08/26/gradle_dependent_tasks.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-        <li>08 - <a href="/blog/2014/07/08/spring_boot_env_vars.html">Setting system properties/environment variables with Spring Boot and Gradle</a></li>
-                </ul>
-                <h4>May 2014</h4>
-                <ul>
-
-        <li>13 - <a href="/blog/2014/05/13/gradle_update_deps.html">Automatically Update Dependencies in Gradle Project</a></li>
-                </ul>
-                <h4>April 2014</h4>
-                <ul>
-
-        <li>29 - <a href="/blog/2014/04/29/gradle_cobertura.html">Code Coverage with Cobertura</a></li>
-
-        <li>22 - <a href="/blog/2014/04/22/grails_gradle_logback.html">The Grails Gradle Plugin and Logback</a></li>
-
-        <li>15 - <a href="/blog/2014/04/15/gradle_api_dependencies.html">Gradle API and Transitive Dependencies</a></li>
-
-        <li>08 - <a href="/blog/2014/04/08/spring_boot_gradle_newrelic.html">Using the New Relic agent with Spring-Boot and Gradle</a></li>
-    </ul>
+    <hr>
 
             </div>
             <div id="push"></div>

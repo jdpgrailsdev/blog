@@ -90,6 +90,46 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog2014/08/26/gradle_dependent_tasks.html"><h1>Execute Gradle Tasks Based on Other Tasks</h1></a>
+                   <p>26 August 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/gradle.html">gradle</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/08/26/gradle_dependent_tasks.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/08/26/gradle_dependent_tasks.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/08/26/gradle_dependent_tasks.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>As discussed in a previous post, <a href="http://gradle.org" target="_blank">Gradle</a> supports multiple ways to perform incremental builds, such as caching based on task inputs, the use of the
+<a href="http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/TaskOutputs.html#upToDateWhen(groovy.lang.Closure)" target="_blank">upToDateWhen</a> closure on a
+task&#8217;s outputs or the use of the task&#8217;s <code>onlyIf()</code> method to control execution, to name a few.  Sometimes, however, you want a task to only execute if another
+cachable task has executed.  For instance, maybe you want to create an archive of some generated source, but only if the source has been updated/re-generated.
+One such way to do this is to make use of the <a href="http://www.gradle.org/docs/current/groovydoc/org/gradle/api/Task.html#getDidWork()" target="_blank">getDidWork()</a>
+method of the task to determine if the task actually executed or was skipped/up-to-date:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>class CustomTask extends DefaultTask {
+
+    @TaskAction
+    void doSomething() {
+        if(project.tasks.getByName('otherTask').getDidWork()) {
+            // Do this task's work here!
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By using the <code>getDidWork</code> method on the other task to determine if it executed, we can avoid having to rely upon the input/output of the task to determine if
+the downstream task should execute, thus giving us better control over what triggers the tasks in our project.</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog2014/08/26/gradle_dependent_tasks.html#disqus_thread">Comments</a></p>
                    <a href="/blog2014/08/19/gradle_tests_jenkins.html"><h1>Gradle, Task Caching, Tests and Jenkins</h1></a>
                    <p>19 August 2014</p>
                 <p><em>Tags: </em>
@@ -298,70 +338,6 @@ tcp        0      0 :::2375                 :::*                    LISTEN      
 </div>
 </div></p>
                 <p><a href="/blog2014/08/05/docker_upgrade.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/07/29/spring_boot_integration_tests.html"><h1>Leveraging Spring Boot Starters in Unit/Integration Tests</h1></a>
-                   <p>29 July 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/07/29/spring_boot_integration_tests.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/07/29/spring_boot_integration_tests.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/07/29/spring_boot_integration_tests.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>The <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> provides a nice <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank">JUnit integration</a>, which allows one to write integration-style tests that make use of a fully loaded and configured Spring context.
-This is great help when writing an integration test suite to test something like a database, as you do not need to manually create all the code required to interact
-with the database.  Instead, you can rely upon Spring to configure the beans just as it would at runtime.  Recently, I found myself in a situation where I needed to
-write just such an integration test, though this time for an application that uses <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  You do not need to do anything special to leverage the <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank">JUnit integration</a>
-integration, as that is provided by the <a href="https://github.com/spring-projects/spring-framework/tree/master/spring-test" target="_blank">Spring Test module</a> of the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a>
-project.  What you do not get by default, is all of the auto-configuration magic that <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> provides, including logging configuration.  With the release of <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>
-1.1.4, it is now possible to add the following to your <code>application.properties</code> or <code>application.yml</code> configuration file to control the logging output:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint"><code>logging.level.org.springframework: ERROR</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Additionally, I wanted to be able to turn on SQL logging when executing my integration tests via the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> JPA configuration:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint"><code>spring.jpa.properties.hibernate.show_sql: true</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>However, simply using the <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank">JUnit integration</a> does not cause <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> to load the configuration or perform any of the auto-configuration that it does when running the application.
-To enable <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> to work its magic when running unit/integration tests that load a context, the first step is to include the <code>spring-boot-starter-test</code> dependency:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>testCompile 'org.springframework.boot:spring-boot-starter-test:1.1.4.RELEASE'</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The presence of this dependency will cause <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> to perform all the normal start-up auto-configuration that occurs when running the application.  However, in order for this to
-actually happen, you need to tell JUnit to use the <code>SpringApplicationContextLoader</code> when loading the context:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint java language-java"><code>@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={TestConfiguration.class}, loader = SpringApplicationContextLoader.class)
-public class DatabaseIntegrationTests {
-    ...
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>When the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> loads the test configuration, it does so via <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>'s <code>SpringApplicationContextLoader</code>, which is provided by the <code>spring-boot-starter-test</code>.  This
-context loader supports all of the auto-configuration magic that we know and love in <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  Now, you can adjust logging levels, provide configuration and have your contexts
-make use of the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> auto-configuration annotations as part of your test suite!</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/07/29/spring_boot_integration_tests.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
