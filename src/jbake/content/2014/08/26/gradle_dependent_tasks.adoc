@@ -30,5 +30,5 @@ class CustomTask extends DefaultTask {
 }
 ----
 
- By using the `getDidWork` method on the other task to determine if it executed, we can avoid having to rely upon the input/output of the task to determine if
- the downstream task should execute, thus giving us better control over what triggers the tasks in our project.
+By using the `getDidWork` method on the other task to determine if it executed, we can avoid having to rely upon the input/output of the task to determine if
+the downstream task should execute, thus giving us better control over what triggers the tasks in our project.
