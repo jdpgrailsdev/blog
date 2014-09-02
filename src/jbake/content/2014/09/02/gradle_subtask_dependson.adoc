@@ -14,19 +14,21 @@ Jonathan Pearlin
 One of the great things (IMHO) about {gradle} is that it does a pretty good job of choosing sane conventions.  That being said, one place that seems to not always
 be a great choice is {gradle}'s convention to visit sub-projects in alpha-numerical order.  Let's say that you have the following project structure:
 
+--------------------------------------
 root
  |_ A
  |_ B
     |_ C
     |_ D
  |_ E
+--------------------------------------
 
 Based on the alpha-numerical ordering, you would probably expect {gradle} to visit the projects in the following order:  A, B, B:C, B:D, E.  However, this is not the case.
 {gradle} will visit the sub-projects in alpha-numerical order, within each level.  What you end up with is:  A, B, E, B:C, B:D.  Normally, this probably isn't a big deal.
 This does become a big deal when one of those sub-projects builds a distribution that needs to include output from all of the other sub-projects.  Such is the case when
 building a fully-repackaged, executable JAR file with {spring_boot}.  The repackaged JAR built by the
 http://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-gradle-plugin.html[Spring Boot Gradle Plugin, window="_blank"] includes all dependency JAR files
-required to execute the application.  Let's suppose in our example above, the sub-project "E"'s `build.gradle` script includes the following dependency block:
+required to execute the application.  Let's suppose in our example above, the sub-project E's `build.gradle` script includes the following dependency block:
 
 [source,groovy]
 ----
