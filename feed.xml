@@ -6,17 +6,76 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 26 Aug 2014 07:42:32 -0700</pubDate>
-        <lastBuildDate>Tue, 26 Aug 2014 07:42:32 -0700</lastBuildDate>
+        <pubDate>Tue, 2 Sep 2014 10:56:12 -0400</pubDate>
+        <lastBuildDate>Tue, 2 Sep 2014 10:56:12 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
         <item>
+            <title>Ensure Order of Task Execution between Gradle Sub-Projects</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/09/02/gradle_subtask_dependson.html</link>
+            <pubDate>Tue, 2 Sep 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">2014/09/02/gradle_subtask_dependson.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;One of the great things (IMHO) about &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; is that it does a pretty good job of choosing sane conventions.  That being said, one place that seems to not always
+be a great choice is &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;&apos;s convention to visit sub-projects in alpha-numerical order.  Let&amp;#8217;s say that you have the following project structure:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre&gt;root
+ |_ A
+ |_ B
+    |_ C
+    |_ D
+ |_ E&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Based on the alpha-numerical ordering, you would probably expect &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; to visit the projects in the following order:  A, B, B:C, B:D, E.  However, this is not the case.
+&lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; will visit the sub-projects in alpha-numerical order, within each level.  What you end up with is:  A, B, E, B:C, B:D.  Normally, this probably isn&amp;#8217;t a big deal.
+This does become a big deal when one of those sub-projects builds a distribution that needs to include output from all of the other sub-projects.  Such is the case when
+building a fully-repackaged, executable JAR file with &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;.  The repackaged JAR built by the
+&lt;a href=&quot;http://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-gradle-plugin.html&quot; target=&quot;_blank&quot;&gt;Spring Boot Gradle Plugin&lt;/a&gt; includes all dependency JAR files
+required to execute the application.  Let&amp;#8217;s suppose in our example above, the sub-project E&amp;#8217;s &lt;code&gt;build.gradle&lt;/code&gt; script includes the following dependency block:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;dependencies {
+    compile module(&apos;:A&apos;)
+    compile module(&apos;:B:C&apos;)
+    compile module(&apos;:B:D&apos;)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;What we would like to happen is that when we build project &quot;E&quot;, the JAR file should include the JAR&amp;#8217;s produced by building &quot;A&quot;, &quot;B:C&quot;, and &quot;B:D&quot;.  What actually happens is
+that only &quot;A&quot;&apos;s JAR gets included, because of the ordering outlined earlier in this post.  The way to correct this behavior and to ensure that all other sub-projects build
+their JAR files prior to &quot;E&quot;&apos;s JAR task executing is to add the following to &quot;E&quot;&apos;s &lt;code&gt;build.gradle&lt;/code&gt; script:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;// Ensure that all other JARs are built before the service is packaged.
+project.tasks.jar.dependsOn(rootProject.getSubprojects().findAll { subproject -&amp;gt; subproject.name != project.name }.collect { subproject -&amp;gt; &quot;${subproject.getPath()}:build&quot; })&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The logic above finds every other sub-project in the project and adds that sub-project&amp;#8217;s &quot;build&quot; task as a dependency that first must execute before the current project&amp;#8217;s
+JAR task can execute.  This ensures that all other projects have built their JAR files before &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; can create the re-packaged JAR.  You can apply this same trick to
+any other scenario where the execution of tasks in other sub-projects (regardless of depth) must occur before a certain sub-project&amp;#8217;s task(s).&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
+        <item>
             <title>Execute Gradle Tasks Based on Other Tasks</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/08/26/gradle_dependent_tasks.html</link>
-            <pubDate>Tue, 26 Aug 2014 00:00:00 -0700</pubDate>
+            <pubDate>Tue, 26 Aug 2014 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2014/08/26/gradle_dependent_tasks.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -53,7 +112,7 @@ the downstream task should execute, thus giving us better control over what trig
         <item>
             <title>Gradle, Task Caching, Tests and Jenkins</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/08/19/gradle_tests_jenkins.html</link>
-            <pubDate>Tue, 19 Aug 2014 00:00:00 -0700</pubDate>
+            <pubDate>Tue, 19 Aug 2014 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2014/08/19/gradle_tests_jenkins.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -105,7 +164,7 @@ advantage of task caching for other tasks in the project (such as compilation, p
         <item>
             <title>Dynamically Build JavaExec Classpath from BuildScript Dependencies in Gradle</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/08/12/gradle_javaexec_classpath.html</link>
-            <pubDate>Tue, 12 Aug 2014 00:00:00 -0700</pubDate>
+            <pubDate>Tue, 12 Aug 2014 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2014/08/12/gradle_javaexec_classpath.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -163,7 +222,7 @@ that the &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.
         <item>
             <title>Updating to the latest Docker/Boot2Docker version</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/08/05/docker_upgrade.html</link>
-            <pubDate>Tue, 5 Aug 2014 00:00:00 -0700</pubDate>
+            <pubDate>Tue, 5 Aug 2014 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2014/08/05/docker_upgrade.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -238,67 +297,6 @@ tcp        0      0 :::2375                 :::*                    LISTEN      
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;You should now be able to connect to &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; and use the command line client and the REST API!&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Leveraging Spring Boot Starters in Unit/Integration Tests</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html</link>
-            <pubDate>Tue, 29 Jul 2014 00:00:00 -0700</pubDate>
-            <guid isPermaLink="false">2014/07/29/spring_boot_integration_tests.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; provides a nice &lt;a href=&quot;http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner&quot; target=&quot;_blank&quot;&gt;JUnit integration&lt;/a&gt;, which allows one to write integration-style tests that make use of a fully loaded and configured Spring context.
-This is great help when writing an integration test suite to test something like a database, as you do not need to manually create all the code required to interact
-with the database.  Instead, you can rely upon Spring to configure the beans just as it would at runtime.  Recently, I found myself in a situation where I needed to
-write just such an integration test, though this time for an application that uses &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;.  You do not need to do anything special to leverage the &lt;a href=&quot;http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner&quot; target=&quot;_blank&quot;&gt;JUnit integration&lt;/a&gt;
-integration, as that is provided by the &lt;a href=&quot;https://github.com/spring-projects/spring-framework/tree/master/spring-test&quot; target=&quot;_blank&quot;&gt;Spring Test module&lt;/a&gt; of the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt;
-project.  What you do not get by default, is all of the auto-configuration magic that &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; provides, including logging configuration.  With the release of &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;
-1.1.4, it is now possible to add the following to your &lt;code&gt;application.properties&lt;/code&gt; or &lt;code&gt;application.yml&lt;/code&gt; configuration file to control the logging output:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;logging.level.org.springframework: ERROR&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Additionally, I wanted to be able to turn on SQL logging when executing my integration tests via the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; JPA configuration:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;spring.jpa.properties.hibernate.show_sql: true&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;However, simply using the &lt;a href=&quot;http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner&quot; target=&quot;_blank&quot;&gt;JUnit integration&lt;/a&gt; does not cause &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; to load the configuration or perform any of the auto-configuration that it does when running the application.
-To enable &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; to work its magic when running unit/integration tests that load a context, the first step is to include the &lt;code&gt;spring-boot-starter-test&lt;/code&gt; dependency:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;testCompile &apos;org.springframework.boot:spring-boot-starter-test:1.1.4.RELEASE&apos;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The presence of this dependency will cause &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; to perform all the normal start-up auto-configuration that occurs when running the application.  However, in order for this to
-actually happen, you need to tell JUnit to use the &lt;code&gt;SpringApplicationContextLoader&lt;/code&gt; when loading the context:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={TestConfiguration.class}, loader = SpringApplicationContextLoader.class)
-public class DatabaseIntegrationTests {
-    ...
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;When the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; loads the test configuration, it does so via &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;&apos;s &lt;code&gt;SpringApplicationContextLoader&lt;/code&gt;, which is provided by the &lt;code&gt;spring-boot-starter-test&lt;/code&gt;.  This
-context loader supports all of the auto-configuration magic that we know and love in &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;.  Now, you can adjust logging levels, provide configuration and have your contexts
-make use of the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; auto-configuration annotations as part of your test suite!&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

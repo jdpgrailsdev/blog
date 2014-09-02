@@ -87,49 +87,86 @@
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: gradle</h1>
+        <h1>Ensure Order of Task Execution between Gradle Sub-Projects</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>September 2014</h4>
-            <ul>
+    <p><em>02 September 2014</em></p>
 
-        <li>02 - <a href="/blog/2014/09/02/gradle_subtask_dependson.html">Ensure Order of Task Execution between Gradle Sub-Projects</a></li>
-                </ul>
-                <h4>August 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/09/02/gradle_subtask_dependson.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/09/02/gradle_subtask_dependson.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/09/02/gradle_subtask_dependson.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>26 - <a href="/blog/2014/08/26/gradle_dependent_tasks.html">Execute Gradle Tasks Based on Other Tasks</a></li>
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>One of the great things (IMHO) about <a href="http://gradle.org" target="_blank">Gradle</a> is that it does a pretty good job of choosing sane conventions.  That being said, one place that seems to not always
+be a great choice is <a href="http://gradle.org" target="_blank">Gradle</a>'s convention to visit sub-projects in alpha-numerical order.  Let&#8217;s say that you have the following project structure:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>root
+ |_ A
+ |_ B
+    |_ C
+    |_ D
+ |_ E</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Based on the alpha-numerical ordering, you would probably expect <a href="http://gradle.org" target="_blank">Gradle</a> to visit the projects in the following order:  A, B, B:C, B:D, E.  However, this is not the case.
+<a href="http://gradle.org" target="_blank">Gradle</a> will visit the sub-projects in alpha-numerical order, within each level.  What you end up with is:  A, B, E, B:C, B:D.  Normally, this probably isn&#8217;t a big deal.
+This does become a big deal when one of those sub-projects builds a distribution that needs to include output from all of the other sub-projects.  Such is the case when
+building a fully-repackaged, executable JAR file with <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  The repackaged JAR built by the
+<a href="http://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-gradle-plugin.html" target="_blank">Spring Boot Gradle Plugin</a> includes all dependency JAR files
+required to execute the application.  Let&#8217;s suppose in our example above, the sub-project E&#8217;s <code>build.gradle</code> script includes the following dependency block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>dependencies {
+    compile module(':A')
+    compile module(':B:C')
+    compile module(':B:D')
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>What we would like to happen is that when we build project "E", the JAR file should include the JAR&#8217;s produced by building "A", "B:C", and "B:D".  What actually happens is
+that only "A"'s JAR gets included, because of the ordering outlined earlier in this post.  The way to correct this behavior and to ensure that all other sub-projects build
+their JAR files prior to "E"'s JAR task executing is to add the following to "E"'s <code>build.gradle</code> script:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>// Ensure that all other JARs are built before the service is packaged.
+project.tasks.jar.dependsOn(rootProject.getSubprojects().findAll { subproject -&gt; subproject.name != project.name }.collect { subproject -&gt; "${subproject.getPath()}:build" })</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The logic above finds every other sub-project in the project and adds that sub-project&#8217;s "build" task as a dependency that first must execute before the current project&#8217;s
+JAR task can execute.  This ensures that all other projects have built their JAR files before <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> can create the re-packaged JAR.  You can apply this same trick to
+any other scenario where the execution of tasks in other sub-projects (regardless of depth) must occur before a certain sub-project&#8217;s task(s).</p>
+</div>
+</div>
+</div></p>
 
-        <li>19 - <a href="/blog/2014/08/19/gradle_tests_jenkins.html">Gradle, Task Caching, Tests and Jenkins</a></li>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/09/02/gradle_subtask_dependson.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/09/02/gradle_subtask_dependson.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/09/02/gradle_subtask_dependson.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>12 - <a href="/blog/2014/08/12/gradle_javaexec_classpath.html">Dynamically Build JavaExec Classpath from BuildScript Dependencies in Gradle</a></li>
-                </ul>
-                <h4>July 2014</h4>
-                <ul>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2014/09/02/gradle_subtask_dependson.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-        <li>22 - <a href="/blog/2014/07/22/gradle_build_scripts_classpath.html">Discovering Gradle build scripts from classpath</a></li>
-
-        <li>15 - <a href="/blog/2014/07/15/spring_boot_remote_debug.html">Remote debugging a Spring Boot application launched by the Gradle plugin</a></li>
-
-        <li>08 - <a href="/blog/2014/07/08/spring_boot_env_vars.html">Setting system properties/environment variables with Spring Boot and Gradle</a></li>
-                </ul>
-                <h4>May 2014</h4>
-                <ul>
-
-        <li>13 - <a href="/blog/2014/05/13/gradle_update_deps.html">Automatically Update Dependencies in Gradle Project</a></li>
-                </ul>
-                <h4>April 2014</h4>
-                <ul>
-
-        <li>29 - <a href="/blog/2014/04/29/gradle_cobertura.html">Code Coverage with Cobertura</a></li>
-
-        <li>22 - <a href="/blog/2014/04/22/grails_gradle_logback.html">The Grails Gradle Plugin and Logback</a></li>
-
-        <li>15 - <a href="/blog/2014/04/15/gradle_api_dependencies.html">Gradle API and Transitive Dependencies</a></li>
-
-        <li>08 - <a href="/blog/2014/04/08/spring_boot_gradle_newrelic.html">Using the New Relic agent with Spring-Boot and Gradle</a></li>
-    </ul>
+    <hr>
 
             </div>
             <div id="push"></div>

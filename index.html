@@ -90,6 +90,68 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog2014/09/02/gradle_subtask_dependson.html"><h1>Ensure Order of Task Execution between Gradle Sub-Projects</h1></a>
+                   <p>02 September 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/gradle.html">gradle</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/09/02/gradle_subtask_dependson.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/09/02/gradle_subtask_dependson.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/09/02/gradle_subtask_dependson.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>One of the great things (IMHO) about <a href="http://gradle.org" target="_blank">Gradle</a> is that it does a pretty good job of choosing sane conventions.  That being said, one place that seems to not always
+be a great choice is <a href="http://gradle.org" target="_blank">Gradle</a>'s convention to visit sub-projects in alpha-numerical order.  Let&#8217;s say that you have the following project structure:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>root
+ |_ A
+ |_ B
+    |_ C
+    |_ D
+ |_ E</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Based on the alpha-numerical ordering, you would probably expect <a href="http://gradle.org" target="_blank">Gradle</a> to visit the projects in the following order:  A, B, B:C, B:D, E.  However, this is not the case.
+<a href="http://gradle.org" target="_blank">Gradle</a> will visit the sub-projects in alpha-numerical order, within each level.  What you end up with is:  A, B, E, B:C, B:D.  Normally, this probably isn&#8217;t a big deal.
+This does become a big deal when one of those sub-projects builds a distribution that needs to include output from all of the other sub-projects.  Such is the case when
+building a fully-repackaged, executable JAR file with <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  The repackaged JAR built by the
+<a href="http://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-gradle-plugin.html" target="_blank">Spring Boot Gradle Plugin</a> includes all dependency JAR files
+required to execute the application.  Let&#8217;s suppose in our example above, the sub-project E&#8217;s <code>build.gradle</code> script includes the following dependency block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>dependencies {
+    compile module(':A')
+    compile module(':B:C')
+    compile module(':B:D')
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>What we would like to happen is that when we build project "E", the JAR file should include the JAR&#8217;s produced by building "A", "B:C", and "B:D".  What actually happens is
+that only "A"'s JAR gets included, because of the ordering outlined earlier in this post.  The way to correct this behavior and to ensure that all other sub-projects build
+their JAR files prior to "E"'s JAR task executing is to add the following to "E"'s <code>build.gradle</code> script:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>// Ensure that all other JARs are built before the service is packaged.
+project.tasks.jar.dependsOn(rootProject.getSubprojects().findAll { subproject -&gt; subproject.name != project.name }.collect { subproject -&gt; "${subproject.getPath()}:build" })</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The logic above finds every other sub-project in the project and adds that sub-project&#8217;s "build" task as a dependency that first must execute before the current project&#8217;s
+JAR task can execute.  This ensures that all other projects have built their JAR files before <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> can create the re-packaged JAR.  You can apply this same trick to
+any other scenario where the execution of tasks in other sub-projects (regardless of depth) must occur before a certain sub-project&#8217;s task(s).</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog2014/09/02/gradle_subtask_dependson.html#disqus_thread">Comments</a></p>
                    <a href="/blog2014/08/26/gradle_dependent_tasks.html"><h1>Execute Gradle Tasks Based on Other Tasks</h1></a>
                    <p>26 August 2014</p>
                 <p><em>Tags: </em>
@@ -250,94 +312,6 @@ that the <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.Ja
 </div>
 </div></p>
                 <p><a href="/blog2014/08/12/gradle_javaexec_classpath.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/08/05/docker_upgrade.html"><h1>Updating to the latest Docker/Boot2Docker version</h1></a>
-                   <p>05 August 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/docker.html">docker</a>
-        
-                <a href="/blog/tags/boot2docker.html">boot2docker</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/08/05/docker_upgrade.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/08/05/docker_upgrade.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/08/05/docker_upgrade.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>Not too long ago, the <a href="http://www.docker.com/" target="_blank">Docker</a> project released 1.0 release, which among many improvements includes a new default port for <a href="http://www.docker.com/" target="_blank">Docker</a>.  To update from <a href="http://www.docker.com/" target="_blank">Docker</a>
- &lt; 1.0 to <a href="http://www.docker.com/" target="_blank">Docker</a> &gt;= 1.0, you may run into issues as the port that <a href="http://www.docker.com/" target="_blank">Docker</a> listens on by default has changed from 4243 to 2375.  While things
-may appear to start correctly after an upgrade, you may see the following error when attempting to run any <a href="http://www.docker.com/" target="_blank">Docker</a> client command:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint"><code>$ boot2docker up
-
-Cannot connect to the Docker daemon. Is 'docker -d' running on this host?</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This is because your <a href="https://www.virtualbox.org/" target="_blank">Virtual Box</a> "boot2docker-vm" image is still listening on the old port and therefore is not receiving the forwarded commands.  You can verify this by
-starting up <a href="https://github.com/boot2docker/boot2docker" target="_blank">Boot2Docker</a> and ssh&#8217;ing (<code>boot2docker ssh</code>) into the VM to check the port that docker is listening on:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint"><code>docker@boot2docker:~$ sudo netstat -ntpl | grep docker
-tcp        0      0 :::4243                :::*                    LISTEN      627/docker</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To fix this, use the following steps:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Update to latest <a href="https://github.com/boot2docker/boot2docker" target="_blank">Boot2Docker</a> and <a href="http://www.docker.com/" target="_blank">Docker</a> via <a href="http://brew.sh/" target="_blank">Homebrew</a> (installing <a href="https://github.com/boot2docker/boot2docker" target="_blank">Boot2Docker</a> will automatically install/update <a href="http://www.docker.com/" target="_blank">Docker</a> to the corresponding version).</p>
-</li>
-<li>
-<p>Run <code>boot2docker delete</code>.</p>
-</li>
-<li>
-<p>Delete the existing <code>~/.boot2docker</code> directory.</p>
-</li>
-<li>
-<p>Run <code>boot2docker init</code></p>
-</li>
-<li>
-<p>Open <a href="https://www.virtualbox.org/" target="_blank">Virtual Box</a>, select the <code>boot2docker-vm</code> and click on the "Settings" button.</p>
-<div class="olist loweralpha">
-<ol class="loweralpha" type="a">
-<li>
-<p>Click on the "Network button" in the settings window, expand the "Advanced" area and click on the "Port Forwarding" button.  Verify that 2375 and 2022 are in the list.</p>
-</li>
-</ol>
-</div>
-</li>
-<li>
-<p>Run <code>boot2docker up</code></p>
-</li>
-<li>
-<p>Run <code>boot2docker ssh</code></p>
-</li>
-<li>
-<p>In the VM, run the following command to verify that <a href="http://www.docker.com/" target="_blank">Docker</a> is listening on port 2375:</p>
-</li>
-</ol>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint"><code>sudo netstat -ntpl | grep docker
-
-docker@boot2docker:~$ sudo netstat -ntpl | grep docker
-tcp        0      0 :::2375                 :::*                    LISTEN      627/docker</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You should now be able to connect to <a href="http://www.docker.com/" target="_blank">Docker</a> and use the command line client and the REST API!</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/08/05/docker_upgrade.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
