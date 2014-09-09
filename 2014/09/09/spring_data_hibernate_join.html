@@ -86,131 +86,84 @@
                 </div>
             </div>
             <div class="container">
-                <div class="page-header">
-                    <h1>The Flowers Are Still Standing</h1>
-                </div>
+    <div class="page-header">
+        <h1>Avoid Hibernate N+1 Problem with Joins in Spring-Data/JPA</h1>
+    </div>
 
-                    <h4>September 2014</h4>
-                <ul>
+    <p><em>09 September 2014</em></p>
 
-                    <li>09 - <a href="/blog2014/09/09/spring_data_hibernate_join.html">Avoid Hibernate N+1 Problem with Joins in Spring-Data/JPA</a></li>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/09/09/spring_data_hibernate_join.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/09/09/spring_data_hibernate_join.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/09/09/spring_data_hibernate_join.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                    <li>02 - <a href="/blog2014/09/02/gradle_subtask_dependson.html">Ensure Order of Task Execution between Gradle Sub-Projects</a></li>
-                </ul>
-                <h4>August 2014</h4>
-                <ul>
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you have used <a href="http://hibernate.org" target="_blank">Hibernate</a> as your ORM for any length of time, you have inevitably run into the
+<a href="http://docs.jboss.org/hibernate/orm/3.3/reference/en-US/html/performance.html#performance-fetching-custom" target="_blank">N+1 problem</a>.  This occurs when
+<a href="http://hibernate.org" target="_blank">Hibernate</a> queries an entity that has a collection of children entities that does not use a <code>JOIN</code> fetch mode to retrieve the children.  The simple solution
+when using <a href="http://hibernate.org" target="_blank">Hibernate</a> directly is to set the <code>FetchMode</code> to <code>JOIN</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint java language-java"><code>User user = (User) session.createCriteria(User.class)
+                .setFetchMode("permissions", FetchMode.JOIN)
+                .add( Restrictions.idEq(userId) )
+                .uniqueResult();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, if you are using <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank">JPA</a> on top of <a href="http://hibernate.org" target="_blank">Hibernate</a>, there is no way to set the <code>FetchMode</code> used by <a href="http://hibernate.org" target="_blank">Hibernate</a> to <code>JOIN</code>.  In fact, <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank">JPA</a> only
+supports two types of fetching:  <code>EAGER</code> and <code>LAZY</code>.  Luckily, there is another <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank">JPA</a> API that can be used to address this problem:  <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a>.  The
+<a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a> library provides a <a href="http://spring.io/blog/2011/04/26/advanced-spring-data-jpa-specifications-and-querydsl/" target="_blank">Domain Driven Design Specifications</a>
+API that allows you to control the behavior of the generated query.  This will allow you to tweak things such as the fetch mode to ensure the proper instruction
+is passed to <a href="http://hibernate.org" target="_blank">Hibernate</a> to address the N+1 problem.  I&#8217;m not going to go into a bunch of details on how to use the <code>JpaSpecificationExecutor</code>, as the <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a>
+documentation does a pretty good job of covering it.  What is more important is how to control the fetch mode using it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint java language-java"><code>final long userId = 1;
 
-                    <li>26 - <a href="/blog2014/08/26/gradle_dependent_tasks.html">Execute Gradle Tasks Based on Other Tasks</a></li>
+final Specification&lt;User&gt; spec = new Specification&lt;User&gt;() {
+    @Override
+    public Predicate toPredicate(final Root&lt;User&gt; root, final CriteriaQuery&lt;?&gt; query, final CriteriaBuilder cb) {
+        query.distinct(true);
+        root.fetch("permissions", JoinType.LEFT);
+        return cb.equal(root.get("id"), userId);
+     }
+};
 
-                    <li>19 - <a href="/blog2014/08/19/gradle_tests_jenkins.html">Gradle, Task Caching, Tests and Jenkins</a></li>
+List&lt;User&gt; users = userRepository.findAll(spec);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There are two important pieces of the example above.  The first is the setting of the <code>distinct</code> flag on the query to ensure that the proper (unique) results are returned as
+a result of the join.  The second is the addition of a <code>fetch</code> hint to the root entity, telling the specification to perform a left join of the root to the entity mapped
+by the "permissions" field of the root entity.  This ensures that <a href="http://hibernate.org" target="_blank">Hibernate</a> will now perform a join instead of N+1 queries to fetch the root entity and its associated
+children.</p>
+</div>
+</div>
+</div></p>
 
-                    <li>12 - <a href="/blog2014/08/12/gradle_javaexec_classpath.html">Dynamically Build JavaExec Classpath from BuildScript Dependencies in Gradle</a></li>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/09/09/spring_data_hibernate_join.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/09/09/spring_data_hibernate_join.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/09/09/spring_data_hibernate_join.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                    <li>05 - <a href="/blog2014/08/05/docker_upgrade.html">Updating to the latest Docker/Boot2Docker version</a></li>
-                </ul>
-                <h4>July 2014</h4>
-                <ul>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2014/09/09/spring_data_hibernate_join.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-                    <li>29 - <a href="/blog2014/07/29/spring_boot_integration_tests.html">Leveraging Spring Boot Starters in Unit/Integration Tests</a></li>
-
-                    <li>22 - <a href="/blog2014/07/22/gradle_build_scripts_classpath.html">Discovering Gradle build scripts from classpath</a></li>
-
-                    <li>15 - <a href="/blog2014/07/15/spring_boot_remote_debug.html">Remote debugging a Spring Boot application launched by the Gradle plugin</a></li>
-
-                    <li>08 - <a href="/blog2014/07/08/spring_boot_env_vars.html">Setting system properties/environment variables with Spring Boot and Gradle</a></li>
-
-                    <li>01 - <a href="/blog2014/07/01/eclipse_env_vars_mac_osx.html">Eclipse, Environment Variables and Mac OSX</a></li>
-                </ul>
-                <h4>June 2014</h4>
-                <ul>
-
-                    <li>24 - <a href="/blog2014/06/24/logback_grails.html">Grails and Logback Revisited</a></li>
-
-                    <li>17 - <a href="/blog2014/06/17/logback_tomcat_rolling_appender.html">A Tomcat Rolling File Appender with Logback</a></li>
-
-                    <li>10 - <a href="/blog2014/06/10/grails_stracetrace_log.html">Grails and stacktrace.log</a></li>
-
-                    <li>03 - <a href="/blog2014/06/03/spring_boot_jersey_2.html">Spring Boot, Jersey and Lazy Initialization</a></li>
-                </ul>
-                <h4>May 2014</h4>
-                <ul>
-
-                    <li>27 - <a href="/blog2014/05/27/grails_maven_jdk_profile.html">Grails, Maven and JDK-based Profile Activation</a></li>
-
-                    <li>20 - <a href="/blog2014/05/20/grails_maven_coverage.html">Grails, Maven, Cobertura and Java 7</a></li>
-
-                    <li>13 - <a href="/blog2014/05/13/gradle_update_deps.html">Automatically Update Dependencies in Gradle Project</a></li>
-
-                    <li>06 - <a href="/blog2014/05/06/github_activity_menu.html">Add a custom GitHub activity stream to your blog</a></li>
-                </ul>
-                <h4>April 2014</h4>
-                <ul>
-
-                    <li>29 - <a href="/blog2014/04/29/gradle_cobertura.html">Code Coverage with Cobertura</a></li>
-
-                    <li>22 - <a href="/blog2014/04/22/grails_gradle_logback.html">The Grails Gradle Plugin and Logback</a></li>
-
-                    <li>15 - <a href="/blog2014/04/15/gradle_api_dependencies.html">Gradle API and Transitive Dependencies</a></li>
-
-                    <li>08 - <a href="/blog2014/04/08/spring_boot_gradle_newrelic.html">Using the New Relic agent with Spring-Boot and Gradle</a></li>
-
-                    <li>03 - <a href="/blog2014/04/03/maven_java8_javadoc.html">Maven, the JavaDoc plugin and Java 8</a></li>
-                </ul>
-                <h4>March 2014</h4>
-                <ul>
-
-                    <li>24 - <a href="/blog2014/03/24/grails_logback.html">Grails and Logback</a></li>
-
-                    <li>18 - <a href="/blog2014/03/18/grails_bean_builder.html">Parsing the Grails Spring Beans DSL with Groovy</a></li>
-
-                    <li>12 - <a href="/blog2014/03/12/grails_tattletale_plugin.html">Grails Tattletale Plugin</a></li>
-
-                    <li>11 - <a href="/blog2014/03/11/grails_test_system_properties.html">Setting system properties when running Grails tests</a></li>
-
-                    <li>04 - <a href="/blog2014/03/04/grails_tattletale.html">Integrating JBoss tattletale with Grails</a></li>
-                </ul>
-                <h4>February 2014</h4>
-                <ul>
-
-                    <li>25 - <a href="/blog2014/02/25/grails_gant_ckeditor.html">Programmatically building CKEditor source in Grails</a></li>
-
-                    <li>19 - <a href="/blog2014/02/19/spring_curator.html">Spring and Apache Curator</a></li>
-
-                    <li>10 - <a href="/blog2014/02/10/grails_maven_local_repo.html">Grails 2.3, Maven and Local Repositories</a></li>
-
-                    <li>08 - <a href="/blog2014/02/06/redesign.html">Blog Makeover</a></li>
-                </ul>
-                <h4>December 2012</h4>
-                <ul>
-
-                    <li>08 - <a href="/blog2012/12/08/relocation.html">Relocation</a></li>
-                </ul>
-                <h4>November 2011</h4>
-                <ul>
-
-                    <li>19 - <a href="/blog2011/11/19/spring_data_mongodb_exceptions.html">Where&apos;s My Exceptions, Spring Data MongoDB?</a></li>
-                </ul>
-                <h4>September 2011</h4>
-                <ul>
-
-                    <li>26 - <a href="/blog2011/09/26/trains_planes_auto.html">Planes, Trains, and Automobiles</a></li>
-
-                    <li>13 - <a href="/blog2011/09/13/spring_integration_jmx.html">I Don&apos;t Need To Read The Manual...Spring Integration and JMX</a></li>
-                </ul>
-                <h4>August 2011</h4>
-                <ul>
-
-                    <li>14 - <a href="/blog2011/08/14/war_of_the_worlds.html">War of the Worlds</a></li>
-                </ul>
-                <h4>July 2011</h4>
-                <ul>
-
-                    <li>31 - <a href="/blog2011/07/31/groovy_whitespace.html">Keep Your Hands Off of My Whitespace!</a></li>
-
-                    <li>27 - <a href="/blog2011/07/27/grails_rename_war.html">Maven Trick to Rename Grails War</a></li>
-
-                    <li>18 - <a href="/blog2011/07/18/grails_web_xml.html">Grails web.xml Generation Magic</a></li>
-                </ul>
+    <hr>
 
             </div>
             <div id="push"></div>

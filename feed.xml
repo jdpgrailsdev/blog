@@ -6,13 +6,69 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 2 Sep 2014 10:56:12 -0400</pubDate>
-        <lastBuildDate>Tue, 2 Sep 2014 10:56:12 -0400</lastBuildDate>
+        <pubDate>Tue, 9 Sep 2014 09:14:04 -0400</pubDate>
+        <lastBuildDate>Tue, 9 Sep 2014 09:14:04 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Avoid Hibernate N+1 Problem with Joins in Spring-Data/JPA</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/09/09/spring_data_hibernate_join.html</link>
+            <pubDate>Tue, 9 Sep 2014 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">2014/09/09/spring_data_hibernate_join.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;If you have used &lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; as your ORM for any length of time, you have inevitably run into the
+&lt;a href=&quot;http://docs.jboss.org/hibernate/orm/3.3/reference/en-US/html/performance.html#performance-fetching-custom&quot; target=&quot;_blank&quot;&gt;N+1 problem&lt;/a&gt;.  This occurs when
+&lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; queries an entity that has a collection of children entities that does not use a &lt;code&gt;JOIN&lt;/code&gt; fetch mode to retrieve the children.  The simple solution
+when using &lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; directly is to set the &lt;code&gt;FetchMode&lt;/code&gt; to &lt;code&gt;JOIN&lt;/code&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;User user = (User) session.createCriteria(User.class)
+                .setFetchMode(&quot;permissions&quot;, FetchMode.JOIN)
+                .add( Restrictions.idEq(userId) )
+                .uniqueResult();&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;However, if you are using &lt;a href=&quot;http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html&quot; target=&quot;_blank&quot;&gt;JPA&lt;/a&gt; on top of &lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt;, there is no way to set the &lt;code&gt;FetchMode&lt;/code&gt; used by &lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; to &lt;code&gt;JOIN&lt;/code&gt;.  In fact, &lt;a href=&quot;http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html&quot; target=&quot;_blank&quot;&gt;JPA&lt;/a&gt; only
+supports two types of fetching:  &lt;code&gt;EAGER&lt;/code&gt; and &lt;code&gt;LAZY&lt;/code&gt;.  Luckily, there is another &lt;a href=&quot;http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html&quot; target=&quot;_blank&quot;&gt;JPA&lt;/a&gt; API that can be used to address this problem:  &lt;a href=&quot;http://projects.spring.io/spring-data-jpa/&quot; target=&quot;_blank&quot;&gt;Spring Data JPA&lt;/a&gt;.  The
+&lt;a href=&quot;http://projects.spring.io/spring-data-jpa/&quot; target=&quot;_blank&quot;&gt;Spring Data JPA&lt;/a&gt; library provides a &lt;a href=&quot;http://spring.io/blog/2011/04/26/advanced-spring-data-jpa-specifications-and-querydsl/&quot; target=&quot;_blank&quot;&gt;Domain Driven Design Specifications&lt;/a&gt;
+API that allows you to control the behavior of the generated query.  This will allow you to tweak things such as the fetch mode to ensure the proper instruction
+is passed to &lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; to address the N+1 problem.  I&amp;#8217;m not going to go into a bunch of details on how to use the &lt;code&gt;JpaSpecificationExecutor&lt;/code&gt;, as the &lt;a href=&quot;http://projects.spring.io/spring-data-jpa/&quot; target=&quot;_blank&quot;&gt;Spring Data JPA&lt;/a&gt;
+documentation does a pretty good job of covering it.  What is more important is how to control the fetch mode using it:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;final long userId = 1;
+
+final Specification&amp;lt;User&amp;gt; spec = new Specification&amp;lt;User&amp;gt;() {
+    @Override
+    public Predicate toPredicate(final Root&amp;lt;User&amp;gt; root, final CriteriaQuery&amp;lt;?&amp;gt; query, final CriteriaBuilder cb) {
+        query.distinct(true);
+        root.fetch(&quot;permissions&quot;, JoinType.LEFT);
+        return cb.equal(root.get(&quot;id&quot;), userId);
+     }
+};
+
+List&amp;lt;User&amp;gt; users = userRepository.findAll(spec);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;There are two important pieces of the example above.  The first is the setting of the &lt;code&gt;distinct&lt;/code&gt; flag on the query to ensure that the proper (unique) results are returned as
+a result of the join.  The second is the addition of a &lt;code&gt;fetch&lt;/code&gt; hint to the root entity, telling the specification to perform a left join of the root to the entity mapped
+by the &quot;permissions&quot; field of the root entity.  This ensures that &lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; will now perform a join instead of N+1 queries to fetch the root entity and its associated
+children.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Ensure Order of Task Execution between Gradle Sub-Projects</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/09/02/gradle_subtask_dependson.html</link>
@@ -214,89 +270,6 @@ private List&amp;lt;File&amp;gt; getClasspath(project, classpath=[]) {
 &lt;p&gt;The above example starts with the current project, adds its build script dependencies to the classpath and then recursively looks at the project&amp;#8217;s root project.  This continues
 until the project does not have a root project or the root project is the project itself.  The result is then converted to a &lt;code&gt;FileCollection&lt;/code&gt; and the classpath is set, ensuring
 that the &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html&quot; target=&quot;_blank&quot;&gt;Gradle JavaExec Task&lt;/a&gt; has the dependencies provided by the custom plugin.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Updating to the latest Docker/Boot2Docker version</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/08/05/docker_upgrade.html</link>
-            <pubDate>Tue, 5 Aug 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">2014/08/05/docker_upgrade.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Not too long ago, the &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; project released 1.0 release, which among many improvements includes a new default port for &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt;.  To update from &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt;
- &amp;lt; 1.0 to &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; &amp;gt;= 1.0, you may run into issues as the port that &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; listens on by default has changed from 4243 to 2375.  While things
-may appear to start correctly after an upgrade, you may see the following error when attempting to run any &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; client command:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;$ boot2docker up
-
-Cannot connect to the Docker daemon. Is &apos;docker -d&apos; running on this host?&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;This is because your &lt;a href=&quot;https://www.virtualbox.org/&quot; target=&quot;_blank&quot;&gt;Virtual Box&lt;/a&gt; &quot;boot2docker-vm&quot; image is still listening on the old port and therefore is not receiving the forwarded commands.  You can verify this by
-starting up &lt;a href=&quot;https://github.com/boot2docker/boot2docker&quot; target=&quot;_blank&quot;&gt;Boot2Docker&lt;/a&gt; and ssh&amp;#8217;ing (&lt;code&gt;boot2docker ssh&lt;/code&gt;) into the VM to check the port that docker is listening on:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;docker@boot2docker:~$ sudo netstat -ntpl | grep docker
-tcp        0      0 :::4243                :::*                    LISTEN      627/docker&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;To fix this, use the following steps:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;olist arabic&quot;&gt;
-&lt;ol class=&quot;arabic&quot;&gt;
-&lt;li&gt;
-&lt;p&gt;Update to latest &lt;a href=&quot;https://github.com/boot2docker/boot2docker&quot; target=&quot;_blank&quot;&gt;Boot2Docker&lt;/a&gt; and &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; via &lt;a href=&quot;http://brew.sh/&quot; target=&quot;_blank&quot;&gt;Homebrew&lt;/a&gt; (installing &lt;a href=&quot;https://github.com/boot2docker/boot2docker&quot; target=&quot;_blank&quot;&gt;Boot2Docker&lt;/a&gt; will automatically install/update &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; to the corresponding version).&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Run &lt;code&gt;boot2docker delete&lt;/code&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Delete the existing &lt;code&gt;~/.boot2docker&lt;/code&gt; directory.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Run &lt;code&gt;boot2docker init&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Open &lt;a href=&quot;https://www.virtualbox.org/&quot; target=&quot;_blank&quot;&gt;Virtual Box&lt;/a&gt;, select the &lt;code&gt;boot2docker-vm&lt;/code&gt; and click on the &quot;Settings&quot; button.&lt;/p&gt;
-&lt;div class=&quot;olist loweralpha&quot;&gt;
-&lt;ol class=&quot;loweralpha&quot; type=&quot;a&quot;&gt;
-&lt;li&gt;
-&lt;p&gt;Click on the &quot;Network button&quot; in the settings window, expand the &quot;Advanced&quot; area and click on the &quot;Port Forwarding&quot; button.  Verify that 2375 and 2022 are in the list.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Run &lt;code&gt;boot2docker up&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Run &lt;code&gt;boot2docker ssh&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;In the VM, run the following command to verify that &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; is listening on port 2375:&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;sudo netstat -ntpl | grep docker
-
-docker@boot2docker:~$ sudo netstat -ntpl | grep docker
-tcp        0      0 :::2375                 :::*                    LISTEN      627/docker&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;You should now be able to connect to &lt;a href=&quot;http://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; and use the command line client and the REST API!&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
