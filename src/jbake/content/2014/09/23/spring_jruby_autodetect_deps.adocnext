@@ -1,0 +1,10 @@
+= Use Spring to Autodetect and Load JRuby Gem Dependencies
+Jonathan Pearlin
+2014-09-23
+:jbake-type: post
+:jbake-tags: spring, jruby
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: spring_jruby_autodetect_deps
+:icons: font

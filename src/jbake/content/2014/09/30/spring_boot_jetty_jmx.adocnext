@@ -1,0 +1,44 @@
+= Expose Jetty MBeans via JMX in a Spring Boot Application
+Jonathan Pearlin
+2014-09-30
+:jbake-type: post
+:jbake-tags: spring
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: spring_boot_jetty_jmx
+:icons: font
+:spring_boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
+
+[source,java]
+----
+@Bean
+public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(@Value("${server.port:8080}") final String port) {
+    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(port));
+    factory.addServerCustomizers(new JettyServerCustomizer() {
+        @Override
+        public void customize(final Server server) {
+            // Expose Jetty managed beans to the JMX platform server provided by Spring
+            final MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+            server.addBean(mbContainer);
+        }
+    });
+}
+----
+
+[source,groovy]
+----
+ext {
+    jettyVersion = '9.0.3.v20130506'
+}
+
+dependencies {
+  ...
+
+  compile "org.eclipse.jetty:jetty-jmx:$jettyVersion"
+  compile "org.eclipse.jetty:jetty-server:$jettyVersion"
+  compile "org.eclipse.jetty:jetty-util:$jettyVersion"
+
+  ...
+}
+----

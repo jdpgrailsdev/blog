@@ -1,0 +1,48 @@
+= Configure Jetty's Thread Pool in a Spring Boot Application
+Jonathan Pearlin
+2014-10-07
+:jbake-type: post
+:jbake-tags: spring
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: spring_boot_jetty_thread_pool
+:icons: font
+:spring_boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
+
+[source,java]
+----
+@Bean
+public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(@Value("${server.port:8080}") final String port,
+            @Value("${jetty.threadPool.maxThreads:200}") final String maxThreads,
+            @Value("${jetty.threadPool.minThreads:8}") final String minThreads,
+            @Value("${jetty.threadPool.idleTimeout:60000}") final String idleTimeout) {
+    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(port));
+    factory.addServerCustomizers(new JettyServerCustomizer() {
+        @Override
+        public void customize(final Server server) {
+            // Tweak the connection pool used by Jetty to handle incoming HTTP connections
+            final QueuedThreadPool threadPool = server.getBean(QueuedThreadPool.class);
+            threadPool.setMaxThreads(Integer.valueOf(maxThreads));
+            threadPool.setMinThreads(Integer.valueOf(minThreads));
+            threadPool.setIdleTimeout(Integer.valueOf(idleTimeout));
+        }
+    });
+}
+----
+
+[source,groovy]
+----
+ext {
+    jettyVersion = '9.0.3.v20130506'
+}
+
+dependencies {
+  ...
+
+  compile "org.eclipse.jetty:jetty-server:$jettyVersion"
+  compile "org.eclipse.jetty:jetty-util:$jettyVersion"
+
+  ...
+}
+----
