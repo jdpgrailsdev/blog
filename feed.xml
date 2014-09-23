@@ -6,17 +6,230 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 9 Sep 2014 09:14:04 -0400</pubDate>
-        <lastBuildDate>Tue, 9 Sep 2014 09:14:04 -0400</lastBuildDate>
+        <pubDate>Tue, 23 Sep 2014 07:54:31 -0700</pubDate>
+        <lastBuildDate>Tue, 23 Sep 2014 07:54:31 -0700</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
         <item>
+            <title>Use Spring to Autodetect and Load JRuby Gem Dependencies</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/09/23/spring_jruby_autodetect_deps.html</link>
+            <pubDate>Tue, 23 Sep 2014 00:00:00 -0700</pubDate>
+            <guid isPermaLink="false">2014/09/23/spring_jruby_autodetect_deps.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;I decided recently to try to use &lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt; to help me use Ruby-based libraries as plugins in a Java application.  This is pretty easy to do if your Ruby code makes use
+of the stock modules included in &lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt;.  However, what happens if the Ruby scripts need to access other libraries that typically would be found in external
+&lt;a href=&quot;https://rubygems.org/&quot; target=&quot;_blank&quot;&gt;Ruby Gems&lt;/a&gt;?  One answer is to use &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;, &lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt; and the &lt;a href=&quot;http://spring.io&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; to automatically download, package and discover these dependencies at build and runtime.
+Another way to put it is that we have three distinct operations that we need to perform in order to get all of this playing nicely together:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;olist arabic&quot;&gt;
+&lt;ol class=&quot;arabic&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;Use &lt;a href=&quot;http://bundler.io/&quot; target=&quot;_blank&quot;&gt;Bundler&lt;/a&gt; to find, download and install all required Ruby modules at build time (&lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; + &lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Package Ruby modules with Ruby script(s) in JAR file (&lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Auto-discover packaged Ruby modules at runtime and add them to the &quot;load path&quot; of the script that is to be executed (&lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt; + &lt;a href=&quot;http://spring.io&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Execute the script (&lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Let&amp;#8217;s start with the first task:  Use &lt;a href=&quot;http://bundler.io/&quot; target=&quot;_blank&quot;&gt;Bundler&lt;/a&gt; to find, download and install all required Ruby modules at build time.  To accomplish this, I decided to
+use custom tasks in a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; script to first install &lt;a href=&quot;http://bundler.io/&quot; target=&quot;_blank&quot;&gt;Bundler&lt;/a&gt; and then use &lt;a href=&quot;http://bundler.io/&quot; target=&quot;_blank&quot;&gt;Bundler&lt;/a&gt; to install any required Ruby modules found in the project&amp;#8217;s &lt;code&gt;Gemfile&lt;/code&gt;.
+This &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; script also needed to be able to copy the installed &lt;a href=&quot;https://rubygems.org/&quot; target=&quot;_blank&quot;&gt;Ruby Gems&lt;/a&gt; to a directory that would ensure their inclusion in the packaged JAR file.  Below
+is the script:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;import groovy.util.AntBuilder
+
+buildscript {
+    dependencies {
+        classpath &apos;org.jruby:jruby-complete:1.7.13&apos;
+    }
+}
+
+jar {
+    from (&quot;${project.projectDir}/src/main/ruby&quot;)
+}
+
+dependencies {
+    runtime project(&apos;:shared&apos;)
+}
+
+sourceSets {
+    main {
+       java {
+          srcDir file(&quot;${project.projectDir}/src/main/ruby&quot;)
+       }
+    }
+}
+
+/*
+ * Installs Bundler to the project&apos;s build directory.  Bundler is used to
+ * install any Gems required by this plugin.
+ */
+task installBundler(type:JavaExec, description:&apos;Installs Bundler&apos;) {
+    args = &quot;--2.0 -S gem install -i ${project.buildDir}/bundler --no-rdoc --no-ri bundler&quot;.tokenize()
+    classpath = project.buildscript.configurations.classpath
+    jvmArgs(&quot;-Xmx800M&quot;)
+    main = &apos;org.jruby.Main&apos;
+    environment = [HOME:System.getProperty(&apos;user.home&apos;),
+                    PATH:[&apos;/usr/local/bin&apos;, &apos;/usr/bin&apos;,&apos;/bin&apos;,&apos;/usr/sbin&apos;,&apos;/sbin&apos;].join(File.pathSeparator)]
+    workingDir = project.projectDir
+}
+
+/*
+ * Installs the Gems required by this plugin to the project&apos;s build directory.
+ * This task uses Bundler to perform the Gem installations.
+ */
+task installGems(type:JavaExec, description:&apos;Installs all required Gems via Bundle.&apos;, dependsOn:&apos;installBundler&apos;) {
+    args = &quot;--2.0 -S bundle install --path ${project.buildDir}&quot;.tokenize()
+    classpath = project.buildscript.configurations.classpath
+    main = &apos;org.jruby.Main&apos;
+    environment = [GEM_PATH: &quot;${project.buildDir}/bundler&quot;,
+                    HOME:System.getProperty(&apos;user.home&apos;),
+                    PATH:[&quot;${project.buildDir}/bundler/bin&quot;, &apos;/usr/local/bin&apos;, &apos;/usr/bin&apos;,&apos;/bin&apos;,&apos;/usr/sbin&apos;,&apos;/sbin&apos;].join(File.pathSeparator)]
+    workingDir = project.projectDir
+}
+
+/*
+ * Moves the installed Gem files from the project&apos;s build directory to src/main/resources
+ * so that they will be included in the packaged JAR.
+ */
+task packageGems(dependsOn:&apos;installGems&apos;) {
+    doLast {
+        Properties props = new Properties()
+        props.load(new File(&quot;${project.projectDir}/src/main/resources/META-INF/notification/${project.name}.plugin&quot;).newDataInputStream())
+        File parent = new File(&quot;${project.projectDir}/src/main/resources/${props.getProperty(&apos;plugin-name&apos;)}/gems&quot;)
+        parent.deleteDir()
+        parent.mkdirs()
+
+        // Normalize each installed gem directory name and move it to src/main/resources
+        new File(&quot;${project.buildDir}/jruby/1.9/gems&quot;).listFiles().each { file -&amp;gt;
+            processSourceFiles(parent, new File(file, &apos;lib&apos;))
+            File vendorGems = new File(file, &apos;vendor/gems&apos;)
+            if(vendorGems.exists()) {
+                vendorGems.listFiles().each { vendorFile -&amp;gt;
+                    processSourceFiles(parent, new File(vendorFile, &apos;lib&apos;))
+                }
+            }
+        }
+    }
+}
+
+project.tasks.installGems.inputs.file(&quot;${project.projectDir}/Gemfile&quot;)
+project.tasks.installGems.outputs.dir(&quot;${project.buildDir}/jruby&quot;)
+project.tasks.installBundler.outputs.upToDateWhen { new File(&quot;${project.buildDir}/bundler&quot;).exists() }
+project.tasks.jar.dependsOn([&apos;packageGems&apos;])
+
+def processSourceFiles(File newParent, File rootDir) {
+    File newRootDir = new File(newParent, rootDir.getParentFile().getName())
+    new AntBuilder().copy(todir : newRootDir.getAbsolutePath(), quiet:true) {
+        fileset(dir: rootDir.getAbsolutePath())
+    }
+    newRootDir.eachFileRecurse { rubyFile -&amp;gt;
+        if(rubyFile.isFile() &amp;amp;&amp;amp; rubyFile.text.contains(&apos;require_relative&apos;)) {
+            def builder = new StringBuilder()
+            rubyFile.eachLine { line -&amp;gt;
+                line = line.replaceAll(&apos;require_relative\\s+\&apos;\\.\\/(.+)\&apos;&apos;, &apos;require_relative \&apos;$1\&apos;&apos;)
+                def matcher = line =~ /require_relative\s+&apos;((\.\.\/)+).+&apos;/
+                if(matcher.find()) {
+                    def numberOfParentDirs = matcher[0][1].split(&apos;/&apos;).length
+                    def actualParent = rubyFile.getParentFile()
+                    numberOfParentDirs.times { actualParent = actualParent.getParentFile() }
+                    actualParent = actualParent.getAbsolutePath().minus(&quot;${newRootDir.getAbsolutePath()}/&quot;)
+                    line = line.replaceAll(&apos;require_relative\\s+\&apos;(?:\\.\\.\\/)+(.+)\&apos;&apos;, &quot;require &apos;${actualParent ? &quot;${actualParent}/&quot; : actualParent}\$1&apos;&quot;)
+                }
+                builder.append(line.trim())
+                builder.append(&apos;\n&apos;)
+            }
+            rubyFile.write(builder.toString())
+        }
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;A couple of things to point out.  First, the script uses &lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt; in custom &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; tasks to execute the Ruby-based commands.  Second, the script recursively
+walks through each of the installed &lt;a href=&quot;https://rubygems.org/&quot; target=&quot;_blank&quot;&gt;Ruby Gems&lt;/a&gt; to properly normalize any &lt;code&gt;require_relative&lt;/code&gt; statements into absolute paths.  This is necessary as &lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt; does
+not handle relative paths in included &lt;a href=&quot;https://rubygems.org/&quot; target=&quot;_blank&quot;&gt;Ruby Gems&lt;/a&gt; very well (or at all).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;At this point, running &lt;code&gt;./gradlew build&lt;/code&gt; on this project will produce a JAR file containing any Ruby scripts found in &lt;code&gt;src/main/ruby&lt;/code&gt;, as well as any required
+&lt;a href=&quot;https://rubygems.org/&quot; target=&quot;_blank&quot;&gt;Ruby Gems&lt;/a&gt; installed by the script.  The next step to use a Ruby-based plugin in a Java application is to use &lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt; to execute the script.  I&amp;#8217;m not going
+to go into all of the details about wiring that up, as the &lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt; tutorials cover this pretty well.  Instead, I am going to focus on how to extract the
+required &lt;a href=&quot;https://rubygems.org/&quot; target=&quot;_blank&quot;&gt;Ruby Gems&lt;/a&gt; that we included in the JAR and make sure that they are available to our Ruby script(s) when &lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt; executes them.  To accomplish this,
+I decided to make use of the &lt;a href=&quot;http://spring.io&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt;&apos;s &lt;code&gt;PathMatchingResourcePatternResolver&lt;/code&gt; to auto-discover the included &lt;a href=&quot;https://rubygems.org/&quot; target=&quot;_blank&quot;&gt;Ruby Gems&lt;/a&gt; and add them to &lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt;&apos;s load path:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
+import org.jruby.embed.ScriptingContainer;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+
+...
+
+final String pluginName = &quot;test-plugin&quot;;
+
+final PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
+
+final Resource[] dependencyGemResources  = patternResolver.getResources(String.format(&quot;classpath*:/%s/gems/**/*.rb&quot;, pluginName));
+
+final Pattern dependencyGemPattern = Pattern.compile(String.format(&quot;^classpath:\\/%s\\/gems\\/([a-zA-Z\\-\\.0-9_]+)/.*$&quot;, pluginName));
+
+final ScriptingContainer container = new ScriptingContainer();
+
+final Set&amp;lt;String&amp;gt; loadPaths = new HashSet&amp;lt;String&amp;gt;();
+
+// Add the JRuby-provided Ruby 2.0 modules to the load path
+loadPaths.add(&quot;classpath:/META-INF/jruby.home/lib/ruby/2.0&quot;);
+
+// Add any required dependency Gems for this plugin to the load path.
+for(final Resource resource : dependencyGemResources) {
+    final Matcher matcher = dependencyGemPattern.matcher(resource.getURI().toString().replaceAll(&quot;^jar:file:\\/.*\\.jar!(.*)$&quot;, &quot;classpath:$1&quot;));
+    if(matcher.find()) {
+        final String resourceName = String.format(&quot;classpath:/%s/gems/%s&quot;, pluginName, matcher.group(1));
+        if(!loadPaths.contains(resourceName)) {
+            loadPaths.add(resourceName);
+        }
+    }
+}
+
+container.setLoadPaths(loadPaths);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The snippet of Java code above makes use of the &lt;code&gt;PathMatchingResourcePatternResolver&lt;/code&gt; from the &lt;a href=&quot;http://spring.io&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; to scan the classpath and find all &lt;code&gt;.rb&lt;/code&gt; files under the
+&lt;code&gt;/&amp;lt;plugin name&amp;gt;/gems&lt;/code&gt; path.  From this list, the URI of each (which is relative to the JAR file) is converted into a classpath-friendly string that &lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt;
+understands and then added to the list of paths for &lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt; to load prior to execution of the script.  At this point, if a Ruby script is executed via the
+&lt;code&gt;ScriptingContainer&lt;/code&gt; with the properly configured load paths, any references to required modules that are packaged in the plugin&amp;#8217;s JAR file will be found and
+the script will execute just as if it were run via Ruby.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
+        <item>
             <title>Avoid Hibernate N+1 Problem with Joins in Spring-Data/JPA</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/09/09/spring_data_hibernate_join.html</link>
-            <pubDate>Tue, 9 Sep 2014 00:00:00 -0400</pubDate>
+            <pubDate>Tue, 9 Sep 2014 00:00:00 -0700</pubDate>
             <guid isPermaLink="false">2014/09/09/spring_data_hibernate_join.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -72,7 +285,7 @@ children.&lt;/p&gt;
         <item>
             <title>Ensure Order of Task Execution between Gradle Sub-Projects</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/09/02/gradle_subtask_dependson.html</link>
-            <pubDate>Tue, 2 Sep 2014 00:00:00 -0400</pubDate>
+            <pubDate>Tue, 2 Sep 2014 00:00:00 -0700</pubDate>
             <guid isPermaLink="false">2014/09/02/gradle_subtask_dependson.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -131,7 +344,7 @@ any other scenario where the execution of tasks in other sub-projects (regardles
         <item>
             <title>Execute Gradle Tasks Based on Other Tasks</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/08/26/gradle_dependent_tasks.html</link>
-            <pubDate>Tue, 26 Aug 2014 00:00:00 -0400</pubDate>
+            <pubDate>Tue, 26 Aug 2014 00:00:00 -0700</pubDate>
             <guid isPermaLink="false">2014/08/26/gradle_dependent_tasks.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -168,7 +381,7 @@ the downstream task should execute, thus giving us better control over what trig
         <item>
             <title>Gradle, Task Caching, Tests and Jenkins</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/08/19/gradle_tests_jenkins.html</link>
-            <pubDate>Tue, 19 Aug 2014 00:00:00 -0400</pubDate>
+            <pubDate>Tue, 19 Aug 2014 00:00:00 -0700</pubDate>
             <guid isPermaLink="false">2014/08/19/gradle_tests_jenkins.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
@@ -212,64 +425,6 @@ get us what we want.  One other alternative is to make use of the &lt;code&gt;up
 that we want to take advantage of caching and which ones we want to always run.  By adding the one line above to my project&amp;#8217;s &lt;code&gt;build.gradle&lt;/code&gt; script, I was able to make &lt;a href=&quot;http://jenkins-ci.org/&quot; target=&quot;_blank&quot;&gt;Jenkins&lt;/a&gt;
 happy with always providing up-to-date unit tests results, regardless of which files (source or otherwise) have changed in my project.  This also means that &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; will take
 advantage of task caching for other tasks in the project (such as compilation, packaging, etc), which helps to reduce build time.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Dynamically Build JavaExec Classpath from BuildScript Dependencies in Gradle</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/08/12/gradle_javaexec_classpath.html</link>
-            <pubDate>Tue, 12 Aug 2014 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">2014/08/12/gradle_javaexec_classpath.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Recently, I have been working on a few &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugins that use the &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html&quot; target=&quot;_blank&quot;&gt;Gradle JavaExec Task&lt;/a&gt;
-to execute a Java main class from within the plugin.  This is pretty straightforward and not at all interesting.  However, in testing the plugin, I realized that I did not
-want to expose the required dependencies needed to run the main class outside of the plugin.  If I did, I would require each project that applies my plugin to list the
-dependencies in its &lt;code&gt;dependencies&lt;/code&gt; block.  This is obviously a leaky abstraction, so I decided to see if I could programmatically set the classpath of the &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html&quot; target=&quot;_blank&quot;&gt;Gradle JavaExec Task&lt;/a&gt;
-to us use the plugin&amp;#8217;s dependencies:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;task generate(type: JavaExec) {
-    main = &apos;com.example.Generator&apos;
-    args = [&apos;arg1&apos;, &apos;arg2&apos;]
-    classpath = buildscript.configurations.classpath
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;In the example above, the task&amp;#8217;s classpath is set to the classpath created by the &lt;code&gt;buildscript&lt;/code&gt; DSL, which includes my plugin dependency and all of its transitive dependencies (unless
-you disable transitive resolution when you define the plugin dependency).  This worked great until I used my plugin as part of a multi-module project, where the plugin dependency
-is declared and applied in the root project, but the task is executed on the sub-project.  What happened is that the above example only loaded the build script classpath for
-the current project (the sub-project), which did not have the plugin dependency on its classpath (apparently, the build script classpath is not additive/transitive).  I addressed
-this by writing a little recursive function to traverse up the project tree and add the dependencies from each build script:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;task generate(type: JavaExec) {
-    main = &apos;com.example.Generator&apos;
-    args = [&apos;arg1&apos;, &apos;arg2&apos;]
-    classpath = files(getClasspath(project))
-}
-
-private List&amp;lt;File&amp;gt; getClasspath(project, classpath=[]) {
-    if(project == null || project == project.rootProject) {
-        classpath
-    } else {
-        classpath.addAll(project.buildscript.configurations.classpath.getFiles())
-        getClasspath(project.rootProject, classpath)
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The above example starts with the current project, adds its build script dependencies to the classpath and then recursively looks at the project&amp;#8217;s root project.  This continues
-until the project does not have a root project or the root project is the project itself.  The result is then converted to a &lt;code&gt;FileCollection&lt;/code&gt; and the classpath is set, ensuring
-that the &lt;a href=&quot;http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html&quot; target=&quot;_blank&quot;&gt;Gradle JavaExec Task&lt;/a&gt; has the dependencies provided by the custom plugin.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

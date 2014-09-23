@@ -86,25 +86,17 @@
                 </div>
             </div>
             <div class="container">
-                <div class="page-header">
-                    <h1>The Flowers Are Still Standing</h1>
-                </div>
+    <div class="page-header">
+        <h1>Use Spring to Autodetect and Load JRuby Gem Dependencies</h1>
+    </div>
 
-                   <a href="/blog2014/09/23/spring_jruby_autodetect_deps.html"><h1>Use Spring to Autodetect and Load JRuby Gem Dependencies</h1></a>
-                   <p>23 September 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/gradle.html">gradle</a>
-        
-                <a href="/blog/tags/spring.html"> spring</a>
-        
-                <a href="/blog/tags/jruby.html"> jruby</a>
-        </p>
+    <p><em>23 September 2014</em></p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/09/23/spring_jruby_autodetect_deps.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/09/23/spring_jruby_autodetect_deps.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/09/23/spring_jruby_autodetect_deps.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/09/23/spring_jruby_autodetect_deps.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/09/23/spring_jruby_autodetect_deps.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/09/23/spring_jruby_autodetect_deps.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div id="preamble">
+    <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>I decided recently to try to use <a href="http://jruby.org/" target="_blank">JRuby</a> to help me use Ruby-based libraries as plugins in a Java application.  This is pretty easy to do if your Ruby code makes use
@@ -309,174 +301,26 @@ the script will execute just as if it were run via Ruby.</p>
 </div>
 </div>
 </div></p>
-                <p><a href="/blog2014/09/23/spring_jruby_autodetect_deps.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/09/09/spring_data_hibernate_join.html"><h1>Avoid Hibernate N+1 Problem with Joins in Spring-Data/JPA</h1></a>
-                   <p>09 September 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/java.html"> java</a>
-        </p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/09/09/spring_data_hibernate_join.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/09/09/spring_data_hibernate_join.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/09/09/spring_data_hibernate_join.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/09/23/spring_jruby_autodetect_deps.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/09/23/spring_jruby_autodetect_deps.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/09/23/spring_jruby_autodetect_deps.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>If you have used <a href="http://hibernate.org" target="_blank">Hibernate</a> as your ORM for any length of time, you have inevitably run into the
-<a href="http://docs.jboss.org/hibernate/orm/3.3/reference/en-US/html/performance.html#performance-fetching-custom" target="_blank">N+1 problem</a>.  This occurs when
-<a href="http://hibernate.org" target="_blank">Hibernate</a> queries an entity that has a collection of children entities that does not use a <code>JOIN</code> fetch mode to retrieve the children.  The simple solution
-when using <a href="http://hibernate.org" target="_blank">Hibernate</a> directly is to set the <code>FetchMode</code> to <code>JOIN</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint java language-java"><code>User user = (User) session.createCriteria(User.class)
-                .setFetchMode("permissions", FetchMode.JOIN)
-                .add( Restrictions.idEq(userId) )
-                .uniqueResult();</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>However, if you are using <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank">JPA</a> on top of <a href="http://hibernate.org" target="_blank">Hibernate</a>, there is no way to set the <code>FetchMode</code> used by <a href="http://hibernate.org" target="_blank">Hibernate</a> to <code>JOIN</code>.  In fact, <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank">JPA</a> only
-supports two types of fetching:  <code>EAGER</code> and <code>LAZY</code>.  Luckily, there is another <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank">JPA</a> API that can be used to address this problem:  <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a>.  The
-<a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a> library provides a <a href="http://spring.io/blog/2011/04/26/advanced-spring-data-jpa-specifications-and-querydsl/" target="_blank">Domain Driven Design Specifications</a>
-API that allows you to control the behavior of the generated query.  This will allow you to tweak things such as the fetch mode to ensure the proper instruction
-is passed to <a href="http://hibernate.org" target="_blank">Hibernate</a> to address the N+1 problem.  I&#8217;m not going to go into a bunch of details on how to use the <code>JpaSpecificationExecutor</code>, as the <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a>
-documentation does a pretty good job of covering it.  What is more important is how to control the fetch mode using it:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint java language-java"><code>final long userId = 1;
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2014/09/23/spring_jruby_autodetect_deps.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-final Specification&lt;User&gt; spec = new Specification&lt;User&gt;() {
-    @Override
-    public Predicate toPredicate(final Root&lt;User&gt; root, final CriteriaQuery&lt;?&gt; query, final CriteriaBuilder cb) {
-        query.distinct(true);
-        root.fetch("permissions", JoinType.LEFT);
-        return cb.equal(root.get("id"), userId);
-     }
-};
-
-List&lt;User&gt; users = userRepository.findAll(spec);</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>There are two important pieces of the example above.  The first is the setting of the <code>distinct</code> flag on the query to ensure that the proper (unique) results are returned as
-a result of the join.  The second is the addition of a <code>fetch</code> hint to the root entity, telling the specification to perform a left join of the root to the entity mapped
-by the "permissions" field of the root entity.  This ensures that <a href="http://hibernate.org" target="_blank">Hibernate</a> will now perform a join instead of N+1 queries to fetch the root entity and its associated
-children.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/09/09/spring_data_hibernate_join.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/09/02/gradle_subtask_dependson.html"><h1>Ensure Order of Task Execution between Gradle Sub-Projects</h1></a>
-                   <p>02 September 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/gradle.html">gradle</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/09/02/gradle_subtask_dependson.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/09/02/gradle_subtask_dependson.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/09/02/gradle_subtask_dependson.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>One of the great things (IMHO) about <a href="http://gradle.org" target="_blank">Gradle</a> is that it does a pretty good job of choosing sane conventions.  That being said, one place that seems to not always
-be a great choice is <a href="http://gradle.org" target="_blank">Gradle</a>'s convention to visit sub-projects in alpha-numerical order.  Let&#8217;s say that you have the following project structure:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>root
- |_ A
- |_ B
-    |_ C
-    |_ D
- |_ E</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Based on the alpha-numerical ordering, you would probably expect <a href="http://gradle.org" target="_blank">Gradle</a> to visit the projects in the following order:  A, B, B:C, B:D, E.  However, this is not the case.
-<a href="http://gradle.org" target="_blank">Gradle</a> will visit the sub-projects in alpha-numerical order, within each level.  What you end up with is:  A, B, E, B:C, B:D.  Normally, this probably isn&#8217;t a big deal.
-This does become a big deal when one of those sub-projects builds a distribution that needs to include output from all of the other sub-projects.  Such is the case when
-building a fully-repackaged, executable JAR file with <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  The repackaged JAR built by the
-<a href="http://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-gradle-plugin.html" target="_blank">Spring Boot Gradle Plugin</a> includes all dependency JAR files
-required to execute the application.  Let&#8217;s suppose in our example above, the sub-project E&#8217;s <code>build.gradle</code> script includes the following dependency block:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>dependencies {
-    compile module(':A')
-    compile module(':B:C')
-    compile module(':B:D')
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>What we would like to happen is that when we build project "E", the JAR file should include the JAR&#8217;s produced by building "A", "B:C", and "B:D".  What actually happens is
-that only "A"'s JAR gets included, because of the ordering outlined earlier in this post.  The way to correct this behavior and to ensure that all other sub-projects build
-their JAR files prior to "E"'s JAR task executing is to add the following to "E"'s <code>build.gradle</code> script:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>// Ensure that all other JARs are built before the service is packaged.
-project.tasks.jar.dependsOn(rootProject.getSubprojects().findAll { subproject -&gt; subproject.name != project.name }.collect { subproject -&gt; "${subproject.getPath()}:build" })</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The logic above finds every other sub-project in the project and adds that sub-project&#8217;s "build" task as a dependency that first must execute before the current project&#8217;s
-JAR task can execute.  This ensures that all other projects have built their JAR files before <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> can create the re-packaged JAR.  You can apply this same trick to
-any other scenario where the execution of tasks in other sub-projects (regardless of depth) must occur before a certain sub-project&#8217;s task(s).</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/09/02/gradle_subtask_dependson.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/08/26/gradle_dependent_tasks.html"><h1>Execute Gradle Tasks Based on Other Tasks</h1></a>
-                   <p>26 August 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/gradle.html">gradle</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/08/26/gradle_dependent_tasks.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/08/26/gradle_dependent_tasks.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/08/26/gradle_dependent_tasks.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>As discussed in a previous post, <a href="http://gradle.org" target="_blank">Gradle</a> supports multiple ways to perform incremental builds, such as caching based on task inputs, the use of the
-<a href="http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/TaskOutputs.html#upToDateWhen(groovy.lang.Closure)" target="_blank">upToDateWhen</a> closure on a
-task&#8217;s outputs or the use of the task&#8217;s <code>onlyIf()</code> method to control execution, to name a few.  Sometimes, however, you want a task to only execute if another
-cachable task has executed.  For instance, maybe you want to create an archive of some generated source, but only if the source has been updated/re-generated.
-One such way to do this is to make use of the <a href="http://www.gradle.org/docs/current/groovydoc/org/gradle/api/Task.html#getDidWork()" target="_blank">getDidWork()</a>
-method of the task to determine if the task actually executed or was skipped/up-to-date:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>class CustomTask extends DefaultTask {
-
-    @TaskAction
-    void doSomething() {
-        if(project.tasks.getByName('otherTask').getDidWork()) {
-            // Do this task's work here!
-        }
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>By using the <code>getDidWork</code> method on the other task to determine if it executed, we can avoid having to rely upon the input/output of the task to determine if
-the downstream task should execute, thus giving us better control over what triggers the tasks in our project.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/08/26/gradle_dependent_tasks.html#disqus_thread">Comments</a></p>
-
-                <hr />
-
-                <p>Older posts are available in the <a href="/blog/archive.html">archive</a>.</p>
+    <hr>
 
             </div>
             <div id="push"></div>
