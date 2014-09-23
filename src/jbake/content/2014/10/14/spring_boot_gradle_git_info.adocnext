@@ -22,9 +22,15 @@ task generateGitProperties {
     def commitHash = revision.split(' ').last()
     def timestamp = new java.util.Date(java.util.concurrent.TimeUnit.SECONDS.toMillis(revision.split(' ').first() as long)).format("yyyy-MM-dd'T'HH:mm:ssZ")
 
-    File propertiesFile = new File(project.getBuildDir(), 'resources/main/git.properties')
+    File resourcesDir = new File(project.getBuildDir(), 'resources/main')
+    File propertiesFile = new File(resourcesDir, 'git.properties')
 
     doLast {
+        // The project may not have any resources, so create the directories and file
+        if(!propertiesFile.exists()) {
+            resourcesDir.mkdirs()
+            propertiesFile.createNewFile()
+        }
         propertiesFile.text = """git.branch=${branch}
 git.commit.id=${commitHash}
 git.commit.time=${timestamp}
