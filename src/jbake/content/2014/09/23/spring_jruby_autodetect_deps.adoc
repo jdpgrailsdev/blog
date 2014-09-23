@@ -1,0 +1,200 @@
+= Use Spring to Autodetect and Load JRuby Gem Dependencies
+Jonathan Pearlin
+2014-09-23
+:jbake-type: post
+:jbake-tags: gradle, spring, jruby
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: spring_jruby_autodetect_deps
+:icons: font
+:bundler: http://bundler.io/[Bundler, window="_blank"]
+:gradle: http://gradle.org[Gradle, window="_blank"]
+:jruby_lib: http://jruby.org/[JRuby, window="_blank"]
+:ruby_gems: https://rubygems.org/[Ruby Gems, window="_blank"]
+:spring: http://spring.io[Spring Framework, window="_blank"]
+
+I decided recently to try to use {jruby_lib} to help me use Ruby-based libraries as plugins in a Java application.  This is pretty easy to do if your Ruby code makes use
+of the stock modules included in {jruby_lib}.  However, what happens if the Ruby scripts need to access other libraries that typically would be found in external
+{ruby_gems}?  One answer is to use {gradle}, {jruby_lib} and the {spring} to automatically download, package and discover these dependencies at build and runtime.
+Another way to put it is that we have three distinct operations that we need to perform in order to get all of this playing nicely together:
+
+. Use {bundler} to find, download and install all required Ruby modules at build time ({gradle} + {jruby_lib})
+. Package Ruby modules with Ruby script(s) in JAR file ({gradle})
+. Auto-discover packaged Ruby modules at runtime and add them to the "load path" of the script that is to be executed ({jruby_lib} + {spring})
+. Execute the script ({jruby_lib})
+
+Let's start with the first task:  Use {bundler} to find, download and install all required Ruby modules at build time.  To accomplish this, I decided to
+use custom tasks in a {gradle} script to first install {bundler} and then use {bundler} to install any required Ruby modules found in the project's `Gemfile`.
+This {gradle} script also needed to be able to copy the installed {ruby_gems} to a directory that would ensure their inclusion in the packaged JAR file.  Below
+is the script:
+
+[source,groovy]
+----
+import groovy.util.AntBuilder
+
+buildscript {
+    dependencies {
+        classpath 'org.jruby:jruby-complete:1.7.13'
+    }
+}
+
+jar {
+    from ("${project.projectDir}/src/main/ruby")
+}
+
+dependencies {
+    runtime project(':shared')
+}
+
+sourceSets {
+    main {
+       java {
+          srcDir file("${project.projectDir}/src/main/ruby")
+       }
+    }
+}
+
+/*
+ * Installs Bundler to the project's build directory.  Bundler is used to
+ * install any Gems required by this plugin.
+ */
+task installBundler(type:JavaExec, description:'Installs Bundler') {
+    args = "--2.0 -S gem install -i ${project.buildDir}/bundler --no-rdoc --no-ri bundler".tokenize()
+    classpath = project.buildscript.configurations.classpath
+    jvmArgs("-Xmx800M")
+    main = 'org.jruby.Main'
+    environment = [HOME:System.getProperty('user.home'),
+                    PATH:['/usr/local/bin', '/usr/bin','/bin','/usr/sbin','/sbin'].join(File.pathSeparator)]
+    workingDir = project.projectDir
+}
+
+/*
+ * Installs the Gems required by this plugin to the project's build directory.
+ * This task uses Bundler to perform the Gem installations.
+ */
+task installGems(type:JavaExec, description:'Installs all required Gems via Bundle.', dependsOn:'installBundler') {
+    args = "--2.0 -S bundle install --path ${project.buildDir}".tokenize()
+    classpath = project.buildscript.configurations.classpath
+    main = 'org.jruby.Main'
+    environment = [GEM_PATH: "${project.buildDir}/bundler",
+                    HOME:System.getProperty('user.home'),
+                    PATH:["${project.buildDir}/bundler/bin", '/usr/local/bin', '/usr/bin','/bin','/usr/sbin','/sbin'].join(File.pathSeparator)]
+    workingDir = project.projectDir
+}
+
+/*
+ * Moves the installed Gem files from the project's build directory to src/main/resources
+ * so that they will be included in the packaged JAR.
+ */
+task packageGems(dependsOn:'installGems') {
+    doLast {
+        Properties props = new Properties()
+        props.load(new File("${project.projectDir}/src/main/resources/META-INF/notification/${project.name}.plugin").newDataInputStream())
+        File parent = new File("${project.projectDir}/src/main/resources/${props.getProperty('plugin-name')}/gems")
+        parent.deleteDir()
+        parent.mkdirs()
+
+        // Normalize each installed gem directory name and move it to src/main/resources
+        new File("${project.buildDir}/jruby/1.9/gems").listFiles().each { file ->
+            processSourceFiles(parent, new File(file, 'lib'))
+            File vendorGems = new File(file, 'vendor/gems')
+            if(vendorGems.exists()) {
+                vendorGems.listFiles().each { vendorFile ->
+                    processSourceFiles(parent, new File(vendorFile, 'lib'))
+                }
+            }
+        }
+    }
+}
+
+project.tasks.installGems.inputs.file("${project.projectDir}/Gemfile")
+project.tasks.installGems.outputs.dir("${project.buildDir}/jruby")
+project.tasks.installBundler.outputs.upToDateWhen { new File("${project.buildDir}/bundler").exists() }
+project.tasks.jar.dependsOn(['packageGems'])
+
+def processSourceFiles(File newParent, File rootDir) {
+    File newRootDir = new File(newParent, rootDir.getParentFile().getName())
+    new AntBuilder().copy(todir : newRootDir.getAbsolutePath(), quiet:true) {
+        fileset(dir: rootDir.getAbsolutePath())
+    }
+    newRootDir.eachFileRecurse { rubyFile ->
+        if(rubyFile.isFile() && rubyFile.text.contains('require_relative')) {
+            def builder = new StringBuilder()
+            rubyFile.eachLine { line ->
+                line = line.replaceAll('require_relative\\s+\'\\.\\/(.+)\'', 'require_relative \'$1\'')
+                def matcher = line =~ /require_relative\s+'((\.\.\/)+).+'/
+                if(matcher.find()) {
+                    def numberOfParentDirs = matcher[0][1].split('/').length
+                    def actualParent = rubyFile.getParentFile()
+                    numberOfParentDirs.times { actualParent = actualParent.getParentFile() }
+                    actualParent = actualParent.getAbsolutePath().minus("${newRootDir.getAbsolutePath()}/")
+                    line = line.replaceAll('require_relative\\s+\'(?:\\.\\.\\/)+(.+)\'', "require '${actualParent ? "${actualParent}/" : actualParent}\$1'")
+                }
+                builder.append(line.trim())
+                builder.append('\n')
+            }
+            rubyFile.write(builder.toString())
+        }
+    }
+}
+----
+
+A couple of things to point out.  First, the script uses {jruby_lib} in custom {gradle} tasks to execute the Ruby-based commands.  Second, the script recursively
+walks through each of the installed {ruby_gems} to properly normalize any `require_relative` statements into absolute paths.  This is necessary as {jruby_lib} does
+not handle relative paths in included {ruby_gems} very well (or at all).
+
+At this point, running `./gradlew build` on this project will produce a JAR file containing any Ruby scripts found in `src/main/ruby`, as well as any required
+{ruby_gems} installed by the script.  The next step to use a Ruby-based plugin in a Java application is to use {jruby_lib} to execute the script.  I'm not going
+to go into all of the details about wiring that up, as the {jruby_lib} tutorials cover this pretty well.  Instead, I am going to focus on how to extract the
+required {ruby_gems} that we included in the JAR and make sure that they are available to our Ruby script(s) when {jruby_lib} executes them.  To accomplish this,
+I decided to make use of the {spring}'s `PathMatchingResourcePatternResolver` to auto-discover the included {ruby_gems} and add them to {jruby_lib}'s load path:
+
+[source,java]
+----
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
+import org.jruby.embed.ScriptingContainer;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+
+...
+
+final String pluginName = "test-plugin";
+
+final PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
+
+final Resource[] dependencyGemResources  = patternResolver.getResources(String.format("classpath*:/%s/gems/**/*.rb", pluginName));
+
+final Pattern dependencyGemPattern = Pattern.compile(String.format("^classpath:\\/%s\\/gems\\/([a-zA-Z\\-\\.0-9_]+)/.*$", pluginName));
+
+final ScriptingContainer container = new ScriptingContainer();
+
+final Set<String> loadPaths = new HashSet<String>();
+
+// Add the JRuby-provided Ruby 2.0 modules to the load path
+loadPaths.add("classpath:/META-INF/jruby.home/lib/ruby/2.0");
+
+// Add any required dependency Gems for this plugin to the load path.
+for(final Resource resource : dependencyGemResources) {
+    final Matcher matcher = dependencyGemPattern.matcher(resource.getURI().toString().replaceAll("^jar:file:\\/.*\\.jar!(.*)$", "classpath:$1"));
+    if(matcher.find()) {
+        final String resourceName = String.format("classpath:/%s/gems/%s", pluginName, matcher.group(1));
+        if(!loadPaths.contains(resourceName)) {
+            loadPaths.add(resourceName);
+        }
+    }
+}
+
+container.setLoadPaths(loadPaths);
+----
+
+The snippet of Java code above makes use of the `PathMatchingResourcePatternResolver` from the {spring} to scan the classpath and find all `.rb` files under the
+`/<plugin name>/gems` path.  From this list, the URI of each (which is relative to the JAR file) is converted into a classpath-friendly string that {jruby_lib}
+understands and then added to the list of paths for {jruby_lib} to load prior to execution of the script.  At this point, if a Ruby script is executed via the
+`ScriptingContainer` with the properly configured load paths, any references to required modules that are packaged in the plugin's JAR file will be found and
+the script will execute just as if it were run via Ruby.
