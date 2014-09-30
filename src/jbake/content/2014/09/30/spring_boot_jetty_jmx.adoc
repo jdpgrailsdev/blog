@@ -10,6 +10,11 @@ Jonathan Pearlin
 :icons: font
 :spring_boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
 
+{spring_boot} provides monitoring and management over JMX http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-jmx.html[out of the box, window="_blank"].  If you include a library
+that exposes http://docs.oracle.com/javase/tutorial/jmx/mbeans/[MBeans, window="_blank"], they will automatically be registered and exposed with the MBean server provided by {spring_boot}.  However, some packages don't enable their MBeans by default.  Jetty is one of those
+libraries.  If you are using Jetty instead of Tomcat (Tomcat is the default option in {spring_boot}), you can enable Jetty's MBeans by adding a `customizer` to a custom override of the `JettyEmbeddedServletContainerFactory`
+bean:
+
 [source,java]
 ----
 @Bean
@@ -25,6 +30,10 @@ public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory
     });
 }
 ----
+
+The code sample above will register Jetty's MBeans with the default platform MBean server (which is provided by {spring_boot}).  This will allow you to see things like the number of threads in use in Jetty's
+connection pool and other fun facts that can be very useful when debugging Jetty or configuring it for better performance.  It is also worth noting that you will need to include the following dependencies
+in order to expose the Jetty MBeans:
 
 [source,groovy]
 ----
