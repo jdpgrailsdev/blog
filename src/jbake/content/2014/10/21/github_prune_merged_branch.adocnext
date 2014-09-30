@@ -1,0 +1,39 @@
+= Bash Function to Prune Merged/Deleted Remote Branches in GitHub
+Jonathan Pearlin
+2014-10-21
+:jbake-type: post
+:jbake-tags: bash,git
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: github_prune_merged_branch
+:icons: font
+
+function parse_git_dirty {
+  [[ $(git status 2> /dev/null | tail -n1) != "nothing to commit, working directory clean" ]] && echo " *"
+}
+
+function parse_git_branch () {
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/ (\1$(parse_git_dirty))/"
+}
+
+function prune_merged_branch () {
+    prunedBranch=`echo "$(parse_git_branch)" | sed -e 's/(//g' | sed -e 's/)//g' | tr -d ' '`
+    git checkout master;git fetch --all;git pull;git remote prune origin;git branch -D "$prunedBranch"
+}
+
+$ prune_merged_branch
+Switched to branch 'master'
+Your branch is up-to-date with 'origin/master'.
+Fetching origin
+remote: Counting objects: 1, done.
+remote: Total 1 (delta 0), reused 0 (delta 0)
+Unpacking objects: 100% (1/1), done.
+From https://github.com/<username>/<repo>
+   a29de3b..b10695c  master     -> origin/master
+First, rewinding head to replay your work on top of it...
+Fast-forwarded master to b10695cdd910f064964d10e4f6d3d9ac78e3c1c6.
+Pruning origin
+URL: https://github.com/<username>/<repo>.git
+ * [pruned] origin/some-branch
+Deleted branch some-branch (was 27da761).
