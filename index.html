@@ -90,6 +90,65 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog2014/09/30/spring_boot_jetty_jmx.html"><h1>Expose Jetty MBeans via JMX in a Spring Boot Application</h1></a>
+                   <p>30 September 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/spring.html">spring</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/09/30/spring_boot_jetty_jmx.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/09/30/spring_boot_jetty_jmx.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/09/30/spring_boot_jetty_jmx.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> provides monitoring and management over JMX <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-jmx.html" target="_blank">out of the box</a>.  If you include a library
+that exposes <a href="http://docs.oracle.com/javase/tutorial/jmx/mbeans/" target="_blank">MBeans</a>, they will automatically be registered and exposed with the MBean server provided by <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  However, some packages don&#8217;t enable their MBeans by default.  Jetty is one of those
+libraries.  If you are using Jetty instead of Tomcat (Tomcat is the default option in <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>), you can enable Jetty&#8217;s MBeans by adding a <code>customizer</code> to a custom override of the <code>JettyEmbeddedServletContainerFactory</code>
+bean:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint java language-java"><code>@Bean
+public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(@Value("${server.port:8080}") final String port) {
+    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(port));
+    factory.addServerCustomizers(new JettyServerCustomizer() {
+        @Override
+        public void customize(final Server server) {
+            // Expose Jetty managed beans to the JMX platform server provided by Spring
+            final MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+            server.addBean(mbContainer);
+        }
+    });
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The code sample above will register Jetty&#8217;s MBeans with the default platform MBean server (which is provided by <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>).  This will allow you to see things like the number of threads in use in Jetty&#8217;s
+connection pool and other fun facts that can be very useful when debugging Jetty or configuring it for better performance.  It is also worth noting that you will need to include the following dependencies
+in order to expose the Jetty MBeans:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>ext {
+    jettyVersion = '9.0.3.v20130506'
+}
+
+dependencies {
+  ...
+
+  compile "org.eclipse.jetty:jetty-jmx:$jettyVersion"
+  compile "org.eclipse.jetty:jetty-server:$jettyVersion"
+  compile "org.eclipse.jetty:jetty-util:$jettyVersion"
+
+  ...
+}</code></pre>
+</div>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog2014/09/30/spring_boot_jetty_jmx.html#disqus_thread">Comments</a></p>
                    <a href="/blog2014/09/23/spring_jruby_autodetect_deps.html"><h1>Use Spring to Autodetect and Load JRuby Gem Dependencies</h1></a>
                    <p>23 September 2014</p>
                 <p><em>Tags: </em>
@@ -433,46 +492,6 @@ any other scenario where the execution of tasks in other sub-projects (regardles
 </div>
 </div></p>
                 <p><a href="/blog2014/09/02/gradle_subtask_dependson.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/08/26/gradle_dependent_tasks.html"><h1>Execute Gradle Tasks Based on Other Tasks</h1></a>
-                   <p>26 August 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/gradle.html">gradle</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/08/26/gradle_dependent_tasks.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/08/26/gradle_dependent_tasks.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/08/26/gradle_dependent_tasks.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>As discussed in a previous post, <a href="http://gradle.org" target="_blank">Gradle</a> supports multiple ways to perform incremental builds, such as caching based on task inputs, the use of the
-<a href="http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/TaskOutputs.html#upToDateWhen(groovy.lang.Closure)" target="_blank">upToDateWhen</a> closure on a
-task&#8217;s outputs or the use of the task&#8217;s <code>onlyIf()</code> method to control execution, to name a few.  Sometimes, however, you want a task to only execute if another
-cachable task has executed.  For instance, maybe you want to create an archive of some generated source, but only if the source has been updated/re-generated.
-One such way to do this is to make use of the <a href="http://www.gradle.org/docs/current/groovydoc/org/gradle/api/Task.html#getDidWork()" target="_blank">getDidWork()</a>
-method of the task to determine if the task actually executed or was skipped/up-to-date:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>class CustomTask extends DefaultTask {
-
-    @TaskAction
-    void doSomething() {
-        if(project.tasks.getByName('otherTask').getDidWork()) {
-            // Do this task's work here!
-        }
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>By using the <code>getDidWork</code> method on the other task to determine if it executed, we can avoid having to rely upon the input/output of the task to determine if
-the downstream task should execute, thus giving us better control over what triggers the tasks in our project.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/08/26/gradle_dependent_tasks.html#disqus_thread">Comments</a></p>
 
                 <hr />
 

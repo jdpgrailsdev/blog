@@ -6,13 +6,69 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 23 Sep 2014 07:54:31 -0700</pubDate>
-        <lastBuildDate>Tue, 23 Sep 2014 07:54:31 -0700</lastBuildDate>
+        <pubDate>Tue, 30 Sep 2014 07:54:47 -0700</pubDate>
+        <lastBuildDate>Tue, 30 Sep 2014 07:54:47 -0700</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Expose Jetty MBeans via JMX in a Spring Boot Application</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/09/30/spring_boot_jetty_jmx.html</link>
+            <pubDate>Tue, 30 Sep 2014 00:00:00 -0700</pubDate>
+            <guid isPermaLink="false">2014/09/30/spring_boot_jetty_jmx.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; provides monitoring and management over JMX &lt;a href=&quot;http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-jmx.html&quot; target=&quot;_blank&quot;&gt;out of the box&lt;/a&gt;.  If you include a library
+that exposes &lt;a href=&quot;http://docs.oracle.com/javase/tutorial/jmx/mbeans/&quot; target=&quot;_blank&quot;&gt;MBeans&lt;/a&gt;, they will automatically be registered and exposed with the MBean server provided by &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;.  However, some packages don&amp;#8217;t enable their MBeans by default.  Jetty is one of those
+libraries.  If you are using Jetty instead of Tomcat (Tomcat is the default option in &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;), you can enable Jetty&amp;#8217;s MBeans by adding a &lt;code&gt;customizer&lt;/code&gt; to a custom override of the &lt;code&gt;JettyEmbeddedServletContainerFactory&lt;/code&gt;
+bean:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;@Bean
+public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(@Value(&quot;${server.port:8080}&quot;) final String port) {
+    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(port));
+    factory.addServerCustomizers(new JettyServerCustomizer() {
+        @Override
+        public void customize(final Server server) {
+            // Expose Jetty managed beans to the JMX platform server provided by Spring
+            final MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+            server.addBean(mbContainer);
+        }
+    });
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The code sample above will register Jetty&amp;#8217;s MBeans with the default platform MBean server (which is provided by &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;).  This will allow you to see things like the number of threads in use in Jetty&amp;#8217;s
+connection pool and other fun facts that can be very useful when debugging Jetty or configuring it for better performance.  It is also worth noting that you will need to include the following dependencies
+in order to expose the Jetty MBeans:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;ext {
+    jettyVersion = &apos;9.0.3.v20130506&apos;
+}
+
+dependencies {
+  ...
+
+  compile &quot;org.eclipse.jetty:jetty-jmx:$jettyVersion&quot;
+  compile &quot;org.eclipse.jetty:jetty-server:$jettyVersion&quot;
+  compile &quot;org.eclipse.jetty:jetty-util:$jettyVersion&quot;
+
+  ...
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Use Spring to Autodetect and Load JRuby Gem Dependencies</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/09/23/spring_jruby_autodetect_deps.html</link>
@@ -373,58 +429,6 @@ method of the task to determine if the task actually executed or was skipped/up-
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;By using the &lt;code&gt;getDidWork&lt;/code&gt; method on the other task to determine if it executed, we can avoid having to rely upon the input/output of the task to determine if
 the downstream task should execute, thus giving us better control over what triggers the tasks in our project.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Gradle, Task Caching, Tests and Jenkins</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/08/19/gradle_tests_jenkins.html</link>
-            <pubDate>Tue, 19 Aug 2014 00:00:00 -0700</pubDate>
-            <guid isPermaLink="false">2014/08/19/gradle_tests_jenkins.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;One of the nice features of &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; is the task execution caching, which prevent tasks whose inputs/outputs have not changed since the last successful execution from
-executing in order to speed up build times.  Sometimes, however this causes issues when integrating your &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; build into other systems.  I ran into one such issue
-when building a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; application from &lt;a href=&quot;http://jenkins-ci.org/&quot; target=&quot;_blank&quot;&gt;Jenkins&lt;/a&gt;.  The &lt;a href=&quot;http://jenkins-ci.org/&quot; target=&quot;_blank&quot;&gt;Jenkins&lt;/a&gt; build job is configured to publish the results of the &lt;code&gt;test&lt;/code&gt; task (the test reports output by &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;).
-It did not occur to me that if I did not invoke the &lt;code&gt;clean&lt;/code&gt; task and let &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; only re-generate the test reports if any of the compiled code had changed (other file changes
-to the project would trigger the CI build) that &lt;a href=&quot;http://jenkins-ci.org/&quot; target=&quot;_blank&quot;&gt;Jenkins&lt;/a&gt; would fail the build due to stale test reports.  However, that is exactly what happened:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;BUILD SUCCESSFUL
-
-Total time: 15.323 secs
-Build step &apos;Invoke Gradle script&apos; changed build result to SUCCESS
-Test reports were found but none of them are new. Did tests run?
-For example, /var/jenkins/jobs/test-job/workspace/build/test-results/TEST-com.example.TestSpec.xml is 12 hours 15 minutes old
-
-Build step &apos;Publish JUnit test result report&apos; changed build result to FAILURE
-Finished: FAILURE&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;By not cleaning out the previously compiled code, the caching mechanism for the &lt;code&gt;test&lt;/code&gt; task kicked in and left the previous test results in place, as it properly detected that
-nothing had changed and therefore is no need to re-run the tests.  However, Jenkins apparently bases its ability to publish the results of the tests based on a timestamp and not
-just the presence of the tests results in the directory specified in the job&amp;#8217;s configuration.  One easy fix is to always run the &lt;code&gt;clean&lt;/code&gt; task, but that eliminates a lot of &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;&apos;s
-performance enhancements around only running task incrementally, based on their inputs/outputs.  Another option is to add the &lt;code&gt;--rerun-tasks&lt;/code&gt; option, which effectively does the same
-thing as the &lt;code&gt;clean&lt;/code&gt; task, except it doesn&amp;#8217;t remove any artifacts&amp;#8201;&amp;#8212;&amp;#8201;it just simply forces &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; to run each task regardless of the caching status.  Neither of these options really
-get us what we want.  One other alternative is to make use of the &lt;code&gt;upToDateWhen&lt;/code&gt; configuration closure on a tasks declared outputs to control caching on a per-task basis:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;    // Always execute the tests -- needed for Jenkins to be happy
-    test.outputs.upToDateWhen { false }&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The example above directs &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; to always run the &lt;code&gt;test&lt;/code&gt; task regardless of what the task cache tells &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; about it.  This gives us fine grained control over which tasks
-that we want to take advantage of caching and which ones we want to always run.  By adding the one line above to my project&amp;#8217;s &lt;code&gt;build.gradle&lt;/code&gt; script, I was able to make &lt;a href=&quot;http://jenkins-ci.org/&quot; target=&quot;_blank&quot;&gt;Jenkins&lt;/a&gt;
-happy with always providing up-to-date unit tests results, regardless of which files (source or otherwise) have changed in my project.  This also means that &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; will take
-advantage of task caching for other tasks in the project (such as compilation, packaging, etc), which helps to reduce build time.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

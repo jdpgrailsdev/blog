@@ -87,48 +87,83 @@
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: spring</h1>
+        <h1>Expose Jetty MBeans via JMX in a Spring Boot Application</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>September 2014</h4>
-            <ul>
+    <p><em>30 September 2014</em></p>
 
-        <li>30 - <a href="/blog/2014/09/30/spring_boot_jetty_jmx.html">Expose Jetty MBeans via JMX in a Spring Boot Application</a></li>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/09/30/spring_boot_jetty_jmx.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/09/30/spring_boot_jetty_jmx.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/09/30/spring_boot_jetty_jmx.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>09 - <a href="/blog/2014/09/09/spring_data_hibernate_join.html">Avoid Hibernate N+1 Problem with Joins in Spring-Data/JPA</a></li>
-                </ul>
-                <h4>July 2014</h4>
-                <ul>
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> provides monitoring and management over JMX <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-jmx.html" target="_blank">out of the box</a>.  If you include a library
+that exposes <a href="http://docs.oracle.com/javase/tutorial/jmx/mbeans/" target="_blank">MBeans</a>, they will automatically be registered and exposed with the MBean server provided by <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  However, some packages don&#8217;t enable their MBeans by default.  Jetty is one of those
+libraries.  If you are using Jetty instead of Tomcat (Tomcat is the default option in <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>), you can enable Jetty&#8217;s MBeans by adding a <code>customizer</code> to a custom override of the <code>JettyEmbeddedServletContainerFactory</code>
+bean:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint java language-java"><code>@Bean
+public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(@Value("${server.port:8080}") final String port) {
+    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(port));
+    factory.addServerCustomizers(new JettyServerCustomizer() {
+        @Override
+        public void customize(final Server server) {
+            // Expose Jetty managed beans to the JMX platform server provided by Spring
+            final MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+            server.addBean(mbContainer);
+        }
+    });
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The code sample above will register Jetty&#8217;s MBeans with the default platform MBean server (which is provided by <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>).  This will allow you to see things like the number of threads in use in Jetty&#8217;s
+connection pool and other fun facts that can be very useful when debugging Jetty or configuring it for better performance.  It is also worth noting that you will need to include the following dependencies
+in order to expose the Jetty MBeans:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>ext {
+    jettyVersion = '9.0.3.v20130506'
+}
 
-        <li>29 - <a href="/blog/2014/07/29/spring_boot_integration_tests.html">Leveraging Spring Boot Starters in Unit/Integration Tests</a></li>
+dependencies {
+  ...
 
-        <li>22 - <a href="/blog/2014/07/22/gradle_build_scripts_classpath.html">Discovering Gradle build scripts from classpath</a></li>
+  compile "org.eclipse.jetty:jetty-jmx:$jettyVersion"
+  compile "org.eclipse.jetty:jetty-server:$jettyVersion"
+  compile "org.eclipse.jetty:jetty-util:$jettyVersion"
 
-        <li>15 - <a href="/blog/2014/07/15/spring_boot_remote_debug.html">Remote debugging a Spring Boot application launched by the Gradle plugin</a></li>
+  ...
+}</code></pre>
+</div>
+</div>
+</div>
+</div></p>
 
-        <li>08 - <a href="/blog/2014/07/08/spring_boot_env_vars.html">Setting system properties/environment variables with Spring Boot and Gradle</a></li>
-                </ul>
-                <h4>June 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/09/30/spring_boot_jetty_jmx.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/09/30/spring_boot_jetty_jmx.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/09/30/spring_boot_jetty_jmx.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>03 - <a href="/blog/2014/06/03/spring_boot_jersey_2.html">Spring Boot, Jersey and Lazy Initialization</a></li>
-                </ul>
-                <h4>April 2014</h4>
-                <ul>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2014/09/30/spring_boot_jetty_jmx.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-        <li>08 - <a href="/blog/2014/04/08/spring_boot_gradle_newrelic.html">Using the New Relic agent with Spring-Boot and Gradle</a></li>
-                </ul>
-                <h4>March 2014</h4>
-                <ul>
-
-        <li>18 - <a href="/blog/2014/03/18/grails_bean_builder.html">Parsing the Grails Spring Beans DSL with Groovy</a></li>
-                </ul>
-                <h4>February 2014</h4>
-                <ul>
-
-        <li>19 - <a href="/blog/2014/02/19/spring_curator.html">Spring and Apache Curator</a></li>
-    </ul>
+    <hr>
 
             </div>
             <div id="push"></div>
