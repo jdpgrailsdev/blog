@@ -6,13 +6,77 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 30 Sep 2014 07:54:47 -0700</pubDate>
-        <lastBuildDate>Tue, 30 Sep 2014 07:54:47 -0700</lastBuildDate>
+        <pubDate>Wed, 8 Oct 2014 08:01:22 -0700</pubDate>
+        <lastBuildDate>Wed, 8 Oct 2014 08:01:22 -0700</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Configure Jetty&amp;#8217;s Thread Pool in a Spring Boot Application</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/10/07/spring_boot_jetty_thread_pool.html</link>
+            <pubDate>Tue, 7 Oct 2014 00:00:00 -0700</pubDate>
+            <guid isPermaLink="false">2014/10/07/spring_boot_jetty_thread_pool.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In a &lt;a href=&quot;http://jonathanpearlin.com/blog/2014/09/30/spring_boot_jetty_jmx.html&quot; target=&quot;_blank&quot;&gt;previous post&lt;/a&gt;, I discussed how to use &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; as the servlet container in a &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; application over the default implementation
+(Apache Tomcat) and also how to enable &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt;&apos;s registered MBeans via JMX.  In addition to this configuration, you can also configure &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; so that it is not using the factory
+default settings for the servlet container.  One setting that you typically want to control is the size of the thread pool used by &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; to service incoming requests.  This is
+pretty easy to do with &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; by adding a &lt;a href=&quot;http://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/embedded/jetty/JettyServerCustomizer.html&quot; target=&quot;blank&quot;&gt;JettyServerCustomizer&lt;/a&gt; implementation
+to gain access to &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt;&apos;s &lt;code&gt;Server&lt;/code&gt; instance:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;@Bean
+public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(@Value(&quot;${server.port:8080}&quot;) final String port,
+            @Value(&quot;${jetty.threadPool.maxThreads:200}&quot;) final String maxThreads,
+            @Value(&quot;${jetty.threadPool.minThreads:8}&quot;) final String minThreads,
+            @Value(&quot;${jetty.threadPool.idleTimeout:60000}&quot;) final String idleTimeout) {
+    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(port));
+    factory.addServerCustomizers(new JettyServerCustomizer() {
+        @Override
+        public void customize(final Server server) {
+            // Tweak the connection pool used by Jetty to handle incoming HTTP connections
+            final QueuedThreadPool threadPool = server.getBean(QueuedThreadPool.class);
+            threadPool.setMaxThreads(Integer.valueOf(maxThreads));
+            threadPool.setMinThreads(Integer.valueOf(minThreads));
+            threadPool.setIdleTimeout(Integer.valueOf(idleTimeout));
+        }
+    });
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In the example above, values (with defaults) are read from the Spring configuration and used to set the thread pool managed by &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt;.  In order
+to make this work, you must include the following dependencies with your application:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;ext {
+    jettyVersion = &apos;9.0.3.v20130506&apos;
+}
+
+dependencies {
+  ...
+
+  compile &quot;org.eclipse.jetty:jetty-server:$jettyVersion&quot;
+  compile &quot;org.eclipse.jetty:jetty-util:$jettyVersion&quot;
+
+  ...
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;This example can be extended to configure any bean registered with the &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; &lt;code&gt;Server&lt;/code&gt; instance.  To figure out what is available, connect to your running
+application using a JMX console and view the beans exposed by &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Expose Jetty MBeans via JMX in a Spring Boot Application</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/09/30/spring_boot_jetty_jmx.html</link>
@@ -392,43 +456,6 @@ project.tasks.jar.dependsOn(rootProject.getSubprojects().findAll { subproject -&
 &lt;p&gt;The logic above finds every other sub-project in the project and adds that sub-project&amp;#8217;s &quot;build&quot; task as a dependency that first must execute before the current project&amp;#8217;s
 JAR task can execute.  This ensures that all other projects have built their JAR files before &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; can create the re-packaged JAR.  You can apply this same trick to
 any other scenario where the execution of tasks in other sub-projects (regardless of depth) must occur before a certain sub-project&amp;#8217;s task(s).&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Execute Gradle Tasks Based on Other Tasks</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/08/26/gradle_dependent_tasks.html</link>
-            <pubDate>Tue, 26 Aug 2014 00:00:00 -0700</pubDate>
-            <guid isPermaLink="false">2014/08/26/gradle_dependent_tasks.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;As discussed in a previous post, &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; supports multiple ways to perform incremental builds, such as caching based on task inputs, the use of the
-&lt;a href=&quot;http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/TaskOutputs.html#upToDateWhen(groovy.lang.Closure)&quot; target=&quot;_blank&quot;&gt;upToDateWhen&lt;/a&gt; closure on a
-task&amp;#8217;s outputs or the use of the task&amp;#8217;s &lt;code&gt;onlyIf()&lt;/code&gt; method to control execution, to name a few.  Sometimes, however, you want a task to only execute if another
-cachable task has executed.  For instance, maybe you want to create an archive of some generated source, but only if the source has been updated/re-generated.
-One such way to do this is to make use of the &lt;a href=&quot;http://www.gradle.org/docs/current/groovydoc/org/gradle/api/Task.html#getDidWork()&quot; target=&quot;_blank&quot;&gt;getDidWork()&lt;/a&gt;
-method of the task to determine if the task actually executed or was skipped/up-to-date:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;class CustomTask extends DefaultTask {
-
-    @TaskAction
-    void doSomething() {
-        if(project.tasks.getByName(&apos;otherTask&apos;).getDidWork()) {
-            // Do this task&apos;s work here!
-        }
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;By using the &lt;code&gt;getDidWork&lt;/code&gt; method on the other task to determine if it executed, we can avoid having to rely upon the input/output of the task to determine if
-the downstream task should execute, thus giving us better control over what triggers the tasks in our project.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

@@ -90,6 +90,73 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog2014/10/07/spring_boot_jetty_thread_pool.html"><h1>Configure Jetty&#8217;s Thread Pool in a Spring Boot Application</h1></a>
+                   <p>07 October 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/spring.html">spring</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/10/07/spring_boot_jetty_thread_pool.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/10/07/spring_boot_jetty_thread_pool.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/10/07/spring_boot_jetty_thread_pool.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In a <a href="http://jonathanpearlin.com/blog/2014/09/30/spring_boot_jetty_jmx.html" target="_blank">previous post</a>, I discussed how to use <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a> as the servlet container in a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application over the default implementation
+(Apache Tomcat) and also how to enable <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a>'s registered MBeans via JMX.  In addition to this configuration, you can also configure <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a> so that it is not using the factory
+default settings for the servlet container.  One setting that you typically want to control is the size of the thread pool used by <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a> to service incoming requests.  This is
+pretty easy to do with <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> by adding a <a href="http://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/embedded/jetty/JettyServerCustomizer.html" target="blank">JettyServerCustomizer</a> implementation
+to gain access to <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a>'s <code>Server</code> instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint java language-java"><code>@Bean
+public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(@Value("${server.port:8080}") final String port,
+            @Value("${jetty.threadPool.maxThreads:200}") final String maxThreads,
+            @Value("${jetty.threadPool.minThreads:8}") final String minThreads,
+            @Value("${jetty.threadPool.idleTimeout:60000}") final String idleTimeout) {
+    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(port));
+    factory.addServerCustomizers(new JettyServerCustomizer() {
+        @Override
+        public void customize(final Server server) {
+            // Tweak the connection pool used by Jetty to handle incoming HTTP connections
+            final QueuedThreadPool threadPool = server.getBean(QueuedThreadPool.class);
+            threadPool.setMaxThreads(Integer.valueOf(maxThreads));
+            threadPool.setMinThreads(Integer.valueOf(minThreads));
+            threadPool.setIdleTimeout(Integer.valueOf(idleTimeout));
+        }
+    });
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the example above, values (with defaults) are read from the Spring configuration and used to set the thread pool managed by <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a>.  In order
+to make this work, you must include the following dependencies with your application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>ext {
+    jettyVersion = '9.0.3.v20130506'
+}
+
+dependencies {
+  ...
+
+  compile "org.eclipse.jetty:jetty-server:$jettyVersion"
+  compile "org.eclipse.jetty:jetty-util:$jettyVersion"
+
+  ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example can be extended to configure any bean registered with the <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a> <code>Server</code> instance.  To figure out what is available, connect to your running
+application using a JMX console and view the beans exposed by <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a>.</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog2014/10/07/spring_boot_jetty_thread_pool.html#disqus_thread">Comments</a></p>
                    <a href="/blog2014/09/30/spring_boot_jetty_jmx.html"><h1>Expose Jetty MBeans via JMX in a Spring Boot Application</h1></a>
                    <p>30 September 2014</p>
                 <p><em>Tags: </em>
@@ -430,68 +497,6 @@ children.</p>
 </div>
 </div></p>
                 <p><a href="/blog2014/09/09/spring_data_hibernate_join.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/09/02/gradle_subtask_dependson.html"><h1>Ensure Order of Task Execution between Gradle Sub-Projects</h1></a>
-                   <p>02 September 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/gradle.html">gradle</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/09/02/gradle_subtask_dependson.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/09/02/gradle_subtask_dependson.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/09/02/gradle_subtask_dependson.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>One of the great things (IMHO) about <a href="http://gradle.org" target="_blank">Gradle</a> is that it does a pretty good job of choosing sane conventions.  That being said, one place that seems to not always
-be a great choice is <a href="http://gradle.org" target="_blank">Gradle</a>'s convention to visit sub-projects in alpha-numerical order.  Let&#8217;s say that you have the following project structure:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>root
- |_ A
- |_ B
-    |_ C
-    |_ D
- |_ E</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Based on the alpha-numerical ordering, you would probably expect <a href="http://gradle.org" target="_blank">Gradle</a> to visit the projects in the following order:  A, B, B:C, B:D, E.  However, this is not the case.
-<a href="http://gradle.org" target="_blank">Gradle</a> will visit the sub-projects in alpha-numerical order, within each level.  What you end up with is:  A, B, E, B:C, B:D.  Normally, this probably isn&#8217;t a big deal.
-This does become a big deal when one of those sub-projects builds a distribution that needs to include output from all of the other sub-projects.  Such is the case when
-building a fully-repackaged, executable JAR file with <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  The repackaged JAR built by the
-<a href="http://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-gradle-plugin.html" target="_blank">Spring Boot Gradle Plugin</a> includes all dependency JAR files
-required to execute the application.  Let&#8217;s suppose in our example above, the sub-project E&#8217;s <code>build.gradle</code> script includes the following dependency block:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>dependencies {
-    compile module(':A')
-    compile module(':B:C')
-    compile module(':B:D')
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>What we would like to happen is that when we build project "E", the JAR file should include the JAR&#8217;s produced by building "A", "B:C", and "B:D".  What actually happens is
-that only "A"'s JAR gets included, because of the ordering outlined earlier in this post.  The way to correct this behavior and to ensure that all other sub-projects build
-their JAR files prior to "E"'s JAR task executing is to add the following to "E"'s <code>build.gradle</code> script:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>// Ensure that all other JARs are built before the service is packaged.
-project.tasks.jar.dependsOn(rootProject.getSubprojects().findAll { subproject -&gt; subproject.name != project.name }.collect { subproject -&gt; "${subproject.getPath()}:build" })</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The logic above finds every other sub-project in the project and adds that sub-project&#8217;s "build" task as a dependency that first must execute before the current project&#8217;s
-JAR task can execute.  This ensures that all other projects have built their JAR files before <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> can create the re-packaged JAR.  You can apply this same trick to
-any other scenario where the execution of tasks in other sub-projects (regardless of depth) must occur before a certain sub-project&#8217;s task(s).</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/09/02/gradle_subtask_dependson.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
