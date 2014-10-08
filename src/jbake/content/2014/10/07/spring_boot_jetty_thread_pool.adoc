@@ -8,7 +8,14 @@ Jonathan Pearlin
 :linkattrs:
 :id: spring_boot_jetty_thread_pool
 :icons: font
+:jetty: http://www.eclipse.org/jetty/[Jetty, window="_blank"]
 :spring_boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
+
+In a http://jonathanpearlin.com/blog/2014/09/30/spring_boot_jetty_jmx.html[previous post, window="_blank"], I discussed how to use {jetty} as the servlet container in a {spring_boot} application over the default implementation
+(Apache Tomcat) and also how to enable {jetty}'s registered MBeans via JMX.  In addition to this configuration, you can also configure {jetty} so that it is not using the factory
+default settings for the servlet container.  One setting that you typically want to control is the size of the thread pool used by {jetty} to service incoming requests.  This is
+pretty easy to do with {spring_boot} by adding a http://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/embedded/jetty/JettyServerCustomizer.html[JettyServerCustomizer, window="blank"] implementation
+to gain access to {jetty}'s `Server` instance:
 
 [source,java]
 ----
@@ -31,6 +38,9 @@ public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory
 }
 ----
 
+In the example above, values (with defaults) are read from the Spring configuration and used to set the thread pool managed by {jetty}.  In order
+to make this work, you must include the following dependencies with your application:
+
 [source,groovy]
 ----
 ext {
@@ -46,3 +56,6 @@ dependencies {
   ...
 }
 ----
+
+This example can be extended to configure any bean registered with the {jetty} `Server` instance.  To figure out what is available, connect to your running
+application using a JMX console and view the beans exposed by {jetty}.
