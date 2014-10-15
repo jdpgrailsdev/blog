@@ -1,0 +1,59 @@
+= Include Git Commit Info in Spring Boot Application with Gradle
+Jonathan Pearlin
+2014-10-14
+:jbake-type: post
+:jbake-tags: spring, gradle
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: spring_boot_jetty_thread_pool
+:icons: font
+:spring_boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
+:gradle: http://gradle.org[Gradle, window="_blank"]
+
+One great way to track where and when your application came from when building is into include source control information.  With {spring_boot}, this
+functionality comes out of the box (more or less).  If you read the http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-git-commit-information[documentation, window="_blank"],
+it suggests using the the https://github.com/ajoberstar/gradle-git[gradle-git plugin, window="_blank"] to generate this data at build time.  However, there is a simple way to do this using Groovy that
+does not involve the use of a plugin:
+
+[source,groovy]
+----
+task generateGitProperties {
+    doLast {
+        try {
+            def branch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
+            def revision = 'git rev-list --max-count 1 --timestamp HEAD'.execute().text.trim()
+            def commitHash = revision.split(' ').last()
+            def timestamp = revision ? new java.util.Date(java.util.concurrent.TimeUnit.SECONDS.toMillis(revision.split(' ').first() as long)).format("yyyy-MM-dd'T'HH:mm:ssZ") : null
+
+            File resourcesDir = new File(project.getBuildDir(), 'resources/main')
+            File propertiesFile = new File(resourcesDir, 'git.properties')
+
+            if(timestamp) {
+                // The project may not have any resources, so create the directories and file
+                if(!propertiesFile.exists()) {
+                    resourcesDir.mkdirs()
+                    propertiesFile.createNewFile()
+                }
+                propertiesFile.text = """git.branch=${branch}
+        git.commit.id=${commitHash}
+        git.commit.time=${timestamp}
+                """
+            } else {
+               project.logger.error('Unable to generate Git properties file:  revision could not be retrieved from Git.')
+            }
+        } catch (e) {
+            project.logger.error('Unable to generate Git properties file.', e)
+        }
+    }
+}
+
+...
+
+// Generate the Git commit properties file prior to building the artifact
+project.tasks.jar.dependsOn('generateGitProperties')
+----
+
+The task above will include the `git.properties` file in the packaged {spring_boot} JAR and can be accessed at the `/info` servlet to see what branch and hash were
+used to build your application.  It will also safely fail on systems that do not have Git installed or do not have Git on the path (such as if you try to execute
+this task from inside an IDE).
