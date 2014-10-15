@@ -90,6 +90,72 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog2014/10/14/spring_boot_gradle_git_info.html"><h1>Include Git Commit Info in Spring Boot Application with Gradle</h1></a>
+                   <p>14 October 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/spring.html">spring</a>
+        
+                <a href="/blog/tags/gradle.html"> gradle</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/10/14/spring_boot_gradle_git_info.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/10/14/spring_boot_gradle_git_info.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/10/14/spring_boot_gradle_git_info.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>One great way to track where and when your application came from when building is into include source control information.  With <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>, this
+functionality comes out of the box (more or less).  If you read the <a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-git-commit-information" target="_blank">documentation</a>,
+it suggests using the the <a href="https://github.com/ajoberstar/gradle-git" target="_blank">gradle-git plugin</a> to generate this data at build time.  However, there is a simple way to do this using Groovy that
+does not involve the use of a plugin:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>task generateGitProperties {
+    doLast {
+        try {
+            def branch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
+            def revision = 'git rev-list --max-count 1 --timestamp HEAD'.execute().text.trim()
+            def commitHash = revision.split(' ').last()
+            def timestamp = revision ? new java.util.Date(java.util.concurrent.TimeUnit.SECONDS.toMillis(revision.split(' ').first() as long)).format("yyyy-MM-dd'T'HH:mm:ssZ") : null
+
+            File resourcesDir = new File(project.getBuildDir(), 'resources/main')
+            File propertiesFile = new File(resourcesDir, 'git.properties')
+
+            if(timestamp) {
+                // The project may not have any resources, so create the directories and file
+                if(!propertiesFile.exists()) {
+                    resourcesDir.mkdirs()
+                    propertiesFile.createNewFile()
+                }
+                propertiesFile.text = """git.branch=${branch}
+        git.commit.id=${commitHash}
+        git.commit.time=${timestamp}
+                """
+            } else {
+               project.logger.error('Unable to generate Git properties file:  revision could not be retrieved from Git.')
+            }
+        } catch (e) {
+            project.logger.error('Unable to generate Git properties file.', e)
+        }
+    }
+}
+
+...
+
+// Generate the Git commit properties file prior to building the artifact
+project.tasks.jar.dependsOn('generateGitProperties')</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The task above will include the <code>git.properties</code> file in the packaged <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> JAR and can be accessed at the <code>/info</code> servlet to see what branch and hash were
+used to build your application.  It will also safely fail on systems that do not have Git installed or do not have Git on the path (such as if you try to execute
+this task from inside an IDE).</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog2014/10/14/spring_boot_gradle_git_info.html#disqus_thread">Comments</a></p>
                    <a href="/blog2014/10/07/spring_boot_jetty_thread_pool.html"><h1>Configure Jetty&#8217;s Thread Pool in a Spring Boot Application</h1></a>
                    <p>07 October 2014</p>
                 <p><em>Tags: </em>
@@ -436,67 +502,6 @@ the script will execute just as if it were run via Ruby.</p>
 </div>
 </div></p>
                 <p><a href="/blog2014/09/23/spring_jruby_autodetect_deps.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/09/09/spring_data_hibernate_join.html"><h1>Avoid Hibernate N+1 Problem with Joins in Spring-Data/JPA</h1></a>
-                   <p>09 September 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/java.html"> java</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/09/09/spring_data_hibernate_join.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/09/09/spring_data_hibernate_join.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/09/09/spring_data_hibernate_join.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>If you have used <a href="http://hibernate.org" target="_blank">Hibernate</a> as your ORM for any length of time, you have inevitably run into the
-<a href="http://docs.jboss.org/hibernate/orm/3.3/reference/en-US/html/performance.html#performance-fetching-custom" target="_blank">N+1 problem</a>.  This occurs when
-<a href="http://hibernate.org" target="_blank">Hibernate</a> queries an entity that has a collection of children entities that does not use a <code>JOIN</code> fetch mode to retrieve the children.  The simple solution
-when using <a href="http://hibernate.org" target="_blank">Hibernate</a> directly is to set the <code>FetchMode</code> to <code>JOIN</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint java language-java"><code>User user = (User) session.createCriteria(User.class)
-                .setFetchMode("permissions", FetchMode.JOIN)
-                .add( Restrictions.idEq(userId) )
-                .uniqueResult();</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>However, if you are using <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank">JPA</a> on top of <a href="http://hibernate.org" target="_blank">Hibernate</a>, there is no way to set the <code>FetchMode</code> used by <a href="http://hibernate.org" target="_blank">Hibernate</a> to <code>JOIN</code>.  In fact, <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank">JPA</a> only
-supports two types of fetching:  <code>EAGER</code> and <code>LAZY</code>.  Luckily, there is another <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank">JPA</a> API that can be used to address this problem:  <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a>.  The
-<a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a> library provides a <a href="http://spring.io/blog/2011/04/26/advanced-spring-data-jpa-specifications-and-querydsl/" target="_blank">Domain Driven Design Specifications</a>
-API that allows you to control the behavior of the generated query.  This will allow you to tweak things such as the fetch mode to ensure the proper instruction
-is passed to <a href="http://hibernate.org" target="_blank">Hibernate</a> to address the N+1 problem.  I&#8217;m not going to go into a bunch of details on how to use the <code>JpaSpecificationExecutor</code>, as the <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a>
-documentation does a pretty good job of covering it.  What is more important is how to control the fetch mode using it:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint java language-java"><code>final long userId = 1;
-
-final Specification&lt;User&gt; spec = new Specification&lt;User&gt;() {
-    @Override
-    public Predicate toPredicate(final Root&lt;User&gt; root, final CriteriaQuery&lt;?&gt; query, final CriteriaBuilder cb) {
-        query.distinct(true);
-        root.fetch("permissions", JoinType.LEFT);
-        return cb.equal(root.get("id"), userId);
-     }
-};
-
-List&lt;User&gt; users = userRepository.findAll(spec);</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>There are two important pieces of the example above.  The first is the setting of the <code>distinct</code> flag on the query to ensure that the proper (unique) results are returned as
-a result of the join.  The second is the addition of a <code>fetch</code> hint to the root entity, telling the specification to perform a left join of the root to the entity mapped
-by the "permissions" field of the root entity.  This ensures that <a href="http://hibernate.org" target="_blank">Hibernate</a> will now perform a join instead of N+1 queries to fetch the root entity and its associated
-children.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/09/09/spring_data_hibernate_join.html#disqus_thread">Comments</a></p>
 
                 <hr />
 

@@ -6,13 +6,74 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Wed, 8 Oct 2014 08:01:22 -0700</pubDate>
-        <lastBuildDate>Wed, 8 Oct 2014 08:01:22 -0700</lastBuildDate>
+        <pubDate>Wed, 15 Oct 2014 08:04:06 -0700</pubDate>
+        <lastBuildDate>Wed, 15 Oct 2014 08:04:06 -0700</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Include Git Commit Info in Spring Boot Application with Gradle</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/10/14/spring_boot_gradle_git_info.html</link>
+            <pubDate>Tue, 14 Oct 2014 00:00:00 -0700</pubDate>
+            <guid isPermaLink="false">2014/10/14/spring_boot_gradle_git_info.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;One great way to track where and when your application came from when building is into include source control information.  With &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;, this
+functionality comes out of the box (more or less).  If you read the &lt;a href=&quot;http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-git-commit-information&quot; target=&quot;_blank&quot;&gt;documentation&lt;/a&gt;,
+it suggests using the the &lt;a href=&quot;https://github.com/ajoberstar/gradle-git&quot; target=&quot;_blank&quot;&gt;gradle-git plugin&lt;/a&gt; to generate this data at build time.  However, there is a simple way to do this using Groovy that
+does not involve the use of a plugin:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;task generateGitProperties {
+    doLast {
+        try {
+            def branch = &apos;git rev-parse --abbrev-ref HEAD&apos;.execute().text.trim()
+            def revision = &apos;git rev-list --max-count 1 --timestamp HEAD&apos;.execute().text.trim()
+            def commitHash = revision.split(&apos; &apos;).last()
+            def timestamp = revision ? new java.util.Date(java.util.concurrent.TimeUnit.SECONDS.toMillis(revision.split(&apos; &apos;).first() as long)).format(&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ssZ&quot;) : null
+
+            File resourcesDir = new File(project.getBuildDir(), &apos;resources/main&apos;)
+            File propertiesFile = new File(resourcesDir, &apos;git.properties&apos;)
+
+            if(timestamp) {
+                // The project may not have any resources, so create the directories and file
+                if(!propertiesFile.exists()) {
+                    resourcesDir.mkdirs()
+                    propertiesFile.createNewFile()
+                }
+                propertiesFile.text = &quot;&quot;&quot;git.branch=${branch}
+        git.commit.id=${commitHash}
+        git.commit.time=${timestamp}
+                &quot;&quot;&quot;
+            } else {
+               project.logger.error(&apos;Unable to generate Git properties file:  revision could not be retrieved from Git.&apos;)
+            }
+        } catch (e) {
+            project.logger.error(&apos;Unable to generate Git properties file.&apos;, e)
+        }
+    }
+}
+
+...
+
+// Generate the Git commit properties file prior to building the artifact
+project.tasks.jar.dependsOn(&apos;generateGitProperties&apos;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The task above will include the &lt;code&gt;git.properties&lt;/code&gt; file in the packaged &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; JAR and can be accessed at the &lt;code&gt;/info&lt;/code&gt; servlet to see what branch and hash were
+used to build your application.  It will also safely fail on systems that do not have Git installed or do not have Git on the path (such as if you try to execute
+this task from inside an IDE).&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Configure Jetty&amp;#8217;s Thread Pool in a Spring Boot Application</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/10/07/spring_boot_jetty_thread_pool.html</link>
@@ -397,65 +458,6 @@ List&amp;lt;User&amp;gt; users = userRepository.findAll(spec);&lt;/code&gt;&lt;/
 a result of the join.  The second is the addition of a &lt;code&gt;fetch&lt;/code&gt; hint to the root entity, telling the specification to perform a left join of the root to the entity mapped
 by the &quot;permissions&quot; field of the root entity.  This ensures that &lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; will now perform a join instead of N+1 queries to fetch the root entity and its associated
 children.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Ensure Order of Task Execution between Gradle Sub-Projects</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/09/02/gradle_subtask_dependson.html</link>
-            <pubDate>Tue, 2 Sep 2014 00:00:00 -0700</pubDate>
-            <guid isPermaLink="false">2014/09/02/gradle_subtask_dependson.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;One of the great things (IMHO) about &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; is that it does a pretty good job of choosing sane conventions.  That being said, one place that seems to not always
-be a great choice is &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;&apos;s convention to visit sub-projects in alpha-numerical order.  Let&amp;#8217;s say that you have the following project structure:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre&gt;root
- |_ A
- |_ B
-    |_ C
-    |_ D
- |_ E&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Based on the alpha-numerical ordering, you would probably expect &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; to visit the projects in the following order:  A, B, B:C, B:D, E.  However, this is not the case.
-&lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; will visit the sub-projects in alpha-numerical order, within each level.  What you end up with is:  A, B, E, B:C, B:D.  Normally, this probably isn&amp;#8217;t a big deal.
-This does become a big deal when one of those sub-projects builds a distribution that needs to include output from all of the other sub-projects.  Such is the case when
-building a fully-repackaged, executable JAR file with &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;.  The repackaged JAR built by the
-&lt;a href=&quot;http://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-gradle-plugin.html&quot; target=&quot;_blank&quot;&gt;Spring Boot Gradle Plugin&lt;/a&gt; includes all dependency JAR files
-required to execute the application.  Let&amp;#8217;s suppose in our example above, the sub-project E&amp;#8217;s &lt;code&gt;build.gradle&lt;/code&gt; script includes the following dependency block:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;dependencies {
-    compile module(&apos;:A&apos;)
-    compile module(&apos;:B:C&apos;)
-    compile module(&apos;:B:D&apos;)
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;What we would like to happen is that when we build project &quot;E&quot;, the JAR file should include the JAR&amp;#8217;s produced by building &quot;A&quot;, &quot;B:C&quot;, and &quot;B:D&quot;.  What actually happens is
-that only &quot;A&quot;&apos;s JAR gets included, because of the ordering outlined earlier in this post.  The way to correct this behavior and to ensure that all other sub-projects build
-their JAR files prior to &quot;E&quot;&apos;s JAR task executing is to add the following to &quot;E&quot;&apos;s &lt;code&gt;build.gradle&lt;/code&gt; script:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;// Ensure that all other JARs are built before the service is packaged.
-project.tasks.jar.dependsOn(rootProject.getSubprojects().findAll { subproject -&amp;gt; subproject.name != project.name }.collect { subproject -&amp;gt; &quot;${subproject.getPath()}:build&quot; })&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The logic above finds every other sub-project in the project and adds that sub-project&amp;#8217;s &quot;build&quot; task as a dependency that first must execute before the current project&amp;#8217;s
-JAR task can execute.  This ensures that all other projects have built their JAR files before &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; can create the re-packaged JAR.  You can apply this same trick to
-any other scenario where the execution of tasks in other sub-projects (regardless of depth) must occur before a certain sub-project&amp;#8217;s task(s).&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
