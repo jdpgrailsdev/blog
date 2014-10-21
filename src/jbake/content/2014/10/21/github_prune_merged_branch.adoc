@@ -8,7 +8,25 @@ Jonathan Pearlin
 :linkattrs:
 :id: github_prune_merged_branch
 :icons: font
+:github: http://github.com[GitHub, window="_blank"]
+:git: http://git-scm.com/[Git, window="_blank"]
 
+If you use {github} or any {git}-related tool that supports pull requests, you probably find yourself constantly
+deleting, pruning and merging branches to get your feature code into your main development branch.  After doing
+this over and over, I decided there must be a simple way using bash to put together a function that would
+automate these steps:
+
+* Check out the master branch (or whatever your mainline development branch is)
+* Fetch all remote branches
+* Pull updates to the master branch
+* Prune remote branches that have been deleted
+* Delete my local copy of the feature branch that has been merged to master
+
+I started with adding {git} status information to my shell by following
+http://www.newfinds.com/Ramblings/Bash-Promt/[these instructions, window="_blank"]:
+
+[source]
+----
 function parse_git_dirty {
   [[ $(git status 2> /dev/null | tail -n1) != "nothing to commit, working directory clean" ]] && echo " *"
 }
@@ -16,12 +34,23 @@ function parse_git_dirty {
 function parse_git_branch () {
   git branch 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/ (\1$(parse_git_dirty))/"
 }
+----
 
+Next, I added a new function to use the current branch (the one being merged/deleted/pruned) to turn
+the steps mentioned above into a command:
+
+[source]
+----
 function prune_merged_branch () {
     prunedBranch=`echo "$(parse_git_branch)" | sed -e 's/(//g' | sed -e 's/)//g' | tr -d ' '`
     git checkout master;git fetch --all;git pull;git remote prune origin;git branch -D "$prunedBranch"
 }
+----
 
+Now, I can run `prune_merged_branch` from the command line to do all of these steps in one swoop:
+
+[source]
+----
 $ prune_merged_branch
 Switched to branch 'master'
 Your branch is up-to-date with 'origin/master'.
@@ -37,3 +66,4 @@ Pruning origin
 URL: https://github.com/<username>/<repo>.git
  * [pruned] origin/some-branch
 Deleted branch some-branch (was 27da761).
+----
