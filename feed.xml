@@ -6,13 +6,99 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Wed, 15 Oct 2014 08:04:06 -0700</pubDate>
-        <lastBuildDate>Wed, 15 Oct 2014 08:04:06 -0700</lastBuildDate>
+        <pubDate>Tue, 21 Oct 2014 08:22:17 -0700</pubDate>
+        <lastBuildDate>Tue, 21 Oct 2014 08:22:17 -0700</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Bash Function to Prune Merged/Deleted Remote Branches in GitHub</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/10/21/github_prune_merged_branch.html</link>
+            <pubDate>Tue, 21 Oct 2014 00:00:00 -0700</pubDate>
+            <guid isPermaLink="false">2014/10/21/github_prune_merged_branch.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;If you use &lt;a href=&quot;http://github.com&quot; target=&quot;_blank&quot;&gt;GitHub&lt;/a&gt; or any &lt;a href=&quot;http://git-scm.com/&quot; target=&quot;_blank&quot;&gt;Git&lt;/a&gt;-related tool that supports pull requests, you probably find yourself constantly
+deleting, pruning and merging branches to get your feature code into your main development branch.  After doing
+this over and over, I decided there must be a simple way using bash to put together a function that would
+automate these steps:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;ulist&quot;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Check out the master branch (or whatever your mainline development branch is)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Fetch all remote branches&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Pull updates to the master branch&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Prune remote branches that have been deleted&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Delete my local copy of the feature branch that has been merged to master&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;I started with adding &lt;a href=&quot;http://git-scm.com/&quot; target=&quot;_blank&quot;&gt;Git&lt;/a&gt; status information to my shell by following
+&lt;a href=&quot;http://www.newfinds.com/Ramblings/Bash-Promt/&quot; target=&quot;_blank&quot;&gt;these instructions&lt;/a&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;function parse_git_dirty {
+  [[ $(git status 2&amp;gt; /dev/null | tail -n1) != &quot;nothing to commit, working directory clean&quot; ]] &amp;amp;&amp;amp; echo &quot; *&quot;
+}
+
+function parse_git_branch () {
+  git branch 2&amp;gt; /dev/null | sed -e &apos;/^[^*]/d&apos; -e &quot;s/* \(.*\)/ (\1$(parse_git_dirty))/&quot;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Next, I added a new function to use the current branch (the one being merged/deleted/pruned) to turn
+the steps mentioned above into a command:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;function prune_merged_branch () {
+    prunedBranch=`echo &quot;$(parse_git_branch)&quot; | sed -e &apos;s/(//g&apos; | sed -e &apos;s/)//g&apos; | tr -d &apos; &apos;`
+    git checkout master;git fetch --all;git pull;git remote prune origin;git branch -D &quot;$prunedBranch&quot;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Now, I can run &lt;code&gt;prune_merged_branch&lt;/code&gt; from the command line to do all of these steps in one swoop:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;$ prune_merged_branch
+Switched to branch &apos;master&apos;
+Your branch is up-to-date with &apos;origin/master&apos;.
+Fetching origin
+remote: Counting objects: 1, done.
+remote: Total 1 (delta 0), reused 0 (delta 0)
+Unpacking objects: 100% (1/1), done.
+From https://github.com/&amp;lt;username&amp;gt;/&amp;lt;repo&amp;gt;
+   a29de3b..b10695c  master     -&amp;gt; origin/master
+First, rewinding head to replay your work on top of it...
+Fast-forwarded master to b10695cdd910f064964d10e4f6d3d9ac78e3c1c6.
+Pruning origin
+URL: https://github.com/&amp;lt;username&amp;gt;/&amp;lt;repo&amp;gt;.git
+ * [pruned] origin/some-branch
+Deleted branch some-branch (was 27da761).&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Include Git Commit Info in Spring Boot Application with Gradle</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/10/14/spring_boot_gradle_git_info.html</link>
@@ -402,62 +488,6 @@ container.setLoadPaths(loadPaths);&lt;/code&gt;&lt;/pre&gt;
 understands and then added to the list of paths for &lt;a href=&quot;http://jruby.org/&quot; target=&quot;_blank&quot;&gt;JRuby&lt;/a&gt; to load prior to execution of the script.  At this point, if a Ruby script is executed via the
 &lt;code&gt;ScriptingContainer&lt;/code&gt; with the properly configured load paths, any references to required modules that are packaged in the plugin&amp;#8217;s JAR file will be found and
 the script will execute just as if it were run via Ruby.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Avoid Hibernate N+1 Problem with Joins in Spring-Data/JPA</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/09/09/spring_data_hibernate_join.html</link>
-            <pubDate>Tue, 9 Sep 2014 00:00:00 -0700</pubDate>
-            <guid isPermaLink="false">2014/09/09/spring_data_hibernate_join.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;If you have used &lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; as your ORM for any length of time, you have inevitably run into the
-&lt;a href=&quot;http://docs.jboss.org/hibernate/orm/3.3/reference/en-US/html/performance.html#performance-fetching-custom&quot; target=&quot;_blank&quot;&gt;N+1 problem&lt;/a&gt;.  This occurs when
-&lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; queries an entity that has a collection of children entities that does not use a &lt;code&gt;JOIN&lt;/code&gt; fetch mode to retrieve the children.  The simple solution
-when using &lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; directly is to set the &lt;code&gt;FetchMode&lt;/code&gt; to &lt;code&gt;JOIN&lt;/code&gt;:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;User user = (User) session.createCriteria(User.class)
-                .setFetchMode(&quot;permissions&quot;, FetchMode.JOIN)
-                .add( Restrictions.idEq(userId) )
-                .uniqueResult();&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;However, if you are using &lt;a href=&quot;http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html&quot; target=&quot;_blank&quot;&gt;JPA&lt;/a&gt; on top of &lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt;, there is no way to set the &lt;code&gt;FetchMode&lt;/code&gt; used by &lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; to &lt;code&gt;JOIN&lt;/code&gt;.  In fact, &lt;a href=&quot;http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html&quot; target=&quot;_blank&quot;&gt;JPA&lt;/a&gt; only
-supports two types of fetching:  &lt;code&gt;EAGER&lt;/code&gt; and &lt;code&gt;LAZY&lt;/code&gt;.  Luckily, there is another &lt;a href=&quot;http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html&quot; target=&quot;_blank&quot;&gt;JPA&lt;/a&gt; API that can be used to address this problem:  &lt;a href=&quot;http://projects.spring.io/spring-data-jpa/&quot; target=&quot;_blank&quot;&gt;Spring Data JPA&lt;/a&gt;.  The
-&lt;a href=&quot;http://projects.spring.io/spring-data-jpa/&quot; target=&quot;_blank&quot;&gt;Spring Data JPA&lt;/a&gt; library provides a &lt;a href=&quot;http://spring.io/blog/2011/04/26/advanced-spring-data-jpa-specifications-and-querydsl/&quot; target=&quot;_blank&quot;&gt;Domain Driven Design Specifications&lt;/a&gt;
-API that allows you to control the behavior of the generated query.  This will allow you to tweak things such as the fetch mode to ensure the proper instruction
-is passed to &lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; to address the N+1 problem.  I&amp;#8217;m not going to go into a bunch of details on how to use the &lt;code&gt;JpaSpecificationExecutor&lt;/code&gt;, as the &lt;a href=&quot;http://projects.spring.io/spring-data-jpa/&quot; target=&quot;_blank&quot;&gt;Spring Data JPA&lt;/a&gt;
-documentation does a pretty good job of covering it.  What is more important is how to control the fetch mode using it:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;final long userId = 1;
-
-final Specification&amp;lt;User&amp;gt; spec = new Specification&amp;lt;User&amp;gt;() {
-    @Override
-    public Predicate toPredicate(final Root&amp;lt;User&amp;gt; root, final CriteriaQuery&amp;lt;?&amp;gt; query, final CriteriaBuilder cb) {
-        query.distinct(true);
-        root.fetch(&quot;permissions&quot;, JoinType.LEFT);
-        return cb.equal(root.get(&quot;id&quot;), userId);
-     }
-};
-
-List&amp;lt;User&amp;gt; users = userRepository.findAll(spec);&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;There are two important pieces of the example above.  The first is the setting of the &lt;code&gt;distinct&lt;/code&gt; flag on the query to ensure that the proper (unique) results are returned as
-a result of the join.  The second is the addition of a &lt;code&gt;fetch&lt;/code&gt; hint to the root entity, telling the specification to perform a left join of the root to the entity mapped
-by the &quot;permissions&quot; field of the root entity.  This ensures that &lt;a href=&quot;http://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; will now perform a join instead of N+1 queries to fetch the root entity and its associated
-children.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
