@@ -90,6 +90,53 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog2014/10/28/gradle_resolve_all_dependencies.html"><h1>Gradle Task to Resolve (Download) All Configured Dependencies</h1></a>
+                   <p>28 October 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/gradle.html">gradle</a>
+        
+                <a href="/blog/tags/docker.html">docker</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/10/28/gradle_resolve_all_dependencies.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/10/28/gradle_resolve_all_dependencies.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/10/28/gradle_resolve_all_dependencies.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>I had a challenge recently that involved being able to run a set of <a href="http://gradle.org" target="_blank">Gradle</a> tasks in a <a href="https://www.docker.com/" target="_blank">Docker</a> container that
+did not have access to my artifact repository.  The obvious solution is to use the <code>--offline</code> switch provided
+by <a href="http://gradle.org" target="_blank">Gradle</a>, but this only works if you have all the artifacts need to run cached locally.  When <a href="https://www.docker.com/" target="_blank">Docker</a>
+builds its container, you can run any number of commands to populate it with whatever you need.  I decided to
+create a simple <a href="http://gradle.org" target="_blank">Gradle</a> task to walk through each project in the source that I had copied into the <a href="https://www.docker.com/" target="_blank">Docker</a>
+container that would force resolve each declared dependency:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>task resolveDependencies {
+    doLast {
+        project.rootProject.allprojects.each { subProject -&gt;
+            subProject.buildscript.configurations.each { configuration -&gt;
+                configuration.resolve()
+            }
+            subProject.configurations.each { configuration -&gt;
+                configuration.resolve()
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <a href="http://gradle.org" target="_blank">Gradle</a> task above walks through each configuration defined in each sub-project in the <a href="http://gradle.org" target="_blank">Gradle</a> project and forces
+<a href="http://gradle.org" target="_blank">Gradle</a> to "resolve" (download) the artifacts.  Because it uses the <code>rootProject</code>, this task can be defined in any
+of the sub-projects.  After running this task, the <a href="https://www.docker.com/" target="_blank">Docker</a> container now has a primed <a href="http://gradle.org" target="_blank">Gradle</a> cache that allows me
+to run the task in the container in offline mode!</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog2014/10/28/gradle_resolve_all_dependencies.html#disqus_thread">Comments</a></p>
                    <a href="/blog2014/10/21/github_prune_merged_branch.html"><h1>Bash Function to Prune Merged/Deleted Remote Branches in GitHub</h1></a>
                    <p>21 October 2014</p>
                 <p><em>Tags: </em>
@@ -314,65 +361,6 @@ application using a JMX console and view the beans exposed by <a href="http://ww
 </div>
 </div></p>
                 <p><a href="/blog2014/10/07/spring_boot_jetty_thread_pool.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/09/30/spring_boot_jetty_jmx.html"><h1>Expose Jetty MBeans via JMX in a Spring Boot Application</h1></a>
-                   <p>30 September 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/09/30/spring_boot_jetty_jmx.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/09/30/spring_boot_jetty_jmx.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/09/30/spring_boot_jetty_jmx.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p><a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> provides monitoring and management over JMX <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-jmx.html" target="_blank">out of the box</a>.  If you include a library
-that exposes <a href="http://docs.oracle.com/javase/tutorial/jmx/mbeans/" target="_blank">MBeans</a>, they will automatically be registered and exposed with the MBean server provided by <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  However, some packages don&#8217;t enable their MBeans by default.  Jetty is one of those
-libraries.  If you are using Jetty instead of Tomcat (Tomcat is the default option in <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>), you can enable Jetty&#8217;s MBeans by adding a <code>customizer</code> to a custom override of the <code>JettyEmbeddedServletContainerFactory</code>
-bean:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint java language-java"><code>@Bean
-public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(@Value("${server.port:8080}") final String port) {
-    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(port));
-    factory.addServerCustomizers(new JettyServerCustomizer() {
-        @Override
-        public void customize(final Server server) {
-            // Expose Jetty managed beans to the JMX platform server provided by Spring
-            final MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
-            server.addBean(mbContainer);
-        }
-    });
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The code sample above will register Jetty&#8217;s MBeans with the default platform MBean server (which is provided by <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>).  This will allow you to see things like the number of threads in use in Jetty&#8217;s
-connection pool and other fun facts that can be very useful when debugging Jetty or configuring it for better performance.  It is also worth noting that you will need to include the following dependencies
-in order to expose the Jetty MBeans:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>ext {
-    jettyVersion = '9.0.3.v20130506'
-}
-
-dependencies {
-  ...
-
-  compile "org.eclipse.jetty:jetty-jmx:$jettyVersion"
-  compile "org.eclipse.jetty:jetty-server:$jettyVersion"
-  compile "org.eclipse.jetty:jetty-util:$jettyVersion"
-
-  ...
-}</code></pre>
-</div>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/09/30/spring_boot_jetty_jmx.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
