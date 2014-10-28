@@ -1,0 +1,37 @@
+= Use connection parameters in Groovy with URL getText()
+Jonathan Pearlin
+2014-11-11
+:jbake-type: post
+:jbake-tags: docker,gradle,groovy,spock
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: groovy_url_text_params
+:icons: font
+:gradle: http://gradle.org[Gradle, window="_blank"]
+:groovy: http://groovy.codehaus.org/[Groovy, window="_blank"]
+:maven: http://maven.apache.org/[Maven, window="_blank"]
+
+A while back, I wrote a {gradle} plugin that would query the {maven} metadata for an artifact in order to automatically determine the next version number
+for a sub-model artifact in a project.  To do so, I used the following code to retrieve and parse the {maven} XML metadata:
+
+[source, groovy]
+----
+String url = "${repository.url}/${project.group.replaceAll('\\.','/')}/${getProjectName(project)}/maven-metadata.xml"
+GPathResult metadata = xmlSlurper.parseText(url.toURL().text)
+latestReleaseVersion = metadata.versioning.release
+----
+
+The above code works great, until you run it in a scenario where you cannot connect to the URL provided by the repository.  When this happens, the code
+waits a long time to determine that the connection cannot be established (as it is using the `URL` defaults provided by Java for the connection and read
+timeouts).  To make this fail faster in the scenarios, I followed some pointers provided by http://mrhaki.blogspot.com/2011/09/groovy-goodness-use-connection.html[Mr. Haki, window="_blank"]:
+
+[source,groovy]
+----
+String url = "${repository.url}/${project.group.replaceAll('\\.','/')}/${getProjectName(project)}/maven-metadata.xml"
+GPathResult metadata = xmlSlurper.parseText(url.toURL().getText(connectTimetout: TimeUnit.SECONDS.toMillis(10), readTimeout: TimeUnit.SECONDS.toMillis(60))))
+latestReleaseVersion = metadata.versioning.release
+----
+
+As of {groovy} 1.8.1, you can pass the underlying `URLConnection`'s parameters to the `getText` method.  In the example above, we have passed both the `connectTimeout`
+and `readTimeout` to the `getText` method to control when the connection will give up.  This ensures that the code will now fail faster in those offline scenarios.
