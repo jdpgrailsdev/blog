@@ -1,0 +1,40 @@
+= Gradle Task to Resolve (Download) All Configured Dependencies
+Jonathan Pearlin
+2014-10-28
+:jbake-type: post
+:jbake-tags: gradle,docker
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: gradle_resolve_all_dependencies
+:icons: font
+:gradle: http://gradle.org[Gradle, window="_blank"]
+:docker: https://www.docker.com/[Docker, window="_blank"]
+
+I had a challenge recently that involved being able to run a set of {gradle} tasks in a {docker} container that
+did not have access to my artifact repository.  The obvious solution is to use the `--offline` switch provided
+by {gradle}, but this only works if you have all the artifacts need to run cached locally.  When {docker}
+builds its container, you can run any number of commands to populate it with whatever you need.  I decided to
+create a simple {gradle} task to walk through each project in the source that I had copied into the {docker}
+container that would force resolve each declared dependency:
+
+[source,groovy]
+----
+task resolveDependencies {
+    doLast {
+        project.rootProject.allprojects.each { subProject ->
+            subProject.buildscript.configurations.each { configuration ->
+                configuration.resolve()
+            }
+            subProject.configurations.each { configuration ->
+                configuration.resolve()
+            }
+        }
+    }
+}
+----
+
+The {gradle} task above walks through each configuration defined in each sub-project in the {gradle} project and forces
+{gradle} to "resolve" (download) the artifacts.  Because it uses the `rootProject`, this task can be defined in any
+of the sub-projects.  After running this task, the {docker} container now has a primed {gradle} cache that allows me
+to run the task in the container in offline mode!
