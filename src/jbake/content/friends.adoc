@@ -14,3 +14,4 @@ that you add them to your blog reading rotation.
 - http://blog.founddrama.net/[found drama, window="_blank"] by https://twitter.com/founddrama["Rob Friesel, Jr.", window="_blank"]
 - http://akeffalas.github.io/blog/[The Programmer's Tool Belt, window="_blank"] by https://twitter.com/akeffalas[Andy Keffalas, window="_blank"]
 - http://ldaley.com/[LD., window="_blank"] by https://twitter.com/ldaley[Luke Daley, window="_blank"]
+- http://blog.hackingthought.com/[Hacking Thought Blog, window="_blank"] by https://twitter.com/lateefjackson[Lateef Jackson, window="_blank"]
