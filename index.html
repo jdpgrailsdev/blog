@@ -90,6 +90,54 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog2014/11/04/groovy_url_text_params.html"><h1>Use connection parameters in Groovy with URL getText()</h1></a>
+                   <p>04 November 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/docker.html">docker</a>
+        
+                <a href="/blog/tags/gradle.html">gradle</a>
+        
+                <a href="/blog/tags/groovy.html">groovy</a>
+        
+                <a href="/blog/tags/spock.html">spock</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/11/04/groovy_url_text_params.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/11/04/groovy_url_text_params.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/11/04/groovy_url_text_params.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>A while back, I wrote a <a href="http://gradle.org" target="_blank">Gradle</a> plugin that would query the <a href="http://maven.apache.org/" target="_blank">Maven</a> metadata for an artifact in order to automatically determine the next version number
+for a sub-model artifact in a project.  To do so, I used the following code to retrieve and parse the <a href="http://maven.apache.org/" target="_blank">Maven</a> XML metadata:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>String url = "${repository.url}/${project.group.replaceAll('\\.','/')}/${getProjectName(project)}/maven-metadata.xml"
+GPathResult metadata = xmlSlurper.parseText(url.toURL().text)
+latestReleaseVersion = metadata.versioning.release</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above code works great, until you run it in a scenario where you cannot connect to the URL provided by the repository.  When this happens, the code
+waits a long time to determine that the connection cannot be established (as it is using the <code>URL</code> defaults provided by Java for the connection and read
+timeouts).  To make this fail faster in the scenarios, I followed some pointers provided by <a href="http://mrhaki.blogspot.com/2011/09/groovy-goodness-use-connection.html" target="_blank">Mr. Haki</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>String url = "${repository.url}/${project.group.replaceAll('\\.','/')}/${getProjectName(project)}/maven-metadata.xml"
+GPathResult metadata = xmlSlurper.parseText(url.toURL().getText(connectTimetout: TimeUnit.SECONDS.toMillis(10), readTimeout: TimeUnit.SECONDS.toMillis(60))))
+latestReleaseVersion = metadata.versioning.release</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As of <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> 1.8.1, you can pass the underlying <code>URLConnection</code>'s parameters to the <code>getText</code> method.  In the example above, we have passed both the <code>connectTimeout</code>
+and <code>readTimeout</code> to the <code>getText</code> method to control when the connection will give up.  This ensures that the code will now fail faster in those offline scenarios.</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog2014/11/04/groovy_url_text_params.html#disqus_thread">Comments</a></p>
                    <a href="/blog2014/10/28/gradle_resolve_all_dependencies.html"><h1>Gradle Task to Resolve (Download) All Configured Dependencies</h1></a>
                    <p>28 October 2014</p>
                 <p><em>Tags: </em>
@@ -294,73 +342,6 @@ this task from inside an IDE).</p>
 </div>
 </div></p>
                 <p><a href="/blog2014/10/14/spring_boot_gradle_git_info.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/10/07/spring_boot_jetty_thread_pool.html"><h1>Configure Jetty&#8217;s Thread Pool in a Spring Boot Application</h1></a>
-                   <p>07 October 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/10/07/spring_boot_jetty_thread_pool.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/10/07/spring_boot_jetty_thread_pool.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/10/07/spring_boot_jetty_thread_pool.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>In a <a href="http://jonathanpearlin.com/blog/2014/09/30/spring_boot_jetty_jmx.html" target="_blank">previous post</a>, I discussed how to use <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a> as the servlet container in a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application over the default implementation
-(Apache Tomcat) and also how to enable <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a>'s registered MBeans via JMX.  In addition to this configuration, you can also configure <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a> so that it is not using the factory
-default settings for the servlet container.  One setting that you typically want to control is the size of the thread pool used by <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a> to service incoming requests.  This is
-pretty easy to do with <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> by adding a <a href="http://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/embedded/jetty/JettyServerCustomizer.html" target="blank">JettyServerCustomizer</a> implementation
-to gain access to <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a>'s <code>Server</code> instance:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint java language-java"><code>@Bean
-public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(@Value("${server.port:8080}") final String port,
-            @Value("${jetty.threadPool.maxThreads:200}") final String maxThreads,
-            @Value("${jetty.threadPool.minThreads:8}") final String minThreads,
-            @Value("${jetty.threadPool.idleTimeout:60000}") final String idleTimeout) {
-    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(port));
-    factory.addServerCustomizers(new JettyServerCustomizer() {
-        @Override
-        public void customize(final Server server) {
-            // Tweak the connection pool used by Jetty to handle incoming HTTP connections
-            final QueuedThreadPool threadPool = server.getBean(QueuedThreadPool.class);
-            threadPool.setMaxThreads(Integer.valueOf(maxThreads));
-            threadPool.setMinThreads(Integer.valueOf(minThreads));
-            threadPool.setIdleTimeout(Integer.valueOf(idleTimeout));
-        }
-    });
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In the example above, values (with defaults) are read from the Spring configuration and used to set the thread pool managed by <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a>.  In order
-to make this work, you must include the following dependencies with your application:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>ext {
-    jettyVersion = '9.0.3.v20130506'
-}
-
-dependencies {
-  ...
-
-  compile "org.eclipse.jetty:jetty-server:$jettyVersion"
-  compile "org.eclipse.jetty:jetty-util:$jettyVersion"
-
-  ...
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This example can be extended to configure any bean registered with the <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a> <code>Server</code> instance.  To figure out what is available, connect to your running
-application using a JMX console and view the beans exposed by <a href="http://www.eclipse.org/jetty/" target="_blank">Jetty</a>.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/10/07/spring_boot_jetty_thread_pool.html#disqus_thread">Comments</a></p>
 
                 <hr />
 

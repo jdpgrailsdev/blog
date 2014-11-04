@@ -6,13 +6,52 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 28 Oct 2014 08:16:49 -0700</pubDate>
-        <lastBuildDate>Tue, 28 Oct 2014 08:16:49 -0700</lastBuildDate>
+        <pubDate>Tue, 4 Nov 2014 07:46:09 -0800</pubDate>
+        <lastBuildDate>Tue, 4 Nov 2014 07:46:09 -0800</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Use connection parameters in Groovy with URL getText()</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/11/04/groovy_url_text_params.html</link>
+            <pubDate>Tue, 4 Nov 2014 00:00:00 -0800</pubDate>
+            <guid isPermaLink="false">2014/11/04/groovy_url_text_params.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;A while back, I wrote a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin that would query the &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; metadata for an artifact in order to automatically determine the next version number
+for a sub-model artifact in a project.  To do so, I used the following code to retrieve and parse the &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; XML metadata:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;String url = &quot;${repository.url}/${project.group.replaceAll(&apos;\\.&apos;,&apos;/&apos;)}/${getProjectName(project)}/maven-metadata.xml&quot;
+GPathResult metadata = xmlSlurper.parseText(url.toURL().text)
+latestReleaseVersion = metadata.versioning.release&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The above code works great, until you run it in a scenario where you cannot connect to the URL provided by the repository.  When this happens, the code
+waits a long time to determine that the connection cannot be established (as it is using the &lt;code&gt;URL&lt;/code&gt; defaults provided by Java for the connection and read
+timeouts).  To make this fail faster in the scenarios, I followed some pointers provided by &lt;a href=&quot;http://mrhaki.blogspot.com/2011/09/groovy-goodness-use-connection.html&quot; target=&quot;_blank&quot;&gt;Mr. Haki&lt;/a&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;String url = &quot;${repository.url}/${project.group.replaceAll(&apos;\\.&apos;,&apos;/&apos;)}/${getProjectName(project)}/maven-metadata.xml&quot;
+GPathResult metadata = xmlSlurper.parseText(url.toURL().getText(connectTimetout: TimeUnit.SECONDS.toMillis(10), readTimeout: TimeUnit.SECONDS.toMillis(60))))
+latestReleaseVersion = metadata.versioning.release&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;As of &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; 1.8.1, you can pass the underlying &lt;code&gt;URLConnection&lt;/code&gt;&apos;s parameters to the &lt;code&gt;getText&lt;/code&gt; method.  In the example above, we have passed both the &lt;code&gt;connectTimeout&lt;/code&gt;
+and &lt;code&gt;readTimeout&lt;/code&gt; to the &lt;code&gt;getText&lt;/code&gt; method to control when the connection will give up.  This ensures that the code will now fail faster in those offline scenarios.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Gradle Task to Resolve (Download) All Configured Dependencies</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/10/28/gradle_resolve_all_dependencies.html</link>
@@ -261,62 +300,6 @@ dependencies {
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;This example can be extended to configure any bean registered with the &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; &lt;code&gt;Server&lt;/code&gt; instance.  To figure out what is available, connect to your running
 application using a JMX console and view the beans exposed by &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt;.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Expose Jetty MBeans via JMX in a Spring Boot Application</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/09/30/spring_boot_jetty_jmx.html</link>
-            <pubDate>Tue, 30 Sep 2014 00:00:00 -0700</pubDate>
-            <guid isPermaLink="false">2014/09/30/spring_boot_jetty_jmx.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;&lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; provides monitoring and management over JMX &lt;a href=&quot;http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-jmx.html&quot; target=&quot;_blank&quot;&gt;out of the box&lt;/a&gt;.  If you include a library
-that exposes &lt;a href=&quot;http://docs.oracle.com/javase/tutorial/jmx/mbeans/&quot; target=&quot;_blank&quot;&gt;MBeans&lt;/a&gt;, they will automatically be registered and exposed with the MBean server provided by &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;.  However, some packages don&amp;#8217;t enable their MBeans by default.  Jetty is one of those
-libraries.  If you are using Jetty instead of Tomcat (Tomcat is the default option in &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;), you can enable Jetty&amp;#8217;s MBeans by adding a &lt;code&gt;customizer&lt;/code&gt; to a custom override of the &lt;code&gt;JettyEmbeddedServletContainerFactory&lt;/code&gt;
-bean:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;@Bean
-public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(@Value(&quot;${server.port:8080}&quot;) final String port) {
-    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(port));
-    factory.addServerCustomizers(new JettyServerCustomizer() {
-        @Override
-        public void customize(final Server server) {
-            // Expose Jetty managed beans to the JMX platform server provided by Spring
-            final MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
-            server.addBean(mbContainer);
-        }
-    });
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The code sample above will register Jetty&amp;#8217;s MBeans with the default platform MBean server (which is provided by &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;).  This will allow you to see things like the number of threads in use in Jetty&amp;#8217;s
-connection pool and other fun facts that can be very useful when debugging Jetty or configuring it for better performance.  It is also worth noting that you will need to include the following dependencies
-in order to expose the Jetty MBeans:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;ext {
-    jettyVersion = &apos;9.0.3.v20130506&apos;
-}
-
-dependencies {
-  ...
-
-  compile &quot;org.eclipse.jetty:jetty-jmx:$jettyVersion&quot;
-  compile &quot;org.eclipse.jetty:jetty-server:$jettyVersion&quot;
-  compile &quot;org.eclipse.jetty:jetty-util:$jettyVersion&quot;
-
-  ...
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
