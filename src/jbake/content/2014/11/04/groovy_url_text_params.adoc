@@ -1,6 +1,6 @@
 = Use connection parameters in Groovy with URL getText()
 Jonathan Pearlin
-2014-11-11
+2014-11-04
 :jbake-type: post
 :jbake-tags: docker,gradle,groovy,spock
 :jbake-status: published

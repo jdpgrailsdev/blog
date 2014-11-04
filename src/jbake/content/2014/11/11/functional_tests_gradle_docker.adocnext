@@ -1,6 +1,6 @@
-= Execute Functional Tests in a Docker Container with Gradle
+= Execute Functional Tests in a Docker Container with Gradle (Part 1)
 Jonathan Pearlin
-2014-10-28
+2014-11-11
 :jbake-type: post
 :jbake-tags: docker,gradle,groovy,spock
 :jbake-status: published
