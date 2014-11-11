@@ -6,13 +6,185 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 4 Nov 2014 07:46:09 -0800</pubDate>
-        <lastBuildDate>Tue, 4 Nov 2014 07:46:09 -0800</lastBuildDate>
+        <pubDate>Tue, 11 Nov 2014 07:47:26 -0800</pubDate>
+        <lastBuildDate>Tue, 11 Nov 2014 07:47:26 -0800</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Auto Configure Health Indicators in Spring Boot</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/11/11/spring_boot_health_indicators_auto_config.html</link>
+            <pubDate>Tue, 11 Nov 2014 00:00:00 -0800</pubDate>
+            <guid isPermaLink="false">2014/11/11/spring_boot_health_indicators_auto_config.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Another great feature provided by &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; is the ability to expose &lt;a href=&quot;http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-health&quot; target=&quot;_blank&quot;&gt;Spring Boot Custom Health Information&lt;/a&gt; about your application with very little effort.  The simple approach is to
+implement the &lt;code&gt;HealthIndicator&lt;/code&gt; interface and register your custom indicator as a Spring bean (or have it be &lt;a href=&quot;http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/annotation/ComponentScan.html&quot; target=&quot;_blank&quot;&gt;component scanned&lt;/a&gt;).
+This is great for one-off indicators or in small projects.  But what happens when you want to have a common set of health indicators that you can use in all of your services (after all, one of the
+promises of &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; is that it makes it trivial to spin up new &quot;micro&quot; services)?  What do you do if not all of your services have the same components that need to be part of your suite of health indicators?  The solution
+is to leverage the &lt;a href=&quot;http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#getting-started-first-application-auto-configuration&quot; target=&quot;_blank&quot;&gt;auto configuration&lt;/a&gt; infrastructure provided by &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;.  The first step
+is to include the proper dependencies in your health indicator shared library:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;ext {
+    springBootVersion = &apos;1.1.8.RELEASE&apos;
+}
+
+dependencies {
+    compile &quot;org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}&quot;
+    compile &quot;org.springframework.boot:spring-boot-actuator:${springBootVersion}&quot;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The &lt;code&gt;spring-boot-autoconfigure&lt;/code&gt; dependency provides the annotations that we will use to mark our configuration as able to partake in auto configuration.  The &lt;code&gt;spring-boot-actuator&lt;/code&gt;
+dependency provides the &lt;code&gt;HealthIndicator&lt;/code&gt; interface and other related classes needed to implement the health indicators.  The next step is to create a custom health indicator implementation:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.concurrent.TimeUnit;
+
+import kafka.consumer.ConsumerConfig;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+
+public class KafkaConsumerHealthIndicator implements HealthIndicator {
+
+    private static final Logger log = LoggerFactory.getLogger(KafkaConsumerHealthIndicator.class);
+
+    private final static Long TIMEOUT = TimeUnit.SECONDS.toMillis(3);
+
+    private final String host;
+
+    private final int port;
+
+    public KafkaConsumerHealthIndicator(final ConsumerConfig consumerConfig) {
+        this.host = consumerConfig.zkConnect().split(&quot;:&quot;)[0];
+        this.port = Integer.valueOf(consumerConfig.zkConnect().split(&quot;:&quot;)[1]);
+    }
+
+    @Override
+    public Health health() {
+        Socket socket = null;
+
+        try {
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(host, port), TIMEOUT.intValue());
+            return Health.up().build();
+        } catch (final Exception e) {
+            return Health.down(e).build();
+        } finally {
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (final IOException e) {
+                    log.debug(&quot;Unable to close Kafka consumer socket.&quot;, e);
+                }
+            }
+        }
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In this example, the health indicator attempts to make a socket connection to the connection string provided by the Kafka &lt;code&gt;ConsumerConfig&lt;/code&gt;.  It&amp;#8217;s a simple test to see if
+ZooKeeper is listening at the configured host/port.  The next step is to create an automatic configuration that will define and register this health indicator if the
+presence of a bean of type &lt;code&gt;ConsumerConfig&lt;/code&gt; is detected:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;import java.util.Map;
+
+import kafka.consumer.ConsumerConfig;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
+import org.springframework.boot.actuate.health.CompositeHealthIndicator;
+import org.springframework.boot.actuate.health.HealthAggregator;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@AutoConfigureBefore({ EndpointAutoConfiguration.class })
+@AutoConfigureAfter({ HealthIndicatorAutoConfiguration.class })
+public class CustomHealthIndicatorAutoConfiguration {
+
+    /**
+     * Configuration for Kafka consumer health indicators.
+     *
+     * @author jpearlin
+     * @since 1.0.0
+     */
+    @Configuration
+    @ConditionalOnBean(ConsumerConfig.class)
+    @ConditionalOnExpression(&quot;${health.kafka.consumer.enabled:true}&quot;)
+    public static class KafkaConsumerHealthIndicatorConfiguration {
+
+        @Autowired
+        private HealthAggregator healthAggregator;
+
+        @Autowired(required = false)
+        private Map&amp;lt;String, ConsumerConfig&amp;gt; consumerConfigs;
+
+        @Bean
+        @ConditionalOnMissingBean(name = &quot;kafkaConsumerHealthIndicator&quot;)
+        public HealthIndicator kafkaConsumerHealthIndicator() {
+            if (this.consumerConfigs.size() == 1) {
+                return new KafkaConsumerHealthIndicator(this.consumerConfigs.values().iterator().next());
+            }
+
+            final CompositeHealthIndicator composite = new CompositeHealthIndicator(this.healthAggregator);
+            for (final Map.Entry&amp;lt;String, ConsumerConfig&amp;gt; entry : this.consumerConfigs.entrySet()) {
+                composite.addHealthIndicator(entry.getKey(), new KafkaConsumerHealthIndicator(entry.getValue()));
+            }
+            return composite;
+        }
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;This auto configuration ensures that it is enabled after the default &lt;code&gt;HealthIndicatorAutoConfiguration&lt;/code&gt; provided by the &lt;code&gt;spring-boot-actuator&lt;/code&gt; dependency has been
+loaded.  It also defines one Spring &lt;code&gt;Configuration&lt;/code&gt; that is conditionally loaded based on the presence of a bean of type &lt;code&gt;ConsumerConfig&lt;/code&gt;.  It can also be manually
+disabled by setting the &lt;code&gt;health.kafka.consumer.enabled&lt;/code&gt; property to &lt;code&gt;false&lt;/code&gt;.  The configuration also ensures that if more than one bean of type &lt;code&gt;ConsumerConfig&lt;/code&gt; is
+present, a &lt;code&gt;CompositeHealthIndicator&lt;/code&gt; is created.  The final piece required to tie all of this together is to provide Spring with the required metadata file that
+instructs it on which classes represent auto-configuration.  To do this, create a file named &lt;code&gt;spring.factories&lt;/code&gt; in the &lt;code&gt;src/main/resources/META-INF&lt;/code&gt; directory of
+your shared health indicator library:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.example.health.autoconfigure.CustomHealthIndicatorAutoConfiguration&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; will automatically scan for these metadata files when your application starts and register your custom auto configuration class to be enacted if it detects
+the &lt;code&gt;EnableAutoConfiguration&lt;/code&gt; annotation on any of your Java-based configuration classes.  Now you can provide a full suite of health indicators that will be enabled if
+and only if certain conditions are met, as defined by the various configurations provided by your auto-configuration class!&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Use connection parameters in Groovy with URL getText()</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/11/04/groovy_url_text_params.html</link>
@@ -236,70 +408,6 @@ project.tasks.jar.dependsOn(&apos;generateGitProperties&apos;)&lt;/code&gt;&lt;/
 &lt;p&gt;The task above will include the &lt;code&gt;git.properties&lt;/code&gt; file in the packaged &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; JAR and can be accessed at the &lt;code&gt;/info&lt;/code&gt; servlet to see what branch and hash were
 used to build your application.  It will also safely fail on systems that do not have Git installed or do not have Git on the path (such as if you try to execute
 this task from inside an IDE).&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Configure Jetty&amp;#8217;s Thread Pool in a Spring Boot Application</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/10/07/spring_boot_jetty_thread_pool.html</link>
-            <pubDate>Tue, 7 Oct 2014 00:00:00 -0700</pubDate>
-            <guid isPermaLink="false">2014/10/07/spring_boot_jetty_thread_pool.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;In a &lt;a href=&quot;http://jonathanpearlin.com/blog/2014/09/30/spring_boot_jetty_jmx.html&quot; target=&quot;_blank&quot;&gt;previous post&lt;/a&gt;, I discussed how to use &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; as the servlet container in a &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; application over the default implementation
-(Apache Tomcat) and also how to enable &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt;&apos;s registered MBeans via JMX.  In addition to this configuration, you can also configure &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; so that it is not using the factory
-default settings for the servlet container.  One setting that you typically want to control is the size of the thread pool used by &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; to service incoming requests.  This is
-pretty easy to do with &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; by adding a &lt;a href=&quot;http://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/embedded/jetty/JettyServerCustomizer.html&quot; target=&quot;blank&quot;&gt;JettyServerCustomizer&lt;/a&gt; implementation
-to gain access to &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt;&apos;s &lt;code&gt;Server&lt;/code&gt; instance:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;@Bean
-public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(@Value(&quot;${server.port:8080}&quot;) final String port,
-            @Value(&quot;${jetty.threadPool.maxThreads:200}&quot;) final String maxThreads,
-            @Value(&quot;${jetty.threadPool.minThreads:8}&quot;) final String minThreads,
-            @Value(&quot;${jetty.threadPool.idleTimeout:60000}&quot;) final String idleTimeout) {
-    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(port));
-    factory.addServerCustomizers(new JettyServerCustomizer() {
-        @Override
-        public void customize(final Server server) {
-            // Tweak the connection pool used by Jetty to handle incoming HTTP connections
-            final QueuedThreadPool threadPool = server.getBean(QueuedThreadPool.class);
-            threadPool.setMaxThreads(Integer.valueOf(maxThreads));
-            threadPool.setMinThreads(Integer.valueOf(minThreads));
-            threadPool.setIdleTimeout(Integer.valueOf(idleTimeout));
-        }
-    });
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;In the example above, values (with defaults) are read from the Spring configuration and used to set the thread pool managed by &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt;.  In order
-to make this work, you must include the following dependencies with your application:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;ext {
-    jettyVersion = &apos;9.0.3.v20130506&apos;
-}
-
-dependencies {
-  ...
-
-  compile &quot;org.eclipse.jetty:jetty-server:$jettyVersion&quot;
-  compile &quot;org.eclipse.jetty:jetty-util:$jettyVersion&quot;
-
-  ...
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;This example can be extended to configure any bean registered with the &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; &lt;code&gt;Server&lt;/code&gt; instance.  To figure out what is available, connect to your running
-application using a JMX console and view the beans exposed by &lt;a href=&quot;http://www.eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt;.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
