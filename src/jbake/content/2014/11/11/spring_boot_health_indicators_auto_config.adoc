@@ -1,0 +1,167 @@
+= Auto Configure Health Indicators in Spring Boot
+Jonathan Pearlin
+2014-11-11
+:jbake-type: post
+:jbake-tags: spring,java
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: spring_boot_health_indicators_auto_config
+:icons: font
+:spring_boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
+:spring_boot_health: http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-health[Spring Boot Custom Health Information, window="_blank"]
+
+Another great feature provided by {spring_boot} is the ability to expose {spring_boot_health} about your application with very little effort.  The simple approach is to
+implement the `HealthIndicator` interface and register your custom indicator as a Spring bean (or have it be http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/annotation/ComponentScan.html[component scanned, window="_blank"]).
+This is great for one-off indicators or in small projects.  But what happens when you want to have a common set of health indicators that you can use in all of your services (after all, one of the
+promises of {spring_boot} is that it makes it trivial to spin up new "micro" services)?  What do you do if not all of your services have the same components that need to be part of your suite of health indicators?  The solution
+is to leverage the http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#getting-started-first-application-auto-configuration[auto configuration, window="_blank"] infrastructure provided by {spring_boot}.  The first step
+is to include the proper dependencies in your health indicator shared library:
+
+[source,groovy]
+----
+ext {
+    springBootVersion = '1.1.8.RELEASE'
+}
+
+dependencies {
+    compile "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-actuator:${springBootVersion}"
+}
+----
+
+The `spring-boot-autoconfigure` dependency provides the annotations that we will use to mark our configuration as able to partake in auto configuration.  The `spring-boot-actuator`
+dependency provides the `HealthIndicator` interface and other related classes needed to implement the health indicators.  The next step is to create a custom health indicator implementation:
+
+[source,java]
+----
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.concurrent.TimeUnit;
+
+import kafka.consumer.ConsumerConfig;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+
+public class KafkaConsumerHealthIndicator implements HealthIndicator {
+
+    private static final Logger log = LoggerFactory.getLogger(KafkaConsumerHealthIndicator.class);
+
+    private final static Long TIMEOUT = TimeUnit.SECONDS.toMillis(3);
+
+    private final String host;
+
+    private final int port;
+
+    public KafkaConsumerHealthIndicator(final ConsumerConfig consumerConfig) {
+        this.host = consumerConfig.zkConnect().split(":")[0];
+        this.port = Integer.valueOf(consumerConfig.zkConnect().split(":")[1]);
+    }
+
+    @Override
+    public Health health() {
+        Socket socket = null;
+
+        try {
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(host, port), TIMEOUT.intValue());
+            return Health.up().build();
+        } catch (final Exception e) {
+            return Health.down(e).build();
+        } finally {
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (final IOException e) {
+                    log.debug("Unable to close Kafka consumer socket.", e);
+                }
+            }
+        }
+    }
+}
+----
+
+In this example, the health indicator attempts to make a socket connection to the connection string provided by the Kafka `ConsumerConfig`.  It's a simple test to see if
+ZooKeeper is listening at the configured host/port.  The next step is to create an automatic configuration that will define and register this health indicator if the
+presence of a bean of type `ConsumerConfig` is detected:
+
+[source,java]
+----
+import java.util.Map;
+
+import kafka.consumer.ConsumerConfig;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
+import org.springframework.boot.actuate.health.CompositeHealthIndicator;
+import org.springframework.boot.actuate.health.HealthAggregator;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@AutoConfigureBefore({ EndpointAutoConfiguration.class })
+@AutoConfigureAfter({ HealthIndicatorAutoConfiguration.class })
+public class CustomHealthIndicatorAutoConfiguration {
+
+    /**
+     * Configuration for Kafka consumer health indicators.
+     *
+     * @author jpearlin
+     * @since 1.0.0
+     */
+    @Configuration
+    @ConditionalOnBean(ConsumerConfig.class)
+    @ConditionalOnExpression("${health.kafka.consumer.enabled:true}")
+    public static class KafkaConsumerHealthIndicatorConfiguration {
+
+        @Autowired
+        private HealthAggregator healthAggregator;
+
+        @Autowired(required = false)
+        private Map<String, ConsumerConfig> consumerConfigs;
+
+        @Bean
+        @ConditionalOnMissingBean(name = "kafkaConsumerHealthIndicator")
+        public HealthIndicator kafkaConsumerHealthIndicator() {
+            if (this.consumerConfigs.size() == 1) {
+                return new KafkaConsumerHealthIndicator(this.consumerConfigs.values().iterator().next());
+            }
+
+            final CompositeHealthIndicator composite = new CompositeHealthIndicator(this.healthAggregator);
+            for (final Map.Entry<String, ConsumerConfig> entry : this.consumerConfigs.entrySet()) {
+                composite.addHealthIndicator(entry.getKey(), new KafkaConsumerHealthIndicator(entry.getValue()));
+            }
+            return composite;
+        }
+    }
+}
+----
+
+This auto configuration ensures that it is enabled after the default `HealthIndicatorAutoConfiguration` provided by the `spring-boot-actuator` dependency has been
+loaded.  It also defines one Spring `Configuration` that is conditionally loaded based on the presence of a bean of type `ConsumerConfig`.  It can also be manually
+disabled by setting the `health.kafka.consumer.enabled` property to `false`.  The configuration also ensures that if more than one bean of type `ConsumerConfig` is
+present, a `CompositeHealthIndicator` is created.  The final piece required to tie all of this together is to provide Spring with the required metadata file that
+instructs it on which classes represent auto-configuration.  To do this, create a file named `spring.factories` in the `src/main/resources/META-INF` directory of
+your shared health indicator library:
+
+[source]
+----
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.example.health.autoconfigure.CustomHealthIndicatorAutoConfiguration
+----
+
+{spring_boot} will automatically scan for these metadata files when your application starts and register your custom auto configuration class to be enacted if it detects
+the `EnableAutoConfiguration` annotation on any of your Java-based configuration classes.  Now you can provide a full suite of health indicators that will be enabled if
+and only if certain conditions are met, as defined by the various configurations provided by your auto-configuration class!
