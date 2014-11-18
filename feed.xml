@@ -6,13 +6,121 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 11 Nov 2014 07:47:26 -0800</pubDate>
-        <lastBuildDate>Tue, 11 Nov 2014 07:47:26 -0800</lastBuildDate>
+        <pubDate>Tue, 18 Nov 2014 07:45:44 -0800</pubDate>
+        <lastBuildDate>Tue, 18 Nov 2014 07:45:44 -0800</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Execute Functional Tests in a Docker Container with Gradle (Part 1)</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html</link>
+            <pubDate>Tue, 18 Nov 2014 00:00:00 -0800</pubDate>
+            <guid isPermaLink="false">2014/11/18/functional_tests_gradle_docker_part_i.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;One of the applications that I have been working on recently has a lot of complex SQL queries that cannot be tested very well with traditional unit tests.  To fill this gap, we
+decided to write a functional test suite that would perform the following steps:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;ulist&quot;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Persist a bunch of data to the table(s) that are used by the query under test to an actual database instance.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Execute the query under test against an actual database instance.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Verify the expected results.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Clean down the table(s) used in the test to avoid pollution against other tests.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The application(s) under test are &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; applications, which make use of &lt;a href=&quot;http://projects.spring.io/spring-data-jpa/&quot; target=&quot;_blank&quot;&gt;Spring Data JPA&lt;/a&gt; for the presistence layer.  Below is an example of one of the repositories:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;@Repository
+public interface BookRepository extends JpaRepository&amp;lt;Book, Long&amp;gt; {
+
+    List&amp;lt;Book&amp;gt; findByIsbn(final String isbn);
+
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Writing a functional test for just such a repository is pretty easy using &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt; and its built-in &lt;a href=&quot;https://code.google.com/p/spock/wiki/SpringExtension&quot; target=&quot;_blank&quot;&gt;Spring extension&lt;/a&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;@ActiveProfiles(&apos;test&apos;)
+@ContextConfiguration(classes=[PersistenceConfiguration], loader=SpringApplicationContextLoader)
+class BookRepositoryFunctionalSpec extends Specification {
+
+    @Autowired
+    private BookRepository boolRepository
+
+    def cleanup() {
+        bookRepository.deleteAll()
+    }
+
+    def &quot;test that the correct number of books are found when finding books by ISBN&quot;() {
+        setup:
+            Book book1 = new Book(title:&apos;A Good Book&apos;, author:&apos;Some Guy&apos;, isbn:&apos;978-3-16-148410-0&apos;)
+            Book book2 = new Book(title:&apos;A Good Book, Second Edition&apos;, author:&apos;Some Guy&apos;, isbn:&apos;978-3-16-148410-1&apos;)
+
+            bookRepository.saveAndFlush(book1)
+            bookRepository.saveAndFlush(book2)
+        when:
+            def books = bookRepository.findByIsbn(&apos;978-3-16-148410-0&apos;)
+        then:
+            books != null
+            books.size() == 1
+            books.first() == book1
+        when:
+            books = bookRepository.findByIsbn(&apos;unknown&apos;)
+        then:
+            books != null
+            books.size() == 0
+    }&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The example &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt; specification above uses the &lt;code&gt;ActiveProfiles&lt;/code&gt; and &lt;code&gt;ContextCongifuration&lt;/code&gt; annotations to load the Spring configuration for use by the test.  This configuration contains
+all of the beans required by &lt;a href=&quot;http://projects.spring.io/spring-data-jpa/&quot; target=&quot;_blank&quot;&gt;Spring Data JPA&lt;/a&gt; to connect to the database (data source, entity manager, etc). With the Spring configuration added to the test, we can now make use of Spring
+techniques, such as the auto-wiring of dependencies into the specification.  In the example above, we have auto-wired in the &lt;code&gt;BookRepository&lt;/code&gt; that defines the query that we want to test.
+The next thing to notice is that the test uses the &lt;code&gt;deleteAll&lt;/code&gt; method of the repository instance to remove any data in the table mapped by the &lt;code&gt;Book&lt;/code&gt; entity after each test in the
+specification.  Finally, we have the test itself, which performs the following steps:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;ulist&quot;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Create a couple of &lt;code&gt;Book&lt;/code&gt; entities and persist them to the mapped table using the repository.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Execute the finder method from the repository and validate the correct results are found.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Execute the finder method again, this time with input that should not produce a result to validate what is returned in that scenario.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Note that this could easily be broken up into two tests or refactored to use &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt;&apos;s &lt;code&gt;@Unroll&lt;/code&gt; annotation.  Now that I was armed with a way to build out functional tests against the actual database
+using &lt;a href=&quot;http://projects.spring.io/spring-data-jpa/&quot; target=&quot;_blank&quot;&gt;Spring Data JPA&lt;/a&gt; and &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt;, I needed a way to execute the tests.  My first thought was to use &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; to run the tests.  However, due to a limitation of our build infrastructure (our deployment
+server does not have access to our artifact repository), &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; would not be able to run the tests, as the build script would not have access to the dependencies it needs to execute!  In the part two of
+this blog post, I will take a look at how I overcame this issue by executing the test suite inside of a &lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; container using &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Auto Configure Health Indicators in Spring Boot</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/11/11/spring_boot_health_indicators_auto_config.html</link>
@@ -347,67 +455,6 @@ URL: https://github.com/&amp;lt;username&amp;gt;/&amp;lt;repo&amp;gt;.git
  * [pruned] origin/some-branch
 Deleted branch some-branch (was 27da761).&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Include Git Commit Info in Spring Boot Application with Gradle</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/10/14/spring_boot_gradle_git_info.html</link>
-            <pubDate>Tue, 14 Oct 2014 00:00:00 -0700</pubDate>
-            <guid isPermaLink="false">2014/10/14/spring_boot_gradle_git_info.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;One great way to track where and when your application came from when building is into include source control information.  With &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;, this
-functionality comes out of the box (more or less).  If you read the &lt;a href=&quot;http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-git-commit-information&quot; target=&quot;_blank&quot;&gt;documentation&lt;/a&gt;,
-it suggests using the the &lt;a href=&quot;https://github.com/ajoberstar/gradle-git&quot; target=&quot;_blank&quot;&gt;gradle-git plugin&lt;/a&gt; to generate this data at build time.  However, there is a simple way to do this using Groovy that
-does not involve the use of a plugin:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;task generateGitProperties {
-    doLast {
-        try {
-            def branch = &apos;git rev-parse --abbrev-ref HEAD&apos;.execute().text.trim()
-            def revision = &apos;git rev-list --max-count 1 --timestamp HEAD&apos;.execute().text.trim()
-            def commitHash = revision.split(&apos; &apos;).last()
-            def timestamp = revision ? new java.util.Date(java.util.concurrent.TimeUnit.SECONDS.toMillis(revision.split(&apos; &apos;).first() as long)).format(&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ssZ&quot;) : null
-
-            File resourcesDir = new File(project.getBuildDir(), &apos;resources/main&apos;)
-            File propertiesFile = new File(resourcesDir, &apos;git.properties&apos;)
-
-            if(timestamp) {
-                // The project may not have any resources, so create the directories and file
-                if(!propertiesFile.exists()) {
-                    resourcesDir.mkdirs()
-                    propertiesFile.createNewFile()
-                }
-                propertiesFile.text = &quot;&quot;&quot;git.branch=${branch}
-        git.commit.id=${commitHash}
-        git.commit.time=${timestamp}
-                &quot;&quot;&quot;
-            } else {
-               project.logger.error(&apos;Unable to generate Git properties file:  revision could not be retrieved from Git.&apos;)
-            }
-        } catch (e) {
-            project.logger.error(&apos;Unable to generate Git properties file.&apos;, e)
-        }
-    }
-}
-
-...
-
-// Generate the Git commit properties file prior to building the artifact
-project.tasks.jar.dependsOn(&apos;generateGitProperties&apos;)&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The task above will include the &lt;code&gt;git.properties&lt;/code&gt; file in the packaged &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; JAR and can be accessed at the &lt;code&gt;/info&lt;/code&gt; servlet to see what branch and hash were
-used to build your application.  It will also safely fail on systems that do not have Git installed or do not have Git on the path (such as if you try to execute
-this task from inside an IDE).&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
