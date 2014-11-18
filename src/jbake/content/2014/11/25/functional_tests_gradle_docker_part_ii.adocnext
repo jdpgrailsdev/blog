@@ -1,6 +1,6 @@
-= Execute Functional Tests in a Docker Container with Gradle (Part 1)
+= Execute Functional Tests in a Docker Container with Gradle (Part 2)
 Jonathan Pearlin
-2014-11-11
+2014-11-25
 :jbake-type: post
 :jbake-tags: docker,gradle,groovy,spock
 :jbake-status: published
@@ -12,61 +12,7 @@ Jonathan Pearlin
 :spring-data-jpa: http://projects.spring.io/spring-data-jpa/[Spring Data JPA, window="_blank"]
 :gradle: http://gradle.org[Gradle, window="_blank"]
 :spock: https://code.google.com/p/spock/[Spock, window="_blank"]
-
-[source,java]
-----
-@Repository
-public interface BookRepository extends JpaRepository<Book, Long> {
-
-    List<Book> findByIsbn(final String isbn);
-
-}
-----
-
-[source,groovy]
-----
-@ActiveProfiles('test')
-@ContextConfiguration(classes=[PersistenceConfiguration], loader=SpringApplicationContextLoader)
-class BookRepositoryFunctionalSpec extends Specification {
-
-    @Autowired
-    private BookRepository boolRepository
-
-    def cleanup() {
-        bookRepository.deleteAll()
-    }
-
-    def "test that the correct number of books are found when finding books by ISBN"() {
-        setup:
-            Book book1 = new Book(title:'A Good Book', author:'Some Guy', isbn:'978-3-16-148410-0')
-            Book book2 = new Book(title:'A Good Book, Second Edition', author:'Some Guy', isbn:'978-3-16-148410-1')
-
-            bookRepository.saveAndFlush(book1)
-            bookRepository.saveAndFlush(book2)
-        when:
-            def books = bookRepository.findByIsbn('978-3-16-148410-0')
-        then:
-            books != null
-            books.size() == 1
-            books.first() == book1
-        when:
-            books = bookRepository.findByIsbn('unknown')
-        then:
-            books != null
-            books.size() == 0
-    }
-----
-
-[source]
-----
-# test ========================================================================== #
-spring:
-  profiles: test
-  jpa:
-    properties:
-      hibernate:
-        show_sql: "true"
-----
+:docker: https://www.docker.com/[Docker, window="_blank"]
 
 [source,groovy]
 ----
@@ -147,4 +93,3 @@ CMD ["/var/tests/functional-tests.sh"]
 The `dependencies.sh` is a simple bash script that runs the following command:  /var/tests/gradlew --refresh-dependencies dependencies
 
 The Dockerfile automatically run another script, which invokes the functional tests.  That script does the following:  /var/tests/gradlew --offline :test:functional:clean :test:functional:execute
-

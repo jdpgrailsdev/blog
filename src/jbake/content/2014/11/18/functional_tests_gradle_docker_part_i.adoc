@@ -1,0 +1,86 @@
+= Execute Functional Tests in a Docker Container with Gradle (Part 1)
+Jonathan Pearlin
+2014-11-18
+:jbake-type: post
+:jbake-tags: docker,gradle,groovy,spock
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: functional_tests_gradle_docker
+:icons: font
+:spring_boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
+:spring-data-jpa: http://projects.spring.io/spring-data-jpa/[Spring Data JPA, window="_blank"]
+:gradle: http://gradle.org[Gradle, window="_blank"]
+:spock: https://code.google.com/p/spock/[Spock, window="_blank"]
+:docker: https://www.docker.com/[Docker, window="_blank"]
+
+One of the applications that I have been working on recently has a lot of complex SQL queries that cannot be tested very well with traditional unit tests.  To fill this gap, we
+decided to write a functional test suite that would perform the following steps:
+
+* Persist a bunch of data to the table(s) that are used by the query under test to an actual database instance.
+* Execute the query under test against an actual database instance.
+* Verify the expected results.
+* Clean down the table(s) used in the test to avoid pollution against other tests.
+
+The application(s) under test are {spring_boot} applications, which make use of {spring-data-jpa} for the presistence layer.  Below is an example of one of the repositories:
+
+[source,java]
+----
+@Repository
+public interface BookRepository extends JpaRepository<Book, Long> {
+
+    List<Book> findByIsbn(final String isbn);
+
+}
+----
+
+Writing a functional test for just such a repository is pretty easy using {spock} and its built-in https://code.google.com/p/spock/wiki/SpringExtension[Spring extension, window="_blank"]:
+
+[source,groovy]
+----
+@ActiveProfiles('test')
+@ContextConfiguration(classes=[PersistenceConfiguration], loader=SpringApplicationContextLoader)
+class BookRepositoryFunctionalSpec extends Specification {
+
+    @Autowired
+    private BookRepository boolRepository
+
+    def cleanup() {
+        bookRepository.deleteAll()
+    }
+
+    def "test that the correct number of books are found when finding books by ISBN"() {
+        setup:
+            Book book1 = new Book(title:'A Good Book', author:'Some Guy', isbn:'978-3-16-148410-0')
+            Book book2 = new Book(title:'A Good Book, Second Edition', author:'Some Guy', isbn:'978-3-16-148410-1')
+
+            bookRepository.saveAndFlush(book1)
+            bookRepository.saveAndFlush(book2)
+        when:
+            def books = bookRepository.findByIsbn('978-3-16-148410-0')
+        then:
+            books != null
+            books.size() == 1
+            books.first() == book1
+        when:
+            books = bookRepository.findByIsbn('unknown')
+        then:
+            books != null
+            books.size() == 0
+    }
+----
+
+The example {spock} specification above uses the `ActiveProfiles` and `ContextCongifuration` annotations to load the Spring configuration for use by the test.  This configuration contains
+all of the beans required by {spring-data-jpa} to connect to the database (data source, entity manager, etc). With the Spring configuration added to the test, we can now make use of Spring
+techniques, such as the auto-wiring of dependencies into the specification.  In the example above, we have auto-wired in the `BookRepository` that defines the query that we want to test.
+The next thing to notice is that the test uses the `deleteAll` method of the repository instance to remove any data in the table mapped by the `Book` entity after each test in the
+specification.  Finally, we have the test itself, which performs the following steps:
+
+* Create a couple of `Book` entities and persist them to the mapped table using the repository.
+* Execute the finder method from the repository and validate the correct results are found.
+* Execute the finder method again, this time with input that should not produce a result to validate what is returned in that scenario.
+
+Note that this could easily be broken up into two tests or refactored to use {spock}'s `@Unroll` annotation.  Now that I was armed with a way to build out functional tests against the actual database
+using {spring-data-jpa} and {spock}, I needed a way to execute the tests.  My first thought was to use {gradle} to run the tests.  However, due to a limitation of our build infrastructure (our deployment
+server does not have access to our artifact repository), {gradle} would not be able to run the tests, as the build script would not have access to the dependencies it needs to execute!  In the part two of
+this blog post, I will take a look at how I overcame this issue by executing the test suite inside of a {docker} container using {gradle}.
