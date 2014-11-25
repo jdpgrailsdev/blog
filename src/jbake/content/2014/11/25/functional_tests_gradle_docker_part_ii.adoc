@@ -1,0 +1,167 @@
+= Execute Functional Tests in a Docker Container with Gradle (Part 2)
+Jonathan Pearlin
+2014-11-25
+:jbake-type: post
+:jbake-tags: docker,gradle,groovy,spock
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: functional_tests_gradle_docker
+:icons: font
+:gradle: http://gradle.org[Gradle, window="_blank"]
+:spock: https://code.google.com/p/spock/[Spock, window="_blank"]
+:docker: https://www.docker.com/[Docker, window="_blank"]
+
+In http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html[part one, window="_blank"] of this blog post, I discussed how to
+build a functional test using {spock} and {gradle}.  Normally, this is all that you would need to be able to test the part of your application that relies
+on a data source.  However, what can you do if you find yourself in a situation where you do not have access to dependencies or the repositories that provide
+them?  The solution is to bundle your tests along with the dependencies and execute them as an application.  In this post, I will discuss how I accomplished
+such a solution using {gradle} and {docker}.  First, let's look at the {gradle} build script:
+
+[source,groovy]
+----
+apply plugin: 'groovy'
+apply plugin: 'jetty'
+
+ext {
+    webSourceDir = "$buildDir/www"
+    imageName = "${rootProject.name}-functional-tests"
+    springVersion = '4.0.7.RELEASE'
+}
+
+sourceSets {
+    funcTest {
+        groovy {
+            srcDir file('src/functionalTest/groovy')
+        }
+    }
+}
+
+eclipse {
+    classpath {
+        downloadSources = true
+        defaultOutputDir = file("$buildDir/classes")
+    }
+    project {
+        name = "${rootProject.name}-functional-tests"
+    }
+}
+
+eclipseJdt.enabled = false
+cleanEclipseJdt.enabled = false
+
+jettyRun {
+    httpPort = System.getenv('PORT') ? System.getenv('PORT') as int : 8080
+    contextPath = 'status/check'
+    webAppSourceDirectory = file(webSourceDir)
+}
+
+dependencies {
+    compile project(':app')		// include the code that is needed to execute the tests (e.g., any entity classes, etc)
+
+    testCompile 'junit:junit:4.11'
+    testCompile 'cglib:cglib-nodep:3.1'
+    testCompile 'org.objenesis:objenesis:2.1'
+    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+    testCompile 'org.spockframework:spock-spring:0.7-groovy-2.0'
+    testCompile "org.springframework:spring-test:${springVersion}"
+
+    funcTestCompile sourceSets.main.output
+    funcTestCompile configurations.testCompile
+    funcTestRuntime configurations.testRuntime
+}
+
+task buildDist(type: Tar, group:'Build', description: 'Builds the Tar distribution of the project.') {
+    archiveName = "${rootProject.name}-functional-tests.tar"
+    from('bin') {
+        into('bin')
+    }
+    from(rootProject.projectDir) {
+        exclude('**/build/**')
+        exclude('**/*.tar')
+        exclude('**/.gradle/**')
+    }
+}
+
+task funcTest(type: Test, group:'Verification', description: 'Runs the functional tests.') {
+    testClassesDir = sourceSets.funcTest.output.classesDir
+    classpath = sourceSets.funcTest.runtimeClasspath
+    jvmArgs = ['-Duser.timezone=UTC']
+    environment = [:] // any necessary env vars for the test
+}
+
+task resolveDependencies {
+    doLast {
+        project.rootProject.allprojects.each { subProject ->
+            subProject.buildscript.configurations.each { configuration ->
+                configuration.resolve()
+            }
+            subProject.configurations.each { configuration ->
+                configuration.resolve()
+            }
+        }
+    }
+}
+
+task createWebSourceDir {
+    doLast {
+        new File(webSourceDir).mkdirs()
+    }
+}
+
+task collectTestResults(type:Tar, group:'Verification', dependsOn:['createWebSourceDir', 'funcTest'], description: 'Generates a tarball of the collected test report.') {
+    archiveName = 'functional-test-reports.tar'
+    destinationDir = file(webSourceDir)
+    from("$buildDir/reports/tests") {
+        into('reports/tests')
+    }
+    from("$buildDir/test-results") {
+        into('test-results')
+    }
+}
+
+task execute(dependsOn:['jettyRun'])
+
+/*
+ * Ensure that the tests are always executed
+ */
+project.tasks.collectTestResults.outputs.upToDateWhen { false }
+project.tasks.funcTest.outputs.upToDateWhen { false }
+project.tasks.resolveDependencies.outputs.upToDateWhen { false }
+build.finalizedBy(project.tasks.buildDist)
+project.tasks.buildDist.dependsOn(['build'])
+project.tasks.jettyRun.dependsOn(['collectTestResults'])
+----
+
+The script above has three very interesting parts:
+
+* A custom `test` task that runs all of the functional tests defined by the `funcTest` configuration.
+* The inclusion of the http://www.gradle.org/docs/current/userguide/jetty_plugin.html[Gradle Jetty Plugin, window="_blank"] to expose the test reports.
+* A custom task (`resolveDependencies`) that will ensure that all the required dependencies are resolved and included when building the {docker} image.
+
+Now let's look at the `Dockerfile` for the functional tests before tying it all together.  Below is a simple `Dockerfile`:
+
+[source]
+----
+FROM registry.hub.docker.com/your-base-image:latest
+
+# Install the functional tests
+RUN mkdir /var/tests
+ADD build/distributions/my-functional-tests.tar /var/tests
+RUN chmod +x /var/tests/bin/functional-tests.sh
+
+# Force Gradle to download all of its dependencies at image build time!
+RUN rm -rf /root/.gradle
+RUN cd /var/tests && ./gradlew --refresh-dependencies resolveDependencies > /dev/null
+
+EXPOSE 8080
+CMD ["cd /var/tests && ./gradlew --offline clean execute"]
+----
+
+The `Dockerfile` extracts the contents of the TAR into the `/var/tests` folder inside the {docker} image.  Once extracted, the `Dockerfile` also invokes the `resolveDepednencies` custom task
+that we saw in the {gradle} build script above.  Because the {docker} image is being built on a machine that has access to our dependency repositories, it can resolve
+everything needed at image creation time.  By resolving the dependencies at this point, we guarantee that the dependencies have been downloaded and cached by {gradle} inside of the
+{docker} image.  The final piece of the puzzle is the `CMD` directive, which runs the custom `execute` task from the {gradle} build script.  As we saw above, the `execute` task launches Jetty, which in turn
+launches the functional tests via the {gradle} task dependency set up in the script.  Upon successful completion of the tests, the test reports generated by {gradle} are exposed by Jetty so that they can be
+viewed/copied/etc.  By tying all of these pieces together, we have created a stand-alone {docker} image capable of executing functional tests
+using {gradle} in an environment that does not have the ability to resolve dependencies!
