@@ -90,7 +90,195 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
-                   <a href="/blog2014/11/18/functional_tests_gradle_docker_part_i.html"><h1>Execute Functional Tests in a Docker Container with Gradle (Part 1)</h1></a>
+                   <a href="/blog/2014/11/25/functional_tests_gradle_docker_part_ii.html"><h1>Execute Functional Tests in a Docker Container with Gradle (Part 2)</h1></a>
+                   <p>25 November 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/docker.html">docker</a>
+        
+                <a href="/blog/tags/gradle.html">gradle</a>
+        
+                <a href="/blog/tags/groovy.html">groovy</a>
+        
+                <a href="/blog/tags/spock.html">spock</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/11/25/functional_tests_gradle_docker_part_ii.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/11/25/functional_tests_gradle_docker_part_ii.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/11/25/functional_tests_gradle_docker_part_ii.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In <a href="http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html" target="_blank">part one</a> of this blog post, I discussed how to
+build a functional test using <a href="https://code.google.com/p/spock/" target="_blank">Spock</a> and <a href="http://gradle.org" target="_blank">Gradle</a>.  Normally, this is all that you would need to be able to test the part of your application that relies
+on a data source.  However, what can you do if you find yourself in a situation where you do not have access to dependencies or the repositories that provide
+them?  The solution is to bundle your tests along with the dependencies and execute them as an application.  In this post, I will discuss how I accomplished
+such a solution using <a href="http://gradle.org" target="_blank">Gradle</a> and <a href="https://www.docker.com/" target="_blank">Docker</a>.  First, let&#8217;s look at the <a href="http://gradle.org" target="_blank">Gradle</a> build script:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>apply plugin: 'groovy'
+apply plugin: 'jetty'
+
+ext {
+    webSourceDir = "$buildDir/www"
+    imageName = "${rootProject.name}-functional-tests"
+    springVersion = '4.0.7.RELEASE'
+}
+
+sourceSets {
+    funcTest {
+        groovy {
+            srcDir file('src/functionalTest/groovy')
+        }
+    }
+}
+
+eclipse {
+    classpath {
+        downloadSources = true
+        defaultOutputDir = file("$buildDir/classes")
+    }
+    project {
+        name = "${rootProject.name}-functional-tests"
+    }
+}
+
+eclipseJdt.enabled = false
+cleanEclipseJdt.enabled = false
+
+jettyRun {
+    httpPort = System.getenv('PORT') ? System.getenv('PORT') as int : 8080
+    contextPath = 'status/check'
+    webAppSourceDirectory = file(webSourceDir)
+}
+
+dependencies {
+    compile project(':app')		// include the code that is needed to execute the tests (e.g., any entity classes, etc)
+
+    testCompile 'junit:junit:4.11'
+    testCompile 'cglib:cglib-nodep:3.1'
+    testCompile 'org.objenesis:objenesis:2.1'
+    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+    testCompile 'org.spockframework:spock-spring:0.7-groovy-2.0'
+    testCompile "org.springframework:spring-test:${springVersion}"
+
+    funcTestCompile sourceSets.main.output
+    funcTestCompile configurations.testCompile
+    funcTestRuntime configurations.testRuntime
+}
+
+task buildDist(type: Tar, group:'Build', description: 'Builds the Tar distribution of the project.') {
+    archiveName = "${rootProject.name}-functional-tests.tar"
+    from('bin') {
+        into('bin')
+    }
+    from(rootProject.projectDir) {
+        exclude('**/build/**')
+        exclude('**/*.tar')
+        exclude('**/.gradle/**')
+    }
+}
+
+task funcTest(type: Test, group:'Verification', description: 'Runs the functional tests.') {
+    testClassesDir = sourceSets.funcTest.output.classesDir
+    classpath = sourceSets.funcTest.runtimeClasspath
+    jvmArgs = ['-Duser.timezone=UTC']
+    environment = [:] // any necessary env vars for the test
+}
+
+task resolveDependencies {
+    doLast {
+        project.rootProject.allprojects.each { subProject -&gt;
+            subProject.buildscript.configurations.each { configuration -&gt;
+                configuration.resolve()
+            }
+            subProject.configurations.each { configuration -&gt;
+                configuration.resolve()
+            }
+        }
+    }
+}
+
+task createWebSourceDir {
+    doLast {
+        new File(webSourceDir).mkdirs()
+    }
+}
+
+task collectTestResults(type:Tar, group:'Verification', dependsOn:['createWebSourceDir', 'funcTest'], description: 'Generates a tarball of the collected test report.') {
+    archiveName = 'functional-test-reports.tar'
+    destinationDir = file(webSourceDir)
+    from("$buildDir/reports/tests") {
+        into('reports/tests')
+    }
+    from("$buildDir/test-results") {
+        into('test-results')
+    }
+}
+
+task execute(dependsOn:['jettyRun'])
+
+/*
+ * Ensure that the tests are always executed
+ */
+project.tasks.collectTestResults.outputs.upToDateWhen { false }
+project.tasks.funcTest.outputs.upToDateWhen { false }
+project.tasks.resolveDependencies.outputs.upToDateWhen { false }
+build.finalizedBy(project.tasks.buildDist)
+project.tasks.buildDist.dependsOn(['build'])
+project.tasks.jettyRun.dependsOn(['collectTestResults'])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The script above has three very interesting parts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A custom <code>test</code> task that runs all of the functional tests defined by the <code>funcTest</code> configuration.</p>
+</li>
+<li>
+<p>The inclusion of the <a href="http://www.gradle.org/docs/current/userguide/jetty_plugin.html" target="_blank">Gradle Jetty Plugin</a> to expose the test reports.</p>
+</li>
+<li>
+<p>A custom task (<code>resolveDependencies</code>) that will ensure that all the required dependencies are resolved and included when building the <a href="https://www.docker.com/" target="_blank">Docker</a> image.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s look at the <code>Dockerfile</code> for the functional tests before tying it all together.  Below is a simple <code>Dockerfile</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint"><code>FROM registry.hub.docker.com/your-base-image:latest
+
+# Install the functional tests
+RUN mkdir /var/tests
+ADD build/distributions/my-functional-tests.tar /var/tests
+RUN chmod +x /var/tests/bin/functional-tests.sh
+
+# Force Gradle to download all of its dependencies at image build time!
+RUN rm -rf /root/.gradle
+RUN cd /var/tests &amp;&amp; ./gradlew --refresh-dependencies resolveDependencies &gt; /dev/null
+
+EXPOSE 8080
+CMD ["cd /var/tests &amp;&amp; ./gradlew --offline clean execute"]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>Dockerfile</code> extracts the contents of the TAR into the <code>/var/tests</code> folder inside the <a href="https://www.docker.com/" target="_blank">Docker</a> image.  Once extracted, the <code>Dockerfile</code> also invokes the <code>resolveDepednencies</code> custom task
+that we saw in the <a href="http://gradle.org" target="_blank">Gradle</a> build script above.  Because the <a href="https://www.docker.com/" target="_blank">Docker</a> image is being built on a machine that has access to our dependency repositories, it can resolve
+everything needed at image creation time.  By resolving the dependencies at this point, we guarantee that the dependencies have been downloaded and cached by <a href="http://gradle.org" target="_blank">Gradle</a> inside of the
+<a href="https://www.docker.com/" target="_blank">Docker</a> image.  The final piece of the puzzle is the <code>CMD</code> directive, which runs the custom <code>execute</code> task from the <a href="http://gradle.org" target="_blank">Gradle</a> build script.  As we saw above, the <code>execute</code> task launches Jetty, which in turn
+launches the functional tests via the <a href="http://gradle.org" target="_blank">Gradle</a> task dependency set up in the script.  Upon successful completion of the tests, the test reports generated by <a href="http://gradle.org" target="_blank">Gradle</a> are exposed by Jetty so that they can be
+viewed/copied/etc.  By tying all of these pieces together, we have created a stand-alone <a href="https://www.docker.com/" target="_blank">Docker</a> image capable of executing functional tests
+using <a href="http://gradle.org" target="_blank">Gradle</a> in an environment that does not have the ability to resolve dependencies!</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog2014/11/25/functional_tests_gradle_docker_part_ii.html#disqus_thread">Comments</a></p>
+                   <a href="/blog/2014/11/18/functional_tests_gradle_docker_part_i.html"><h1>Execute Functional Tests in a Docker Container with Gradle (Part 1)</h1></a>
                    <p>18 November 2014</p>
                 <p><em>Tags: </em>
                 <a href="/blog/tags/docker.html">docker</a>
@@ -102,9 +290,9 @@
                 <a href="/blog/tags/spock.html">spock</a>
         </p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/11/18/functional_tests_gradle_docker_part_i.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/11/18/functional_tests_gradle_docker_part_i.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/11/18/functional_tests_gradle_docker_part_i.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
                    <p><div id="preamble">
 <div class="sectionbody">
@@ -207,7 +395,7 @@ this blog post, I will take a look at how I overcame this issue by executing the
 </div>
 </div></p>
                 <p><a href="/blog2014/11/18/functional_tests_gradle_docker_part_i.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/11/11/spring_boot_health_indicators_auto_config.html"><h1>Auto Configure Health Indicators in Spring Boot</h1></a>
+                   <a href="/blog/2014/11/11/spring_boot_health_indicators_auto_config.html"><h1>Auto Configure Health Indicators in Spring Boot</h1></a>
                    <p>11 November 2014</p>
                 <p><em>Tags: </em>
                 <a href="/blog/tags/spring.html">spring</a>
@@ -215,9 +403,9 @@ this blog post, I will take a look at how I overcame this issue by executing the
                 <a href="/blog/tags/java.html">java</a>
         </p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/11/11/spring_boot_health_indicators_auto_config.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/11/11/spring_boot_health_indicators_auto_config.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/11/11/spring_boot_health_indicators_auto_config.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/11/11/spring_boot_health_indicators_auto_config.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/11/11/spring_boot_health_indicators_auto_config.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/11/11/spring_boot_health_indicators_auto_config.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
                    <p><div id="preamble">
 <div class="sectionbody">
@@ -384,7 +572,7 @@ and only if certain conditions are met, as defined by the various configurations
 </div>
 </div></p>
                 <p><a href="/blog2014/11/11/spring_boot_health_indicators_auto_config.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/11/04/groovy_url_text_params.html"><h1>Use connection parameters in Groovy with URL getText()</h1></a>
+                   <a href="/blog/2014/11/04/groovy_url_text_params.html"><h1>Use connection parameters in Groovy with URL getText()</h1></a>
                    <p>04 November 2014</p>
                 <p><em>Tags: </em>
                 <a href="/blog/tags/docker.html">docker</a>
@@ -396,9 +584,9 @@ and only if certain conditions are met, as defined by the various configurations
                 <a href="/blog/tags/spock.html">spock</a>
         </p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/11/04/groovy_url_text_params.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/11/04/groovy_url_text_params.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/11/04/groovy_url_text_params.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/11/04/groovy_url_text_params.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/11/04/groovy_url_text_params.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/11/04/groovy_url_text_params.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
                    <p><div id="preamble">
 <div class="sectionbody">
@@ -432,53 +620,6 @@ and <code>readTimeout</code> to the <code>getText</code> method to control when 
 </div>
 </div></p>
                 <p><a href="/blog2014/11/04/groovy_url_text_params.html#disqus_thread">Comments</a></p>
-                   <a href="/blog2014/10/28/gradle_resolve_all_dependencies.html"><h1>Gradle Task to Resolve (Download) All Configured Dependencies</h1></a>
-                   <p>28 October 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/gradle.html">gradle</a>
-        
-                <a href="/blog/tags/docker.html">docker</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog2014/10/28/gradle_resolve_all_dependencies.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog2014/10/28/gradle_resolve_all_dependencies.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog2014/10/28/gradle_resolve_all_dependencies.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>I had a challenge recently that involved being able to run a set of <a href="http://gradle.org" target="_blank">Gradle</a> tasks in a <a href="https://www.docker.com/" target="_blank">Docker</a> container that
-did not have access to my artifact repository.  The obvious solution is to use the <code>--offline</code> switch provided
-by <a href="http://gradle.org" target="_blank">Gradle</a>, but this only works if you have all the artifacts need to run cached locally.  When <a href="https://www.docker.com/" target="_blank">Docker</a>
-builds its container, you can run any number of commands to populate it with whatever you need.  I decided to
-create a simple <a href="http://gradle.org" target="_blank">Gradle</a> task to walk through each project in the source that I had copied into the <a href="https://www.docker.com/" target="_blank">Docker</a>
-container that would force resolve each declared dependency:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>task resolveDependencies {
-    doLast {
-        project.rootProject.allprojects.each { subProject -&gt;
-            subProject.buildscript.configurations.each { configuration -&gt;
-                configuration.resolve()
-            }
-            subProject.configurations.each { configuration -&gt;
-                configuration.resolve()
-            }
-        }
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <a href="http://gradle.org" target="_blank">Gradle</a> task above walks through each configuration defined in each sub-project in the <a href="http://gradle.org" target="_blank">Gradle</a> project and forces
-<a href="http://gradle.org" target="_blank">Gradle</a> to "resolve" (download) the artifacts.  Because it uses the <code>rootProject</code>, this task can be defined in any
-of the sub-projects.  After running this task, the <a href="https://www.docker.com/" target="_blank">Docker</a> container now has a primed <a href="http://gradle.org" target="_blank">Gradle</a> cache that allows me
-to run the task in the container in offline mode!</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/10/28/gradle_resolve_all_dependencies.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
