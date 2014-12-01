@@ -13,7 +13,7 @@ Jonathan Pearlin
 :gradle: http://www.gradle.org/[Gradle, window="_blank"]
 :grails: http://grails.org[Grails, window="_blank"]
 :groovy: http://groovy.codehaus.org[Groovy, window="_blank"]
-:jenkins: http://jenkins-ci.org/[Jeknin, window="_blank"s]
+:jenkins: http://jenkins-ci.org/[Jenkins, window="_blank"s]
 :junit: http://junit.org/[JUnit, window="_blank"]
 :maven: http://maven.apache.org[Maven, window="_blank"]
 :mongo: http://www.mongodb.org[MongoDB, window="_blank"]
