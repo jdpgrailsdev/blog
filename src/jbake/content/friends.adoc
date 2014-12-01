@@ -15,3 +15,4 @@ that you add them to your blog reading rotation.
 - http://akeffalas.github.io/blog/[The Programmer's Tool Belt, window="_blank"] by https://twitter.com/akeffalas[Andy Keffalas, window="_blank"]
 - http://ldaley.com/[LD., window="_blank"] by https://twitter.com/ldaley[Luke Daley, window="_blank"]
 - http://blog.hackingthought.com/[Hacking Thought Blog, window="_blank"] by https://twitter.com/lateefjackson[Lateef Jackson, window="_blank"]
+- https://www.youtube.com/watch?v=LCcKBcZzGdA["A stranger in the alps", window="_blank"]
