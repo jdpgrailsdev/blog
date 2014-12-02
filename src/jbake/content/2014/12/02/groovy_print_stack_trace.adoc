@@ -1,0 +1,41 @@
+= Groovy Meta Method to Print Current Stacktrace
+Jonathan Pearlin
+2014-12-02
+:jbake-type: post
+:jbake-tags: groovy
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: groovy_print_stack_trace
+:icons: font
+:groovy: http://groovy.codehaus.org/[Groovy, window="_blank"]
+
+If you find yourself in a situation where you cannot debug your application (from an IDE or via attaching remotely to the executing JVM), you can use a little {groovy} meta class
+magic to add a method to each class in order to print the current stack of any given line:
+
+[source,groovy]
+----
+this.class.classLoader.class.classes.each {
+    it.metaClass.printStackTrace = { ->
+        Thread.currentThread().stackTrace.each { element ->
+            println "\tat ${element.className}.${element.methodName}(${element.fileName}:${element.lineNumber})"
+        }
+    }
+}
+----
+
+Once the above code has been executed (preferably from your main class), you can use it anywhere in your {groovy} application to print the current stack trace:
+
+[source,groovy]
+----
+class MyClass {
+
+    def method() {
+        printStackTrace()
+
+        ...
+    }
+}
+----
+
+This is particularly useful when trying to track down which of a number of multiple code points might be invoking a given method.
