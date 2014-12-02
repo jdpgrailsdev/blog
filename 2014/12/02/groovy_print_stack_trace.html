@@ -87,39 +87,72 @@
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: groovy</h1>
+        <h1>Groovy Meta Method to Print Current Stacktrace</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>December 2014</h4>
-            <ul>
+    <p><em>02 December 2014</em></p>
 
-        <li>02 - <a href="/blog/2014/12/02/groovy_print_stack_trace.html">Groovy Meta Method to Print Current Stacktrace</a></li>
-                </ul>
-                <h4>November 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>25 - <a href="/blog/2014/11/25/functional_tests_gradle_docker_part_ii.html">Execute Functional Tests in a Docker Container with Gradle (Part 2)</a></li>
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you find yourself in a situation where you cannot debug your application (from an IDE or via attaching remotely to the executing JVM), you can use a little <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> meta class
+magic to add a method to each class in order to print the current stack of any given line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>this.class.classLoader.class.classes.each {
+    it.metaClass.printStackTrace = { -&gt;
+        Thread.currentThread().stackTrace.each { element -&gt;
+            println "\tat ${element.className}.${element.methodName}(${element.fileName}:${element.lineNumber})"
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once the above code has been executed (preferably from your main class), you can use it anywhere in your <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> application to print the current stack trace:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>class MyClass {
 
-        <li>18 - <a href="/blog/2014/11/18/functional_tests_gradle_docker_part_i.html">Execute Functional Tests in a Docker Container with Gradle (Part 1)</a></li>
+    def method() {
+        printStackTrace()
 
-        <li>04 - <a href="/blog/2014/11/04/groovy_url_text_params.html">Use connection parameters in Groovy with URL getText()</a></li>
-                </ul>
-                <h4>June 2014</h4>
-                <ul>
+        ...
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is particularly useful when trying to track down which of a number of multiple code points might be invoking a given method.</p>
+</div>
+</div>
+</div></p>
 
-        <li>17 - <a href="/blog/2014/06/17/logback_tomcat_rolling_appender.html">A Tomcat Rolling File Appender with Logback</a></li>
-                </ul>
-                <h4>March 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/12/02/groovy_print_stack_trace.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>18 - <a href="/blog/2014/03/18/grails_bean_builder.html">Parsing the Grails Spring Beans DSL with Groovy</a></li>
-                </ul>
-                <h4>July 2011</h4>
-                <ul>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2014/12/02/groovy_print_stack_trace.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-        <li>31 - <a href="/blog/2011/07/31/groovy_whitespace.html">Keep Your Hands Off of My Whitespace!</a></li>
-    </ul>
+    <hr>
 
             </div>
             <div id="push"></div>

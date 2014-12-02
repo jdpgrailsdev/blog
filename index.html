@@ -90,6 +90,54 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog/2014/12/02/groovy_print_stack_trace.html"><h1>Groovy Meta Method to Print Current Stacktrace</h1></a>
+                   <p>02 December 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/groovy.html">groovy</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you find yourself in a situation where you cannot debug your application (from an IDE or via attaching remotely to the executing JVM), you can use a little <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> meta class
+magic to add a method to each class in order to print the current stack of any given line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>this.class.classLoader.class.classes.each {
+    it.metaClass.printStackTrace = { -&gt;
+        Thread.currentThread().stackTrace.each { element -&gt;
+            println "\tat ${element.className}.${element.methodName}(${element.fileName}:${element.lineNumber})"
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once the above code has been executed (preferably from your main class), you can use it anywhere in your <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> application to print the current stack trace:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>class MyClass {
+
+    def method() {
+        printStackTrace()
+
+        ...
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is particularly useful when trying to track down which of a number of multiple code points might be invoking a given method.</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog2014/12/02/groovy_print_stack_trace.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2014/11/25/functional_tests_gradle_docker_part_ii.html"><h1>Execute Functional Tests in a Docker Container with Gradle (Part 2)</h1></a>
                    <p>25 November 2014</p>
                 <p><em>Tags: </em>
@@ -572,54 +620,6 @@ and only if certain conditions are met, as defined by the various configurations
 </div>
 </div></p>
                 <p><a href="/blog2014/11/11/spring_boot_health_indicators_auto_config.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/11/04/groovy_url_text_params.html"><h1>Use connection parameters in Groovy with URL getText()</h1></a>
-                   <p>04 November 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/docker.html">docker</a>
-        
-                <a href="/blog/tags/gradle.html">gradle</a>
-        
-                <a href="/blog/tags/groovy.html">groovy</a>
-        
-                <a href="/blog/tags/spock.html">spock</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/11/04/groovy_url_text_params.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/11/04/groovy_url_text_params.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/11/04/groovy_url_text_params.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>A while back, I wrote a <a href="http://gradle.org" target="_blank">Gradle</a> plugin that would query the <a href="http://maven.apache.org/" target="_blank">Maven</a> metadata for an artifact in order to automatically determine the next version number
-for a sub-model artifact in a project.  To do so, I used the following code to retrieve and parse the <a href="http://maven.apache.org/" target="_blank">Maven</a> XML metadata:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>String url = "${repository.url}/${project.group.replaceAll('\\.','/')}/${getProjectName(project)}/maven-metadata.xml"
-GPathResult metadata = xmlSlurper.parseText(url.toURL().text)
-latestReleaseVersion = metadata.versioning.release</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The above code works great, until you run it in a scenario where you cannot connect to the URL provided by the repository.  When this happens, the code
-waits a long time to determine that the connection cannot be established (as it is using the <code>URL</code> defaults provided by Java for the connection and read
-timeouts).  To make this fail faster in the scenarios, I followed some pointers provided by <a href="http://mrhaki.blogspot.com/2011/09/groovy-goodness-use-connection.html" target="_blank">Mr. Haki</a>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>String url = "${repository.url}/${project.group.replaceAll('\\.','/')}/${getProjectName(project)}/maven-metadata.xml"
-GPathResult metadata = xmlSlurper.parseText(url.toURL().getText(connectTimetout: TimeUnit.SECONDS.toMillis(10), readTimeout: TimeUnit.SECONDS.toMillis(60))))
-latestReleaseVersion = metadata.versioning.release</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As of <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> 1.8.1, you can pass the underlying <code>URLConnection</code>'s parameters to the <code>getText</code> method.  In the example above, we have passed both the <code>connectTimeout</code>
-and <code>readTimeout</code> to the <code>getText</code> method to control when the connection will give up.  This ensures that the code will now fail faster in those offline scenarios.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/11/04/groovy_url_text_params.html#disqus_thread">Comments</a></p>
 
                 <hr />
 

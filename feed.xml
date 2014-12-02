@@ -6,13 +6,58 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 25 Nov 2014 07:54:07 -0800</pubDate>
-        <lastBuildDate>Tue, 25 Nov 2014 07:54:07 -0800</lastBuildDate>
+        <pubDate>Tue, 2 Dec 2014 07:56:28 -0800</pubDate>
+        <lastBuildDate>Tue, 2 Dec 2014 07:56:28 -0800</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Groovy Meta Method to Print Current Stacktrace</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html</link>
+            <pubDate>Tue, 2 Dec 2014 00:00:00 -0800</pubDate>
+            <guid isPermaLink="false">2014/12/02/groovy_print_stack_trace.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;If you find yourself in a situation where you cannot debug your application (from an IDE or via attaching remotely to the executing JVM), you can use a little &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; meta class
+magic to add a method to each class in order to print the current stack of any given line:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;this.class.classLoader.class.classes.each {
+    it.metaClass.printStackTrace = { -&amp;gt;
+        Thread.currentThread().stackTrace.each { element -&amp;gt;
+            println &quot;\tat ${element.className}.${element.methodName}(${element.fileName}:${element.lineNumber})&quot;
+        }
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Once the above code has been executed (preferably from your main class), you can use it anywhere in your &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; application to print the current stack trace:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;class MyClass {
+
+    def method() {
+        printStackTrace()
+
+        ...
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;This is particularly useful when trying to track down which of a number of multiple code points might be invoking a given method.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Execute Functional Tests in a Docker Container with Gradle (Part 2)</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/11/25/functional_tests_gradle_docker_part_ii.html</link>
@@ -506,48 +551,6 @@ latestReleaseVersion = metadata.versioning.release&lt;/code&gt;&lt;/pre&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;As of &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; 1.8.1, you can pass the underlying &lt;code&gt;URLConnection&lt;/code&gt;&apos;s parameters to the &lt;code&gt;getText&lt;/code&gt; method.  In the example above, we have passed both the &lt;code&gt;connectTimeout&lt;/code&gt;
 and &lt;code&gt;readTimeout&lt;/code&gt; to the &lt;code&gt;getText&lt;/code&gt; method to control when the connection will give up.  This ensures that the code will now fail faster in those offline scenarios.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Gradle Task to Resolve (Download) All Configured Dependencies</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/10/28/gradle_resolve_all_dependencies.html</link>
-            <pubDate>Tue, 28 Oct 2014 00:00:00 -0700</pubDate>
-            <guid isPermaLink="false">2014/10/28/gradle_resolve_all_dependencies.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;I had a challenge recently that involved being able to run a set of &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; tasks in a &lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; container that
-did not have access to my artifact repository.  The obvious solution is to use the &lt;code&gt;--offline&lt;/code&gt; switch provided
-by &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;, but this only works if you have all the artifacts need to run cached locally.  When &lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt;
-builds its container, you can run any number of commands to populate it with whatever you need.  I decided to
-create a simple &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; task to walk through each project in the source that I had copied into the &lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt;
-container that would force resolve each declared dependency:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;task resolveDependencies {
-    doLast {
-        project.rootProject.allprojects.each { subProject -&amp;gt;
-            subProject.buildscript.configurations.each { configuration -&amp;gt;
-                configuration.resolve()
-            }
-            subProject.configurations.each { configuration -&amp;gt;
-                configuration.resolve()
-            }
-        }
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; task above walks through each configuration defined in each sub-project in the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; project and forces
-&lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; to &quot;resolve&quot; (download) the artifacts.  Because it uses the &lt;code&gt;rootProject&lt;/code&gt;, this task can be defined in any
-of the sub-projects.  After running this task, the &lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; container now has a primed &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; cache that allows me
-to run the task in the container in offline mode!&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
