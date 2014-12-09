@@ -1,0 +1,74 @@
+= Use Inline Attachments as Image Sources in HTML Emails with Spring
+Jonathan Pearlin
+2014-12-09
+:jbake-type: post
+:jbake-tags: java,spring
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: email_inline_image_attachments_spring
+:icons: font
+
+If you are in the need of generating HTML-based e-mails with images, the simple approach is to simply host the image and link to it
+in the HTML.  This will work, but will cause the reciepients (in most e-mail clients) to be prompted as to whether or not they should
+download and show the image.  If you want to avoid this (and therefore the stigma of a perceived security threat), you can include
+the image as an attachment in the e-mail and reference it using the attachment's content ID value:
+
+[source,html]
+----
+<img src="cid:imageName.png"></img>
+----
+
+When the e-mail client loads the message, it will now resolve the image from the inlined attachments included in the e-mail.  This all
+sounds great, but how do you get the images in the e-mail?  The solution is to combine the
+http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mail.html[Spring JavaMailSender, window="_blank"] with the
+http://docs.spring.io/spring/docs/current/spring-framework-reference/html/resources.html[Spring Resource interface, window="_blank"] to
+load and store the image data in the generated e-mail.  The first step is to load the images as `Resource` objects, either from the
+file system or classpath (in this example, we will use the classpath):
+
+[source,java]
+----
+import org.apache.commons.io.IOUtils;
+
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamSource;
+
+...
+
+InputStreamSource imageSource = new ByteArrayResource(IOUtils.toByteArray(getClass().getResourceAsStream("/images/logo.png")))
+----
+
+The code snippet above uses the http://commons.apache.org/proper/commons-io/[Apache Commons IO library, window="_blank'] to convert
+the image bytes (read from the classpath via the `getResourceAsStream()` method) into a byte array.  The byte array is then wrapped
+by the Spring `ByteArrayResource`, which we will use to create the inline attachment (we could also use the `ClassPathResource`).  The next
+step is to add the image to the MIME message as an attachment:
+
+[source,java]
+----
+import javax.mail.internet.MimeMessage;
+
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
+
+...
+
+JavaMailSender mailSender = new JavaMailSenderImpl();  // Or use Spring IoC to inject a pre-configured JavaMailSenderImpl
+MimeMessage mimeMessage = mailSender.createMimeMessage();
+MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+// Add information to the message, such as subject, recipients, etc
+
+message.addInline("logo.png", imageSource);
+----
+
+The `addInline()` method of the `MimeMessageHelper` reads the byte data from the `InputStreamSource` and creates the inline MIME body part to hold the
+attachment.  It also sets the content ID to the name provided by the first parameter.  Now, all that's left is to reference the image in our HTML body:
+
+[source,java]
+----
+message.setText("<img src=\"cid:logo.png\"></img><div>My logo</div>", true);
+----
+
+Now, when the e-mail is viewed in the reciepient's e-mail client, the image will be displayed from the attachments.  Note that this works with most web mail clients, however,
+you should only attach images that are referenced by the HTML body, otherwise they may show up as actual attachments in the e-mail client.
