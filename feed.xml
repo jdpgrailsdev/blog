@@ -6,13 +6,94 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 2 Dec 2014 07:56:28 -0800</pubDate>
-        <lastBuildDate>Tue, 2 Dec 2014 07:56:28 -0800</lastBuildDate>
+        <pubDate>Tue, 9 Dec 2014 08:00:33 -0800</pubDate>
+        <lastBuildDate>Tue, 9 Dec 2014 08:00:33 -0800</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Use Inline Attachments as Image Sources in HTML Emails with Spring</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html</link>
+            <pubDate>Tue, 9 Dec 2014 00:00:00 -0800</pubDate>
+            <guid isPermaLink="false">2014/12/09/email_inline_image_attachments.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;If you are in the need of generating HTML-based e-mails with images, the simple approach is to simply host the image and link to it
+in the HTML.  This will work, but will cause the reciepients (in most e-mail clients) to be prompted as to whether or not they should
+download and show the image.  If you want to avoid this (and therefore the stigma of a perceived security threat), you can include
+the image as an attachment in the e-mail and reference it using the attachment&amp;#8217;s content ID value:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint html language-html&quot;&gt;&lt;code&gt;&amp;lt;img src=&quot;cid:imageName.png&quot;&amp;gt;&amp;lt;/img&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;When the e-mail client loads the message, it will now resolve the image from the inlined attachments included in the e-mail.  This all
+sounds great, but how do you get the images in the e-mail?  The solution is to combine the
+&lt;a href=&quot;http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mail.html&quot; target=&quot;_blank&quot;&gt;Spring JavaMailSender&lt;/a&gt; with the
+&lt;a href=&quot;http://docs.spring.io/spring/docs/current/spring-framework-reference/html/resources.html&quot; target=&quot;_blank&quot;&gt;Spring Resource interface&lt;/a&gt; to
+load and store the image data in the generated e-mail.  The first step is to load the images as &lt;code&gt;Resource&lt;/code&gt; objects, either from the
+file system or classpath (in this example, we will use the classpath):&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;import org.apache.commons.io.IOUtils;
+
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamSource;
+
+...
+
+InputStreamSource imageSource = new ByteArrayResource(IOUtils.toByteArray(getClass().getResourceAsStream(&quot;/images/logo.png&quot;)))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The code snippet above uses the &lt;a href=&quot;http://commons.apache.org/proper/commons-io/&quot; target=&quot;&quot;_blank&apos;&quot;&gt;Apache Commons IO library&lt;/a&gt; to convert
+the image bytes (read from the classpath via the &lt;code&gt;getResourceAsStream()&lt;/code&gt; method) into a byte array.  The byte array is then wrapped
+by the Spring &lt;code&gt;ByteArrayResource&lt;/code&gt;, which we will use to create the inline attachment (we could also use the &lt;code&gt;ClassPathResource&lt;/code&gt;).  The next
+step is to add the image to the MIME message as an attachment:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;import javax.mail.internet.MimeMessage;
+
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
+
+...
+
+JavaMailSender mailSender = new JavaMailSenderImpl();  // Or use Spring IoC to inject a pre-configured JavaMailSenderImpl
+MimeMessage mimeMessage = mailSender.createMimeMessage();
+MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, &quot;UTF-8&quot;);
+
+// Add information to the message, such as subject, recipients, etc
+
+message.addInline(&quot;logo.png&quot;, imageSource);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The &lt;code&gt;addInline()&lt;/code&gt; method of the &lt;code&gt;MimeMessageHelper&lt;/code&gt; reads the byte data from the &lt;code&gt;InputStreamSource&lt;/code&gt; and creates the inline MIME body part to hold the
+attachment.  It also sets the content ID to the name provided by the first parameter.  Now, all that&amp;#8217;s left is to reference the image in our HTML body:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;message.setText(&quot;&amp;lt;img src=\&quot;cid:logo.png\&quot;&amp;gt;&amp;lt;/img&amp;gt;&amp;lt;div&amp;gt;My logo&amp;lt;/div&amp;gt;&quot;, true);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Now, when the e-mail is viewed in the reciepient&amp;#8217;s e-mail client, the image will be displayed from the attachments.  Note that this works with most web mail clients, however,
+you should only attach images that are referenced by the HTML body, otherwise they may show up as actual attachments in the e-mail client.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Groovy Meta Method to Print Current Stacktrace</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html</link>
@@ -512,45 +593,6 @@ com.example.health.autoconfigure.CustomHealthIndicatorAutoConfiguration&lt;/code
 &lt;p&gt;&lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; will automatically scan for these metadata files when your application starts and register your custom auto configuration class to be enacted if it detects
 the &lt;code&gt;EnableAutoConfiguration&lt;/code&gt; annotation on any of your Java-based configuration classes.  Now you can provide a full suite of health indicators that will be enabled if
 and only if certain conditions are met, as defined by the various configurations provided by your auto-configuration class!&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Use connection parameters in Groovy with URL getText()</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/11/04/groovy_url_text_params.html</link>
-            <pubDate>Tue, 4 Nov 2014 00:00:00 -0800</pubDate>
-            <guid isPermaLink="false">2014/11/04/groovy_url_text_params.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;A while back, I wrote a &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin that would query the &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; metadata for an artifact in order to automatically determine the next version number
-for a sub-model artifact in a project.  To do so, I used the following code to retrieve and parse the &lt;a href=&quot;http://maven.apache.org/&quot; target=&quot;_blank&quot;&gt;Maven&lt;/a&gt; XML metadata:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;String url = &quot;${repository.url}/${project.group.replaceAll(&apos;\\.&apos;,&apos;/&apos;)}/${getProjectName(project)}/maven-metadata.xml&quot;
-GPathResult metadata = xmlSlurper.parseText(url.toURL().text)
-latestReleaseVersion = metadata.versioning.release&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The above code works great, until you run it in a scenario where you cannot connect to the URL provided by the repository.  When this happens, the code
-waits a long time to determine that the connection cannot be established (as it is using the &lt;code&gt;URL&lt;/code&gt; defaults provided by Java for the connection and read
-timeouts).  To make this fail faster in the scenarios, I followed some pointers provided by &lt;a href=&quot;http://mrhaki.blogspot.com/2011/09/groovy-goodness-use-connection.html&quot; target=&quot;_blank&quot;&gt;Mr. Haki&lt;/a&gt;:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;String url = &quot;${repository.url}/${project.group.replaceAll(&apos;\\.&apos;,&apos;/&apos;)}/${getProjectName(project)}/maven-metadata.xml&quot;
-GPathResult metadata = xmlSlurper.parseText(url.toURL().getText(connectTimetout: TimeUnit.SECONDS.toMillis(10), readTimeout: TimeUnit.SECONDS.toMillis(60))))
-latestReleaseVersion = metadata.versioning.release&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;As of &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; 1.8.1, you can pass the underlying &lt;code&gt;URLConnection&lt;/code&gt;&apos;s parameters to the &lt;code&gt;getText&lt;/code&gt; method.  In the example above, we have passed both the &lt;code&gt;connectTimeout&lt;/code&gt;
-and &lt;code&gt;readTimeout&lt;/code&gt; to the &lt;code&gt;getText&lt;/code&gt; method to control when the connection will give up.  This ensures that the code will now fail faster in those offline scenarios.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

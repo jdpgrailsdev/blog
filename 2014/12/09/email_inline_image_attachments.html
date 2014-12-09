@@ -87,65 +87,108 @@
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: spring</h1>
+        <h1>Use Inline Attachments as Image Sources in HTML Emails with Spring</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>December 2014</h4>
-            <ul>
+    <p><em>09 December 2014</em></p>
 
-        <li>09 - <a href="/blog/2014/12/09/email_inline_image_attachments.html">Use Inline Attachments as Image Sources in HTML Emails with Spring</a></li>
-                </ul>
-                <h4>November 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>11 - <a href="/blog/2014/11/11/spring_boot_health_indicators_auto_config.html">Auto Configure Health Indicators in Spring Boot</a></li>
-                </ul>
-                <h4>October 2014</h4>
-                <ul>
+    <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you are in the need of generating HTML-based e-mails with images, the simple approach is to simply host the image and link to it
+in the HTML.  This will work, but will cause the reciepients (in most e-mail clients) to be prompted as to whether or not they should
+download and show the image.  If you want to avoid this (and therefore the stigma of a perceived security threat), you can include
+the image as an attachment in the e-mail and reference it using the attachment&#8217;s content ID value:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint html language-html"><code>&lt;img src="cid:imageName.png"&gt;&lt;/img&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the e-mail client loads the message, it will now resolve the image from the inlined attachments included in the e-mail.  This all
+sounds great, but how do you get the images in the e-mail?  The solution is to combine the
+<a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mail.html" target="_blank">Spring JavaMailSender</a> with the
+<a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/resources.html" target="_blank">Spring Resource interface</a> to
+load and store the image data in the generated e-mail.  The first step is to load the images as <code>Resource</code> objects, either from the
+file system or classpath (in this example, we will use the classpath):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint java language-java"><code>import org.apache.commons.io.IOUtils;
 
-        <li>14 - <a href="/blog/2014/10/14/spring_boot_gradle_git_info.html">Include Git Commit Info in Spring Boot Application with Gradle</a></li>
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamSource;
 
-        <li>07 - <a href="/blog/2014/10/07/spring_boot_jetty_thread_pool.html">Configure Jetty&#8217;s Thread Pool in a Spring Boot Application</a></li>
-                </ul>
-                <h4>September 2014</h4>
-                <ul>
+...
 
-        <li>30 - <a href="/blog/2014/09/30/spring_boot_jetty_jmx.html">Expose Jetty MBeans via JMX in a Spring Boot Application</a></li>
+InputStreamSource imageSource = new ByteArrayResource(IOUtils.toByteArray(getClass().getResourceAsStream("/images/logo.png")))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The code snippet above uses the <a href="http://commons.apache.org/proper/commons-io/" target=""_blank'">Apache Commons IO library</a> to convert
+the image bytes (read from the classpath via the <code>getResourceAsStream()</code> method) into a byte array.  The byte array is then wrapped
+by the Spring <code>ByteArrayResource</code>, which we will use to create the inline attachment (we could also use the <code>ClassPathResource</code>).  The next
+step is to add the image to the MIME message as an attachment:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint java language-java"><code>import javax.mail.internet.MimeMessage;
 
-        <li>09 - <a href="/blog/2014/09/09/spring_data_hibernate_join.html">Avoid Hibernate N+1 Problem with Joins in Spring-Data/JPA</a></li>
-                </ul>
-                <h4>July 2014</h4>
-                <ul>
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
-        <li>29 - <a href="/blog/2014/07/29/spring_boot_integration_tests.html">Leveraging Spring Boot Starters in Unit/Integration Tests</a></li>
+...
 
-        <li>22 - <a href="/blog/2014/07/22/gradle_build_scripts_classpath.html">Discovering Gradle build scripts from classpath</a></li>
+JavaMailSender mailSender = new JavaMailSenderImpl();  // Or use Spring IoC to inject a pre-configured JavaMailSenderImpl
+MimeMessage mimeMessage = mailSender.createMimeMessage();
+MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-        <li>15 - <a href="/blog/2014/07/15/spring_boot_remote_debug.html">Remote debugging a Spring Boot application launched by the Gradle plugin</a></li>
+// Add information to the message, such as subject, recipients, etc
 
-        <li>08 - <a href="/blog/2014/07/08/spring_boot_env_vars.html">Setting system properties/environment variables with Spring Boot and Gradle</a></li>
-                </ul>
-                <h4>June 2014</h4>
-                <ul>
+message.addInline("logo.png", imageSource);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>addInline()</code> method of the <code>MimeMessageHelper</code> reads the byte data from the <code>InputStreamSource</code> and creates the inline MIME body part to hold the
+attachment.  It also sets the content ID to the name provided by the first parameter.  Now, all that&#8217;s left is to reference the image in our HTML body:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint java language-java"><code>message.setText("&lt;img src=\"cid:logo.png\"&gt;&lt;/img&gt;&lt;div&gt;My logo&lt;/div&gt;", true);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, when the e-mail is viewed in the reciepient&#8217;s e-mail client, the image will be displayed from the attachments.  Note that this works with most web mail clients, however,
+you should only attach images that are referenced by the HTML body, otherwise they may show up as actual attachments in the e-mail client.</p>
+</div>
+</div>
+</div></p>
 
-        <li>03 - <a href="/blog/2014/06/03/spring_boot_jersey_2.html">Spring Boot, Jersey and Lazy Initialization</a></li>
-                </ul>
-                <h4>April 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/12/09/email_inline_image_attachments.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>08 - <a href="/blog/2014/04/08/spring_boot_gradle_newrelic.html">Using the New Relic agent with Spring-Boot and Gradle</a></li>
-                </ul>
-                <h4>March 2014</h4>
-                <ul>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2014/12/09/email_inline_image_attachments.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-        <li>18 - <a href="/blog/2014/03/18/grails_bean_builder.html">Parsing the Grails Spring Beans DSL with Groovy</a></li>
-                </ul>
-                <h4>February 2014</h4>
-                <ul>
-
-        <li>19 - <a href="/blog/2014/02/19/spring_curator.html">Spring and Apache Curator</a></li>
-    </ul>
+    <hr>
 
             </div>
             <div id="push"></div>
