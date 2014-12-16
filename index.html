@@ -90,6 +90,61 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog/2014/12/16/spring_context_groovy_script.html"><h1>Spring Application Context and Groovy Scripts</h1></a>
+                   <p>16 December 2014</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/spring.html">spring</a>
+        
+                <a href="/blog/tags/groovy.html">groovy</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div class="paragraph">
+<p>I like to use <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> to write scripts to help me test parts of my application that require a little more set up than a normal unit test should allow
+(think a small-scale integration test).  Often, these scripts take the form of client-based code that establishes a connection to a locally running
+instance of my application and verifies that certain operations produce the desired and expected results.  Recently, I found myself in a situation where
+I wanted to test some <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a>-based code that uses <a href="http://www.thymeleaf.org/" target="_blank">Thymeleaf</a> to generate HTML.  I didn&#8217;t necessarily want to extact the code into a separate library just
+so I could functionally test it outside of my application.  Instead, I decided to take the project&#8217;s JAR file (as the application is a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application)
+and use it as a dependency in my <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script.  This meant that I would need to find a way to set up the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> context, so that all of the required
+dependency injection would take place.  This turned out to not be that difficult:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">import com.test.ApplicationConfiguration
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
+
+...
+
+def activeProfile = 'test'
+
+def ctx = new AnnotationConfigApplicationContext()
+ctx.getEnvironment().setActiveProfiles(activeProfile)
+ctx.register(ApplicationConfiguration)
+ctx.refresh()
+
+...
+
+ctx.close()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the example above, the script creates an instance of the <code>AnnotationConfigApplicationContext</code> <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> context, sets the active profile, registers my Java-based configuration
+class (from my application&#8217;s JAR) and refreshes the context.  At this point, you can reference any and all beans created by the configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">def bean = ctx.getBean('myBean')</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can obviously use the other variants of the <code>ApplicationContext</code> interface to configure your context (e.g. XML, etc).  In a future post, I will discuss how to leverage the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>
+YAML support from a <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script so that you can leverage your application&#8217;s configuration files when in your script.</p>
+</div></p>
+                <p><a href="/blog2014/12/16/spring_context_groovy_script.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2014/12/09/email_inline_image_attachments.html"><h1>Use Inline Attachments as Image Sources in HTML Emails with Spring</h1></a>
                    <p>09 December 2014</p>
                 <p><em>Tags: </em>
@@ -102,9 +157,7 @@
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html" data-counter="right"></script>
                 <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+                   <p><div class="paragraph">
 <p>If you are in the need of generating HTML-based e-mails with images, the simple approach is to simply host the image and link to it
 in the HTML.  This will work, but will cause the reciepients (in most e-mail clients) to be prompted as to whether or not they should
 download and show the image.  If you want to avoid this (and therefore the stigma of a perceived security threat), you can include
@@ -112,7 +165,7 @@ the image as an attachment in the e-mail and reference it using the attachment&#
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint html language-html"><code>&lt;img src="cid:imageName.png"&gt;&lt;/img&gt;</code></pre>
+<pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;img src="cid:imageName.png"&gt;&lt;/img&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -125,7 +178,7 @@ file system or classpath (in this example, we will use the classpath):</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint java language-java"><code>import org.apache.commons.io.IOUtils;
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import org.apache.commons.io.IOUtils;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamSource;
@@ -143,7 +196,7 @@ step is to add the image to the MIME message as an attachment:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint java language-java"><code>import javax.mail.internet.MimeMessage;
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import javax.mail.internet.MimeMessage;
 
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -166,14 +219,12 @@ attachment.  It also sets the content ID to the name provided by the first param
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint java language-java"><code>message.setText("&lt;img src=\"cid:logo.png\"&gt;&lt;/img&gt;&lt;div&gt;My logo&lt;/div&gt;", true);</code></pre>
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">message.setText("&lt;img src=\"cid:logo.png\"&gt;&lt;/img&gt;&lt;div&gt;My logo&lt;/div&gt;", true);</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Now, when the e-mail is viewed in the reciepient&#8217;s e-mail client, the image will be displayed from the attachments.  Note that this works with most web mail clients, however,
 you should only attach images that are referenced by the HTML body, otherwise they may show up as actual attachments in the e-mail client.</p>
-</div>
-</div>
 </div></p>
                 <p><a href="/blog2014/12/09/email_inline_image_attachments.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2014/12/02/groovy_print_stack_trace.html"><h1>Groovy Meta Method to Print Current Stacktrace</h1></a>
@@ -186,15 +237,13 @@ you should only attach images that are referenced by the HTML body, otherwise th
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html" data-counter="right"></script>
                 <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+                   <p><div class="paragraph">
 <p>If you find yourself in a situation where you cannot debug your application (from an IDE or via attaching remotely to the executing JVM), you can use a little <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> meta class
 magic to add a method to each class in order to print the current stack of any given line:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>this.class.classLoader.class.classes.each {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">this.class.classLoader.class.classes.each {
     it.metaClass.printStackTrace = { -&gt;
         Thread.currentThread().stackTrace.each { element -&gt;
             println "\tat ${element.className}.${element.methodName}(${element.fileName}:${element.lineNumber})"
@@ -208,7 +257,7 @@ magic to add a method to each class in order to print the current stack of any g
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>class MyClass {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">class MyClass {
 
     def method() {
         printStackTrace()
@@ -220,8 +269,6 @@ magic to add a method to each class in order to print the current stack of any g
 </div>
 <div class="paragraph">
 <p>This is particularly useful when trying to track down which of a number of multiple code points might be invoking a given method.</p>
-</div>
-</div>
 </div></p>
                 <p><a href="/blog2014/12/02/groovy_print_stack_trace.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2014/11/25/functional_tests_gradle_docker_part_ii.html"><h1>Execute Functional Tests in a Docker Container with Gradle (Part 2)</h1></a>
@@ -240,9 +287,7 @@ magic to add a method to each class in order to print the current stack of any g
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/11/25/functional_tests_gradle_docker_part_ii.html" data-counter="right"></script>
                 <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/11/25/functional_tests_gradle_docker_part_ii.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+                   <p><div class="paragraph">
 <p>In <a href="http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html" target="_blank">part one</a> of this blog post, I discussed how to
 build a functional test using <a href="https://code.google.com/p/spock/" target="_blank">Spock</a> and <a href="http://gradle.org" target="_blank">Gradle</a>.  Normally, this is all that you would need to be able to test the part of your application that relies
 on a data source.  However, what can you do if you find yourself in a situation where you do not have access to dependencies or the repositories that provide
@@ -251,7 +296,7 @@ such a solution using <a href="http://gradle.org" target="_blank">Gradle</a> and
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>apply plugin: 'groovy'
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">apply plugin: 'groovy'
 apply plugin: 'jetty'
 
 ext {
@@ -385,7 +430,7 @@ project.tasks.jettyRun.dependsOn(['collectTestResults'])</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>FROM registry.hub.docker.com/your-base-image:latest
+<pre class="prettyprint highlight"><code>FROM registry.hub.docker.com/your-base-image:latest
 
 # Install the functional tests
 RUN mkdir /var/tests
@@ -408,127 +453,8 @@ everything needed at image creation time.  By resolving the dependencies at this
 launches the functional tests via the <a href="http://gradle.org" target="_blank">Gradle</a> task dependency set up in the script.  Upon successful completion of the tests, the test reports generated by <a href="http://gradle.org" target="_blank">Gradle</a> are exposed by Jetty so that they can be
 viewed/copied/etc.  By tying all of these pieces together, we have created a stand-alone <a href="https://www.docker.com/" target="_blank">Docker</a> image capable of executing functional tests
 using <a href="http://gradle.org" target="_blank">Gradle</a> in an environment that does not have the ability to resolve dependencies!</p>
-</div>
-</div>
 </div></p>
                 <p><a href="/blog2014/11/25/functional_tests_gradle_docker_part_ii.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/11/18/functional_tests_gradle_docker_part_i.html"><h1>Execute Functional Tests in a Docker Container with Gradle (Part 1)</h1></a>
-                   <p>18 November 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/docker.html">docker</a>
-        
-                <a href="/blog/tags/gradle.html">gradle</a>
-        
-                <a href="/blog/tags/groovy.html">groovy</a>
-        
-                <a href="/blog/tags/spock.html">spock</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>One of the applications that I have been working on recently has a lot of complex SQL queries that cannot be tested very well with traditional unit tests.  To fill this gap, we
-decided to write a functional test suite that would perform the following steps:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Persist a bunch of data to the table(s) that are used by the query under test to an actual database instance.</p>
-</li>
-<li>
-<p>Execute the query under test against an actual database instance.</p>
-</li>
-<li>
-<p>Verify the expected results.</p>
-</li>
-<li>
-<p>Clean down the table(s) used in the test to avoid pollution against other tests.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>The application(s) under test are <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> applications, which make use of <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a> for the presistence layer.  Below is an example of one of the repositories:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint java language-java"><code>@Repository
-public interface BookRepository extends JpaRepository&lt;Book, Long&gt; {
-
-    List&lt;Book&gt; findByIsbn(final String isbn);
-
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Writing a functional test for just such a repository is pretty easy using <a href="https://code.google.com/p/spock/" target="_blank">Spock</a> and its built-in <a href="https://code.google.com/p/spock/wiki/SpringExtension" target="_blank">Spring extension</a>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint groovy language-groovy"><code>@ActiveProfiles('test')
-@ContextConfiguration(classes=[PersistenceConfiguration], loader=SpringApplicationContextLoader)
-class BookRepositoryFunctionalSpec extends Specification {
-
-    @Autowired
-    private BookRepository boolRepository
-
-    def cleanup() {
-        bookRepository.deleteAll()
-    }
-
-    def "test that the correct number of books are found when finding books by ISBN"() {
-        setup:
-            Book book1 = new Book(title:'A Good Book', author:'Some Guy', isbn:'978-3-16-148410-0')
-            Book book2 = new Book(title:'A Good Book, Second Edition', author:'Some Guy', isbn:'978-3-16-148410-1')
-
-            bookRepository.saveAndFlush(book1)
-            bookRepository.saveAndFlush(book2)
-        when:
-            def books = bookRepository.findByIsbn('978-3-16-148410-0')
-        then:
-            books != null
-            books.size() == 1
-            books.first() == book1
-        when:
-            books = bookRepository.findByIsbn('unknown')
-        then:
-            books != null
-            books.size() == 0
-    }</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The example <a href="https://code.google.com/p/spock/" target="_blank">Spock</a> specification above uses the <code>ActiveProfiles</code> and <code>ContextCongifuration</code> annotations to load the Spring configuration for use by the test.  This configuration contains
-all of the beans required by <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a> to connect to the database (data source, entity manager, etc). With the Spring configuration added to the test, we can now make use of Spring
-techniques, such as the auto-wiring of dependencies into the specification.  In the example above, we have auto-wired in the <code>BookRepository</code> that defines the query that we want to test.
-The next thing to notice is that the test uses the <code>deleteAll</code> method of the repository instance to remove any data in the table mapped by the <code>Book</code> entity after each test in the
-specification.  Finally, we have the test itself, which performs the following steps:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Create a couple of <code>Book</code> entities and persist them to the mapped table using the repository.</p>
-</li>
-<li>
-<p>Execute the finder method from the repository and validate the correct results are found.</p>
-</li>
-<li>
-<p>Execute the finder method again, this time with input that should not produce a result to validate what is returned in that scenario.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Note that this could easily be broken up into two tests or refactored to use <a href="https://code.google.com/p/spock/" target="_blank">Spock</a>'s <code>@Unroll</code> annotation.  Now that I was armed with a way to build out functional tests against the actual database
-using <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a> and <a href="https://code.google.com/p/spock/" target="_blank">Spock</a>, I needed a way to execute the tests.  My first thought was to use <a href="http://gradle.org" target="_blank">Gradle</a> to run the tests.  However, due to a limitation of our build infrastructure (our deployment
-server does not have access to our artifact repository), <a href="http://gradle.org" target="_blank">Gradle</a> would not be able to run the tests, as the build script would not have access to the dependencies it needs to execute!  In the part two of
-this blog post, I will take a look at how I overcame this issue by executing the test suite inside of a <a href="https://www.docker.com/" target="_blank">Docker</a> container using <a href="http://gradle.org" target="_blank">Gradle</a>.</p>
-</div>
-</div>
-</div></p>
-                <p><a href="/blog2014/11/18/functional_tests_gradle_docker_part_i.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
@@ -540,7 +466,7 @@ this blog post, I will take a look at how I overcame this issue by executing the
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

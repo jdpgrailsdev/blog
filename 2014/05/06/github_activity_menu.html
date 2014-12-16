@@ -144,7 +144,7 @@ that appear on the activity page on my <a href="http://github.com" target="_blan
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint html language-html"><code>&lt;div class="panel panel-default"&gt;
+<pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;div class="panel panel-default"&gt;
   &lt;!-- Default panel contents --&gt;
   &lt;div class="panel-heading"&gt;Panel heading&lt;/div&gt;
   &lt;div class="panel-body"&gt;
@@ -159,8 +159,7 @@ that appear on the activity page on my <a href="http://github.com" target="_blan
     &lt;li class="list-group-item"&gt;Porta ac consectetur ac&lt;/li&gt;
     &lt;li class="list-group-item"&gt;Vestibulum at eros&lt;/li&gt;
   &lt;/ul&gt;
-&lt;/div&gt;
-</code></pre>
+&lt;/div&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -169,7 +168,7 @@ solved the positioning issue by surrounding the panel with a new <code>&lt;div&g
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint html language-html"><code>&lt;div id="activity" class="pull-left"&gt;
+<pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;div id="activity" class="pull-left"&gt;
     &lt;div class="panel panel-default"&gt;
       &lt;!-- Default panel contents --&gt;
       &lt;div class="panel-heading"&gt;Panel heading&lt;/div&gt;
@@ -195,7 +194,7 @@ newly added <code>activity</code> ID:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint css language-css"><code>#activity {
+<pre class="prettyprint highlight"><code class="language-css" data-lang="css">#activity {
   padding-top: 110px;
   padding-left: 20px;
   width: 275px;
@@ -207,7 +206,7 @@ newly added <code>activity</code> ID:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint html language-html"><code>&lt;div id="activity" class="pull-left"&gt;
+<pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;div id="activity" class="pull-left"&gt;
     &lt;div class="panel panel-primary"&gt;
         ...
     &lt;/div&gt;
@@ -221,7 +220,7 @@ support for a loading spinner.  With one more line of HTML, I had something that
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint html language-html"><code>&lt;div id="activity" class="pull-left"&gt;
+<pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;div id="activity" class="pull-left"&gt;
     &lt;div class="panel panel-primary"&gt;
           &lt;!-- Default panel contents --&gt;
           &lt;div class="panel-heading"&gt;
@@ -250,7 +249,7 @@ request to the <a href="https://developer.github.com/v3/" target="_blank">GitHub
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint javascript language-javascript"><code>// Load the GitHub activity widget on the document ready event.
+<pre class="prettyprint highlight"><code class="language-javascript" data-lang="javascript">// Load the GitHub activity widget on the document ready event.
 $(document).ready(function() {
     $.get("https://api.github.com/users/jdpgrailsdev/events", function(data) {
         // Remove the "Loading..." place holder.
@@ -288,7 +287,7 @@ by the <a href="https://developer.github.com/v3/" target="_blank">GitHub API</a>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint javascript language-javascript"><code>// Loop over each retrieved GitHub event and process.
+<pre class="prettyprint highlight"><code class="language-javascript" data-lang="javascript">// Loop over each retrieved GitHub event and process.
 $.each(data, function(i, githubEvent) {
     // The icon font to be displayed with the event.
     var octicon = "";
@@ -372,7 +371,7 @@ displayed to the right of the widget.  After playing around with the CSS, I came
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint css language-css"><code>#activity {
+<pre class="prettyprint highlight"><code class="language-css" data-lang="css">#activity {
   padding-top: 110px;
   padding-left: 20px;
   width: 275px;
@@ -447,7 +446,7 @@ future as my skills in the area of front-end development grow.</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

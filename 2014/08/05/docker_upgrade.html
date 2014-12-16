@@ -96,16 +96,14 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/08/05/docker_upgrade.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/08/05/docker_upgrade.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>Not too long ago, the <a href="http://www.docker.com/" target="_blank">Docker</a> project released 1.0 release, which among many improvements includes a new default port for <a href="http://www.docker.com/" target="_blank">Docker</a>.  To update from <a href="http://www.docker.com/" target="_blank">Docker</a>
  &lt; 1.0 to <a href="http://www.docker.com/" target="_blank">Docker</a> &gt;= 1.0, you may run into issues as the port that <a href="http://www.docker.com/" target="_blank">Docker</a> listens on by default has changed from 4243 to 2375.  While things
 may appear to start correctly after an upgrade, you may see the following error when attempting to run any <a href="http://www.docker.com/" target="_blank">Docker</a> client command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>$ boot2docker up
+<pre class="prettyprint highlight"><code>$ boot2docker up
 
 Cannot connect to the Docker daemon. Is 'docker -d' running on this host?</code></pre>
 </div>
@@ -116,7 +114,7 @@ starting up <a href="https://github.com/boot2docker/boot2docker" target="_blank"
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>docker@boot2docker:~$ sudo netstat -ntpl | grep docker
+<pre class="prettyprint highlight"><code>docker@boot2docker:~$ sudo netstat -ntpl | grep docker
 tcp        0      0 :::4243                :::*                    LISTEN      627/docker</code></pre>
 </div>
 </div>
@@ -160,7 +158,7 @@ tcp        0      0 :::4243                :::*                    LISTEN      6
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>sudo netstat -ntpl | grep docker
+<pre class="prettyprint highlight"><code>sudo netstat -ntpl | grep docker
 
 docker@boot2docker:~$ sudo netstat -ntpl | grep docker
 tcp        0      0 :::2375                 :::*                    LISTEN      627/docker</code></pre>
@@ -168,8 +166,6 @@ tcp        0      0 :::2375                 :::*                    LISTEN      
 </div>
 <div class="paragraph">
 <p>You should now be able to connect to <a href="http://www.docker.com/" target="_blank">Docker</a> and use the command line client and the REST API!</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/08/05/docker_upgrade.html"></div>
@@ -198,7 +194,7 @@ tcp        0      0 :::2375                 :::*                    LISTEN      
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

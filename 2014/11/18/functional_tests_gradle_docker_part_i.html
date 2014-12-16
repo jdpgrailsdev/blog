@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>One of the applications that I have been working on recently has a lot of complex SQL queries that cannot be tested very well with traditional unit tests.  To fill this gap, we
 decided to write a functional test suite that would perform the following steps:</p>
 </div>
@@ -123,7 +121,7 @@ decided to write a functional test suite that would perform the following steps:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint java language-java"><code>@Repository
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">@Repository
 public interface BookRepository extends JpaRepository&lt;Book, Long&gt; {
 
     List&lt;Book&gt; findByIsbn(final String isbn);
@@ -136,7 +134,7 @@ public interface BookRepository extends JpaRepository&lt;Book, Long&gt; {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>@ActiveProfiles('test')
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">@ActiveProfiles('test')
 @ContextConfiguration(classes=[PersistenceConfiguration], loader=SpringApplicationContextLoader)
 class BookRepositoryFunctionalSpec extends Specification {
 
@@ -193,8 +191,6 @@ specification.  Finally, we have the test itself, which performs the following s
 using <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a> and <a href="https://code.google.com/p/spock/" target="_blank">Spock</a>, I needed a way to execute the tests.  My first thought was to use <a href="http://gradle.org" target="_blank">Gradle</a> to run the tests.  However, due to a limitation of our build infrastructure (our deployment
 server does not have access to our artifact repository), <a href="http://gradle.org" target="_blank">Gradle</a> would not be able to run the tests, as the build script would not have access to the dependencies it needs to execute!  In the part two of
 this blog post, I will take a look at how I overcame this issue by executing the test suite inside of a <a href="https://www.docker.com/" target="_blank">Docker</a> container using <a href="http://gradle.org" target="_blank">Gradle</a>.</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/11/18/functional_tests_gradle_docker_part_i.html"></div>
@@ -223,7 +219,7 @@ this blog post, I will take a look at how I overcame this issue by executing the
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

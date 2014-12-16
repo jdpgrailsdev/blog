@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/05/13/gradle_update_deps.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/05/13/gradle_update_deps.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>One feature that we use a lot that appears to be missing from <a href="http://gradle.org" target="_blank">Gradle</a> is the ability to update all dependencies of a specific group ID to their latest release version.  In <a href="http://maven.apache.org/" target="_blank">Maven</a>, this can
 be done through the <code>use-latest-versions</code> goal of the <a href="http://mojo.codehaus.org/versions-maven-plugin/" target="_blank">Maven Versions Plugin</a>.  There is what appears to be a <a href="https://github.com/ben-manes/gradle-versions-plugin" target="_blank">port</a> of the
 <a href="http://mojo.codehaus.org/versions-maven-plugin/" target="_blank">Maven Versions Plugin</a> to a <a href="http://gradle.org" target="_blank">Gradle</a> plugin, but it only support generating a report of what is out of date and does not actually support updating the project itself.  That being said, you actually
@@ -106,7 +104,7 @@ don&#8217;t need to create a wrapper over the <a href="http://mojo.codehaus.org/
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>void updateDependencies(String groupId) {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">void updateDependencies(String groupId) {
     def dependencies = project.configurations.collectMany { it.allDependencies }.findAll { it.group == groupId}
     dependencies?.each { Dependency dep -&gt;
         def resolvedConfiguration = project.configurations
@@ -129,7 +127,7 @@ constants with a meaningful default:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>void updateDependencies(String groupId, String targetVersion='latest.release') {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">void updateDependencies(String groupId, String targetVersion='latest.release') {
     ...
 }</code></pre>
 </div>
@@ -139,8 +137,6 @@ constants with a meaningful default:</p>
 that I hope to implement soon is the ability to opt in or out of major version updates (this is something that the <a href="http://mojo.codehaus.org/versions-maven-plugin/" target="_blank">Maven Versions Plugin</a> supports).  This will require using something like
 <a href="https://github.com/akutz/version-maven-plugin/blob/master/src/main/java/com/lostcreations/mojos/version/Version.java" target="_blank">Version.java</a> to parse the version number for comparison.  All of this code can be put into a <a href="http://gradle.org" target="_blank">Gradle</a> task
 and even into a separate plugin to share between projects!</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/05/13/gradle_update_deps.html"></div>
@@ -169,7 +165,7 @@ and even into a separate plugin to share between projects!</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

@@ -96,15 +96,13 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/11/04/groovy_url_text_params.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/11/04/groovy_url_text_params.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>A while back, I wrote a <a href="http://gradle.org" target="_blank">Gradle</a> plugin that would query the <a href="http://maven.apache.org/" target="_blank">Maven</a> metadata for an artifact in order to automatically determine the next version number
 for a sub-model artifact in a project.  To do so, I used the following code to retrieve and parse the <a href="http://maven.apache.org/" target="_blank">Maven</a> XML metadata:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>String url = "${repository.url}/${project.group.replaceAll('\\.','/')}/${getProjectName(project)}/maven-metadata.xml"
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">String url = "${repository.url}/${project.group.replaceAll('\\.','/')}/${getProjectName(project)}/maven-metadata.xml"
 GPathResult metadata = xmlSlurper.parseText(url.toURL().text)
 latestReleaseVersion = metadata.versioning.release</code></pre>
 </div>
@@ -116,16 +114,14 @@ timeouts).  To make this fail faster in the scenarios, I followed some pointers 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>String url = "${repository.url}/${project.group.replaceAll('\\.','/')}/${getProjectName(project)}/maven-metadata.xml"
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">String url = "${repository.url}/${project.group.replaceAll('\\.','/')}/${getProjectName(project)}/maven-metadata.xml"
 GPathResult metadata = xmlSlurper.parseText(url.toURL().getText(connectTimetout: TimeUnit.SECONDS.toMillis(10), readTimeout: TimeUnit.SECONDS.toMillis(60))))
 latestReleaseVersion = metadata.versioning.release</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>As of <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> 1.8.1, you can pass the underlying <code>URLConnection</code>'s parameters to the <code>getText</code> method.  In the example above, we have passed both the <code>connectTimeout</code>
+<p>As of <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> 1.8.1, you can pass the underlying <code>URLConnection&#8217;s parameters to the `getText</code> method.  In the example above, we have passed both the <code>connectTimeout</code>
 and <code>readTimeout</code> to the <code>getText</code> method to control when the connection will give up.  This ensures that the code will now fail faster in those offline scenarios.</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/11/04/groovy_url_text_params.html"></div>
@@ -154,7 +150,7 @@ and <code>readTimeout</code> to the <code>getText</code> method to control when 
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

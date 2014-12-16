@@ -96,15 +96,13 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>If you find yourself in a situation where you cannot debug your application (from an IDE or via attaching remotely to the executing JVM), you can use a little <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> meta class
 magic to add a method to each class in order to print the current stack of any given line:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>this.class.classLoader.class.classes.each {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">this.class.classLoader.class.classes.each {
     it.metaClass.printStackTrace = { -&gt;
         Thread.currentThread().stackTrace.each { element -&gt;
             println "\tat ${element.className}.${element.methodName}(${element.fileName}:${element.lineNumber})"
@@ -118,7 +116,7 @@ magic to add a method to each class in order to print the current stack of any g
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>class MyClass {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">class MyClass {
 
     def method() {
         printStackTrace()
@@ -130,8 +128,6 @@ magic to add a method to each class in order to print the current stack of any g
 </div>
 <div class="paragraph">
 <p>This is particularly useful when trying to track down which of a number of multiple code points might be invoking a given method.</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/12/02/groovy_print_stack_trace.html"></div>
@@ -160,7 +156,7 @@ magic to add a method to each class in order to print the current stack of any g
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

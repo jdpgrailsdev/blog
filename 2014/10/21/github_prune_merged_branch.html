@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/10/21/github_prune_merged_branch.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/10/21/github_prune_merged_branch.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>If you use <a href="http://github.com" target="_blank">GitHub</a> or any <a href="http://git-scm.com/" target="_blank">Git</a>-related tool that supports pull requests, you probably find yourself constantly
 deleting, pruning and merging branches to get your feature code into your main development branch.  After doing
 this over and over, I decided there must be a simple way using bash to put together a function that would
@@ -129,7 +127,7 @@ automate these steps:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>function parse_git_dirty {
+<pre class="prettyprint highlight"><code>function parse_git_dirty {
   [[ $(git status 2&gt; /dev/null | tail -n1) != "nothing to commit, working directory clean" ]] &amp;&amp; echo " *"
 }
 
@@ -144,7 +142,7 @@ the steps mentioned above into a command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>function prune_merged_branch () {
+<pre class="prettyprint highlight"><code>function prune_merged_branch () {
     prunedBranch=`echo "$(parse_git_branch)" | sed -e 's/(//g' | sed -e 's/)//g' | tr -d ' '`
     git checkout master;git fetch --all;git pull;git remote prune origin;git branch -D "$prunedBranch"
 }</code></pre>
@@ -155,7 +153,7 @@ the steps mentioned above into a command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>$ prune_merged_branch
+<pre class="prettyprint highlight"><code>$ prune_merged_branch
 Switched to branch 'master'
 Your branch is up-to-date with 'origin/master'.
 Fetching origin
@@ -170,8 +168,6 @@ Pruning origin
 URL: https://github.com/&lt;username&gt;/&lt;repo&gt;.git
  * [pruned] origin/some-branch
 Deleted branch some-branch (was 27da761).</code></pre>
-</div>
-</div>
 </div>
 </div></p>
 
@@ -201,7 +197,7 @@ Deleted branch some-branch (was 27da761).</code></pre>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/04/08/spring_boot_gradle_newrelic.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/04/08/spring_boot_gradle_newrelic.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>I wanted to play around with <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> the other day and found it pretty easy to get up and running using their <a href="http://gradle.org" target="_blank">Gradle</a> plugin.  After only a few minutes, I had a sample Spring-based
 web application running as a stand-alone process.  Next, I thought I would add in <a href="http://newrelic.com" target="_blank">New Relic</a> support so I could see some performance stats.  Normally, you would install the <a href="http://newrelic.com" target="_blank">New Relic</a> agent
 in your application container or add a <code>javaagent</code> JVM option pointing at the <a href="http://newrelic.com" target="_blank">New Relic</a> agent to enable metrics gathering.  In my first attempt, I added the <code>javaagent</code> JVM option pointing
@@ -110,7 +108,7 @@ following change to my <code>build.gradle</code> file:</p>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>apply plugin: 'spring-boot'
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">apply plugin: 'spring-boot'
 
 ...
 
@@ -136,7 +134,7 @@ downloaded file for the <code>javaagent</code> JVM option.  After a little playi
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>apply plugin: 'groovy'
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">apply plugin: 'groovy'
 apply plugin: 'spring-boot'
 
 group = 'com.test'
@@ -222,8 +220,6 @@ project.tasks.run.dependsOn([copyAgent])			<i class="conum" data-value="3"></i><
 <p>Finally, the last thing that I did was set up a symbolic link from my project&#8217;s directory to where my <a href="http://newrelic.com" target="_blank">New Relic</a> YAML file resides.  The <a href="http://newrelic.com" target="_blank">New Relic</a> agent will
 automatically look for the <code>newrelic.yml</code> file in the same location as the agent JAR or in the current working directory.  With this last piece in place, all
 hard-coded paths are now removed from the equation.</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/04/08/spring_boot_gradle_newrelic.html"></div>
@@ -252,7 +248,7 @@ hard-coded paths are now removed from the equation.</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/07/08/spring_boot_env_vars.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/08/spring_boot_env_vars.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>Out of the box, <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> ships with a <a href="http://gradle.org" target="_blank">Gradle</a> plugin that supports running your application, as well as building an executable JAR or WAR file.  The plugin
 extends off the stock <a href="http://gradle.org" target="_blank">Gradle</a> <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html" target="_blank">JavaExec Task</a>, which means that you can
 use any of the task&#8217;s configuration properties to customize how your application runs when launching it via <a href="http://gradle.org" target="_blank">Gradle</a> (e.g. <code>./gradlew run</code>).  For instance, if you
@@ -108,7 +106,7 @@ configuration block in your <code>build.gradle</code> build script:</p>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>apply plugin: 'java'
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">apply plugin: 'java'
 apply plugin: 'spring-boot'
 
 buildscript {
@@ -136,16 +134,13 @@ repositories {
 
 dependencies {
     ...
-}
-</code></pre>
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>For a complete list of the properties of the <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html" target="_blank">JavaExec Task</a> that can be
 set, see the <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html#N1E1D1" target="_blank">Properties</a> of the
 <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html" target="_blank">JavaExec Task Gradle Documentation</a>.</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/07/08/spring_boot_env_vars.html"></div>
@@ -174,7 +169,7 @@ set, see the <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.task
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

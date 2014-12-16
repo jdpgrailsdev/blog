@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/11/11/spring_boot_health_indicators_auto_config.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/11/11/spring_boot_health_indicators_auto_config.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>Another great feature provided by <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> is the ability to expose <a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-health" target="_blank">Spring Boot Custom Health Information</a> about your application with very little effort.  The simple approach is to
 implement the <code>HealthIndicator</code> interface and register your custom indicator as a Spring bean (or have it be <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/annotation/ComponentScan.html" target="_blank">component scanned</a>).
 This is great for one-off indicators or in small projects.  But what happens when you want to have a common set of health indicators that you can use in all of your services (after all, one of the
@@ -108,7 +106,7 @@ is to include the proper dependencies in your health indicator shared library:</
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>ext {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">ext {
     springBootVersion = '1.1.8.RELEASE'
 }
 
@@ -124,7 +122,7 @@ dependency provides the <code>HealthIndicator</code> interface and other related
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint java language-java"><code>import java.io.IOException;
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
@@ -181,7 +179,7 @@ presence of a bean of type <code>ConsumerConfig</code> is detected:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint java language-java"><code>import java.util.Map;
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import java.util.Map;
 
 import kafka.consumer.ConsumerConfig;
 
@@ -249,7 +247,7 @@ your shared health indicator library:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+<pre class="prettyprint highlight"><code>org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.example.health.autoconfigure.CustomHealthIndicatorAutoConfiguration</code></pre>
 </div>
 </div>
@@ -257,8 +255,6 @@ com.example.health.autoconfigure.CustomHealthIndicatorAutoConfiguration</code></
 <p><a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> will automatically scan for these metadata files when your application starts and register your custom auto configuration class to be enacted if it detects
 the <code>EnableAutoConfiguration</code> annotation on any of your Java-based configuration classes.  Now you can provide a full suite of health indicators that will be enabled if
 and only if certain conditions are met, as defined by the various configurations provided by your auto-configuration class!</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/11/11/spring_boot_health_indicators_auto_config.html"></div>
@@ -287,7 +283,7 @@ and only if certain conditions are met, as defined by the various configurations
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

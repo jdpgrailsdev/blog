@@ -87,73 +87,66 @@
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Leveraging Spring Boot Starters in Unit/Integration Tests</h1>
+        <h1>Spring Application Context and Groovy Scripts</h1>
     </div>
 
-    <p><em>29 July 2014</em></p>
+    <p><em>16 December 2014</em></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html"></div>
-    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph">
-<p>The <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> provides a nice <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank">JUnit integration</a>, which allows one to write integration-style tests that make use of a fully loaded and configured Spring context.
-This is great help when writing an integration test suite to test something like a database, as you do not need to manually create all the code required to interact
-with the database.  Instead, you can rely upon Spring to configure the beans just as it would at runtime.  Recently, I found myself in a situation where I needed to
-write just such an integration test, though this time for an application that uses <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  You do not need to do anything special to leverage the <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank">JUnit integration</a>
-integration, as that is provided by the <a href="https://github.com/spring-projects/spring-framework/tree/master/spring-test" target="_blank">Spring Test module</a> of the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a>
-project.  What you do not get by default, is all of the auto-configuration magic that <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> provides, including logging configuration.  With the release of <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>
-1.1.4, it is now possible to add the following to your <code>application.properties</code> or <code>application.yml</code> configuration file to control the logging output:</p>
+<p>I like to use <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> to write scripts to help me test parts of my application that require a little more set up than a normal unit test should allow
+(think a small-scale integration test).  Often, these scripts take the form of client-based code that establishes a connection to a locally running
+instance of my application and verifies that certain operations produce the desired and expected results.  Recently, I found myself in a situation where
+I wanted to test some <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a>-based code that uses <a href="http://www.thymeleaf.org/" target="_blank">Thymeleaf</a> to generate HTML.  I didn&#8217;t necessarily want to extact the code into a separate library just
+so I could functionally test it outside of my application.  Instead, I decided to take the project&#8217;s JAR file (as the application is a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application)
+and use it as a dependency in my <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script.  This meant that I would need to find a way to set up the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> context, so that all of the required
+dependency injection would take place.  This turned out to not be that difficult:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code>logging.level.org.springframework: ERROR</code></pre>
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">import com.test.ApplicationConfiguration
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
+
+...
+
+def activeProfile = 'test'
+
+def ctx = new AnnotationConfigApplicationContext()
+ctx.getEnvironment().setActiveProfiles(activeProfile)
+ctx.register(ApplicationConfiguration)
+ctx.refresh()
+
+...
+
+ctx.close()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Additionally, I wanted to be able to turn on SQL logging when executing my integration tests via the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> JPA configuration:</p>
+<p>In the example above, the script creates an instance of the <code>AnnotationConfigApplicationContext</code> <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> context, sets the active profile, registers my Java-based configuration
+class (from my application&#8217;s JAR) and refreshes the context.  At this point, you can reference any and all beans created by the configuration:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code>spring.jpa.properties.hibernate.show_sql: true</code></pre>
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">def bean = ctx.getBean('myBean')</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>However, simply using the <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank">JUnit integration</a> does not cause <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> to load the configuration or perform any of the auto-configuration that it does when running the application.
-To enable <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> to work its magic when running unit/integration tests that load a context, the first step is to include the <code>spring-boot-starter-test</code> dependency:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">testCompile 'org.springframework.boot:spring-boot-starter-test:1.1.4.RELEASE'</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The presence of this dependency will cause <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> to perform all the normal start-up auto-configuration that occurs when running the application.  However, in order for this to
-actually happen, you need to tell JUnit to use the <code>SpringApplicationContextLoader</code> when loading the context:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={TestConfiguration.class}, loader = SpringApplicationContextLoader.class)
-public class DatabaseIntegrationTests {
-    ...
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>When the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> loads the test configuration, it does so via <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>'s <code>SpringApplicationContextLoader</code>, which is provided by the <code>spring-boot-starter-test</code>.  This
-context loader supports all of the auto-configuration magic that we know and love in <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  Now, you can adjust logging levels, provide configuration and have your contexts
-make use of the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> auto-configuration annotations as part of your test suite!</p>
+<p>You can obviously use the other variants of the <code>ApplicationContext</code> interface to configure your context (e.g. XML, etc).  In a future post, I will discuss how to leverage the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>
+YAML support from a <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script so that you can leverage your application&#8217;s configuration files when in your script.</p>
 </div></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/07/29/spring_boot_integration_tests.html"></div>
-    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/12/16/spring_context_groovy_script.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <div id="disqus_thread"></div>
     <script type="text/javascript">
         var disqus_shortname = 'jdpgrailsdevblog';
-        var disqus_identifier = '2014/07/29/spring_boot_integration_tests.html';
+        var disqus_identifier = '2014/12/16/spring_context_groovy_script.html';
         /* * * DON'T EDIT BELOW THIS LINE * * */
         (function() {
             var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

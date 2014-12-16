@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/04/15/gradle_api_dependencies.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/04/15/gradle_api_dependencies.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>Recently, I have been working on porting the <a href="http://raml.org" target="_blank">RAML</a> <a href="http://maven.apache.org/" target="_blank">Maven</a> plugin to a <a href="http://gradle.org" target="_blank">Gradle</a> plugin and ran into a limitation with <a href="http://gradle.org" target="_blank">Gradle</a> and its API jars.  An interesting difference between <a href="http://gradle.org" target="_blank">Gradle</a> and
 <a href="http://maven.apache.org/" target="_blank">Maven</a> is that <a href="http://gradle.org" target="_blank">Gradle</a> does not want you to rely on its API jars from a <a href="http://maven.apache.org/" target="_blank">Maven</a> repository (unlike <a href="http://maven.apache.org/" target="_blank">Maven</a>, whose API jars are all stored in the central <a href="http://maven.apache.org/" target="_blank">Maven</a> repository).  Instead, the
 <a href="http://gradle.org" target="_blank">Gradle</a> team has built in some special dependency handlers that in effect treat the required <a href="http://gradle.org" target="_blank">Gradle</a> (and <a href="http://groovy.codehaus.org" target="_blank">Groovy</a> dependencies, if need be) as "provided" dependencies:</p>
@@ -106,7 +104,7 @@
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>...
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">...
 dependencies {
     gradleApi()						<i class="conum" data-value="1"></i><b>(1)</b>
     localGroovy()					<i class="conum" data-value="2"></i><b>(2)</b>
@@ -136,7 +134,7 @@ wouldn&#8217;t be that big of an issue, except for the fact the <code>gradleApi(
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint text language-text"><code>~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/gradle-core-1.11.jar
+<pre class="prettyprint highlight"><code class="language-text" data-lang="text">~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/gradle-core-1.11.jar
 ~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/groovy-all-1.8.6.jar
 ~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/asm-all-5.0_BETA.jar
 ~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/ant-1.9.2.jar
@@ -287,7 +285,7 @@ to write tests for my plugin.  Each time I attempted to build the project (and t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint text language-text"><code>GroovyVersionException: The Spock compiler plugin cannot execute because Spock 0.7.0-groovy-2.0 is not compatible with Groovy 1.8.6. For more information, see http://versioninfo.spockframework.org
+<pre class="prettyprint highlight"><code class="language-text" data-lang="text">GroovyVersionException: The Spock compiler plugin cannot execute because Spock 0.7.0-groovy-2.0 is not compatible with Groovy 1.8.6. For more information, see http://versioninfo.spockframework.org
 Spock location: file:~/.gradle/caches/artifacts-23/filestore/org.spockframework/spock-core/0.7-groovy-2.0/jar/4de0b428de0c14b6eb6375d8174f71848cbfc1d7/spock-core-0.7-groovy-2.0.jar
 Groovy location: file:~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/groovy-all-1.8.6.jar</code></pre>
 </div>
@@ -300,7 +298,7 @@ Groovy location: file:~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint text language-text"><code>org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':raml-generate'.
+<pre class="prettyprint highlight"><code class="language-text" data-lang="text">org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':raml-generate'.
     at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeActions(ExecuteActionsTaskExecuter.java:69)
     at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:46)
     at org.gradle.api.internal.tasks.execution.PostExecutionAnalysisTaskExecuter.execute(PostExecutionAnalysisTaskExecuter.java:35)
@@ -342,7 +340,7 @@ plugin in a sample application and it works, so I figured something must be up w
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint text language-text"><code>~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/snakeyaml-1.6.jar</code></pre>
+<pre class="prettyprint highlight"><code class="language-text" data-lang="text">~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/snakeyaml-1.6.jar</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -351,8 +349,6 @@ plugin in a sample application and it works, so I figured something must be up w
 that if you have a <a href="http://gradle.org" target="_blank">Gradle</a> plugin project that uses any of the dependencies that are also used by the <a href="http://gradle.org" target="_blank">Gradle</a> API, you are effectively stuck at the versions of those dependencies that match
 what <a href="http://gradle.org" target="_blank">Gradle</a> currently depends on.  I have brought this issue up on the <a href="http://gradle.org" target="_blank">Gradle</a> forum and I noticed that a few other people have asked for a feature to allow for excluding dependencies from
 the <a href="http://gradle.org" target="_blank">Gradle</a> API.  I will keep you posted on this issue and if I get an answer and/or resolution.</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/04/15/gradle_api_dependencies.html"></div>
@@ -381,7 +377,7 @@ the <a href="http://gradle.org" target="_blank">Gradle</a> API.  I will keep you
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

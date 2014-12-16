@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/10/28/gradle_resolve_all_dependencies.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/10/28/gradle_resolve_all_dependencies.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>I had a challenge recently that involved being able to run a set of <a href="http://gradle.org" target="_blank">Gradle</a> tasks in a <a href="https://www.docker.com/" target="_blank">Docker</a> container that
 did not have access to my artifact repository.  The obvious solution is to use the <code>--offline</code> switch provided
 by <a href="http://gradle.org" target="_blank">Gradle</a>, but this only works if you have all the artifacts need to run cached locally.  When <a href="https://www.docker.com/" target="_blank">Docker</a>
@@ -108,7 +106,7 @@ container that would force resolve each declared dependency:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>task resolveDependencies {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">task resolveDependencies {
     doLast {
         project.rootProject.allprojects.each { subProject -&gt;
             subProject.buildscript.configurations.each { configuration -&gt;
@@ -127,8 +125,6 @@ container that would force resolve each declared dependency:</p>
 <a href="http://gradle.org" target="_blank">Gradle</a> to "resolve" (download) the artifacts.  Because it uses the <code>rootProject</code>, this task can be defined in any
 of the sub-projects.  After running this task, the <a href="https://www.docker.com/" target="_blank">Docker</a> container now has a primed <a href="http://gradle.org" target="_blank">Gradle</a> cache that allows me
 to run the task in the container in offline mode!</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/10/28/gradle_resolve_all_dependencies.html"></div>
@@ -157,7 +153,7 @@ to run the task in the container in offline mode!</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

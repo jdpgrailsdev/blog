@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/02/10/grails_maven_local_repo.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/02/10/grails_maven_local_repo.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>One of the great new features in <a href="http://grails.org" target="_blank">Grails</a> 2.3 is the ability to use <a href="http://www.eclipse.org/aether/" target="_blank">Aether</a> to resolve dependencies in place of Ivy.  This is great news if
 you already use <a href="http://maven.apache.org/" target="_blank">Maven</a> to build other projects, as it now means you can have predictable builds between your <a href="http://grails.org" target="_blank">Grails</a> and non-http://grails.org[Grails, window="_blank"] applications.  However, like
 any new feature, there are a few rough edges.  I ran into one the other day when trying to determine why one of my <a href="http://grails.org" target="_blank">Grails</a> applications was not picking up dependencies from the local <a href="http://maven.apache.org/" target="_blank">Maven</a>
@@ -108,7 +106,7 @@ DSL pick up the local <a href="http://maven.apache.org/" target="_blank">Maven</
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>    repositories {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">    repositories {
         inherits true // Whether to inherit repository definitions from plugins
 
         mavenRepo "file://${System.getProperty('user.home')}/.m2/repository"
@@ -129,7 +127,7 @@ I modified the BuildConfig.groovy file to contain the following logic:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>    final String localMavenRepo = System.getenv('JENKINS_HOME') ? "${System.getenv('WORKSPACE')}/.m2/repository" :
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">    final String localMavenRepo = System.getenv('JENKINS_HOME') ? "${System.getenv('WORKSPACE')}/.m2/repository" :
                                         "${System.getProperty('user.home')}/.m2/repository"
 
     ...
@@ -174,8 +172,6 @@ I also set the <code>localRepository</code> property of the dependency resolutio
 for dependencies AND a place to store the cached dependencies (see the <a href="https://github.com/grails/grails-core/blob/2.3.x/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy" target="_blank">AetherDependencyManager.groovy</a> source
 file in the <code>grails-aether</code> module for more details).  Now when the application builds on Jenkins, not only does it have a local <a href="http://maven.apache.org/" target="_blank">Maven</a> repository as part of
 the list of repositories, but that repository is stored in the workspace for the Jenkins build job.</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/02/10/grails_maven_local_repo.html"></div>
@@ -204,7 +200,7 @@ the list of repositories, but that repository is stored in the workspace for the
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

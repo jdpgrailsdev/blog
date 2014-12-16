@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/09/02/gradle_subtask_dependson.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/09/02/gradle_subtask_dependson.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>One of the great things (IMHO) about <a href="http://gradle.org" target="_blank">Gradle</a> is that it does a pretty good job of choosing sane conventions.  That being said, one place that seems to not always
 be a great choice is <a href="http://gradle.org" target="_blank">Gradle</a>'s convention to visit sub-projects in alpha-numerical order.  Let&#8217;s say that you have the following project structure:</p>
 </div>
@@ -122,7 +120,7 @@ required to execute the application.  Let&#8217;s suppose in our example above, 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>dependencies {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">dependencies {
     compile module(':A')
     compile module(':B:C')
     compile module(':B:D')
@@ -136,7 +134,7 @@ their JAR files prior to "E"'s JAR task executing is to add the following to "E"
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>// Ensure that all other JARs are built before the service is packaged.
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">// Ensure that all other JARs are built before the service is packaged.
 project.tasks.jar.dependsOn(rootProject.getSubprojects().findAll { subproject -&gt; subproject.name != project.name }.collect { subproject -&gt; "${subproject.getPath()}:build" })</code></pre>
 </div>
 </div>
@@ -144,8 +142,6 @@ project.tasks.jar.dependsOn(rootProject.getSubprojects().findAll { subproject -&
 <p>The logic above finds every other sub-project in the project and adds that sub-project&#8217;s "build" task as a dependency that first must execute before the current project&#8217;s
 JAR task can execute.  This ensures that all other projects have built their JAR files before <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> can create the re-packaged JAR.  You can apply this same trick to
 any other scenario where the execution of tasks in other sub-projects (regardless of depth) must occur before a certain sub-project&#8217;s task(s).</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/09/02/gradle_subtask_dependson.html"></div>
@@ -174,7 +170,7 @@ any other scenario where the execution of tasks in other sub-projects (regardles
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

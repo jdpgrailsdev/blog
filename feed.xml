@@ -6,22 +6,70 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 9 Dec 2014 08:00:33 -0800</pubDate>
-        <lastBuildDate>Tue, 9 Dec 2014 08:00:33 -0800</lastBuildDate>
+        <pubDate>Tue, 16 Dec 2014 07:44:03 -0800</pubDate>
+        <lastBuildDate>Tue, 16 Dec 2014 07:44:03 -0800</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
         <item>
+            <title>Spring Application Context and Groovy Scripts</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html</link>
+            <pubDate>Tue, 16 Dec 2014 00:00:00 -0800</pubDate>
+            <guid isPermaLink="false">2014/12/16/spring_context_groovy_script.html</guid>
+            <description>
+                    &lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;I like to use &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; to write scripts to help me test parts of my application that require a little more set up than a normal unit test should allow
+(think a small-scale integration test).  Often, these scripts take the form of client-based code that establishes a connection to a locally running
+instance of my application and verifies that certain operations produce the desired and expected results.  Recently, I found myself in a situation where
+I wanted to test some &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt;-based code that uses &lt;a href=&quot;http://www.thymeleaf.org/&quot; target=&quot;_blank&quot;&gt;Thymeleaf&lt;/a&gt; to generate HTML.  I didn&amp;#8217;t necessarily want to extact the code into a separate library just
+so I could functionally test it outside of my application.  Instead, I decided to take the project&amp;#8217;s JAR file (as the application is a &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; application)
+and use it as a dependency in my &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; script.  This meant that I would need to find a way to set up the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; context, so that all of the required
+dependency injection would take place.  This turned out to not be that difficult:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;import com.test.ApplicationConfiguration
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
+
+...
+
+def activeProfile = &apos;test&apos;
+
+def ctx = new AnnotationConfigApplicationContext()
+ctx.getEnvironment().setActiveProfiles(activeProfile)
+ctx.register(ApplicationConfiguration)
+ctx.refresh()
+
+...
+
+ctx.close()&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In the example above, the script creates an instance of the &lt;code&gt;AnnotationConfigApplicationContext&lt;/code&gt; &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; context, sets the active profile, registers my Java-based configuration
+class (from my application&amp;#8217;s JAR) and refreshes the context.  At this point, you can reference any and all beans created by the configuration:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;def bean = ctx.getBean(&apos;myBean&apos;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;You can obviously use the other variants of the &lt;code&gt;ApplicationContext&lt;/code&gt; interface to configure your context (e.g. XML, etc).  In a future post, I will discuss how to leverage the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;
+YAML support from a &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; script so that you can leverage your application&amp;#8217;s configuration files when in your script.&lt;/p&gt;
+&lt;/div&gt;
+            </description>
+        </item>
+        <item>
             <title>Use Inline Attachments as Image Sources in HTML Emails with Spring</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html</link>
             <pubDate>Tue, 9 Dec 2014 00:00:00 -0800</pubDate>
             <guid isPermaLink="false">2014/12/09/email_inline_image_attachments.html</guid>
             <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
+                    &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;If you are in the need of generating HTML-based e-mails with images, the simple approach is to simply host the image and link to it
 in the HTML.  This will work, but will cause the reciepients (in most e-mail clients) to be prompted as to whether or not they should
 download and show the image.  If you want to avoid this (and therefore the stigma of a perceived security threat), you can include
@@ -29,7 +77,7 @@ the image as an attachment in the e-mail and reference it using the attachment&a
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint html language-html&quot;&gt;&lt;code&gt;&amp;lt;img src=&quot;cid:imageName.png&quot;&amp;gt;&amp;lt;/img&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&amp;lt;img src=&quot;cid:imageName.png&quot;&amp;gt;&amp;lt;/img&amp;gt;&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
@@ -42,7 +90,7 @@ file system or classpath (in this example, we will use the classpath):&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;import org.apache.commons.io.IOUtils;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;import org.apache.commons.io.IOUtils;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamSource;
@@ -60,7 +108,7 @@ step is to add the image to the MIME message as an attachment:&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;import javax.mail.internet.MimeMessage;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;import javax.mail.internet.MimeMessage;
 
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -83,14 +131,12 @@ attachment.  It also sets the content ID to the name provided by the first param
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;message.setText(&quot;&amp;lt;img src=\&quot;cid:logo.png\&quot;&amp;gt;&amp;lt;/img&amp;gt;&amp;lt;div&amp;gt;My logo&amp;lt;/div&amp;gt;&quot;, true);&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;message.setText(&quot;&amp;lt;img src=\&quot;cid:logo.png\&quot;&amp;gt;&amp;lt;/img&amp;gt;&amp;lt;div&amp;gt;My logo&amp;lt;/div&amp;gt;&quot;, true);&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;Now, when the e-mail is viewed in the reciepient&amp;#8217;s e-mail client, the image will be displayed from the attachments.  Note that this works with most web mail clients, however,
 you should only attach images that are referenced by the HTML body, otherwise they may show up as actual attachments in the e-mail client.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
 &lt;/div&gt;
             </description>
         </item>
@@ -100,15 +146,13 @@ you should only attach images that are referenced by the HTML body, otherwise th
             <pubDate>Tue, 2 Dec 2014 00:00:00 -0800</pubDate>
             <guid isPermaLink="false">2014/12/02/groovy_print_stack_trace.html</guid>
             <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
+                    &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;If you find yourself in a situation where you cannot debug your application (from an IDE or via attaching remotely to the executing JVM), you can use a little &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; meta class
 magic to add a method to each class in order to print the current stack of any given line:&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;this.class.classLoader.class.classes.each {
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;this.class.classLoader.class.classes.each {
     it.metaClass.printStackTrace = { -&amp;gt;
         Thread.currentThread().stackTrace.each { element -&amp;gt;
             println &quot;\tat ${element.className}.${element.methodName}(${element.fileName}:${element.lineNumber})&quot;
@@ -122,7 +166,7 @@ magic to add a method to each class in order to print the current stack of any g
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;class MyClass {
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;class MyClass {
 
     def method() {
         printStackTrace()
@@ -135,8 +179,6 @@ magic to add a method to each class in order to print the current stack of any g
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;This is particularly useful when trying to track down which of a number of multiple code points might be invoking a given method.&lt;/p&gt;
 &lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
             </description>
         </item>
         <item>
@@ -145,9 +187,7 @@ magic to add a method to each class in order to print the current stack of any g
             <pubDate>Tue, 25 Nov 2014 00:00:00 -0800</pubDate>
             <guid isPermaLink="false">2014/11/25/functional_tests_gradle_docker_part_ii.html</guid>
             <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
+                    &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;In &lt;a href=&quot;http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html&quot; target=&quot;_blank&quot;&gt;part one&lt;/a&gt; of this blog post, I discussed how to
 build a functional test using &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt; and &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;.  Normally, this is all that you would need to be able to test the part of your application that relies
 on a data source.  However, what can you do if you find yourself in a situation where you do not have access to dependencies or the repositories that provide
@@ -156,7 +196,7 @@ such a solution using &lt;a href=&quot;http://gradle.org&quot; target=&quot;_bla
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;apply plugin: &apos;groovy&apos;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;apply plugin: &apos;groovy&apos;
 apply plugin: &apos;jetty&apos;
 
 ext {
@@ -290,7 +330,7 @@ project.tasks.jettyRun.dependsOn([&apos;collectTestResults&apos;])&lt;/code&gt;&
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;FROM registry.hub.docker.com/your-base-image:latest
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code&gt;FROM registry.hub.docker.com/your-base-image:latest
 
 # Install the functional tests
 RUN mkdir /var/tests
@@ -314,8 +354,6 @@ launches the functional tests via the &lt;a href=&quot;http://gradle.org&quot; t
 viewed/copied/etc.  By tying all of these pieces together, we have created a stand-alone &lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; image capable of executing functional tests
 using &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; in an environment that does not have the ability to resolve dependencies!&lt;/p&gt;
 &lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
             </description>
         </item>
         <item>
@@ -324,9 +362,7 @@ using &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Grad
             <pubDate>Tue, 18 Nov 2014 00:00:00 -0800</pubDate>
             <guid isPermaLink="false">2014/11/18/functional_tests_gradle_docker_part_i.html</guid>
             <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
+                    &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;One of the applications that I have been working on recently has a lot of complex SQL queries that cannot be tested very well with traditional unit tests.  To fill this gap, we
 decided to write a functional test suite that would perform the following steps:&lt;/p&gt;
 &lt;/div&gt;
@@ -351,7 +387,7 @@ decided to write a functional test suite that would perform the following steps:
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;@Repository
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;@Repository
 public interface BookRepository extends JpaRepository&amp;lt;Book, Long&amp;gt; {
 
     List&amp;lt;Book&amp;gt; findByIsbn(final String isbn);
@@ -364,7 +400,7 @@ public interface BookRepository extends JpaRepository&amp;lt;Book, Long&amp;gt; 
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;@ActiveProfiles(&apos;test&apos;)
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;@ActiveProfiles(&apos;test&apos;)
 @ContextConfiguration(classes=[PersistenceConfiguration], loader=SpringApplicationContextLoader)
 class BookRepositoryFunctionalSpec extends Specification {
 
@@ -421,180 +457,6 @@ specification.  Finally, we have the test itself, which performs the following s
 using &lt;a href=&quot;http://projects.spring.io/spring-data-jpa/&quot; target=&quot;_blank&quot;&gt;Spring Data JPA&lt;/a&gt; and &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt;, I needed a way to execute the tests.  My first thought was to use &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; to run the tests.  However, due to a limitation of our build infrastructure (our deployment
 server does not have access to our artifact repository), &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; would not be able to run the tests, as the build script would not have access to the dependencies it needs to execute!  In the part two of
 this blog post, I will take a look at how I overcame this issue by executing the test suite inside of a &lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; container using &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Auto Configure Health Indicators in Spring Boot</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/11/11/spring_boot_health_indicators_auto_config.html</link>
-            <pubDate>Tue, 11 Nov 2014 00:00:00 -0800</pubDate>
-            <guid isPermaLink="false">2014/11/11/spring_boot_health_indicators_auto_config.html</guid>
-            <description>
-                    &lt;div id=&quot;preamble&quot;&gt;
-&lt;div class=&quot;sectionbody&quot;&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Another great feature provided by &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; is the ability to expose &lt;a href=&quot;http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-health&quot; target=&quot;_blank&quot;&gt;Spring Boot Custom Health Information&lt;/a&gt; about your application with very little effort.  The simple approach is to
-implement the &lt;code&gt;HealthIndicator&lt;/code&gt; interface and register your custom indicator as a Spring bean (or have it be &lt;a href=&quot;http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/annotation/ComponentScan.html&quot; target=&quot;_blank&quot;&gt;component scanned&lt;/a&gt;).
-This is great for one-off indicators or in small projects.  But what happens when you want to have a common set of health indicators that you can use in all of your services (after all, one of the
-promises of &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; is that it makes it trivial to spin up new &quot;micro&quot; services)?  What do you do if not all of your services have the same components that need to be part of your suite of health indicators?  The solution
-is to leverage the &lt;a href=&quot;http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#getting-started-first-application-auto-configuration&quot; target=&quot;_blank&quot;&gt;auto configuration&lt;/a&gt; infrastructure provided by &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;.  The first step
-is to include the proper dependencies in your health indicator shared library:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint groovy language-groovy&quot;&gt;&lt;code&gt;ext {
-    springBootVersion = &apos;1.1.8.RELEASE&apos;
-}
-
-dependencies {
-    compile &quot;org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}&quot;
-    compile &quot;org.springframework.boot:spring-boot-actuator:${springBootVersion}&quot;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The &lt;code&gt;spring-boot-autoconfigure&lt;/code&gt; dependency provides the annotations that we will use to mark our configuration as able to partake in auto configuration.  The &lt;code&gt;spring-boot-actuator&lt;/code&gt;
-dependency provides the &lt;code&gt;HealthIndicator&lt;/code&gt; interface and other related classes needed to implement the health indicators.  The next step is to create a custom health indicator implementation:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.util.concurrent.TimeUnit;
-
-import kafka.consumer.ConsumerConfig;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
-
-public class KafkaConsumerHealthIndicator implements HealthIndicator {
-
-    private static final Logger log = LoggerFactory.getLogger(KafkaConsumerHealthIndicator.class);
-
-    private final static Long TIMEOUT = TimeUnit.SECONDS.toMillis(3);
-
-    private final String host;
-
-    private final int port;
-
-    public KafkaConsumerHealthIndicator(final ConsumerConfig consumerConfig) {
-        this.host = consumerConfig.zkConnect().split(&quot;:&quot;)[0];
-        this.port = Integer.valueOf(consumerConfig.zkConnect().split(&quot;:&quot;)[1]);
-    }
-
-    @Override
-    public Health health() {
-        Socket socket = null;
-
-        try {
-            socket = new Socket();
-            socket.connect(new InetSocketAddress(host, port), TIMEOUT.intValue());
-            return Health.up().build();
-        } catch (final Exception e) {
-            return Health.down(e).build();
-        } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (final IOException e) {
-                    log.debug(&quot;Unable to close Kafka consumer socket.&quot;, e);
-                }
-            }
-        }
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;In this example, the health indicator attempts to make a socket connection to the connection string provided by the Kafka &lt;code&gt;ConsumerConfig&lt;/code&gt;.  It&amp;#8217;s a simple test to see if
-ZooKeeper is listening at the configured host/port.  The next step is to create an automatic configuration that will define and register this health indicator if the
-presence of a bean of type &lt;code&gt;ConsumerConfig&lt;/code&gt; is detected:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint java language-java&quot;&gt;&lt;code&gt;import java.util.Map;
-
-import kafka.consumer.ConsumerConfig;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
-import org.springframework.boot.actuate.health.CompositeHealthIndicator;
-import org.springframework.boot.actuate.health.HealthAggregator;
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-@AutoConfigureBefore({ EndpointAutoConfiguration.class })
-@AutoConfigureAfter({ HealthIndicatorAutoConfiguration.class })
-public class CustomHealthIndicatorAutoConfiguration {
-
-    /**
-     * Configuration for Kafka consumer health indicators.
-     *
-     * @author jpearlin
-     * @since 1.0.0
-     */
-    @Configuration
-    @ConditionalOnBean(ConsumerConfig.class)
-    @ConditionalOnExpression(&quot;${health.kafka.consumer.enabled:true}&quot;)
-    public static class KafkaConsumerHealthIndicatorConfiguration {
-
-        @Autowired
-        private HealthAggregator healthAggregator;
-
-        @Autowired(required = false)
-        private Map&amp;lt;String, ConsumerConfig&amp;gt; consumerConfigs;
-
-        @Bean
-        @ConditionalOnMissingBean(name = &quot;kafkaConsumerHealthIndicator&quot;)
-        public HealthIndicator kafkaConsumerHealthIndicator() {
-            if (this.consumerConfigs.size() == 1) {
-                return new KafkaConsumerHealthIndicator(this.consumerConfigs.values().iterator().next());
-            }
-
-            final CompositeHealthIndicator composite = new CompositeHealthIndicator(this.healthAggregator);
-            for (final Map.Entry&amp;lt;String, ConsumerConfig&amp;gt; entry : this.consumerConfigs.entrySet()) {
-                composite.addHealthIndicator(entry.getKey(), new KafkaConsumerHealthIndicator(entry.getValue()));
-            }
-            return composite;
-        }
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;This auto configuration ensures that it is enabled after the default &lt;code&gt;HealthIndicatorAutoConfiguration&lt;/code&gt; provided by the &lt;code&gt;spring-boot-actuator&lt;/code&gt; dependency has been
-loaded.  It also defines one Spring &lt;code&gt;Configuration&lt;/code&gt; that is conditionally loaded based on the presence of a bean of type &lt;code&gt;ConsumerConfig&lt;/code&gt;.  It can also be manually
-disabled by setting the &lt;code&gt;health.kafka.consumer.enabled&lt;/code&gt; property to &lt;code&gt;false&lt;/code&gt;.  The configuration also ensures that if more than one bean of type &lt;code&gt;ConsumerConfig&lt;/code&gt; is
-present, a &lt;code&gt;CompositeHealthIndicator&lt;/code&gt; is created.  The final piece required to tie all of this together is to provide Spring with the required metadata file that
-instructs it on which classes represent auto-configuration.  To do this, create a file named &lt;code&gt;spring.factories&lt;/code&gt; in the &lt;code&gt;src/main/resources/META-INF&lt;/code&gt; directory of
-your shared health indicator library:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code&gt;org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.example.health.autoconfigure.CustomHealthIndicatorAutoConfiguration&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;&lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; will automatically scan for these metadata files when your application starts and register your custom auto configuration class to be enacted if it detects
-the &lt;code&gt;EnableAutoConfiguration&lt;/code&gt; annotation on any of your Java-based configuration classes.  Now you can provide a full suite of health indicators that will be enabled if
-and only if certain conditions are met, as defined by the various configurations provided by your auto-configuration class!&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
 &lt;/div&gt;
             </description>
         </item>

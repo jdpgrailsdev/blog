@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/07/22/gradle_build_scripts_classpath.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/22/gradle_build_scripts_classpath.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p><a href="http://gradle.org" target="_blank">Gradle</a> currently supports two different way to reference other <code>.gradle</code> files from a build script:</p>
 </div>
 <div class="olist arabic">
@@ -123,7 +121,7 @@ the file-based approach outlined above.  Here is the entire plugin code:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>class BuildScriptSupportPlugin implements Plugin&lt;Project&gt; {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">class BuildScriptSupportPlugin implements Plugin&lt;Project&gt; {
 
     /**
      * Spring {@link PathMatchingResourcePatternResolver} used to find all Gradle scripts
@@ -165,7 +163,7 @@ them to your <code>build.gradle</code> script in the <code>buildScript</code> se
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>apply plugin: 'build-script-support'
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">apply plugin: 'build-script-support'
 
 buildscript {
     repositories {
@@ -197,8 +195,6 @@ buildscript {
 </div>
 <div class="paragraph">
 <p>It should be noted that the code above was written and used with <a href="http://gradle.org" target="_blank">Gradle</a> 1.12 and has not yet been tested with 2.0, though I don&#8217;t expect any issues.</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/07/22/gradle_build_scripts_classpath.html"></div>
@@ -227,7 +223,7 @@ buildscript {
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

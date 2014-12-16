@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/08/26/gradle_dependent_tasks.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/08/26/gradle_dependent_tasks.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>As discussed in a previous post, <a href="http://gradle.org" target="_blank">Gradle</a> supports multiple ways to perform incremental builds, such as caching based on task inputs, the use of the
 <a href="http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/TaskOutputs.html#upToDateWhen(groovy.lang.Closure)" target="_blank">upToDateWhen</a> closure on a
 task&#8217;s outputs or the use of the task&#8217;s <code>onlyIf()</code> method to control execution, to name a few.  Sometimes, however, you want a task to only execute if another
@@ -108,7 +106,7 @@ method of the task to determine if the task actually executed or was skipped/up-
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>class CustomTask extends DefaultTask {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">class CustomTask extends DefaultTask {
 
     @TaskAction
     void doSomething() {
@@ -122,8 +120,6 @@ method of the task to determine if the task actually executed or was skipped/up-
 <div class="paragraph">
 <p>By using the <code>getDidWork</code> method on the other task to determine if it executed, we can avoid having to rely upon the input/output of the task to determine if
 the downstream task should execute, thus giving us better control over what triggers the tasks in our project.</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/08/26/gradle_dependent_tasks.html"></div>
@@ -152,7 +148,7 @@ the downstream task should execute, thus giving us better control over what trig
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

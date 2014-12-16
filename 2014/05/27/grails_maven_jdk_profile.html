@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/05/27/grails_maven_jdk_profile.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/05/27/grails_maven_jdk_profile.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>Recently, I have been spending my time converting <a href="http://grails.org" target="_blank">Grails</a> applications to use <a href="http://maven.apache.org/" target="_blank">Maven</a> POM files for dependency management.  For the last couple releases, <a href="http://grails.org" target="_blank">Grails</a> has included the ability to
 rely on a POM file for dependencies, instead of declaring the repositories and dependencies directly in your <code>grails-app/conf/BuildConfig.groovy</code>.  This works exactly as expected&#8201;&#8212;&#8201;that is <a href="http://grails.org" target="_blank">Grails</a>
 retrieves the dependency declarations from the POM file and uses them to build/run the application when using the <a href="http://grails.org" target="_blank">Grails</a> CLI.  However, there is a bug in the way <a href="http://grails.org" target="_blank">Grails</a> dynamically validates and
@@ -107,7 +105,7 @@ When a JDK-activated profile is present in the POM file used by <a href="http://
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>[ERROR] Failed to determine Java version for profile java8 @ &lt;GAV of the POM file containing the profile&gt;
+<pre class="prettyprint highlight"><code>[ERROR] Failed to determine Java version for profile java8 @ &lt;GAV of the POM file containing the profile&gt;
         at org.apache.maven.model.building.DefaultModelProblemCollector.newModelBuildingException(DefaultModelProblemCollector.java:195)
         at org.apache.maven.model.building.DefaultModelBuilder.build(DefaultModelBuilder.java:416)
         at org.apache.maven.model.building.DefaultModelBuilder.build(DefaultModelBuilder.java:368)
@@ -127,7 +125,7 @@ When a JDK-activated profile is present in the POM file used by <a href="http://
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint java language-java"><code>String version = context.getSystemProperties().get( "java.version" );
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">String version = context.getSystemProperties().get( "java.version" );
 
 if ( version == null || version.length() &lt;= 0 )
 {
@@ -146,7 +144,7 @@ are no properties to inspect!  I made a quick change to the <code>AetherDependen
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>final modelRequest = new DefaultModelBuildingRequest()
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">final modelRequest = new DefaultModelBuildingRequest()
 modelRequest.setPomFile(pomFile)
 modelRequest.setSystemProperties(System.properties)
 modelRequest.setModelResolver(new GrailsModelResolver(repositorySystem, session, repositories))</code></pre>
@@ -156,8 +154,6 @@ modelRequest.setModelResolver(new GrailsModelResolver(repositorySystem, session,
 <p>After re-testing with the modified code, the <a href="http://grails.org" target="_blank">Grails</a> happily accepted the JDK-based <a href="http://maven.apache.org/" target="_blank">Maven</a> profile without exception.  I have created a <a href="https://github.com/grails/grails-core/pull/492" target="_blank">pull request</a>, which has been merged into the
 2.4.x version of <a href="http://grails.org" target="_blank">Grails</a>.  If you need access to this fix earlier, I would suggest creating a branch off of the tagged version of <a href="http://grails.org" target="_blank">Grails</a> that you are currently using and cherry-picking the commit that contains the change.  You can then build
 the <code>grails-aether</code> JAR and drop it into the <code>dist</code> folder of your <a href="http://grails.org" target="_blank">Grails</a> installation to consume the change.</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/05/27/grails_maven_jdk_profile.html"></div>
@@ -186,7 +182,7 @@ the <code>grails-aether</code> JAR and drop it into the <code>dist</code> folder
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

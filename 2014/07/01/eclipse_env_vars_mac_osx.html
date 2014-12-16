@@ -96,16 +96,14 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/07/01/eclipse_env_vars_mac_osx.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/01/eclipse_env_vars_mac_osx.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>I ran into an issue the other day when attempting to run a <a href="http://gradle.org" target="_blank">Gradle</a> build script that invokes a process from within Eclipse.  For whatever reason, Eclipse does not pick up
 environment variables from the shell when launching on Mac OSX.  If you attempt to reference a command on your path from within Eclipse, you will most likely see
 an error similar to this one:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>java.io.IOException: Cannot run program "thrift": error=2, No such file or directory</code></pre>
+<pre class="prettyprint highlight"><code>java.io.IOException: Cannot run program "thrift": error=2, No such file or directory</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -113,7 +111,7 @@ an error similar to this one:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>~$ thrift -version
+<pre class="prettyprint highlight"><code>~$ thrift -version
 Thrift version 0.9.1</code></pre>
 </div>
 </div>
@@ -124,7 +122,7 @@ on my PATH environment variable) and then launch Eclipse:</p>
 <div class="listingblock">
 <div class="title">eclipseLauncher.sh</div>
 <div class="content">
-<pre class="prettyprint"><code>#!/bin/bash
+<pre class="prettyprint highlight"><code>#!/bin/bash
 source ~/.profile
 /Applications/eclipse/eclipse</code></pre>
 </div>
@@ -158,14 +156,12 @@ source ~/.profile
 </div>
 <div class="paragraph">
 <p>You can test the new script from the Automator application before saving by clicking on the "Run" button in the upper right-hand corner of the Automator window.
-When you are ready, select "File &gt; Save&#8230;" to save the new application automator script.  I recommend saving it in <code>/Applications/eclipse</code>.  <strong>MAKE SURE THAT YOU DO
+When you are ready, select "File &gt; Save&#8230;&#8203;" to save the new application automator script.  I recommend saving it in <code>/Applications/eclipse</code>.  <strong>MAKE SURE THAT YOU DO
 NOT OVERWRITE THE EXISTING "Eclipse" APPLICATION</strong>.</p>
 </div>
 <div class="paragraph">
 <p>Next up, add it to the dock by launching it via the Applications menu.  You can also open the <code>/Applications/eclipse</code> folder in the Finder, select the new application and right-click select "Get Info" if you want to change the icon.
 In the info window, click on the icon at the top of the window so that a blue halo appears around it.  In the finder window, select the original Eclipse application file and drag it over the icon in the info window to change the new application to use the Eclipse icon.</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/07/01/eclipse_env_vars_mac_osx.html"></div>
@@ -194,7 +190,7 @@ In the info window, click on the icon at the top of the window so that a blue ha
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

@@ -96,15 +96,13 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/05/20/grails_maven_coverage.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/05/20/grails_maven_coverage.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>When working on upgrading a few <a href="http://grails.org" target="_blank">Grails</a> plugins to 2.3.x and converting them to be built using the <a href="http://grails.org/doc/latest/guide/commandLine.html#4.5%20Ant%20and%20Maven" target="_blank">Grails Maven Plugin</a>, I ran into a weird issue when
 executing unit tests with the <a href="https://github.com/beckje01/grails-code-coverage" target="_blank">Grails Code Coverage Plugin</a> installed and enabled:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>Error |
+<pre class="prettyprint highlight"><code>Error |
 Compilation error compiling [unit] tests: Expecting a stackmap frame at branch target 97
 Exception Details:
   Location:
@@ -210,7 +208,7 @@ to pass this JVM argument to the forked <a href="http://grails.org" target="_bla
 <div class="listingblock">
 <div class="title">pom.xml</div>
 <div class="content">
-<pre class="prettyprint xml language-xml"><code>    &lt;build&gt;
+<pre class="prettyprint highlight"><code class="language-xml" data-lang="xml">    &lt;build&gt;
         &lt;plugins&gt;
             &lt;plugin&gt;
                 &lt;groupId&gt;org.grails&lt;/groupId&gt;
@@ -236,8 +234,6 @@ to pass this JVM argument to the forked <a href="http://grails.org" target="_bla
 <div class="paragraph">
 <p>After add the argument and re-running the tests, everything passed as expected.  I am still not sure if the problem lies with <a href="http://grails.org" target="_blank">Grails</a>, <a href="http://groovy.codehaus.org" target="_blank">Groovy</a> or the instrumentation provided by the <a href="https://github.com/beckje01/grails-code-coverage" target="_blank">Grails Code Coverage Plugin</a> or
 some combination of all of those.  I will continue to keep an eye out for updates that appear to affect this issue in the hopes that the verifier can be re-enabled in the future.</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/05/20/grails_maven_coverage.html"></div>
@@ -266,7 +262,7 @@ some combination of all of those.  I will continue to keep an eye out for update
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

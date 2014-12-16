@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/06/03/spring_boot_jersey_2.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/06/03/spring_boot_jersey_2.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>It is pretty simple to spin up a micro REST service using <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> and <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a>.  In fact, there are various tutorials out there that show how this can be done with very little code/configuration:</p>
 </div>
 <div class="ulist">
@@ -118,7 +116,7 @@ is to create a Spring-based <a href="https://jersey.java.net/" target="_blank">J
 <div class="listingblock">
 <div class="title">JerseyConfig.java</div>
 <div class="content">
-<pre class="prettyprint java language-java"><code>import org.glassfish.jersey.server.ResourceConfig;
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.SpringComponentProvider;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 import org.springframework.stereotype.Component;
@@ -141,7 +139,7 @@ public class JerseyConfig extends ResourceConfig {
 <div class="listingblock">
 <div class="title">ApplicationConfig.java</div>
 <div class="content">
-<pre class="prettyprint java language-java"><code>import java.io.IOException;
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import java.io.IOException;
 
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
@@ -168,7 +166,7 @@ public class ApplicationConfig {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>2014-05-19 12:08:30.062  INFO 8626 --- [lication.main()] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080/http
+<pre class="prettyprint highlight"><code>2014-05-19 12:08:30.062  INFO 8626 --- [lication.main()] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080/http
 2014-05-19 12:08:30.065  INFO 8626 --- [lication.main()] com.test.Application        		      : Started Application in 13.461 seconds (JVM running for 21.588)
 2014-05-19 12:10:29.363  INFO 8626 --- [lication.main()] o.g.jersey.server.ApplicationHandler     : Initiating Jersey application, version Jersey: 2.7 2014-03-12 18:11:31...</code></pre>
 </div>
@@ -180,7 +178,7 @@ a call to the <code>setLoadOnStartup()</code> method of the <code>ServletRegistr
 <div class="listingblock">
 <div class="title">ApplicationConfig.java</div>
 <div class="content">
-<pre class="prettyprint java language-java"><code>import java.io.IOException;
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import java.io.IOException;
 
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
@@ -208,11 +206,9 @@ public class ApplicationConfig {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>2014-05-19 12:10:29.363  INFO 8626 --- [lication.main()] o.g.jersey.server.ApplicationHandler     : Initiating Jersey application, version Jersey: 2.7 2014-03-12 18:11:31...
+<pre class="prettyprint highlight"><code>2014-05-19 12:10:29.363  INFO 8626 --- [lication.main()] o.g.jersey.server.ApplicationHandler     : Initiating Jersey application, version Jersey: 2.7 2014-03-12 18:11:31...
 2014-05-19 12:10:30.062  INFO 8626 --- [lication.main()] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080/http
 2014-05-19 12:10:30.065  INFO 8626 --- [lication.main()] com.test.Application        		      : Started Application in 13.461 seconds (JVM running for 21.588)</code></pre>
-</div>
-</div>
 </div>
 </div></p>
 
@@ -242,7 +238,7 @@ public class ApplicationConfig {
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

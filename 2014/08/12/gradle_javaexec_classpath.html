@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/08/12/gradle_javaexec_classpath.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/08/12/gradle_javaexec_classpath.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>Recently, I have been working on a few <a href="http://gradle.org" target="_blank">Gradle</a> plugins that use the <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html" target="_blank">Gradle JavaExec Task</a>
 to execute a Java main class from within the plugin.  This is pretty straightforward and not at all interesting.  However, in testing the plugin, I realized that I did not
 want to expose the required dependencies needed to run the main class outside of the plugin.  If I did, I would require each project that applies my plugin to list the
@@ -107,7 +105,7 @@ to us use the plugin&#8217;s dependencies:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>task generate(type: JavaExec) {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">task generate(type: JavaExec) {
     main = 'com.example.Generator'
     args = ['arg1', 'arg2']
     classpath = buildscript.configurations.classpath
@@ -123,7 +121,7 @@ this by writing a little recursive function to traverse up the project tree and 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>task generate(type: JavaExec) {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">task generate(type: JavaExec) {
     main = 'com.example.Generator'
     args = ['arg1', 'arg2']
     classpath = files(getClasspath(project))
@@ -143,8 +141,6 @@ private List&lt;File&gt; getClasspath(project, classpath=[]) {
 <p>The above example starts with the current project, adds its build script dependencies to the classpath and then recursively looks at the project&#8217;s root project.  This continues
 until the project does not have a root project or the root project is the project itself.  The result is then converted to a <code>FileCollection</code> and the classpath is set, ensuring
 that the <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.JavaExec.html" target="_blank">Gradle JavaExec Task</a> has the dependencies provided by the custom plugin.</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/08/12/gradle_javaexec_classpath.html"></div>
@@ -173,7 +169,7 @@ that the <a href="http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.Ja
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

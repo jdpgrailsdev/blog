@@ -96,9 +96,7 @@
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/04/22/grails_gradle_logback.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/04/22/grails_gradle_logback.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
+    <p><div class="paragraph">
 <p>In a <a href="http://jonathanpearlin.com/blog/2014/03/24/grails_logback.html" target="_blank">previous post</a>, I discussed how to switch a <a href="http://grails.org" target="_blank">Grails</a> application to use <a href="http://logback.qos.ch/" target="_blank">Logback</a> instead of Log4j for logging.  In that post, I
 covered using both the <a href="http://maven.apache.org/" target="_blank">Maven</a> support in Grails to configure the dependencies required to use <a href="http://logback.qos.ch/" target="_blank">Logback</a> with <a href="http://grails.org" target="_blank">Grails</a>, as well as how to use the built in dependency management support via the
 <code>BuildConfig.groovy</code> dependencies DSL.  I did not cover how to make this all work with <a href="http://gradle.org" target="_blank">Gradle</a>.  The same caveats and issues, as mentioned previously, still apply with regards to the <a href="http://logback.qos.ch/" target="_blank">Logback</a> DSL
@@ -108,7 +106,7 @@ dependencies configured correctly in the <code>build.gradle</code> file.  Simila
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>configurations {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">configurations {
      all*.exclude group: 'org.grails', module: 'grails-plugin-log4j'		<i class="conum" data-value="1"></i><b>(1)</b>
      all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'			<i class="conum" data-value="2"></i><b>(2)</b>
 }</code></pre>
@@ -132,7 +130,7 @@ dependencies configured correctly in the <code>build.gradle</code> file.  Simila
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>dependencies {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">dependencies {
     compile ('org.grails.plugins:logback:0.3.1') {
         exclude(module:'slf4j-api')								<i class="conum" data-value="1"></i><b>(1)</b>
     }
@@ -160,7 +158,7 @@ build failed with the following exception:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>| Error Error generating web.xml file
+<pre class="prettyprint highlight"><code>| Error Error generating web.xml file
 org.codehaus.groovy.runtime.typehandling.GroovyCastException: Cannot cast object 'org.slf4j.helpers.NOPLoggerFactory@7f4cfb5' with class 'org.slf4j.helpers.NOPLoggerFactory' to class 'ch.qos.logback.classic.LoggerContext'</code></pre>
 </div>
 </div>
@@ -169,7 +167,7 @@ org.codehaus.groovy.runtime.typehandling.GroovyCastException: Cannot cast object
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+<pre class="prettyprint highlight"><code>SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
 SLF4J: Defaulting to no-operation (NOP) logger implementation
 SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.</code></pre>
 </div>
@@ -183,7 +181,7 @@ the status of what is being executed.  I decided to add a duplicate dependency t
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="prettyprint groovy language-groovy"><code>dependencies {
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">dependencies {
     compile ('org.grails.plugins:logback:0.3.1') {
         exclude(module:'slf4j-api')
     }
@@ -199,7 +197,7 @@ the status of what is being executed.  I decided to add a duplicate dependency t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint"><code>| Done creating WAR build/distributions/test-1.0.0.war
+<pre class="prettyprint highlight"><code>| Done creating WAR build/distributions/test-1.0.0.war
 
 BUILD SUCCESSFUL
 
@@ -210,8 +208,6 @@ Total time: 17.166 secs</code></pre>
 <p>Much better.  It&#8217;s important to remember that the <a href="http://grails.org" target="_blank">Grails</a> build eco-system is itself a Java-based application that requires its own set of dependencies just to execute.  When using the <a href="http://grails.org" target="_blank">Grails</a>
 command line arguments or building via <a href="http://maven.apache.org/" target="_blank">Maven</a>, this classpath is management automatically.  However, when using the <a href="https://github.com/grails/grails-gradle-plugin/" target="_blank">Grails Gradle Plugin</a> plugin, you currently have to manage any additions to this yourself
 via the <code>bootstrap</code> scope (an interesting side note here is that now <a href="http://grails.org" target="_blank">Grails</a> is using <a href="http://logback.qos.ch/" target="_blank">Logback</a> for all logging, not just when executing the application).</p>
-</div>
-</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/04/22/grails_gradle_logback.html"></div>
@@ -240,7 +236,7 @@ via the <code>bootstrap</code> scope (an interesting side note here is that now 
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 
