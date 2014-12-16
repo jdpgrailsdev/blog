@@ -1,0 +1,53 @@
+= Spring Application Context and Groovy Scripts
+Jonathan Pearlin
+2014-12-16
+:jbake-type: post
+:jbake-tags: spring,groovy
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: spring_context_groovy_script
+:icons: font
+:groovy: http://groovy.codehaus.org/[Groovy, window="_blank"]
+:spring: http://projects.spring.io/spring-framework/[Spring Framework, window="_blank"]
+:spring-boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
+:thymeleaf: http://www.thymeleaf.org/[Thymeleaf, window="_blank"]
+
+I like to use {groovy} to write scripts to help me test parts of my application that require a little more set up than a normal unit test should allow
+(think a small-scale integration test).  Often, these scripts take the form of client-based code that establishes a connection to a locally running
+instance of my application and verifies that certain operations produce the desired and expected results.  Recently, I found myself in a situation where
+I wanted to test some {spring}-based code that uses {thymeleaf} to generate HTML.  I didn't necessarily want to extact the code into a separate library just
+so I could functionally test it outside of my application.  Instead, I decided to take the project's JAR file (as the application is a {spring-boot} application)
+and use it as a dependency in my {groovy} script.  This meant that I would need to find a way to set up the {spring} context, so that all of the required
+dependency injection would take place.  This turned out to not be that difficult:
+
+[source,groovy]
+----
+import com.test.ApplicationConfiguration
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
+
+...
+
+def activeProfile = 'test'
+
+def ctx = new AnnotationConfigApplicationContext()
+ctx.getEnvironment().setActiveProfiles(activeProfile)
+ctx.register(ApplicationConfiguration)
+ctx.refresh()
+
+...
+
+ctx.close()
+----
+
+In the example above, the script creates an instance of the `AnnotationConfigApplicationContext` {spring} context, sets the active profile, registers my Java-based configuration
+class (from my application's JAR) and refreshes the context.  At this point, you can reference any and all beans created by the configuration:
+
+[source,groovy]
+----
+def bean = ctx.getBean('myBean')
+----
+
+You can obviously use the other variants of the `ApplicationContext` interface to configure your context (e.g. XML, etc).  In a future post, I will discuss how to leverage the {spring-boot}
+YAML support from a {groovy} script so that you can leverage your application's configuration files when in your script.
