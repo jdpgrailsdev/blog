@@ -1,0 +1,181 @@
+= Leverage Spring Boot's YAML Configuration Files in Groovy Scripts
+Jonathan Pearlin
+2014-12-30
+:jbake-type: post
+:jbake-tags: spring,groovy
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: spring_boot_yaml_groovy
+:icons: font
+:groovy: http://groovy.codehaus.org/[Groovy, window="_blank"]
+:snakeyaml: https://code.google.com/p/snakeyaml/[Snakeyaml, window="_blank"]
+:spring: http://projects.spring.io/spring-framework/[Spring Framework, window="_blank"]
+:spring-boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
+
+In a http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html[previous, window="_blank"] blog post, I discussed how to load
+an application's {spring} configuration in a {groovy} script.  This is a great way to test portions of your application without running the
+entire application.  However, this approach has limits.  When trying this with a {spring-boot} application, you miss out on a bunch of the magical
+auto-enabling done by {spring-boot}.  This includes the ability of {spring-boot} to find certain properties and configuration files and load their
+contents for use by {spring}'s property placeholder mechanism.  In this post, I'll discuss how to include a little extra {groovy} sauce to get the
+{spring} context to load a YAML file from the classpath and use its values for property placeholder replacement.  Let's start by looking at how
+to tell the {spring} context how to load the YAML file:
+
+[source,groovy]
+----
+class YamlMapPropertySourceLoader extends YamlPropertySourceLoader {
+
+    @Override
+    public PropertySource load(String name, Resource resource, String profile) throws IOException {
+        if (ClassUtils.isPresent(Yaml.class.name, null)) {
+            final YamlMapFactoryBean bean = new YamlMapFactoryBean();
+            YamlMapFactoryBean factory = new YamlMapFactoryBean()
+            factory.setDocumentMatchers(new DefaultProfileDocumentMatcher(), new SpringProfileDocumentMatcher(profile))
+            factory.setResolutionMethod(ResolutionMethod.OVERRIDE)
+            factory.setResources([resource] as Resource[])
+            return new MapPropertySource(name, factory.getObject())
+        }
+        null
+    }
+}
+----
+
+The code above defines a new `PropertySourceLoader` class that produces a `PropertySource` wrapping the loaded YAML file.  This bean is responsible for reading
+in the contents of the `Resource` that contains the YAML file loaded from the classpath and converting those values to a `Map` that can be used
+by the property placeholder resolver.  You may notice that it checks to see the {snakeyaml} library is on the classpath.  This code is a copy of
+the code found in the {spring-boot} `YamlPropertySourceLoader`, with a small tweak to use the `YamlMapFactoryBean` instead of the `YamlPropertiesFactoryBean`
+(more on this in a bit).  The next step is to create a new Java-based configuration class to register the new `YamlMapPropertySourceLoader` with the {spring}
+context:
+
+[source,groovy]
+----
+@Configuration
+@Order(Ordered.HIGHEST_PRECEDENCE)
+class YamlConfiguration {
+
+    @Bean
+    public static EnvironmentAwarePropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer(PropertySource yamlPropertySourceLoader) {
+        MutablePropertySources propertySources = new MutablePropertySources()
+        propertySources.addFirst(yamlPropertySourceLoader)
+
+        EnvironmentAwarePropertySourcesPlaceholderConfigurer configurer = new EnvironmentAwarePropertySourcesPlaceholderConfigurer()
+        configurer.propertySources = propertySources
+        configurer
+    }
+
+    @Bean
+    public PropertySource yamlPropertySourceLoader() throws IOException {
+      YamlMapPropertySourceLoader loader = new YamlMapPropertySourceLoader()
+      PropertySource applicationYamlPropertySource = loader.load('application.yml', new ClassPathResource('application.yml', getClass()), 'integration')
+      applicationYamlPropertySource
+    }
+}
+----
+
+The configuration above creates two beans:  one to enable the resolving of property placeholders based on the active profile and another to
+actually find and load the YAML configuration file from the classpath.  The special `PropertySourcePlaceholderConfiguration` is necessary to make
+sure that the configuration loaded from the classpath is added to the {spring} framework context.  Otherwise, simply provided the loader is not
+enough to expose the loaded data to the context.  This custom class provides a mechanism to merge the newly found and created property source with those
+provided by {spring}:
+
+[source,groovy]
+----
+class EnvironmentAwarePropertySourcesPlaceholderConfigurer extends PropertySourcesPlaceholderConfigurer implements EnvironmentAware, InitializingBean {
+
+    MutablePropertySources propertySources
+    Environment environment
+
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment
+        super.setEnvironment(environment)
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        def envPropertySources = environment.getPropertySources()
+        propertySources.each { propertySource ->
+            envPropertySources.addFirst(propertySource)
+        }
+    }
+}
+----
+
+The custom configurer uses the loaded YAML property source and the configured `Environment` to create a combined set of property sources that can be used for property placeholder replacement.
+Once you have this new configuration class in place, you need to register it with the {spring} context:
+
+[source,groovy]
+----
+...
+ctx.register(YamlConfiguration)
+ctx.refresh()
+----
+
+After wiring all of this together and running the {groovy} script, I noticed that the script was upset with some, but not all, of the property placeholders.  After some digging around, I noticed
+that it was having issues with finding nested values in the YAML configuration.  For instance, let's say you have the following YAML configuration file:
+
+[source,yaml]
+----
+service:
+    host.url: 'localhost'
+settings:
+    timeout: 30
+    connection.timeout = 100
+debug: false
+----
+
+You would expect to be able to do something like this using the {spring} `Value` annotation:
+
+[source,java]
+----
+@Value("${service.host.url}")
+private String hostUrl;
+----
+
+However, because the {snakeyaml} library that backs the `YamlMapFactoryBean` does a literal translation of the configuration to map, separating keys wherever it finds a '.' character, the resolver
+cannot find the key `service.host.url` (it could find `service` and `host` under `service`, etc).  One way to resolve this is to flatten out the map after loading it, but before returning it from the
+property source:
+
+[source,groovy]
+----
+class YamlMapPropertySourceLoader extends YamlPropertySourceLoader {
+
+    @Override
+    public PropertySource load(String name, Resource resource, String profile) throws IOException {
+        if (ClassUtils.isPresent(Yaml.class.name, null)) {
+            final YamlMapFactoryBean bean = new YamlMapFactoryBean();
+            YamlMapFactoryBean factory = new YamlMapFactoryBean()
+            factory.setDocumentMatchers(new DefaultProfileDocumentMatcher(), new SpringProfileDocumentMatcher(profile))
+            factory.setResolutionMethod(ResolutionMethod.OVERRIDE)
+            factory.setResources([resource] as Resource[])
+            return new MapPropertySource(name, flattenMap(factory.getObject()))
+        }
+        null
+    }
+
+        private Map flattenMap(Map aMap, prefix=null) {
+        aMap.inject([:]) { map, entry ->
+            if(entry.value instanceof Map) {
+                map += flattenMap(entry.value, createKey(prefix, entry.key))
+            } else {
+                map."${createKey(prefix, entry.key)}" = entry.value
+            }
+            map
+        }
+    }
+
+    private String createKey(prefix, key) {
+        (prefix?.length() > 0) ? "${prefix}.${key}" : key
+    }
+}
+----
+
+In this updated version of the `YamlMapPropertySourceLoader`, we use some {groovy}-foo to flatten out the map so that the keys will match the strings provided to the `Value` annotation.  Now, when this is combined
+together and executed, you can run:
+
+[source,groovy]
+----
+ctx.getEnvironment().getProperty('service.host.url')
+----
+
+to resolve a property placeholder value retrieved from a YAML configuration file in your {groovy} script!
