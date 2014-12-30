@@ -6,13 +6,197 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 16 Dec 2014 07:44:03 -0800</pubDate>
-        <lastBuildDate>Tue, 16 Dec 2014 07:44:03 -0800</lastBuildDate>
+        <pubDate>Tue, 30 Dec 2014 07:51:55 -0800</pubDate>
+        <lastBuildDate>Tue, 30 Dec 2014 07:51:55 -0800</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Leverage Spring Boot&amp;#8217;s YAML Configuration Files in Groovy Scripts</title>
+            <link>http://jdpgrailsdev.github.io/blog/2014/12/30/groovy_script_spring_boot_yaml.html</link>
+            <pubDate>Tue, 30 Dec 2014 00:00:00 -0800</pubDate>
+            <guid isPermaLink="false">2014/12/30/groovy_script_spring_boot_yaml.html</guid>
+            <description>
+                    &lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In a &lt;a href=&quot;http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html&quot; target=&quot;_blank&quot;&gt;previous&lt;/a&gt; blog post, I discussed how to load
+an application&amp;#8217;s &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; configuration in a &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; script.  This is a great way to test portions of your application without running the
+entire application.  However, this approach has limits.  When trying this with a &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; application, you miss out on a bunch of the magical
+auto-enabling done by &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;.  This includes the ability of &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; to find certain properties and configuration files and load their
+contents for use by &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt;&apos;s property placeholder mechanism.  In this post, I&amp;#8217;ll discuss how to include a little extra &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; sauce to get the
+&lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; context to load a YAML file from the classpath and use its values for property placeholder replacement.  Let&amp;#8217;s start by looking at how
+to tell the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; context how to load the YAML file:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;class YamlMapPropertySourceLoader extends YamlPropertySourceLoader {
+
+    @Override
+    public PropertySource load(String name, Resource resource, String profile) throws IOException {
+        if (ClassUtils.isPresent(Yaml.class.name, null)) {
+            final YamlMapFactoryBean bean = new YamlMapFactoryBean();
+            YamlMapFactoryBean factory = new YamlMapFactoryBean()
+            factory.setDocumentMatchers(new DefaultProfileDocumentMatcher(), new SpringProfileDocumentMatcher(profile))
+            factory.setResolutionMethod(ResolutionMethod.OVERRIDE)
+            factory.setResources([resource] as Resource[])
+            return new MapPropertySource(name, factory.getObject())
+        }
+        null
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The code above defines a new &lt;code&gt;PropertySourceLoader&lt;/code&gt; class that produces a &lt;code&gt;PropertySource&lt;/code&gt; wrapping the loaded YAML file.  This bean is responsible for reading
+in the contents of the &lt;code&gt;Resource&lt;/code&gt; that contains the YAML file loaded from the classpath and converting those values to a &lt;code&gt;Map&lt;/code&gt; that can be used
+by the property placeholder resolver.  You may notice that it checks to see the &lt;a href=&quot;https://code.google.com/p/snakeyaml/&quot; target=&quot;_blank&quot;&gt;Snakeyaml&lt;/a&gt; library is on the classpath.  This code is a copy of
+the code found in the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; &lt;code&gt;YamlPropertySourceLoader&lt;/code&gt;, with a small tweak to use the &lt;code&gt;YamlMapFactoryBean&lt;/code&gt; instead of the &lt;code&gt;YamlPropertiesFactoryBean&lt;/code&gt;
+(more on this in a bit).  The next step is to create a new Java-based configuration class to register the new &lt;code&gt;YamlMapPropertySourceLoader&lt;/code&gt; with the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt;
+context:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;@Configuration
+@Order(Ordered.HIGHEST_PRECEDENCE)
+class YamlConfiguration {
+
+    @Bean
+    public static EnvironmentAwarePropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer(PropertySource yamlPropertySourceLoader) {
+        MutablePropertySources propertySources = new MutablePropertySources()
+        propertySources.addFirst(yamlPropertySourceLoader)
+
+        EnvironmentAwarePropertySourcesPlaceholderConfigurer configurer = new EnvironmentAwarePropertySourcesPlaceholderConfigurer()
+        configurer.propertySources = propertySources
+        configurer
+    }
+
+    @Bean
+    public PropertySource yamlPropertySourceLoader() throws IOException {
+      YamlMapPropertySourceLoader loader = new YamlMapPropertySourceLoader()
+      PropertySource applicationYamlPropertySource = loader.load(&apos;application.yml&apos;, new ClassPathResource(&apos;application.yml&apos;, getClass()), &apos;integration&apos;)
+      applicationYamlPropertySource
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The configuration above creates two beans:  one to enable the resolving of property placeholders based on the active profile and another to
+actually find and load the YAML configuration file from the classpath.  The special &lt;code&gt;PropertySourcePlaceholderConfiguration&lt;/code&gt; is necessary to make
+sure that the configuration loaded from the classpath is added to the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; framework context.  Otherwise, simply provided the loader is not
+enough to expose the loaded data to the context.  This custom class provides a mechanism to merge the newly found and created property source with those
+provided by &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;class EnvironmentAwarePropertySourcesPlaceholderConfigurer extends PropertySourcesPlaceholderConfigurer implements EnvironmentAware, InitializingBean {
+
+    MutablePropertySources propertySources
+    Environment environment
+
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment
+        super.setEnvironment(environment)
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        def envPropertySources = environment.getPropertySources()
+        propertySources.each { propertySource -&amp;gt;
+            envPropertySources.addFirst(propertySource)
+        }
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The custom configurer uses the loaded YAML property source and the configured &lt;code&gt;Environment&lt;/code&gt; to create a combined set of property sources that can be used for property placeholder replacement.
+Once you have this new configuration class in place, you need to register it with the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; context:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;...
+ctx.register(YamlConfiguration)
+ctx.refresh()&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;After wiring all of this together and running the &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; script, I noticed that the script was upset with some, but not all, of the property placeholders.  After some digging around, I noticed
+that it was having issues with finding nested values in the YAML configuration.  For instance, let&amp;#8217;s say you have the following YAML configuration file:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;service:
+    host.url: &apos;localhost&apos;
+settings:
+    timeout: 30
+    connection.timeout = 100
+debug: false&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;You would expect to be able to do something like this using the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; &lt;code&gt;Value&lt;/code&gt; annotation:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;@Value(&quot;${service.host.url}&quot;)
+private String hostUrl;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;However, because the &lt;a href=&quot;https://code.google.com/p/snakeyaml/&quot; target=&quot;_blank&quot;&gt;Snakeyaml&lt;/a&gt; library that backs the &lt;code&gt;YamlMapFactoryBean&lt;/code&gt; does a literal translation of the configuration to map, separating keys wherever it finds a &apos;.&apos; character, the resolver
+cannot find the key &lt;code&gt;service.host.url&lt;/code&gt; (it could find &lt;code&gt;service&lt;/code&gt; and &lt;code&gt;host&lt;/code&gt; under &lt;code&gt;service&lt;/code&gt;, etc).  One way to resolve this is to flatten out the map after loading it, but before returning it from the
+property source:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;class YamlMapPropertySourceLoader extends YamlPropertySourceLoader {
+
+    @Override
+    public PropertySource load(String name, Resource resource, String profile) throws IOException {
+        if (ClassUtils.isPresent(Yaml.class.name, null)) {
+            final YamlMapFactoryBean bean = new YamlMapFactoryBean();
+            YamlMapFactoryBean factory = new YamlMapFactoryBean()
+            factory.setDocumentMatchers(new DefaultProfileDocumentMatcher(), new SpringProfileDocumentMatcher(profile))
+            factory.setResolutionMethod(ResolutionMethod.OVERRIDE)
+            factory.setResources([resource] as Resource[])
+            return new MapPropertySource(name, flattenMap(factory.getObject()))
+        }
+        null
+    }
+
+        private Map flattenMap(Map aMap, prefix=null) {
+        aMap.inject([:]) { map, entry -&amp;gt;
+            if(entry.value instanceof Map) {
+                map += flattenMap(entry.value, createKey(prefix, entry.key))
+            } else {
+                map.&quot;${createKey(prefix, entry.key)}&quot; = entry.value
+            }
+            map
+        }
+    }
+
+    private String createKey(prefix, key) {
+        (prefix?.length() &amp;gt; 0) ? &quot;${prefix}.${key}&quot; : key
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In this updated version of the &lt;code&gt;YamlMapPropertySourceLoader&lt;/code&gt;, we use some &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt;-foo to flatten out the map so that the keys will match the strings provided to the &lt;code&gt;Value&lt;/code&gt; annotation.  Now, when this is combined
+together and executed, you can run:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;ctx.getEnvironment().getProperty(&apos;service.host.url&apos;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;to resolve a property placeholder value retrieved from a YAML configuration file in your &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; script!&lt;/p&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Spring Application Context and Groovy Scripts</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html</link>
@@ -353,110 +537,6 @@ everything needed at image creation time.  By resolving the dependencies at this
 launches the functional tests via the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; task dependency set up in the script.  Upon successful completion of the tests, the test reports generated by &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; are exposed by Jetty so that they can be
 viewed/copied/etc.  By tying all of these pieces together, we have created a stand-alone &lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; image capable of executing functional tests
 using &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; in an environment that does not have the ability to resolve dependencies!&lt;/p&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Execute Functional Tests in a Docker Container with Gradle (Part 1)</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html</link>
-            <pubDate>Tue, 18 Nov 2014 00:00:00 -0800</pubDate>
-            <guid isPermaLink="false">2014/11/18/functional_tests_gradle_docker_part_i.html</guid>
-            <description>
-                    &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;One of the applications that I have been working on recently has a lot of complex SQL queries that cannot be tested very well with traditional unit tests.  To fill this gap, we
-decided to write a functional test suite that would perform the following steps:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;ulist&quot;&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Persist a bunch of data to the table(s) that are used by the query under test to an actual database instance.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Execute the query under test against an actual database instance.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Verify the expected results.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Clean down the table(s) used in the test to avoid pollution against other tests.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The application(s) under test are &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; applications, which make use of &lt;a href=&quot;http://projects.spring.io/spring-data-jpa/&quot; target=&quot;_blank&quot;&gt;Spring Data JPA&lt;/a&gt; for the presistence layer.  Below is an example of one of the repositories:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;@Repository
-public interface BookRepository extends JpaRepository&amp;lt;Book, Long&amp;gt; {
-
-    List&amp;lt;Book&amp;gt; findByIsbn(final String isbn);
-
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Writing a functional test for just such a repository is pretty easy using &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt; and its built-in &lt;a href=&quot;https://code.google.com/p/spock/wiki/SpringExtension&quot; target=&quot;_blank&quot;&gt;Spring extension&lt;/a&gt;:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;@ActiveProfiles(&apos;test&apos;)
-@ContextConfiguration(classes=[PersistenceConfiguration], loader=SpringApplicationContextLoader)
-class BookRepositoryFunctionalSpec extends Specification {
-
-    @Autowired
-    private BookRepository boolRepository
-
-    def cleanup() {
-        bookRepository.deleteAll()
-    }
-
-    def &quot;test that the correct number of books are found when finding books by ISBN&quot;() {
-        setup:
-            Book book1 = new Book(title:&apos;A Good Book&apos;, author:&apos;Some Guy&apos;, isbn:&apos;978-3-16-148410-0&apos;)
-            Book book2 = new Book(title:&apos;A Good Book, Second Edition&apos;, author:&apos;Some Guy&apos;, isbn:&apos;978-3-16-148410-1&apos;)
-
-            bookRepository.saveAndFlush(book1)
-            bookRepository.saveAndFlush(book2)
-        when:
-            def books = bookRepository.findByIsbn(&apos;978-3-16-148410-0&apos;)
-        then:
-            books != null
-            books.size() == 1
-            books.first() == book1
-        when:
-            books = bookRepository.findByIsbn(&apos;unknown&apos;)
-        then:
-            books != null
-            books.size() == 0
-    }&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The example &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt; specification above uses the &lt;code&gt;ActiveProfiles&lt;/code&gt; and &lt;code&gt;ContextCongifuration&lt;/code&gt; annotations to load the Spring configuration for use by the test.  This configuration contains
-all of the beans required by &lt;a href=&quot;http://projects.spring.io/spring-data-jpa/&quot; target=&quot;_blank&quot;&gt;Spring Data JPA&lt;/a&gt; to connect to the database (data source, entity manager, etc). With the Spring configuration added to the test, we can now make use of Spring
-techniques, such as the auto-wiring of dependencies into the specification.  In the example above, we have auto-wired in the &lt;code&gt;BookRepository&lt;/code&gt; that defines the query that we want to test.
-The next thing to notice is that the test uses the &lt;code&gt;deleteAll&lt;/code&gt; method of the repository instance to remove any data in the table mapped by the &lt;code&gt;Book&lt;/code&gt; entity after each test in the
-specification.  Finally, we have the test itself, which performs the following steps:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;ulist&quot;&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Create a couple of &lt;code&gt;Book&lt;/code&gt; entities and persist them to the mapped table using the repository.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Execute the finder method from the repository and validate the correct results are found.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Execute the finder method again, this time with input that should not produce a result to validate what is returned in that scenario.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Note that this could easily be broken up into two tests or refactored to use &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt;&apos;s &lt;code&gt;@Unroll&lt;/code&gt; annotation.  Now that I was armed with a way to build out functional tests against the actual database
-using &lt;a href=&quot;http://projects.spring.io/spring-data-jpa/&quot; target=&quot;_blank&quot;&gt;Spring Data JPA&lt;/a&gt; and &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt;, I needed a way to execute the tests.  My first thought was to use &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; to run the tests.  However, due to a limitation of our build infrastructure (our deployment
-server does not have access to our artifact repository), &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; would not be able to run the tests, as the build script would not have access to the dependencies it needs to execute!  In the part two of
-this blog post, I will take a look at how I overcame this issue by executing the test suite inside of a &lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; container using &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;.&lt;/p&gt;
 &lt;/div&gt;
             </description>
         </item>

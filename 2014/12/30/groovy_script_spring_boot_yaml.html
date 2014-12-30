@@ -86,23 +86,17 @@
                 </div>
             </div>
             <div class="container">
-                <div class="page-header">
-                    <h1>The Flowers Are Still Standing</h1>
-                </div>
+    <div class="page-header">
+        <h1>Leverage Spring Boot&#8217;s YAML Configuration Files in Groovy Scripts</h1>
+    </div>
 
-                   <a href="/blog/2014/12/30/groovy_script_spring_boot_yaml.html"><h1>Leverage Spring Boot&#8217;s YAML Configuration Files in Groovy Scripts</h1></a>
-                   <p>30 December 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/groovy.html">groovy</a>
-        </p>
+    <p><em>30 December 2014</em></p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/12/30/groovy_script_spring_boot_yaml.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/30/groovy_script_spring_boot_yaml.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/30/groovy_script_spring_boot_yaml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/12/30/groovy_script_spring_boot_yaml.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/30/groovy_script_spring_boot_yaml.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/30/groovy_script_spring_boot_yaml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div class="paragraph">
+    <p><div class="paragraph">
 <p>In a <a href="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html" target="_blank">previous</a> blog post, I discussed how to load
 an application&#8217;s <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> configuration in a <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script.  This is a great way to test portions of your application without running the
 entire application.  However, this approach has limits.  When trying this with a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application, you miss out on a bunch of the magical
@@ -278,192 +272,26 @@ together and executed, you can run:</p>
 <div class="paragraph">
 <p>to resolve a property placeholder value retrieved from a YAML configuration file in your <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script!</p>
 </div></p>
-                <p><a href="/blog2014/12/30/groovy_script_spring_boot_yaml.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/12/16/spring_context_groovy_script.html"><h1>Spring Application Context and Groovy Scripts</h1></a>
-                   <p>16 December 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/groovy.html">groovy</a>
-        </p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/12/30/groovy_script_spring_boot_yaml.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/30/groovy_script_spring_boot_yaml.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/30/groovy_script_spring_boot_yaml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div class="paragraph">
-<p>I like to use <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> to write scripts to help me test parts of my application that require a little more set up than a normal unit test should allow
-(think a small-scale integration test).  Often, these scripts take the form of client-based code that establishes a connection to a locally running
-instance of my application and verifies that certain operations produce the desired and expected results.  Recently, I found myself in a situation where
-I wanted to test some <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a>-based code that uses <a href="http://www.thymeleaf.org/" target="_blank">Thymeleaf</a> to generate HTML.  I didn&#8217;t necessarily want to extact the code into a separate library just
-so I could functionally test it outside of my application.  Instead, I decided to take the project&#8217;s JAR file (as the application is a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application)
-and use it as a dependency in my <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script.  This meant that I would need to find a way to set up the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> context, so that all of the required
-dependency injection would take place.  This turned out to not be that difficult:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">import com.test.ApplicationConfiguration
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2014/12/30/groovy_script_spring_boot_yaml.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
-
-...
-
-def activeProfile = 'test'
-
-def ctx = new AnnotationConfigApplicationContext()
-ctx.getEnvironment().setActiveProfiles(activeProfile)
-ctx.register(ApplicationConfiguration)
-ctx.refresh()
-
-...
-
-ctx.close()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In the example above, the script creates an instance of the <code>AnnotationConfigApplicationContext</code> <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> context, sets the active profile, registers my Java-based configuration
-class (from my application&#8217;s JAR) and refreshes the context.  At this point, you can reference any and all beans created by the configuration:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">def bean = ctx.getBean('myBean')</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can obviously use the other variants of the <code>ApplicationContext</code> interface to configure your context (e.g. XML, etc).  In a future post, I will discuss how to leverage the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>
-YAML support from a <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script so that you can leverage your application&#8217;s configuration files when in your script.</p>
-</div></p>
-                <p><a href="/blog2014/12/16/spring_context_groovy_script.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/12/09/email_inline_image_attachments.html"><h1>Use Inline Attachments as Image Sources in HTML Emails with Spring</h1></a>
-                   <p>09 December 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/java.html">java</a>
-        
-                <a href="/blog/tags/spring.html">spring</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div class="paragraph">
-<p>If you are in the need of generating HTML-based e-mails with images, the simple approach is to simply host the image and link to it
-in the HTML.  This will work, but will cause the reciepients (in most e-mail clients) to be prompted as to whether or not they should
-download and show the image.  If you want to avoid this (and therefore the stigma of a perceived security threat), you can include
-the image as an attachment in the e-mail and reference it using the attachment&#8217;s content ID value:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;img src="cid:imageName.png"&gt;&lt;/img&gt;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>When the e-mail client loads the message, it will now resolve the image from the inlined attachments included in the e-mail.  This all
-sounds great, but how do you get the images in the e-mail?  The solution is to combine the
-<a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mail.html" target="_blank">Spring JavaMailSender</a> with the
-<a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/resources.html" target="_blank">Spring Resource interface</a> to
-load and store the image data in the generated e-mail.  The first step is to load the images as <code>Resource</code> objects, either from the
-file system or classpath (in this example, we will use the classpath):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import org.apache.commons.io.IOUtils;
-
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamSource;
-
-...
-
-InputStreamSource imageSource = new ByteArrayResource(IOUtils.toByteArray(getClass().getResourceAsStream("/images/logo.png")))</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The code snippet above uses the <a href="http://commons.apache.org/proper/commons-io/" target=""_blank'">Apache Commons IO library</a> to convert
-the image bytes (read from the classpath via the <code>getResourceAsStream()</code> method) into a byte array.  The byte array is then wrapped
-by the Spring <code>ByteArrayResource</code>, which we will use to create the inline attachment (we could also use the <code>ClassPathResource</code>).  The next
-step is to add the image to the MIME message as an attachment:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import javax.mail.internet.MimeMessage;
-
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
-
-...
-
-JavaMailSender mailSender = new JavaMailSenderImpl();  // Or use Spring IoC to inject a pre-configured JavaMailSenderImpl
-MimeMessage mimeMessage = mailSender.createMimeMessage();
-MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-
-// Add information to the message, such as subject, recipients, etc
-
-message.addInline("logo.png", imageSource);</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>addInline()</code> method of the <code>MimeMessageHelper</code> reads the byte data from the <code>InputStreamSource</code> and creates the inline MIME body part to hold the
-attachment.  It also sets the content ID to the name provided by the first parameter.  Now, all that&#8217;s left is to reference the image in our HTML body:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">message.setText("&lt;img src=\"cid:logo.png\"&gt;&lt;/img&gt;&lt;div&gt;My logo&lt;/div&gt;", true);</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now, when the e-mail is viewed in the reciepient&#8217;s e-mail client, the image will be displayed from the attachments.  Note that this works with most web mail clients, however,
-you should only attach images that are referenced by the HTML body, otherwise they may show up as actual attachments in the e-mail client.</p>
-</div></p>
-                <p><a href="/blog2014/12/09/email_inline_image_attachments.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/12/02/groovy_print_stack_trace.html"><h1>Groovy Meta Method to Print Current Stacktrace</h1></a>
-                   <p>02 December 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/groovy.html">groovy</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div class="paragraph">
-<p>If you find yourself in a situation where you cannot debug your application (from an IDE or via attaching remotely to the executing JVM), you can use a little <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> meta class
-magic to add a method to each class in order to print the current stack of any given line:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">this.class.classLoader.class.classes.each {
-    it.metaClass.printStackTrace = { -&gt;
-        Thread.currentThread().stackTrace.each { element -&gt;
-            println "\tat ${element.className}.${element.methodName}(${element.fileName}:${element.lineNumber})"
-        }
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Once the above code has been executed (preferably from your main class), you can use it anywhere in your <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> application to print the current stack trace:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">class MyClass {
-
-    def method() {
-        printStackTrace()
-
-        ...
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This is particularly useful when trying to track down which of a number of multiple code points might be invoking a given method.</p>
-</div></p>
-                <p><a href="/blog2014/12/02/groovy_print_stack_trace.html#disqus_thread">Comments</a></p>
-
-                <hr />
-
-                <p>Older posts are available in the <a href="/blog/archive.html">archive</a>.</p>
+    <hr>
 
             </div>
             <div id="push"></div>
