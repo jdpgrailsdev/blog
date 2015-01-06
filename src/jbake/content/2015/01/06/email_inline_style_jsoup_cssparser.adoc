@@ -1,0 +1,109 @@
+= Using CSS Parser and JSoup to Inline Styles for Web Mail
+Jonathan Pearlin
+2015-01-06
+:jbake-type: post
+:jbake-tags: java,spring
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: email_inline_image_attachments_spring
+:icons: font
+:campaign_monitor: https://www.campaignmonitor.com/css/[Campaign Monitor CSS Support, window="_blank"]
+:cssparser: http://cssparser.sourceforge.net/[CSS Parser, window="_blank"]
+:jsoup: http://jsoup.org/[JSoup, window="_blank"]
+
+As part of an on-going project, we had a requirement to send pretty (CSS-ified) e-mails to communicate status.  Sending HTML-based e-mails from Java is pretty easy.  There
+are a ton of templating engines out there that can be used to generate HTML.  However, what most people fail to realize is that most web mail providers (e.g. Gmail, Yahoo!, etc) handle a limited
+subset of standard CSS.  You can find out what is supported by looking at {campaign_monitor}.  The first thing you might notice is that almost all of the web mail providers
+do not support CSS classes.  They do, however, support inline style declarations.  Being a good developer, you know that you want to keep all of your CSS in style sheets so
+that you do not have to find and replace styles in multiple templates/files.  This poses a problem if the clients can only support inline styles.  The solution?  A combination
+of {jsoup} and {cssparser} to load and convert a style sheet into inline style declarations.  The solution in this blog post uses {cssparser} to parse a CSS style sheet file
+loaded from the classpath into a set of `CSSSytleRule` objects.  It then uses {jsoup} to walk the DOM in the HTML and find elements that match the rules present in the parsed style sheet.  To start, you
+need to include the {cssparser} and {jsoup} dependencies:
+
+[source,groovy]
+----
+compile 'org.jsoup:jsoup:1.8.1'
+compile 'net.sourceforge.cssparser:cssparser:0.9.14'
+----
+
+Next, create the `CSSOMParser` used to parse the CSS style sheet and load the style sheet from the classpath:
+
+[source,java]
+----
+import com.steadystate.css.parser.CSSOMParser;
+
+import org.w3c.dom.css.CSSStyleSheet;
+
+...
+
+CSSOMParser parser = new CSSOMParser();
+CSSStyleSheet stylesheet = parser.parseStyleSheet(new InputSource(new InputStreamReader(getClass().getResourceAsStream("/css/styles.css"))), null, null);
+----
+
+Now that we have our style sheet loaded and parsed, we can use the following code to walk the DOM and add inline style declarations
+to elements that match the rules contained in the style sheet:
+
+[source,java]
+----
+final Document document = Jsoup.parse(originalHtml);
+final CSSRuleList rules = stylesheet.getCssRules();
+final Map<Element, Map<String, String>> elementStyles = new HashMap<>();
+
+/*
+ * For each rule in the style sheet, find all HTML elements that match
+ * based on its selector and store the style attributes in the map with
+ * the selected element as the key.
+ */
+for (int i = 0; i < rules.getLength(); i++) {
+    final CSSRule rule = rules.item(i);
+    if (rule instanceof CSSStyleRule) {
+        final CSSStyleRule styleRule = (CSSStyleRule) rule;
+        final String selector = styleRule.getSelectorText();
+
+        // Ignore pseudo classes, as JSoup's selector cannot handle
+        // them.
+        if (!selector.contains(":")) {
+            final Elements selectedElements = document.select(selector);
+            for (final Element selected : selectedElements) {
+                if (!elementStyles.containsKey(selected)) {
+                    elementStyles.put(selected, new LinkedHashMap<String, String>());
+                }
+
+                final CSSStyleDeclaration styleDeclaration = styleRule.getStyle();
+
+                for (int j = 0; j < styleDeclaration.getLength(); j++) {
+                    final String propertyName = styleDeclaration.item(j);
+                    final String propertyValue = styleDeclaration.getPropertyValue(propertyName);
+                    final Map<String, String> elementStyle = elementStyles.get(selected);
+                    elementStyle.put(propertyName, propertyValue);
+                }
+
+            }
+        }
+    }
+}
+
+/*
+ * Apply the style attributes to each element and remove the "class"
+ * attribute.
+ */
+for (final Map.Entry<Element, Map<String, String>> elementEntry : elementStyles.entrySet()) {
+    final Element element = elementEntry.getKey();
+    final StringBuilder builder = new StringBuilder();
+    for (final Map.Entry<String, String> styleEntry : elementEntry.getValue().entrySet()) {
+        builder.append(styleEntry.getKey()).append(":").append(styleEntry.getValue()).append(";");
+    }
+    builder.append(element.attr("style"));
+    element.attr("style", builder.toString());
+    element.removeAttr("class");
+}
+
+System.out.println(document.html());
+----
+
+One important thing to note in the code above is that {jsoup} cannot handle pseudo classes in selectors.  Therefore, any
+selector that contains a colon (":") is ignored.  Otherwise, each selector contained in the parsed sytle sheet is applied
+to the HTML.  Inline styles are appended to each other, so ordering in your CSS stylesheet matters!  The output of the
+code above is the modified HTML with all styles that could be applied converted to inline style declarations.  Now, when
+this HTML is interpreted in a web mail client, it will look as it was intended to look by the developer.
