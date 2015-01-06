@@ -6,13 +6,121 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 30 Dec 2014 07:51:55 -0800</pubDate>
-        <lastBuildDate>Tue, 30 Dec 2014 07:51:55 -0800</lastBuildDate>
+        <pubDate>Tue, 6 Jan 2015 07:37:28 -0800</pubDate>
+        <lastBuildDate>Tue, 6 Jan 2015 07:37:28 -0800</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Using CSS Parser and JSoup to Inline Styles for Web Mail</title>
+            <link>http://jdpgrailsdev.github.io/blog/2015/01/06/email_inline_style_jsoup_cssparser.html</link>
+            <pubDate>Tue, 6 Jan 2015 00:00:00 -0800</pubDate>
+            <guid isPermaLink="false">2015/01/06/email_inline_style_jsoup_cssparser.html</guid>
+            <description>
+                    &lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;As part of an on-going project, we had a requirement to send pretty (CSS-ified) e-mails to communicate status.  Sending HTML-based e-mails from Java is pretty easy.  There
+are a ton of templating engines out there that can be used to generate HTML.  However, what most people fail to realize is that most web mail providers (e.g. Gmail, Yahoo!, etc) handle a limited
+subset of standard CSS.  You can find out what is supported by looking at &lt;a href=&quot;https://www.campaignmonitor.com/css/&quot; target=&quot;_blank&quot;&gt;Campaign Monitor CSS Support&lt;/a&gt;.  The first thing you might notice is that almost all of the web mail providers
+do not support CSS classes.  They do, however, support inline style declarations.  Being a good developer, you know that you want to keep all of your CSS in style sheets so
+that you do not have to find and replace styles in multiple templates/files.  This poses a problem if the clients can only support inline styles.  The solution?  A combination
+of &lt;a href=&quot;http://jsoup.org/&quot; target=&quot;_blank&quot;&gt;JSoup&lt;/a&gt; and &lt;a href=&quot;http://cssparser.sourceforge.net/&quot; target=&quot;_blank&quot;&gt;CSS Parser&lt;/a&gt; to load and convert a style sheet into inline style declarations.  The solution in this blog post uses &lt;a href=&quot;http://cssparser.sourceforge.net/&quot; target=&quot;_blank&quot;&gt;CSS Parser&lt;/a&gt; to parse a CSS style sheet file
+loaded from the classpath into a set of &lt;code&gt;CSSSytleRule&lt;/code&gt; objects.  It then uses &lt;a href=&quot;http://jsoup.org/&quot; target=&quot;_blank&quot;&gt;JSoup&lt;/a&gt; to walk the DOM in the HTML and find elements that match the rules present in the parsed style sheet.  To start, you
+need to include the &lt;a href=&quot;http://cssparser.sourceforge.net/&quot; target=&quot;_blank&quot;&gt;CSS Parser&lt;/a&gt; and &lt;a href=&quot;http://jsoup.org/&quot; target=&quot;_blank&quot;&gt;JSoup&lt;/a&gt; dependencies:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;compile &apos;org.jsoup:jsoup:1.8.1&apos;
+compile &apos;net.sourceforge.cssparser:cssparser:0.9.14&apos;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Next, create the &lt;code&gt;CSSOMParser&lt;/code&gt; used to parse the CSS style sheet and load the style sheet from the classpath:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;import com.steadystate.css.parser.CSSOMParser;
+
+import org.w3c.dom.css.CSSStyleSheet;
+
+...
+
+CSSOMParser parser = new CSSOMParser();
+CSSStyleSheet stylesheet = parser.parseStyleSheet(new InputSource(new InputStreamReader(getClass().getResourceAsStream(&quot;/css/styles.css&quot;))), null, null);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Now that we have our style sheet loaded and parsed, we can use the following code to walk the DOM and add inline style declarations
+to elements that match the rules contained in the style sheet:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;final Document document = Jsoup.parse(originalHtml);
+final CSSRuleList rules = stylesheet.getCssRules();
+final Map&amp;lt;Element, Map&amp;lt;String, String&amp;gt;&amp;gt; elementStyles = new HashMap&amp;lt;&amp;gt;();
+
+/*
+ * For each rule in the style sheet, find all HTML elements that match
+ * based on its selector and store the style attributes in the map with
+ * the selected element as the key.
+ */
+for (int i = 0; i &amp;lt; rules.getLength(); i++) {
+    final CSSRule rule = rules.item(i);
+    if (rule instanceof CSSStyleRule) {
+        final CSSStyleRule styleRule = (CSSStyleRule) rule;
+        final String selector = styleRule.getSelectorText();
+
+        // Ignore pseudo classes, as JSoup&apos;s selector cannot handle
+        // them.
+        if (!selector.contains(&quot;:&quot;)) {
+            final Elements selectedElements = document.select(selector);
+            for (final Element selected : selectedElements) {
+                if (!elementStyles.containsKey(selected)) {
+                    elementStyles.put(selected, new LinkedHashMap&amp;lt;String, String&amp;gt;());
+                }
+
+                final CSSStyleDeclaration styleDeclaration = styleRule.getStyle();
+
+                for (int j = 0; j &amp;lt; styleDeclaration.getLength(); j++) {
+                    final String propertyName = styleDeclaration.item(j);
+                    final String propertyValue = styleDeclaration.getPropertyValue(propertyName);
+                    final Map&amp;lt;String, String&amp;gt; elementStyle = elementStyles.get(selected);
+                    elementStyle.put(propertyName, propertyValue);
+                }
+
+            }
+        }
+    }
+}
+
+/*
+ * Apply the style attributes to each element and remove the &quot;class&quot;
+ * attribute.
+ */
+for (final Map.Entry&amp;lt;Element, Map&amp;lt;String, String&amp;gt;&amp;gt; elementEntry : elementStyles.entrySet()) {
+    final Element element = elementEntry.getKey();
+    final StringBuilder builder = new StringBuilder();
+    for (final Map.Entry&amp;lt;String, String&amp;gt; styleEntry : elementEntry.getValue().entrySet()) {
+        builder.append(styleEntry.getKey()).append(&quot;:&quot;).append(styleEntry.getValue()).append(&quot;;&quot;);
+    }
+    builder.append(element.attr(&quot;style&quot;));
+    element.attr(&quot;style&quot;, builder.toString());
+    element.removeAttr(&quot;class&quot;);
+}
+
+System.out.println(document.html());&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;One important thing to note in the code above is that &lt;a href=&quot;http://jsoup.org/&quot; target=&quot;_blank&quot;&gt;JSoup&lt;/a&gt; cannot handle pseudo classes in selectors.  Therefore, any
+selector that contains a colon (&quot;:&quot;) is ignored.  Otherwise, each selector contained in the parsed sytle sheet is applied
+to the HTML.  Inline styles are appended to each other, so ordering in your CSS stylesheet matters!  The output of the
+code above is the modified HTML with all styles that could be applied converted to inline style declarations.  Now, when
+this HTML is interpreted in a web mail client, it will look as it was intended to look by the developer.&lt;/p&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Leverage Spring Boot&amp;#8217;s YAML Configuration Files in Groovy Scripts</title>
             <link>http://jdpgrailsdev.github.io/blog/2014/12/30/groovy_script_spring_boot_yaml.html</link>
@@ -362,181 +470,6 @@ magic to add a method to each class in order to print the current stack of any g
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;This is particularly useful when trying to track down which of a number of multiple code points might be invoking a given method.&lt;/p&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Execute Functional Tests in a Docker Container with Gradle (Part 2)</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/11/25/functional_tests_gradle_docker_part_ii.html</link>
-            <pubDate>Tue, 25 Nov 2014 00:00:00 -0800</pubDate>
-            <guid isPermaLink="false">2014/11/25/functional_tests_gradle_docker_part_ii.html</guid>
-            <description>
-                    &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;In &lt;a href=&quot;http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html&quot; target=&quot;_blank&quot;&gt;part one&lt;/a&gt; of this blog post, I discussed how to
-build a functional test using &lt;a href=&quot;https://code.google.com/p/spock/&quot; target=&quot;_blank&quot;&gt;Spock&lt;/a&gt; and &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt;.  Normally, this is all that you would need to be able to test the part of your application that relies
-on a data source.  However, what can you do if you find yourself in a situation where you do not have access to dependencies or the repositories that provide
-them?  The solution is to bundle your tests along with the dependencies and execute them as an application.  In this post, I will discuss how I accomplished
-such a solution using &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; and &lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt;.  First, let&amp;#8217;s look at the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; build script:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;apply plugin: &apos;groovy&apos;
-apply plugin: &apos;jetty&apos;
-
-ext {
-    webSourceDir = &quot;$buildDir/www&quot;
-    imageName = &quot;${rootProject.name}-functional-tests&quot;
-    springVersion = &apos;4.0.7.RELEASE&apos;
-}
-
-sourceSets {
-    funcTest {
-        groovy {
-            srcDir file(&apos;src/functionalTest/groovy&apos;)
-        }
-    }
-}
-
-eclipse {
-    classpath {
-        downloadSources = true
-        defaultOutputDir = file(&quot;$buildDir/classes&quot;)
-    }
-    project {
-        name = &quot;${rootProject.name}-functional-tests&quot;
-    }
-}
-
-eclipseJdt.enabled = false
-cleanEclipseJdt.enabled = false
-
-jettyRun {
-    httpPort = System.getenv(&apos;PORT&apos;) ? System.getenv(&apos;PORT&apos;) as int : 8080
-    contextPath = &apos;status/check&apos;
-    webAppSourceDirectory = file(webSourceDir)
-}
-
-dependencies {
-    compile project(&apos;:app&apos;)		// include the code that is needed to execute the tests (e.g., any entity classes, etc)
-
-    testCompile &apos;junit:junit:4.11&apos;
-    testCompile &apos;cglib:cglib-nodep:3.1&apos;
-    testCompile &apos;org.objenesis:objenesis:2.1&apos;
-    testCompile &apos;org.spockframework:spock-core:0.7-groovy-2.0&apos;
-    testCompile &apos;org.spockframework:spock-spring:0.7-groovy-2.0&apos;
-    testCompile &quot;org.springframework:spring-test:${springVersion}&quot;
-
-    funcTestCompile sourceSets.main.output
-    funcTestCompile configurations.testCompile
-    funcTestRuntime configurations.testRuntime
-}
-
-task buildDist(type: Tar, group:&apos;Build&apos;, description: &apos;Builds the Tar distribution of the project.&apos;) {
-    archiveName = &quot;${rootProject.name}-functional-tests.tar&quot;
-    from(&apos;bin&apos;) {
-        into(&apos;bin&apos;)
-    }
-    from(rootProject.projectDir) {
-        exclude(&apos;**/build/**&apos;)
-        exclude(&apos;**/*.tar&apos;)
-        exclude(&apos;**/.gradle/**&apos;)
-    }
-}
-
-task funcTest(type: Test, group:&apos;Verification&apos;, description: &apos;Runs the functional tests.&apos;) {
-    testClassesDir = sourceSets.funcTest.output.classesDir
-    classpath = sourceSets.funcTest.runtimeClasspath
-    jvmArgs = [&apos;-Duser.timezone=UTC&apos;]
-    environment = [:] // any necessary env vars for the test
-}
-
-task resolveDependencies {
-    doLast {
-        project.rootProject.allprojects.each { subProject -&amp;gt;
-            subProject.buildscript.configurations.each { configuration -&amp;gt;
-                configuration.resolve()
-            }
-            subProject.configurations.each { configuration -&amp;gt;
-                configuration.resolve()
-            }
-        }
-    }
-}
-
-task createWebSourceDir {
-    doLast {
-        new File(webSourceDir).mkdirs()
-    }
-}
-
-task collectTestResults(type:Tar, group:&apos;Verification&apos;, dependsOn:[&apos;createWebSourceDir&apos;, &apos;funcTest&apos;], description: &apos;Generates a tarball of the collected test report.&apos;) {
-    archiveName = &apos;functional-test-reports.tar&apos;
-    destinationDir = file(webSourceDir)
-    from(&quot;$buildDir/reports/tests&quot;) {
-        into(&apos;reports/tests&apos;)
-    }
-    from(&quot;$buildDir/test-results&quot;) {
-        into(&apos;test-results&apos;)
-    }
-}
-
-task execute(dependsOn:[&apos;jettyRun&apos;])
-
-/*
- * Ensure that the tests are always executed
- */
-project.tasks.collectTestResults.outputs.upToDateWhen { false }
-project.tasks.funcTest.outputs.upToDateWhen { false }
-project.tasks.resolveDependencies.outputs.upToDateWhen { false }
-build.finalizedBy(project.tasks.buildDist)
-project.tasks.buildDist.dependsOn([&apos;build&apos;])
-project.tasks.jettyRun.dependsOn([&apos;collectTestResults&apos;])&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The script above has three very interesting parts:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;ulist&quot;&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;A custom &lt;code&gt;test&lt;/code&gt; task that runs all of the functional tests defined by the &lt;code&gt;funcTest&lt;/code&gt; configuration.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The inclusion of the &lt;a href=&quot;http://www.gradle.org/docs/current/userguide/jetty_plugin.html&quot; target=&quot;_blank&quot;&gt;Gradle Jetty Plugin&lt;/a&gt; to expose the test reports.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;A custom task (&lt;code&gt;resolveDependencies&lt;/code&gt;) that will ensure that all the required dependencies are resolved and included when building the &lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; image.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Now let&amp;#8217;s look at the &lt;code&gt;Dockerfile&lt;/code&gt; for the functional tests before tying it all together.  Below is a simple &lt;code&gt;Dockerfile&lt;/code&gt;:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code&gt;FROM registry.hub.docker.com/your-base-image:latest
-
-# Install the functional tests
-RUN mkdir /var/tests
-ADD build/distributions/my-functional-tests.tar /var/tests
-RUN chmod +x /var/tests/bin/functional-tests.sh
-
-# Force Gradle to download all of its dependencies at image build time!
-RUN rm -rf /root/.gradle
-RUN cd /var/tests &amp;amp;&amp;amp; ./gradlew --refresh-dependencies resolveDependencies &amp;gt; /dev/null
-
-EXPOSE 8080
-CMD [&quot;cd /var/tests &amp;amp;&amp;amp; ./gradlew --offline clean execute&quot;]&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The &lt;code&gt;Dockerfile&lt;/code&gt; extracts the contents of the TAR into the &lt;code&gt;/var/tests&lt;/code&gt; folder inside the &lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; image.  Once extracted, the &lt;code&gt;Dockerfile&lt;/code&gt; also invokes the &lt;code&gt;resolveDepednencies&lt;/code&gt; custom task
-that we saw in the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; build script above.  Because the &lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; image is being built on a machine that has access to our dependency repositories, it can resolve
-everything needed at image creation time.  By resolving the dependencies at this point, we guarantee that the dependencies have been downloaded and cached by &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; inside of the
-&lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; image.  The final piece of the puzzle is the &lt;code&gt;CMD&lt;/code&gt; directive, which runs the custom &lt;code&gt;execute&lt;/code&gt; task from the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; build script.  As we saw above, the &lt;code&gt;execute&lt;/code&gt; task launches Jetty, which in turn
-launches the functional tests via the &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; task dependency set up in the script.  Upon successful completion of the tests, the test reports generated by &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; are exposed by Jetty so that they can be
-viewed/copied/etc.  By tying all of these pieces together, we have created a stand-alone &lt;a href=&quot;https://www.docker.com/&quot; target=&quot;_blank&quot;&gt;Docker&lt;/a&gt; image capable of executing functional tests
-using &lt;a href=&quot;http://gradle.org&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; in an environment that does not have the ability to resolve dependencies!&lt;/p&gt;
 &lt;/div&gt;
             </description>
         </item>

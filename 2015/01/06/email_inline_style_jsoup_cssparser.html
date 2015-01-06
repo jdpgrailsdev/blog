@@ -87,74 +87,135 @@
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: spring</h1>
+        <h1>Using CSS Parser and JSoup to Inline Styles for Web Mail</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>January 2015</h4>
-            <ul>
+    <p><em>06 January 2015</em></p>
 
-        <li>06 - <a href="/blog/2015/01/06/email_inline_style_jsoup_cssparser.html">Using CSS Parser and JSoup to Inline Styles for Web Mail</a></li>
-                </ul>
-                <h4>December 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/01/06/email_inline_style_jsoup_cssparser.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/06/email_inline_style_jsoup_cssparser.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/06/email_inline_style_jsoup_cssparser.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>30 - <a href="/blog/2014/12/30/groovy_script_spring_boot_yaml.html">Leverage Spring Boot&#8217;s YAML Configuration Files in Groovy Scripts</a></li>
+    <p><div class="paragraph">
+<p>As part of an on-going project, we had a requirement to send pretty (CSS-ified) e-mails to communicate status.  Sending HTML-based e-mails from Java is pretty easy.  There
+are a ton of templating engines out there that can be used to generate HTML.  However, what most people fail to realize is that most web mail providers (e.g. Gmail, Yahoo!, etc) handle a limited
+subset of standard CSS.  You can find out what is supported by looking at <a href="https://www.campaignmonitor.com/css/" target="_blank">Campaign Monitor CSS Support</a>.  The first thing you might notice is that almost all of the web mail providers
+do not support CSS classes.  They do, however, support inline style declarations.  Being a good developer, you know that you want to keep all of your CSS in style sheets so
+that you do not have to find and replace styles in multiple templates/files.  This poses a problem if the clients can only support inline styles.  The solution?  A combination
+of <a href="http://jsoup.org/" target="_blank">JSoup</a> and <a href="http://cssparser.sourceforge.net/" target="_blank">CSS Parser</a> to load and convert a style sheet into inline style declarations.  The solution in this blog post uses <a href="http://cssparser.sourceforge.net/" target="_blank">CSS Parser</a> to parse a CSS style sheet file
+loaded from the classpath into a set of <code>CSSSytleRule</code> objects.  It then uses <a href="http://jsoup.org/" target="_blank">JSoup</a> to walk the DOM in the HTML and find elements that match the rules present in the parsed style sheet.  To start, you
+need to include the <a href="http://cssparser.sourceforge.net/" target="_blank">CSS Parser</a> and <a href="http://jsoup.org/" target="_blank">JSoup</a> dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">compile 'org.jsoup:jsoup:1.8.1'
+compile 'net.sourceforge.cssparser:cssparser:0.9.14'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, create the <code>CSSOMParser</code> used to parse the CSS style sheet and load the style sheet from the classpath:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import com.steadystate.css.parser.CSSOMParser;
 
-        <li>16 - <a href="/blog/2014/12/16/spring_context_groovy_script.html">Spring Application Context and Groovy Scripts</a></li>
+import org.w3c.dom.css.CSSStyleSheet;
 
-        <li>09 - <a href="/blog/2014/12/09/email_inline_image_attachments.html">Use Inline Attachments as Image Sources in HTML Emails with Spring</a></li>
-                </ul>
-                <h4>November 2014</h4>
-                <ul>
+...
 
-        <li>11 - <a href="/blog/2014/11/11/spring_boot_health_indicators_auto_config.html">Auto Configure Health Indicators in Spring Boot</a></li>
-                </ul>
-                <h4>October 2014</h4>
-                <ul>
+CSSOMParser parser = new CSSOMParser();
+CSSStyleSheet stylesheet = parser.parseStyleSheet(new InputSource(new InputStreamReader(getClass().getResourceAsStream("/css/styles.css"))), null, null);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now that we have our style sheet loaded and parsed, we can use the following code to walk the DOM and add inline style declarations
+to elements that match the rules contained in the style sheet:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">final Document document = Jsoup.parse(originalHtml);
+final CSSRuleList rules = stylesheet.getCssRules();
+final Map&lt;Element, Map&lt;String, String&gt;&gt; elementStyles = new HashMap&lt;&gt;();
 
-        <li>14 - <a href="/blog/2014/10/14/spring_boot_gradle_git_info.html">Include Git Commit Info in Spring Boot Application with Gradle</a></li>
+/*
+ * For each rule in the style sheet, find all HTML elements that match
+ * based on its selector and store the style attributes in the map with
+ * the selected element as the key.
+ */
+for (int i = 0; i &lt; rules.getLength(); i++) {
+    final CSSRule rule = rules.item(i);
+    if (rule instanceof CSSStyleRule) {
+        final CSSStyleRule styleRule = (CSSStyleRule) rule;
+        final String selector = styleRule.getSelectorText();
 
-        <li>07 - <a href="/blog/2014/10/07/spring_boot_jetty_thread_pool.html">Configure Jetty&#8217;s Thread Pool in a Spring Boot Application</a></li>
-                </ul>
-                <h4>September 2014</h4>
-                <ul>
+        // Ignore pseudo classes, as JSoup's selector cannot handle
+        // them.
+        if (!selector.contains(":")) {
+            final Elements selectedElements = document.select(selector);
+            for (final Element selected : selectedElements) {
+                if (!elementStyles.containsKey(selected)) {
+                    elementStyles.put(selected, new LinkedHashMap&lt;String, String&gt;());
+                }
 
-        <li>30 - <a href="/blog/2014/09/30/spring_boot_jetty_jmx.html">Expose Jetty MBeans via JMX in a Spring Boot Application</a></li>
+                final CSSStyleDeclaration styleDeclaration = styleRule.getStyle();
 
-        <li>09 - <a href="/blog/2014/09/09/spring_data_hibernate_join.html">Avoid Hibernate N+1 Problem with Joins in Spring-Data/JPA</a></li>
-                </ul>
-                <h4>July 2014</h4>
-                <ul>
+                for (int j = 0; j &lt; styleDeclaration.getLength(); j++) {
+                    final String propertyName = styleDeclaration.item(j);
+                    final String propertyValue = styleDeclaration.getPropertyValue(propertyName);
+                    final Map&lt;String, String&gt; elementStyle = elementStyles.get(selected);
+                    elementStyle.put(propertyName, propertyValue);
+                }
 
-        <li>29 - <a href="/blog/2014/07/29/spring_boot_integration_tests.html">Leveraging Spring Boot Starters in Unit/Integration Tests</a></li>
+            }
+        }
+    }
+}
 
-        <li>22 - <a href="/blog/2014/07/22/gradle_build_scripts_classpath.html">Discovering Gradle build scripts from classpath</a></li>
+/*
+ * Apply the style attributes to each element and remove the "class"
+ * attribute.
+ */
+for (final Map.Entry&lt;Element, Map&lt;String, String&gt;&gt; elementEntry : elementStyles.entrySet()) {
+    final Element element = elementEntry.getKey();
+    final StringBuilder builder = new StringBuilder();
+    for (final Map.Entry&lt;String, String&gt; styleEntry : elementEntry.getValue().entrySet()) {
+        builder.append(styleEntry.getKey()).append(":").append(styleEntry.getValue()).append(";");
+    }
+    builder.append(element.attr("style"));
+    element.attr("style", builder.toString());
+    element.removeAttr("class");
+}
 
-        <li>15 - <a href="/blog/2014/07/15/spring_boot_remote_debug.html">Remote debugging a Spring Boot application launched by the Gradle plugin</a></li>
+System.out.println(document.html());</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>One important thing to note in the code above is that <a href="http://jsoup.org/" target="_blank">JSoup</a> cannot handle pseudo classes in selectors.  Therefore, any
+selector that contains a colon (":") is ignored.  Otherwise, each selector contained in the parsed sytle sheet is applied
+to the HTML.  Inline styles are appended to each other, so ordering in your CSS stylesheet matters!  The output of the
+code above is the modified HTML with all styles that could be applied converted to inline style declarations.  Now, when
+this HTML is interpreted in a web mail client, it will look as it was intended to look by the developer.</p>
+</div></p>
 
-        <li>08 - <a href="/blog/2014/07/08/spring_boot_env_vars.html">Setting system properties/environment variables with Spring Boot and Gradle</a></li>
-                </ul>
-                <h4>June 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2015/01/06/email_inline_style_jsoup_cssparser.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/06/email_inline_style_jsoup_cssparser.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/06/email_inline_style_jsoup_cssparser.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>03 - <a href="/blog/2014/06/03/spring_boot_jersey_2.html">Spring Boot, Jersey and Lazy Initialization</a></li>
-                </ul>
-                <h4>April 2014</h4>
-                <ul>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2015/01/06/email_inline_style_jsoup_cssparser.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-        <li>08 - <a href="/blog/2014/04/08/spring_boot_gradle_newrelic.html">Using the New Relic agent with Spring-Boot and Gradle</a></li>
-                </ul>
-                <h4>March 2014</h4>
-                <ul>
-
-        <li>18 - <a href="/blog/2014/03/18/grails_bean_builder.html">Parsing the Grails Spring Beans DSL with Groovy</a></li>
-                </ul>
-                <h4>February 2014</h4>
-                <ul>
-
-        <li>19 - <a href="/blog/2014/02/19/spring_curator.html">Spring and Apache Curator</a></li>
-    </ul>
+    <hr>
 
             </div>
             <div id="push"></div>

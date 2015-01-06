@@ -90,6 +90,119 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog/2015/01/06/email_inline_style_jsoup_cssparser.html"><h1>Using CSS Parser and JSoup to Inline Styles for Web Mail</h1></a>
+                   <p>06 January 2015</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/java.html">java</a>
+        
+                <a href="/blog/tags/spring.html">spring</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/01/06/email_inline_style_jsoup_cssparser.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/06/email_inline_style_jsoup_cssparser.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/06/email_inline_style_jsoup_cssparser.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div class="paragraph">
+<p>As part of an on-going project, we had a requirement to send pretty (CSS-ified) e-mails to communicate status.  Sending HTML-based e-mails from Java is pretty easy.  There
+are a ton of templating engines out there that can be used to generate HTML.  However, what most people fail to realize is that most web mail providers (e.g. Gmail, Yahoo!, etc) handle a limited
+subset of standard CSS.  You can find out what is supported by looking at <a href="https://www.campaignmonitor.com/css/" target="_blank">Campaign Monitor CSS Support</a>.  The first thing you might notice is that almost all of the web mail providers
+do not support CSS classes.  They do, however, support inline style declarations.  Being a good developer, you know that you want to keep all of your CSS in style sheets so
+that you do not have to find and replace styles in multiple templates/files.  This poses a problem if the clients can only support inline styles.  The solution?  A combination
+of <a href="http://jsoup.org/" target="_blank">JSoup</a> and <a href="http://cssparser.sourceforge.net/" target="_blank">CSS Parser</a> to load and convert a style sheet into inline style declarations.  The solution in this blog post uses <a href="http://cssparser.sourceforge.net/" target="_blank">CSS Parser</a> to parse a CSS style sheet file
+loaded from the classpath into a set of <code>CSSSytleRule</code> objects.  It then uses <a href="http://jsoup.org/" target="_blank">JSoup</a> to walk the DOM in the HTML and find elements that match the rules present in the parsed style sheet.  To start, you
+need to include the <a href="http://cssparser.sourceforge.net/" target="_blank">CSS Parser</a> and <a href="http://jsoup.org/" target="_blank">JSoup</a> dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">compile 'org.jsoup:jsoup:1.8.1'
+compile 'net.sourceforge.cssparser:cssparser:0.9.14'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, create the <code>CSSOMParser</code> used to parse the CSS style sheet and load the style sheet from the classpath:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import com.steadystate.css.parser.CSSOMParser;
+
+import org.w3c.dom.css.CSSStyleSheet;
+
+...
+
+CSSOMParser parser = new CSSOMParser();
+CSSStyleSheet stylesheet = parser.parseStyleSheet(new InputSource(new InputStreamReader(getClass().getResourceAsStream("/css/styles.css"))), null, null);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now that we have our style sheet loaded and parsed, we can use the following code to walk the DOM and add inline style declarations
+to elements that match the rules contained in the style sheet:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">final Document document = Jsoup.parse(originalHtml);
+final CSSRuleList rules = stylesheet.getCssRules();
+final Map&lt;Element, Map&lt;String, String&gt;&gt; elementStyles = new HashMap&lt;&gt;();
+
+/*
+ * For each rule in the style sheet, find all HTML elements that match
+ * based on its selector and store the style attributes in the map with
+ * the selected element as the key.
+ */
+for (int i = 0; i &lt; rules.getLength(); i++) {
+    final CSSRule rule = rules.item(i);
+    if (rule instanceof CSSStyleRule) {
+        final CSSStyleRule styleRule = (CSSStyleRule) rule;
+        final String selector = styleRule.getSelectorText();
+
+        // Ignore pseudo classes, as JSoup's selector cannot handle
+        // them.
+        if (!selector.contains(":")) {
+            final Elements selectedElements = document.select(selector);
+            for (final Element selected : selectedElements) {
+                if (!elementStyles.containsKey(selected)) {
+                    elementStyles.put(selected, new LinkedHashMap&lt;String, String&gt;());
+                }
+
+                final CSSStyleDeclaration styleDeclaration = styleRule.getStyle();
+
+                for (int j = 0; j &lt; styleDeclaration.getLength(); j++) {
+                    final String propertyName = styleDeclaration.item(j);
+                    final String propertyValue = styleDeclaration.getPropertyValue(propertyName);
+                    final Map&lt;String, String&gt; elementStyle = elementStyles.get(selected);
+                    elementStyle.put(propertyName, propertyValue);
+                }
+
+            }
+        }
+    }
+}
+
+/*
+ * Apply the style attributes to each element and remove the "class"
+ * attribute.
+ */
+for (final Map.Entry&lt;Element, Map&lt;String, String&gt;&gt; elementEntry : elementStyles.entrySet()) {
+    final Element element = elementEntry.getKey();
+    final StringBuilder builder = new StringBuilder();
+    for (final Map.Entry&lt;String, String&gt; styleEntry : elementEntry.getValue().entrySet()) {
+        builder.append(styleEntry.getKey()).append(":").append(styleEntry.getValue()).append(";");
+    }
+    builder.append(element.attr("style"));
+    element.attr("style", builder.toString());
+    element.removeAttr("class");
+}
+
+System.out.println(document.html());</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>One important thing to note in the code above is that <a href="http://jsoup.org/" target="_blank">JSoup</a> cannot handle pseudo classes in selectors.  Therefore, any
+selector that contains a colon (":") is ignored.  Otherwise, each selector contained in the parsed sytle sheet is applied
+to the HTML.  Inline styles are appended to each other, so ordering in your CSS stylesheet matters!  The output of the
+code above is the modified HTML with all styles that could be applied converted to inline style declarations.  Now, when
+this HTML is interpreted in a web mail client, it will look as it was intended to look by the developer.</p>
+</div></p>
+                <p><a href="/blog2015/01/06/email_inline_style_jsoup_cssparser.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2014/12/30/groovy_script_spring_boot_yaml.html"><h1>Leverage Spring Boot&#8217;s YAML Configuration Files in Groovy Scripts</h1></a>
                    <p>30 December 2014</p>
                 <p><em>Tags: </em>
@@ -416,50 +529,6 @@ attachment.  It also sets the content ID to the name provided by the first param
 you should only attach images that are referenced by the HTML body, otherwise they may show up as actual attachments in the e-mail client.</p>
 </div></p>
                 <p><a href="/blog2014/12/09/email_inline_image_attachments.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/12/02/groovy_print_stack_trace.html"><h1>Groovy Meta Method to Print Current Stacktrace</h1></a>
-                   <p>02 December 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/groovy.html">groovy</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div class="paragraph">
-<p>If you find yourself in a situation where you cannot debug your application (from an IDE or via attaching remotely to the executing JVM), you can use a little <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> meta class
-magic to add a method to each class in order to print the current stack of any given line:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">this.class.classLoader.class.classes.each {
-    it.metaClass.printStackTrace = { -&gt;
-        Thread.currentThread().stackTrace.each { element -&gt;
-            println "\tat ${element.className}.${element.methodName}(${element.fileName}:${element.lineNumber})"
-        }
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Once the above code has been executed (preferably from your main class), you can use it anywhere in your <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> application to print the current stack trace:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">class MyClass {
-
-    def method() {
-        printStackTrace()
-
-        ...
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This is particularly useful when trying to track down which of a number of multiple code points might be invoking a given method.</p>
-</div></p>
-                <p><a href="/blog2014/12/02/groovy_print_stack_trace.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
