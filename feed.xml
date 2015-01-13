@@ -6,13 +6,48 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 6 Jan 2015 07:37:28 -0800</pubDate>
-        <lastBuildDate>Tue, 6 Jan 2015 07:37:28 -0800</lastBuildDate>
+        <pubDate>Tue, 13 Jan 2015 07:45:44 -0800</pubDate>
+        <lastBuildDate>Tue, 13 Jan 2015 07:45:44 -0800</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Check Jenkins Job Status via REST API</title>
+            <link>http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html</link>
+            <pubDate>Wed, 7 Jan 2015 00:00:00 -0800</pubDate>
+            <guid isPermaLink="false">2015/01/13/jenkins_check_job_status.html</guid>
+            <description>
+                    &lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;There are a ton of &lt;a href=&quot;http://jenkins-ci.org/&quot; target=&quot;_blank&quot;&gt;Jenkins&lt;/a&gt; plugins out there that let you control when a job should run based on the status of
+other builds.  However, plugins typically become out of date pretty quickly.  If you don&amp;#8217;t want to have to play
+the plugin update game, you can use a little bash magic to leverage the &lt;a href=&quot;http://jenkins-ci.org/&quot; target=&quot;_blank&quot;&gt;Jenkins&lt;/a&gt; REST API to check the status
+of other jobs before running your builds.  Let&amp;#8217;s assume that you have a job named &lt;code&gt;other-job&lt;/code&gt; that must be in
+a success state in order for another job to execute.  You can check the status of the &lt;code&gt;other-job&lt;/code&gt; by using
+the &lt;a href=&quot;http://jenkins-ci.org/&quot; target=&quot;_blank&quot;&gt;Jenkins&lt;/a&gt; REST API as part of an executed shell in the job&amp;#8217;s configuration:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;job_status=`curl https://jenkins/view/job/other-job/lastBuild/api/json | grep &quot;\&quot;result\&quot;:\&quot;SUCCESS\&quot;&quot;`
+
+if [ -n &quot;$job_status&quot; ]
+then
+    # Run your script commands here
+else
+  echo &quot;BUILD FAILURE: Other build is unsuccessful or status could not be obtained.&quot;
+  exit 1
+fi&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The &lt;code&gt;then&lt;/code&gt; block of this other job could even do something like invoke another build that has a parameterized configuration to run your
+actual build via the REST API.  This would allow you to have the job with the configuration above check the status of &lt;code&gt;other-job&lt;/code&gt; first
+and then kick of a third job that actual performs the build, but only if the first job is successful, all without
+installing any additional plugins.&lt;/p&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Using CSS Parser and JSoup to Inline Styles for Web Mail</title>
             <link>http://jdpgrailsdev.github.io/blog/2015/01/06/email_inline_style_jsoup_cssparser.html</link>
@@ -429,47 +464,6 @@ attachment.  It also sets the content ID to the name provided by the first param
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;Now, when the e-mail is viewed in the reciepient&amp;#8217;s e-mail client, the image will be displayed from the attachments.  Note that this works with most web mail clients, however,
 you should only attach images that are referenced by the HTML body, otherwise they may show up as actual attachments in the e-mail client.&lt;/p&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Groovy Meta Method to Print Current Stacktrace</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/12/02/groovy_print_stack_trace.html</link>
-            <pubDate>Tue, 2 Dec 2014 00:00:00 -0800</pubDate>
-            <guid isPermaLink="false">2014/12/02/groovy_print_stack_trace.html</guid>
-            <description>
-                    &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;If you find yourself in a situation where you cannot debug your application (from an IDE or via attaching remotely to the executing JVM), you can use a little &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; meta class
-magic to add a method to each class in order to print the current stack of any given line:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;this.class.classLoader.class.classes.each {
-    it.metaClass.printStackTrace = { -&amp;gt;
-        Thread.currentThread().stackTrace.each { element -&amp;gt;
-            println &quot;\tat ${element.className}.${element.methodName}(${element.fileName}:${element.lineNumber})&quot;
-        }
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Once the above code has been executed (preferably from your main class), you can use it anywhere in your &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; application to print the current stack trace:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;class MyClass {
-
-    def method() {
-        printStackTrace()
-
-        ...
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;This is particularly useful when trying to track down which of a number of multiple code points might be invoking a given method.&lt;/p&gt;
 &lt;/div&gt;
             </description>
         </item>

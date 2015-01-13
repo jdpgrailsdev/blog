@@ -87,25 +87,62 @@
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: jenkins</h1>
+        <h1>Check Jenkins Job Status via REST API</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>January 2015</h4>
-            <ul>
+    <p><em>07 January 2015</em></p>
 
-        <li>07 - <a href="/blog/2015/01/13/jenkins_check_job_status.html">Check Jenkins Job Status via REST API</a></li>
-                </ul>
-                <h4>August 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>19 - <a href="/blog/2014/08/19/gradle_tests_jenkins.html">Gradle, Task Caching, Tests and Jenkins</a></li>
-                </ul>
-                <h4>February 2014</h4>
-                <ul>
+    <p><div class="paragraph">
+<p>There are a ton of <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> plugins out there that let you control when a job should run based on the status of
+other builds.  However, plugins typically become out of date pretty quickly.  If you don&#8217;t want to have to play
+the plugin update game, you can use a little bash magic to leverage the <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> REST API to check the status
+of other jobs before running your builds.  Let&#8217;s assume that you have a job named <code>other-job</code> that must be in
+a success state in order for another job to execute.  You can check the status of the <code>other-job</code> by using
+the <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> REST API as part of an executed shell in the job&#8217;s configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-shell" data-lang="shell">job_status=`curl https://jenkins/view/job/other-job/lastBuild/api/json | grep "\"result\":\"SUCCESS\""`
 
-        <li>10 - <a href="/blog/2014/02/10/grails_maven_local_repo.html">Grails 2.3, Maven and Local Repositories</a></li>
-    </ul>
+if [ -n "$job_status" ]
+then
+    # Run your script commands here
+else
+  echo "BUILD FAILURE: Other build is unsuccessful or status could not be obtained."
+  exit 1
+fi</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>then</code> block of this other job could even do something like invoke another build that has a parameterized configuration to run your
+actual build via the REST API.  This would allow you to have the job with the configuration above check the status of <code>other-job</code> first
+and then kick of a third job that actual performs the build, but only if the first job is successful, all without
+installing any additional plugins.</p>
+</div></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2015/01/13/jenkins_check_job_status.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2015/01/13/jenkins_check_job_status.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    <hr>
 
             </div>
             <div id="push"></div>

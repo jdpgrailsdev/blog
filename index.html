@@ -90,6 +90,44 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog/2015/01/13/jenkins_check_job_status.html"><h1>Check Jenkins Job Status via REST API</h1></a>
+                   <p>07 January 2015</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/jenkins.html">jenkins</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div class="paragraph">
+<p>There are a ton of <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> plugins out there that let you control when a job should run based on the status of
+other builds.  However, plugins typically become out of date pretty quickly.  If you don&#8217;t want to have to play
+the plugin update game, you can use a little bash magic to leverage the <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> REST API to check the status
+of other jobs before running your builds.  Let&#8217;s assume that you have a job named <code>other-job</code> that must be in
+a success state in order for another job to execute.  You can check the status of the <code>other-job</code> by using
+the <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> REST API as part of an executed shell in the job&#8217;s configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-shell" data-lang="shell">job_status=`curl https://jenkins/view/job/other-job/lastBuild/api/json | grep "\"result\":\"SUCCESS\""`
+
+if [ -n "$job_status" ]
+then
+    # Run your script commands here
+else
+  echo "BUILD FAILURE: Other build is unsuccessful or status could not be obtained."
+  exit 1
+fi</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>then</code> block of this other job could even do something like invoke another build that has a parameterized configuration to run your
+actual build via the REST API.  This would allow you to have the job with the configuration above check the status of <code>other-job</code> first
+and then kick of a third job that actual performs the build, but only if the first job is successful, all without
+installing any additional plugins.</p>
+</div></p>
+                <p><a href="/blog2015/01/13/jenkins_check_job_status.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2015/01/06/email_inline_style_jsoup_cssparser.html"><h1>Using CSS Parser and JSoup to Inline Styles for Web Mail</h1></a>
                    <p>06 January 2015</p>
                 <p><em>Tags: </em>
@@ -447,88 +485,6 @@ class (from my application&#8217;s JAR) and refreshes the context.  At this poin
 YAML support from a <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script so that you can leverage your application&#8217;s configuration files when in your script.</p>
 </div></p>
                 <p><a href="/blog2014/12/16/spring_context_groovy_script.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/12/09/email_inline_image_attachments.html"><h1>Use Inline Attachments as Image Sources in HTML Emails with Spring</h1></a>
-                   <p>09 December 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/java.html">java</a>
-        
-                <a href="/blog/tags/spring.html">spring</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div class="paragraph">
-<p>If you are in the need of generating HTML-based e-mails with images, the simple approach is to simply host the image and link to it
-in the HTML.  This will work, but will cause the reciepients (in most e-mail clients) to be prompted as to whether or not they should
-download and show the image.  If you want to avoid this (and therefore the stigma of a perceived security threat), you can include
-the image as an attachment in the e-mail and reference it using the attachment&#8217;s content ID value:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;img src="cid:imageName.png"&gt;&lt;/img&gt;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>When the e-mail client loads the message, it will now resolve the image from the inlined attachments included in the e-mail.  This all
-sounds great, but how do you get the images in the e-mail?  The solution is to combine the
-<a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mail.html" target="_blank">Spring JavaMailSender</a> with the
-<a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/resources.html" target="_blank">Spring Resource interface</a> to
-load and store the image data in the generated e-mail.  The first step is to load the images as <code>Resource</code> objects, either from the
-file system or classpath (in this example, we will use the classpath):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import org.apache.commons.io.IOUtils;
-
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamSource;
-
-...
-
-InputStreamSource imageSource = new ByteArrayResource(IOUtils.toByteArray(getClass().getResourceAsStream("/images/logo.png")))</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The code snippet above uses the <a href="http://commons.apache.org/proper/commons-io/" target=""_blank'">Apache Commons IO library</a> to convert
-the image bytes (read from the classpath via the <code>getResourceAsStream()</code> method) into a byte array.  The byte array is then wrapped
-by the Spring <code>ByteArrayResource</code>, which we will use to create the inline attachment (we could also use the <code>ClassPathResource</code>).  The next
-step is to add the image to the MIME message as an attachment:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import javax.mail.internet.MimeMessage;
-
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
-
-...
-
-JavaMailSender mailSender = new JavaMailSenderImpl();  // Or use Spring IoC to inject a pre-configured JavaMailSenderImpl
-MimeMessage mimeMessage = mailSender.createMimeMessage();
-MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-
-// Add information to the message, such as subject, recipients, etc
-
-message.addInline("logo.png", imageSource);</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>addInline()</code> method of the <code>MimeMessageHelper</code> reads the byte data from the <code>InputStreamSource</code> and creates the inline MIME body part to hold the
-attachment.  It also sets the content ID to the name provided by the first parameter.  Now, all that&#8217;s left is to reference the image in our HTML body:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">message.setText("&lt;img src=\"cid:logo.png\"&gt;&lt;/img&gt;&lt;div&gt;My logo&lt;/div&gt;", true);</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now, when the e-mail is viewed in the reciepient&#8217;s e-mail client, the image will be displayed from the attachments.  Note that this works with most web mail clients, however,
-you should only attach images that are referenced by the HTML body, otherwise they may show up as actual attachments in the e-mail client.</p>
-</div></p>
-                <p><a href="/blog2014/12/09/email_inline_image_attachments.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
