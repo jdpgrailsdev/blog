@@ -90,6 +90,58 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog/2015/01/20/spring_transactions_rollback.html"><h1>Rollbacks with Spring Transactions</h1></a>
+                   <p>20 January 2015</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/spring.html">spring</a>
+        
+                <a href="/blog/tags/java.html">java</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div class="paragraph">
+<p>By default, no rollback handling rules are defined if you simply add <code>@Transactional</code> to your method.  In order for the rollback to actually be executed upon failure,
+you must define one or more exceptions that you want to trigger a rollback via the <code>rollbackFor</code> or <code>rollbackForClassName</code> attributes of the annotation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">@Transactional(rollbackForClassName={"Exception"})
+public void save(final Book book) {
+    Author author = new Author(book.getAuthorName());
+    authorRepository.saveAndFlush(author);
+    bookRepository.saveAndFlush(book);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the example above, the <code>@Transactional</code> annotation makes use of the <code>rollbackForClassName</code> attribute value to force
+a database rollback if any exception of type <code>java.lang.Exception</code> is thrown by the method (e.g. if any exception happens,
+roll both save operations back).  The <code>rollbackForClassName</code> attribute actually provides a little more flexibility than the
+<code>rollbackFor</code> attribute value.  From the <code>@Transactional</code> JavaDoc:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Consider carefully how specific the pattern is, and whether
+to include package information (which isn&#8217;t mandatory). For example,
+"Exception" will match nearly anything, and will probably hide other rules.
+"java.lang.Exception" would be correct if "Exception" was meant to define
+a rule for all checked exceptions. With more unusual java.lang.Exception
+names such as "BaseBusinessException" there is no need to use a FQN.</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; org.springframework.transaction.annotation.Transactional#rollbackForClassName() JavaDoc
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see, it gives you the ability to provide rules to match certain sub-strings of exception
+types to better control your rollback logic.</p>
+</div></p>
+                <p><a href="/blog2015/01/20/spring_transactions_rollback.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2015/01/13/jenkins_check_job_status.html"><h1>Check Jenkins Job Status via REST API</h1></a>
                    <p>07 January 2015</p>
                 <p><em>Tags: </em>
@@ -430,61 +482,6 @@ together and executed, you can run:</p>
 <p>to resolve a property placeholder value retrieved from a YAML configuration file in your <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script!</p>
 </div></p>
                 <p><a href="/blog2014/12/30/groovy_script_spring_boot_yaml.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2014/12/16/spring_context_groovy_script.html"><h1>Spring Application Context and Groovy Scripts</h1></a>
-                   <p>16 December 2014</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/groovy.html">groovy</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div class="paragraph">
-<p>I like to use <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> to write scripts to help me test parts of my application that require a little more set up than a normal unit test should allow
-(think a small-scale integration test).  Often, these scripts take the form of client-based code that establishes a connection to a locally running
-instance of my application and verifies that certain operations produce the desired and expected results.  Recently, I found myself in a situation where
-I wanted to test some <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a>-based code that uses <a href="http://www.thymeleaf.org/" target="_blank">Thymeleaf</a> to generate HTML.  I didn&#8217;t necessarily want to extact the code into a separate library just
-so I could functionally test it outside of my application.  Instead, I decided to take the project&#8217;s JAR file (as the application is a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application)
-and use it as a dependency in my <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script.  This meant that I would need to find a way to set up the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> context, so that all of the required
-dependency injection would take place.  This turned out to not be that difficult:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">import com.test.ApplicationConfiguration
-
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
-
-...
-
-def activeProfile = 'test'
-
-def ctx = new AnnotationConfigApplicationContext()
-ctx.getEnvironment().setActiveProfiles(activeProfile)
-ctx.register(ApplicationConfiguration)
-ctx.refresh()
-
-...
-
-ctx.close()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In the example above, the script creates an instance of the <code>AnnotationConfigApplicationContext</code> <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> context, sets the active profile, registers my Java-based configuration
-class (from my application&#8217;s JAR) and refreshes the context.  At this point, you can reference any and all beans created by the configuration:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">def bean = ctx.getBean('myBean')</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can obviously use the other variants of the <code>ApplicationContext</code> interface to configure your context (e.g. XML, etc).  In a future post, I will discuss how to leverage the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>
-YAML support from a <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script so that you can leverage your application&#8217;s configuration files when in your script.</p>
-</div></p>
-                <p><a href="/blog2014/12/16/spring_context_groovy_script.html#disqus_thread">Comments</a></p>
 
                 <hr />
 

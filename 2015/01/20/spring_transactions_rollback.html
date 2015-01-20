@@ -87,76 +87,74 @@
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: spring</h1>
+        <h1>Rollbacks with Spring Transactions</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>January 2015</h4>
-            <ul>
+    <p><em>20 January 2015</em></p>
 
-        <li>20 - <a href="/blog/2015/01/20/spring_transactions_rollback.html">Rollbacks with Spring Transactions</a></li>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>06 - <a href="/blog/2015/01/06/email_inline_style_jsoup_cssparser.html">Using CSS Parser and JSoup to Inline Styles for Web Mail</a></li>
-                </ul>
-                <h4>December 2014</h4>
-                <ul>
+    <p><div class="paragraph">
+<p>By default, no rollback handling rules are defined if you simply add <code>@Transactional</code> to your method.  In order for the rollback to actually be executed upon failure,
+you must define one or more exceptions that you want to trigger a rollback via the <code>rollbackFor</code> or <code>rollbackForClassName</code> attributes of the annotation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">@Transactional(rollbackForClassName={"Exception"})
+public void save(final Book book) {
+    Author author = new Author(book.getAuthorName());
+    authorRepository.saveAndFlush(author);
+    bookRepository.saveAndFlush(book);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the example above, the <code>@Transactional</code> annotation makes use of the <code>rollbackForClassName</code> attribute value to force
+a database rollback if any exception of type <code>java.lang.Exception</code> is thrown by the method (e.g. if any exception happens,
+roll both save operations back).  The <code>rollbackForClassName</code> attribute actually provides a little more flexibility than the
+<code>rollbackFor</code> attribute value.  From the <code>@Transactional</code> JavaDoc:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Consider carefully how specific the pattern is, and whether
+to include package information (which isn&#8217;t mandatory). For example,
+"Exception" will match nearly anything, and will probably hide other rules.
+"java.lang.Exception" would be correct if "Exception" was meant to define
+a rule for all checked exceptions. With more unusual java.lang.Exception
+names such as "BaseBusinessException" there is no need to use a FQN.</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; org.springframework.transaction.annotation.Transactional#rollbackForClassName() JavaDoc
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see, it gives you the ability to provide rules to match certain sub-strings of exception
+types to better control your rollback logic.</p>
+</div></p>
 
-        <li>30 - <a href="/blog/2014/12/30/groovy_script_spring_boot_yaml.html">Leverage Spring Boot&#8217;s YAML Configuration Files in Groovy Scripts</a></li>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2015/01/20/spring_transactions_rollback.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>16 - <a href="/blog/2014/12/16/spring_context_groovy_script.html">Spring Application Context and Groovy Scripts</a></li>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2015/01/20/spring_transactions_rollback.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-        <li>09 - <a href="/blog/2014/12/09/email_inline_image_attachments.html">Use Inline Attachments as Image Sources in HTML Emails with Spring</a></li>
-                </ul>
-                <h4>November 2014</h4>
-                <ul>
-
-        <li>11 - <a href="/blog/2014/11/11/spring_boot_health_indicators_auto_config.html">Auto Configure Health Indicators in Spring Boot</a></li>
-                </ul>
-                <h4>October 2014</h4>
-                <ul>
-
-        <li>14 - <a href="/blog/2014/10/14/spring_boot_gradle_git_info.html">Include Git Commit Info in Spring Boot Application with Gradle</a></li>
-
-        <li>07 - <a href="/blog/2014/10/07/spring_boot_jetty_thread_pool.html">Configure Jetty&#8217;s Thread Pool in a Spring Boot Application</a></li>
-                </ul>
-                <h4>September 2014</h4>
-                <ul>
-
-        <li>30 - <a href="/blog/2014/09/30/spring_boot_jetty_jmx.html">Expose Jetty MBeans via JMX in a Spring Boot Application</a></li>
-
-        <li>09 - <a href="/blog/2014/09/09/spring_data_hibernate_join.html">Avoid Hibernate N+1 Problem with Joins in Spring-Data/JPA</a></li>
-                </ul>
-                <h4>July 2014</h4>
-                <ul>
-
-        <li>29 - <a href="/blog/2014/07/29/spring_boot_integration_tests.html">Leveraging Spring Boot Starters in Unit/Integration Tests</a></li>
-
-        <li>22 - <a href="/blog/2014/07/22/gradle_build_scripts_classpath.html">Discovering Gradle build scripts from classpath</a></li>
-
-        <li>15 - <a href="/blog/2014/07/15/spring_boot_remote_debug.html">Remote debugging a Spring Boot application launched by the Gradle plugin</a></li>
-
-        <li>08 - <a href="/blog/2014/07/08/spring_boot_env_vars.html">Setting system properties/environment variables with Spring Boot and Gradle</a></li>
-                </ul>
-                <h4>June 2014</h4>
-                <ul>
-
-        <li>03 - <a href="/blog/2014/06/03/spring_boot_jersey_2.html">Spring Boot, Jersey and Lazy Initialization</a></li>
-                </ul>
-                <h4>April 2014</h4>
-                <ul>
-
-        <li>08 - <a href="/blog/2014/04/08/spring_boot_gradle_newrelic.html">Using the New Relic agent with Spring-Boot and Gradle</a></li>
-                </ul>
-                <h4>March 2014</h4>
-                <ul>
-
-        <li>18 - <a href="/blog/2014/03/18/grails_bean_builder.html">Parsing the Grails Spring Beans DSL with Groovy</a></li>
-                </ul>
-                <h4>February 2014</h4>
-                <ul>
-
-        <li>19 - <a href="/blog/2014/02/19/spring_curator.html">Spring and Apache Curator</a></li>
-    </ul>
+    <hr>
 
             </div>
             <div id="push"></div>
