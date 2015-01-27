@@ -1,0 +1,36 @@
+= Check Jenkins Job Status via REST API
+Jonathan Pearlin
+2015-01-07
+:jbake-type: post
+:jbake-tags: jenkins
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: jenkins_check_job_status
+:icons: font
+:jenkins: http://jenkins-ci.org/[Jenkins, window="_blank"]
+
+There are a ton of {jenkins} plugins out there that let you control when a job should run based on the status of
+other builds.  However, plugins typically become out of date pretty quickly.  If you don't want to have to play
+the plugin update game, you can use a little bash magic to leverage the {jenkins} REST API to check the status
+of other jobs before running your builds.  Let's assume that you have a job named `other-job` that must be in
+a success state in order for another job to execute.  You can check the status of the `other-job` by using
+the {jenkins} REST API as part of an executed shell in the job's configuration:
+
+[source,shell]
+----
+job_status=`curl https://jenkins/view/job/other-job/lastBuild/api/json | grep "\"result\":\"SUCCESS\""`
+
+if [ -n "$job_status" ]
+then
+    # Run your script commands here
+else
+  echo "BUILD FAILURE: Other build is unsuccessful or status could not be obtained."
+  exit 1
+fi
+----
+
+The `then` block of this other job could even do something like invoke another build that has a parameterized configuration to run your
+actual build via the REST API.  This would allow you to have the job with the configuration above check the status of `other-job` first
+and then kick of a third job that actual performs the build, but only if the first job is successful, all without
+installing any additional plugins.

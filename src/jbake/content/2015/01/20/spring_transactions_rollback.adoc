@@ -1,0 +1,41 @@
+= Rollbacks with Spring Transactions
+Jonathan Pearlin
+2015-01-20
+:jbake-type: post
+:jbake-tags: spring,java
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: spring_transactions_rollback
+:icons: font
+:spring_transactions: http://docs.spring.io/spring/docs/current/spring-framework-reference/html/transaction.html[Spring Transaction Management, window="_blank"]
+
+By default, no rollback handling rules are defined if you simply add `@Transactional` to your method.  In order for the rollback to actually be executed upon failure,
+you must define one or more exceptions that you want to trigger a rollback via the `rollbackFor` or `rollbackForClassName` attributes of the annotation:
+
+[source,java]
+----
+@Transactional(rollbackForClassName={"Exception"})
+public void save(final Book book) {
+    Author author = new Author(book.getAuthorName());
+    authorRepository.saveAndFlush(author);
+    bookRepository.saveAndFlush(book);
+}
+----
+
+In the example above, the `@Transactional` annotation makes use of the `rollbackForClassName` attribute value to force
+a database rollback if any exception of type `java.lang.Exception` is thrown by the method (e.g. if any exception happens,
+roll both save operations back).  The `rollbackForClassName` attribute actually provides a little more flexibility than the
+`rollbackFor` attribute value.  From the `@Transactional` JavaDoc:
+[quote, org.springframework.transaction.annotation.Transactional#rollbackForClassName() JavaDoc]
+____________________________________________________________________
+Consider carefully how specific the pattern is, and whether
+to include package information (which isn't mandatory). For example,
+"Exception" will match nearly anything, and will probably hide other rules.
+"java.lang.Exception" would be correct if "Exception" was meant to define
+a rule for all checked exceptions. With more unusual java.lang.Exception
+names such as "BaseBusinessException" there is no need to use a FQN.
+____________________________________________________________________
+
+As you can see, it gives you the ability to provide rules to match certain sub-strings of exception
+types to better control your rollback logic.
