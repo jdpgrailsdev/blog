@@ -86,27 +86,17 @@
                 </div>
             </div>
             <div class="container">
-                <div class="page-header">
-                    <h1>The Flowers Are Still Standing</h1>
-                </div>
+    <div class="page-header">
+        <h1>Custom PostgreSQL Hstore Data Type with Spring, JPA and Hibernate</h1>
+    </div>
 
-                   <a href="/blog/2015/01/27/spring_jpa_postgresql_hstore.html"><h1>Custom PostgreSQL Hstore Data Type with Spring, JPA and Hibernate</h1></a>
-                   <p>27 January 2015</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/java.html">java</a>
-        
-                <a href="/blog/tags/jpa.html">jpa</a>
-        
-                <a href="/blog/tags/postgresql.html">postgresql</a>
-        </p>
+    <p><em>27 January 2015</em></p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div class="paragraph">
+    <p><div class="paragraph">
 <p>Starting <a href="http://www.postgresql.org" target="_blank">PostgreSQL</a> version 9.0, the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank">PostgreSQL hstore datatype</a> data type was introduced, which allows for the storing of arbitrary sets of key/value pairs within a single column.  This
 data type can be leveraged for a bunch of different situations, such as for storing custom/random attributes, semi-structured data or in any scenario where the number and
 type of columns associated with an entity stored in a table varies.  As with most new/database vendor-specific features, support for the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank">PostgreSQL hstore datatype</a> data type does not exist
@@ -292,214 +282,26 @@ will be invoked to handle the data.  It is also worth noting that the <a href="h
 inside the custom <code>UserType</code> to handle the conversion to/from a <code>Map&lt;String,Object&gt;</code> to a <code>String</code> and vice versa.  However, I would not recommend an implementation that depends on an internal
 class from the JDBC driver, as it may cause compatibility issues if you upgrade.</p>
 </div></p>
-                <p><a href="/blog2015/01/27/spring_jpa_postgresql_hstore.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2015/01/20/spring_transactions_rollback.html"><h1>Rollbacks with Spring Transactions</h1></a>
-                   <p>20 January 2015</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/java.html">java</a>
-        </p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2015/01/27/spring_jpa_postgresql_hstore.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div class="paragraph">
-<p>By default, no rollback handling rules are defined if you simply add <code>@Transactional</code> to your method.  In order for the rollback to actually be executed upon failure,
-you must define one or more exceptions that you want to trigger a rollback via the <code>rollbackFor</code> or <code>rollbackForClassName</code> attributes of the annotation:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">@Transactional(rollbackForClassName={"Exception"})
-public void save(final Book book) {
-    Author author = new Author(book.getAuthorName());
-    authorRepository.saveAndFlush(author);
-    bookRepository.saveAndFlush(book);
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In the example above, the <code>@Transactional</code> annotation makes use of the <code>rollbackForClassName</code> attribute value to force
-a database rollback if any exception of type <code>java.lang.Exception</code> is thrown by the method (e.g. if any exception happens,
-roll both save operations back).  The <code>rollbackForClassName</code> attribute actually provides a little more flexibility than the
-<code>rollbackFor</code> attribute value.  From the <code>@Transactional</code> JavaDoc:</p>
-</div>
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p>Consider carefully how specific the pattern is, and whether
-to include package information (which isn&#8217;t mandatory). For example,
-"Exception" will match nearly anything, and will probably hide other rules.
-"java.lang.Exception" would be correct if "Exception" was meant to define
-a rule for all checked exceptions. With more unusual java.lang.Exception
-names such as "BaseBusinessException" there is no need to use a FQN.</p>
-</div>
-</blockquote>
-<div class="attribution">
-&#8212; org.springframework.transaction.annotation.Transactional#rollbackForClassName() JavaDoc
-</div>
-</div>
-<div class="paragraph">
-<p>As you can see, it gives you the ability to provide rules to match certain sub-strings of exception
-types to better control your rollback logic.</p>
-</div></p>
-                <p><a href="/blog2015/01/20/spring_transactions_rollback.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2015/01/13/jenkins_check_job_status.html"><h1>Check Jenkins Job Status via REST API</h1></a>
-                   <p>07 January 2015</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/jenkins.html">jenkins</a>
-        </p>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2015/01/27/spring_jpa_postgresql_hstore.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div class="paragraph">
-<p>There are a ton of <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> plugins out there that let you control when a job should run based on the status of
-other builds.  However, plugins typically become out of date pretty quickly.  If you don&#8217;t want to have to play
-the plugin update game, you can use a little bash magic to leverage the <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> REST API to check the status
-of other jobs before running your builds.  Let&#8217;s assume that you have a job named <code>other-job</code> that must be in
-a success state in order for another job to execute.  You can check the status of the <code>other-job</code> by using
-the <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> REST API as part of an executed shell in the job&#8217;s configuration:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-shell" data-lang="shell">job_status=`curl https://jenkins/view/job/other-job/lastBuild/api/json | grep "\"result\":\"SUCCESS\""`
-
-if [ -n "$job_status" ]
-then
-    # Run your script commands here
-else
-  echo "BUILD FAILURE: Other build is unsuccessful or status could not be obtained."
-  exit 1
-fi</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>then</code> block of this other job could even do something like invoke another build that has a parameterized configuration to run your
-actual build via the REST API.  This would allow you to have the job with the configuration above check the status of <code>other-job</code> first
-and then kick of a third job that actual performs the build, but only if the first job is successful, all without
-installing any additional plugins.</p>
-</div></p>
-                <p><a href="/blog2015/01/13/jenkins_check_job_status.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2015/01/06/email_inline_style_jsoup_cssparser.html"><h1>Using CSS Parser and JSoup to Inline Styles for Web Mail</h1></a>
-                   <p>06 January 2015</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/java.html">java</a>
-        
-                <a href="/blog/tags/spring.html">spring</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/01/06/email_inline_style_jsoup_cssparser.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/06/email_inline_style_jsoup_cssparser.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/06/email_inline_style_jsoup_cssparser.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div class="paragraph">
-<p>As part of an on-going project, we had a requirement to send pretty (CSS-ified) e-mails to communicate status.  Sending HTML-based e-mails from Java is pretty easy.  There
-are a ton of templating engines out there that can be used to generate HTML.  However, what most people fail to realize is that most web mail providers (e.g. Gmail, Yahoo!, etc) handle a limited
-subset of standard CSS.  You can find out what is supported by looking at <a href="https://www.campaignmonitor.com/css/" target="_blank">Campaign Monitor CSS Support</a>.  The first thing you might notice is that almost all of the web mail providers
-do not support CSS classes.  They do, however, support inline style declarations.  Being a good developer, you know that you want to keep all of your CSS in style sheets so
-that you do not have to find and replace styles in multiple templates/files.  This poses a problem if the clients can only support inline styles.  The solution?  A combination
-of <a href="http://jsoup.org/" target="_blank">JSoup</a> and <a href="http://cssparser.sourceforge.net/" target="_blank">CSS Parser</a> to load and convert a style sheet into inline style declarations.  The solution in this blog post uses <a href="http://cssparser.sourceforge.net/" target="_blank">CSS Parser</a> to parse a CSS style sheet file
-loaded from the classpath into a set of <code>CSSSytleRule</code> objects.  It then uses <a href="http://jsoup.org/" target="_blank">JSoup</a> to walk the DOM in the HTML and find elements that match the rules present in the parsed style sheet.  To start, you
-need to include the <a href="http://cssparser.sourceforge.net/" target="_blank">CSS Parser</a> and <a href="http://jsoup.org/" target="_blank">JSoup</a> dependencies:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">compile 'org.jsoup:jsoup:1.8.1'
-compile 'net.sourceforge.cssparser:cssparser:0.9.14'</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Next, create the <code>CSSOMParser</code> used to parse the CSS style sheet and load the style sheet from the classpath:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import com.steadystate.css.parser.CSSOMParser;
-
-import org.w3c.dom.css.CSSStyleSheet;
-
-...
-
-CSSOMParser parser = new CSSOMParser();
-CSSStyleSheet stylesheet = parser.parseStyleSheet(new InputSource(new InputStreamReader(getClass().getResourceAsStream("/css/styles.css"))), null, null);</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now that we have our style sheet loaded and parsed, we can use the following code to walk the DOM and add inline style declarations
-to elements that match the rules contained in the style sheet:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">final Document document = Jsoup.parse(originalHtml);
-final CSSRuleList rules = stylesheet.getCssRules();
-final Map&lt;Element, Map&lt;String, String&gt;&gt; elementStyles = new HashMap&lt;&gt;();
-
-/*
- * For each rule in the style sheet, find all HTML elements that match
- * based on its selector and store the style attributes in the map with
- * the selected element as the key.
- */
-for (int i = 0; i &lt; rules.getLength(); i++) {
-    final CSSRule rule = rules.item(i);
-    if (rule instanceof CSSStyleRule) {
-        final CSSStyleRule styleRule = (CSSStyleRule) rule;
-        final String selector = styleRule.getSelectorText();
-
-        // Ignore pseudo classes, as JSoup's selector cannot handle
-        // them.
-        if (!selector.contains(":")) {
-            final Elements selectedElements = document.select(selector);
-            for (final Element selected : selectedElements) {
-                if (!elementStyles.containsKey(selected)) {
-                    elementStyles.put(selected, new LinkedHashMap&lt;String, String&gt;());
-                }
-
-                final CSSStyleDeclaration styleDeclaration = styleRule.getStyle();
-
-                for (int j = 0; j &lt; styleDeclaration.getLength(); j++) {
-                    final String propertyName = styleDeclaration.item(j);
-                    final String propertyValue = styleDeclaration.getPropertyValue(propertyName);
-                    final Map&lt;String, String&gt; elementStyle = elementStyles.get(selected);
-                    elementStyle.put(propertyName, propertyValue);
-                }
-
-            }
-        }
-    }
-}
-
-/*
- * Apply the style attributes to each element and remove the "class"
- * attribute.
- */
-for (final Map.Entry&lt;Element, Map&lt;String, String&gt;&gt; elementEntry : elementStyles.entrySet()) {
-    final Element element = elementEntry.getKey();
-    final StringBuilder builder = new StringBuilder();
-    for (final Map.Entry&lt;String, String&gt; styleEntry : elementEntry.getValue().entrySet()) {
-        builder.append(styleEntry.getKey()).append(":").append(styleEntry.getValue()).append(";");
-    }
-    builder.append(element.attr("style"));
-    element.attr("style", builder.toString());
-    element.removeAttr("class");
-}
-
-System.out.println(document.html());</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>One important thing to note in the code above is that <a href="http://jsoup.org/" target="_blank">JSoup</a> cannot handle pseudo classes in selectors.  Therefore, any
-selector that contains a colon (":") is ignored.  Otherwise, each selector contained in the parsed sytle sheet is applied
-to the HTML.  Inline styles are appended to each other, so ordering in your CSS stylesheet matters!  The output of the
-code above is the modified HTML with all styles that could be applied converted to inline style declarations.  Now, when
-this HTML is interpreted in a web mail client, it will look as it was intended to look by the developer.</p>
-</div></p>
-                <p><a href="/blog2015/01/06/email_inline_style_jsoup_cssparser.html#disqus_thread">Comments</a></p>
-
-                <hr />
-
-                <p>Older posts are available in the <a href="/blog/archive.html">archive</a>.</p>
+    <hr>
 
             </div>
             <div id="push"></div>

@@ -6,13 +6,207 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 20 Jan 2015 07:35:11 -0800</pubDate>
-        <lastBuildDate>Tue, 20 Jan 2015 07:35:11 -0800</lastBuildDate>
+        <pubDate>Tue, 27 Jan 2015 07:46:28 -0800</pubDate>
+        <lastBuildDate>Tue, 27 Jan 2015 07:46:28 -0800</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Custom PostgreSQL Hstore Data Type with Spring, JPA and Hibernate</title>
+            <link>http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html</link>
+            <pubDate>Tue, 27 Jan 2015 00:00:00 -0800</pubDate>
+            <guid isPermaLink="false">2015/01/27/spring_jpa_postgresql_hstore.html</guid>
+            <description>
+                    &lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Starting &lt;a href=&quot;http://www.postgresql.org&quot; target=&quot;_blank&quot;&gt;PostgreSQL&lt;/a&gt; version 9.0, the &lt;a href=&quot;http://www.postgresql.org/docs/9.4/static/hstore.html&quot; target=&quot;_blank&quot;&gt;PostgreSQL hstore datatype&lt;/a&gt; data type was introduced, which allows for the storing of arbitrary sets of key/value pairs within a single column.  This
+data type can be leveraged for a bunch of different situations, such as for storing custom/random attributes, semi-structured data or in any scenario where the number and
+type of columns associated with an entity stored in a table varies.  As with most new/database vendor-specific features, support for the &lt;a href=&quot;http://www.postgresql.org/docs/9.4/static/hstore.html&quot; target=&quot;_blank&quot;&gt;PostgreSQL hstore datatype&lt;/a&gt; data type does not exist
+as a first-level data type in the &lt;a href=&quot;http://www.postgresql.org&quot; target=&quot;_blank&quot;&gt;PostgreSQL&lt;/a&gt; dialect provided by &lt;a href=&quot;https://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt;.  However, both JPA and &lt;a href=&quot;https://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; provide mechanisms that allow you to customize the
+way in which data stored in an entity is prepared for insertion into a database table and vice-versa.  The &lt;a href=&quot;http://en.wikibooks.org/wiki/Java_Persistence/Basic_Attributes#Converters_.28JPA_2.1.29&quot; target=&quot;_blank&quot;&gt;JPA Attribute Converter&lt;/a&gt; specification allows you to provide
+a custom &lt;code&gt;AttributeConverter&lt;/code&gt; implementation that governs how data stored in a field of an entity gets converted for storage in the database and how to convert the column
+data back into a Java type.  Normally, this would be how you would implement support for an un-supported data type.  However, due to an &lt;a href=&quot;https://hibernate.atlassian.net/browse/HHH-8804&quot; target=&quot;_blank&quot;&gt;Hibernate issue with Converters and parameterized types&lt;/a&gt;, this won&amp;#8217;t work
+for the &lt;a href=&quot;http://www.postgresql.org/docs/9.4/static/hstore.html&quot; target=&quot;_blank&quot;&gt;PostgreSQL hstore datatype&lt;/a&gt;, unless you want to map it to a Java &lt;code&gt;String&lt;/code&gt; type instead of a Java &lt;code&gt;Map&amp;lt;String,Object&amp;gt;&lt;/code&gt; type, which makes more sense for an arbitrary key/value store.
+The solution?  Leverage &lt;a href=&quot;https://docs.jboss.org/hibernate/orm/3.6/reference/en-US/html/types.html#types-custom-ut&quot; target=&quot;_blank&quot;&gt;Hibernate&amp;#8217;s Custom Types&lt;/a&gt; support!&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;package com.example.jpa.support;
+
+import java.io.Serializable;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.usertype.UserType;
+
+/**
+ * Custom Hibernate {@link UserType} used to convert between a {@link Map}
+ * and PostgreSQL {@code hstore} data type.
+ */
+public class HstoreUserType implements UserType {
+
+    /**
+     * PostgreSQL {@code hstore} field separator token.
+     */
+    private static final String HSTORE_SEPARATOR_TOKEN = &quot;=&amp;gt;&quot;;
+
+    /**
+     * {@link Pattern} used to find and split {@code hstore} entries.
+     */
+    private static final Pattern HSTORE_ENTRY_PATTERN = Pattern.compile(String.format(&quot;\&quot;(.*)\&quot;%s\&quot;(.*)\&quot;&quot;, HSTORE_SEPARATOR_TOKEN));
+
+    /**
+     * The PostgreSQL value for the {@code hstore} data type.
+     */
+    public static final int HSTORE_TYPE = 1111;
+
+    @Override
+    public int[] sqlTypes() {
+        return new int[] { HSTORE_TYPE };
+    }
+
+    @SuppressWarnings(&quot;rawtypes&quot;)
+    @Override
+    public Class returnedClass() {
+        return Map.class;
+    }
+
+    @Override
+    public boolean equals(final Object x, final Object y) throws HibernateException {
+        return x.equals(y);
+    }
+
+    @Override
+    public int hashCode(final Object x) throws HibernateException {
+        return x.hashCode();
+    }
+
+    @Override
+    public Object nullSafeGet(final ResultSet rs, final String[] names,
+            final SessionImplementor session, final Object owner)
+            throws HibernateException, SQLException {
+        return convertToEntityAttribute(rs.getString(names[0]));
+    }
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+    @Override
+    public void nullSafeSet(final PreparedStatement st, final Object value, final int index,
+            final SessionImplementor session) throws HibernateException, SQLException {
+        st.setObject(index, convertToDatabaseColumn((Map&amp;lt;String,Object&amp;gt;)value), HSTORE_TYPE);
+
+    }
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+    @Override
+    public Object deepCopy(final Object value) throws HibernateException {
+        return new HashMap&amp;lt;String,Object&amp;gt;(((Map&amp;lt;String,Object&amp;gt;)value));
+    }
+
+    @Override
+    public boolean isMutable() {
+        return true;
+    }
+
+    @Override
+    public Serializable disassemble(final Object value) throws HibernateException {
+        return (Serializable) value;
+    }
+
+    @Override
+    public Object assemble(final Serializable cached, final Object owner)
+            throws HibernateException {
+        return cached;
+    }
+
+    @Override
+    public Object replace(final Object original, final Object target, final Object owner)
+            throws HibernateException {
+        return original;
+    }
+
+
+    private String convertToDatabaseColumn(final Map&amp;lt;String, Object&amp;gt; attribute) {
+        final StringBuilder builder = new StringBuilder();
+        for (final Map.Entry&amp;lt;String, Object&amp;gt; entry : attribute.entrySet()) {
+            if(builder.length() &amp;gt; 1) {
+                builder.append(&quot;, &quot;);
+            }
+            builder.append(&quot;\&quot;&quot;);
+            builder.append(entry.getKey());
+            builder.append(&quot;\&quot;&quot;);
+            builder.append(HSTORE_SEPARATOR_TOKEN);
+            builder.append(&quot;\&quot;&quot;);
+            builder.append(entry.getValue().toString());
+            builder.append(&quot;\&quot;&quot;);
+        }
+        return builder.toString();
+    }
+
+    private Map&amp;lt;String, Object&amp;gt; convertToEntityAttribute(final String dbData) {
+        final Map&amp;lt;String, Object&amp;gt; data = new HashMap&amp;lt;String, Object&amp;gt;();
+        final StringTokenizer tokenizer = new StringTokenizer(dbData, &quot;,&quot;);
+
+        while(tokenizer.hasMoreTokens()) {
+            final Matcher matcher = HSTORE_ENTRY_PATTERN.matcher(tokenizer.nextToken().trim());
+            if(matcher.find()) {
+                data.put(matcher.group(1), matcher.group(2));
+            }
+        }
+
+        return data;
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The example above implements the &lt;a href=&quot;https://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; &lt;code&gt;UserType&lt;/code&gt; interface and provides methods (&lt;code&gt;nullSafeGet&lt;/code&gt; and &lt;code&gt;nullSafeSet&lt;/code&gt;) to handle the conversion.  It also provides the appropriate
+data type value for the &lt;a href=&quot;http://www.postgresql.org/docs/9.4/static/hstore.html&quot; target=&quot;_blank&quot;&gt;PostgreSQL hstore datatype&lt;/a&gt; (1111).  Now that you have a custom &lt;code&gt;UserType&lt;/code&gt; implementation for the &lt;a href=&quot;http://www.postgresql.org/docs/9.4/static/hstore.html&quot; target=&quot;_blank&quot;&gt;PostgreSQL hstore datatype&lt;/a&gt;, the next step is to annotate your entity class to instruct JPA to
+use the custom type during mapping:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;package com.example.jpa.entity;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
+import com.example.jpa.support.HstoreUserType;
+
+@Entity
+@Table(name = &quot;books&quot;)
+@TypeDef(name = &quot;hstore&quot;, typeClass = HstoreUserType.class)
+public class BookEntity {
+
+    @Column(name=&quot;metadata&quot;)
+    @Type(type=&quot;hstore&quot;)
+    private Map&amp;lt;String,Object&amp;gt; metadata;
+
+    ...
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The &lt;code&gt;TypeDef&lt;/code&gt; is given a name so that it can be referenced when applied to the field via the &lt;code&gt;Type&lt;/code&gt; annotation.  Now, when data is persisted or retrieved, our custom &lt;code&gt;UserType&lt;/code&gt; implementation
+will be invoked to handle the data.  It is also worth noting that the &lt;a href=&quot;http://www.postgresql.org&quot; target=&quot;_blank&quot;&gt;PostgreSQL&lt;/a&gt; JDBC driver library does come with an &lt;code&gt;HStoreConverter&lt;/code&gt; class with static methods that could be leveraged from
+inside the custom &lt;code&gt;UserType&lt;/code&gt; to handle the conversion to/from a &lt;code&gt;Map&amp;lt;String,Object&amp;gt;&lt;/code&gt; to a &lt;code&gt;String&lt;/code&gt; and vice versa.  However, I would not recommend an implementation that depends on an internal
+class from the JDBC driver, as it may cause compatibility issues if you upgrade.&lt;/p&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Rollbacks with Spring Transactions</title>
             <link>http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html</link>
@@ -384,56 +578,6 @@ together and executed, you can run:&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;to resolve a property placeholder value retrieved from a YAML configuration file in your &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; script!&lt;/p&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Spring Application Context and Groovy Scripts</title>
-            <link>http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html</link>
-            <pubDate>Tue, 16 Dec 2014 00:00:00 -0800</pubDate>
-            <guid isPermaLink="false">2014/12/16/spring_context_groovy_script.html</guid>
-            <description>
-                    &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;I like to use &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; to write scripts to help me test parts of my application that require a little more set up than a normal unit test should allow
-(think a small-scale integration test).  Often, these scripts take the form of client-based code that establishes a connection to a locally running
-instance of my application and verifies that certain operations produce the desired and expected results.  Recently, I found myself in a situation where
-I wanted to test some &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt;-based code that uses &lt;a href=&quot;http://www.thymeleaf.org/&quot; target=&quot;_blank&quot;&gt;Thymeleaf&lt;/a&gt; to generate HTML.  I didn&amp;#8217;t necessarily want to extact the code into a separate library just
-so I could functionally test it outside of my application.  Instead, I decided to take the project&amp;#8217;s JAR file (as the application is a &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; application)
-and use it as a dependency in my &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; script.  This meant that I would need to find a way to set up the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; context, so that all of the required
-dependency injection would take place.  This turned out to not be that difficult:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;import com.test.ApplicationConfiguration
-
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
-
-...
-
-def activeProfile = &apos;test&apos;
-
-def ctx = new AnnotationConfigApplicationContext()
-ctx.getEnvironment().setActiveProfiles(activeProfile)
-ctx.register(ApplicationConfiguration)
-ctx.refresh()
-
-...
-
-ctx.close()&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;In the example above, the script creates an instance of the &lt;code&gt;AnnotationConfigApplicationContext&lt;/code&gt; &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt; context, sets the active profile, registers my Java-based configuration
-class (from my application&amp;#8217;s JAR) and refreshes the context.  At this point, you can reference any and all beans created by the configuration:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;def bean = ctx.getBean(&apos;myBean&apos;)&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;You can obviously use the other variants of the &lt;code&gt;ApplicationContext&lt;/code&gt; interface to configure your context (e.g. XML, etc).  In a future post, I will discuss how to leverage the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;
-YAML support from a &lt;a href=&quot;http://groovy.codehaus.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; script so that you can leverage your application&amp;#8217;s configuration files when in your script.&lt;/p&gt;
 &lt;/div&gt;
             </description>
         </item>
