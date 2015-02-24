@@ -1,0 +1,301 @@
+= Using Thrift Genreated Classes with a JSON REST API in Spring Boot - Part I: Serialization
+Jonathan Pearlin
+2015-02-24
+:jbake-type: post
+:jbake-tags: spring,thrift
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: thrift_json_rest_spring_boot_part_i
+:icons: font
+:guava: https://github.com/google/guava[Google Guava, window="_blank"]
+:jackson: https://github.com/FasterXML/jackson[Jackson 2, window="_blank"]
+:spring_boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
+:spring_rest: https://spring.io/guides/gs/rest-service/[Spring's REST support, window="_blank"]
+:thrift: https://thrift.apache.org/[Apache Thrift, window="_blank"]
+
+If you use {thrift} in your project, sometimes you may run into situations where you would like to be able interact with your service using
+JSON and REST instead of the binary {thrift} protocol.  If you try to simply serialize/deserialize your {thrift} objects to/from JSON, you
+will notice that a lot of additional cruft is included (such as the `isSet` fields, etc).  Furthermore, you don't have any control over
+include/excluding fields that have not yet been set, as most JSON libraries will happily include every field present in the class by default.
+Luckily, you can tackle all of these issues by using some custom {jackson} code in combination with {spring_boot} and {spring_rest}.  In part
+one of this series, I will show how to handle the serialization of {thrift} objects into JSON.
+
+== Simple Rest Controller ==
+
+This first thing that you will need to create is a `RestController` to expose access to your {thrift} objects.  Let's assume that you have
+the following {thrift} object defined in your {thrift} definition file:
+
+[source,thrift]
+----
+namespace java com.example.v1
+
+enum BookFormat {
+    ELECTRONIC,
+    HARDCOVER,
+    PAPERBACK
+}
+
+struct Book {
+    10:required string      author
+    20:required string      title
+    30:required string      isbn10
+    40:required string      isbn13
+    50:required BookFormat  format
+    60:required i64         publishDate
+    70:optional string      language
+    80:optional i64         pages
+    90:optional i64         edition
+}
+----
+
+To provide a way to get a `Book` by title, you would create the following:
+
+[source,java]
+----
+import com.example.v1.Book;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/v1/books")
+public class BookController {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @RequestMapping(method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.ALL_VALUE})
+    public ResponseEntity<Book> getBookByTitle(@RequestParam(value="title", required=true) final String title) {
+        Book book = convertToThrift(bookRepository.findByTitle(title));
+        if(book != null) {
+            return new ResponseEntity<Book>(book, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Book>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    private Book converToThrift(BookEntity bookEntity) {
+        // Let's assume this method handles the creation of a Thrift-based Book from the JPA entity
+        ...
+    }
+}
+----
+
+When an HTTP GET is made to http://<server>:<port>/api/v1/books with the query string `?title=<some title>` that matches a known book, the book will be
+returned in JSON format.  As mentioned earlier, this will work with {thrift} objects out of the box, as {spring_boot} includes {jackson} support for
+controllers annotated with the `RestController` annotation, but will included unwanted fields.  To address this, the next step is to add a custom
+{jackson} serializer.  In this example, the code has been extracted to an abstract class to make it easier to add additional serializers and/or for
+cases where composition is used in the {thrift} definition file:
+
+[source,java]
+----
+package com.example.controllers.json;
+
+import java.io.IOException;
+import java.util.Collection;
+
+import org.apache.thrift.TBase;
+import org.apache.thrift.TFieldIdEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.google.common.base.CaseFormat;
+
+/**
+ * This abstract class represents a generic serializer for converting Thrift-based entities to JSON.
+ *
+ * @param <E> An implementation of the {@link TFieldIdEnum} interface.
+ * @param <T> An implementation of the {@link TBase} interface.
+ */
+public abstract class AbstractThriftSerializer<E extends TFieldIdEnum, T extends TBase<T, E>> extends JsonSerializer<T> {
+
+    private static final Logger log = LoggerFactory.getLogger(AbstractThriftSerializer.class);
+
+    @Override
+    public Class<T> handledType() {
+        return getThriftClass();
+    }
+
+    @Override
+    public void serialize(final T value, final JsonGenerator jgen, final SerializerProvider provider) throws IOException, JsonProcessingException {
+        jgen.writeStartObject();
+        for(final E field : getFieldValues()) {
+            if(value.isSet(field)) {
+                final Object fieldValue = value.getFieldValue(field);
+                if(fieldValue != null) {
+                    log.debug("Adding field {} to the JSON string...", CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,field.getFieldName()));
+                    jgen.writeFieldName(CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,field.getFieldName()));
+                    if(fieldValue instanceof Short) {
+                        jgen.writeNumber((Short)fieldValue);
+                    } else if(fieldValue instanceof Integer) {
+                        jgen.writeNumber((Integer)fieldValue);
+                    } else if(fieldValue instanceof Long) {
+                        jgen.writeNumber((Long)fieldValue);
+                    } else if(fieldValue instanceof Double) {
+                        jgen.writeNumber((Double)fieldValue);
+                    } else if(fieldValue instanceof Float) {
+                        jgen.writeNumber((Float)fieldValue);
+                    } else if(fieldValue instanceof Boolean) {
+                        jgen.writeBoolean((Boolean)fieldValue);
+                    } else if(fieldValue instanceof String) {
+                        jgen.writeString(fieldValue.toString());
+                    } else if(fieldValue instanceof Collection) {
+                        log.debug("Array opened for field {}.", CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,field.getFieldName()));
+                        jgen.writeStartArray();
+                        for(final Object arrayObject : (Collection<?>)fieldValue) {
+                            jgen.writeObject(arrayObject);
+                        }
+                        jgen.writeEndArray();
+                        log.debug("Array closed for field {}.", CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,field.getFieldName()));
+                    } else {
+                        jgen.writeObject(fieldValue);
+                    }
+                } else {
+                    log.debug("Skipping converting field {} to JSON:  value is null!", CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,field.getFieldName()));
+                }
+            } else {
+                log.debug("Skipping converting field {} to JSON:  field has not been set!", CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,field.getFieldName()));
+            }
+        }
+        jgen.writeEndObject();
+    }
+
+    /**
+     * Returns an array of {@code <E>} enumerated values that represent the fields present in the
+     * Thrift class associated with this serializer.
+     * @return The array of {@code <E>} enumerated values that represent the fields present in the
+     *   Thrift class.
+     */
+    protected abstract E[] getFieldValues();
+
+    /**
+     * Returns the {@code <T>} implementation class associated with this serializer.
+     * @return The {@code <T>} implementation class
+     */
+    protected abstract Class<T> getThriftClass();
+}
+----
+
+The `AbstractThriftSerializer` extends the {jackson} `JsonSerializer` to provide instructions to {jackson} on how to convert
+a {thrift} based object to JSON.  In particular, it uses the `TFieldIdEnum` enumeration found in each {thrift} generated class
+that provides metadata about each field in the class.  If a value has been set for the each field, the value is converted
+to JSON based on the Java type associated with that field.  In addition, some additional logic was added to convert the
+camel cased field names to lower case underscore format using {guava}'s `CaseFormat` utility.  Implementations of this abstract
+class simply need to provide access to the `TFieldIdEnum` enumeration declared within the class, as well as the specific type
+for registration with {jackson}:
+
+[source,java]
+----
+package com.example.json;
+
+import com.example.v2.Book;
+import com.example.v2.Book._Fields;
+
+public class BookSerializer extends AbstractThriftSerializer<Book._Fields, Book> {
+
+    @Override
+    protected _Fields[] getFieldValues() {
+        return Book._Fields.values();
+    }
+
+    @Override
+    protected Class<Book> getThriftClass() {
+        return Book.class;
+    }
+}
+----
+
+The final step is to register the custom serializer with {spring_boot} so that the REST
+controller will use it when converting our `Book` object to JSON.  Let's re-visit the `BookController`:
+
+[source,java]
+----
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.v1.Book;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
+@RestController
+@RequestMapping("/api/v1/books")
+public class BookController implements InitializingBean {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // Register the custom Thrift <> JSON deserializers/serializers.
+        final ObjectMapper mapper = mappingJackson2HttpMessageConverter.getObjectMapper();
+        final SimpleModule bookModule = new SimpleModule("Book", new Version(1,0,0,null,null,null));
+        bookModule.addSerializer(new BookSerializer());
+        mapper.registerModule(bookModule);
+    }
+
+    @RequestMapping(method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.ALL_VALUE})
+    public ResponseEntity<Book> getBookByTitle(@RequestParam(value="title", required=true) final String title) {
+        Book book = convertToThrift(bookRepository.findByTitle(title));
+        if(book != null) {
+            return new ResponseEntity<Book>(book, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Book>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    private Book converToThrift(BookEntity bookEntity) {
+        // Let's assume this method handles the creation of a Thrift-based Book from the JPA entity
+        ...
+    }
+}
+----
+
+So, what did we add?  First, we modified the `BookController` to implement the `InitializingBean` interface so that we could handle the
+{jackson} configuration at bean creation time.  Second, we injected the `MappingJackson2HttpMessageConverter`, which is provided by
+{sprinb_boot} to handle the conversion of entities to JSON when a controller action is marked to produce JSON.  Finally, we implemented
+the `afterPropertiesSet` method of the `InitializingBean` interface to register our `BookSerializer` with the {jackson} `ObjectMapper`
+used by the `MappingJackson2HttpMessageConverter`.  Now, when we perform an HTTP GET against our endpoint for a book title that matches
+an existing book, we will see the following JSON response:
+
+[source,json]
+----
+{
+    "author" : "Rob Friesel",
+    "title" : "PhamtomJS Cookbook",
+    "isbn_10" : "178398192X",
+    "isbn_13" : "978-1783981922",
+    "format" : "PAPERBACK",
+    "publish_date" : 1402531200000,
+    "language" : "English",
+    "pages" : 276,
+    "edition" : 1
+}
+----
+
+So, what did we accomplish.  First, we were able to customize how {jackson} converts an object to JSON.  Second, we were able to convert our
+{thrift} objects to JSON in a manner of our choosing.  Third, we did all of this without having to create any new DTO's or extend from our
+generated {thrift} objects.  In the next post, I will show how to handle the custom deserialization of JSON into {thrift} based objects.
