@@ -1,0 +1,256 @@
+= Using Thrift Generated Classes with a JSON REST API in Spring Boot - Part II: De-Serialization
+Jonathan Pearlin
+2015-03-03
+:jbake-type: post
+:jbake-tags: spring,thrift
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: thrift_json_rest_spring_boot_part_i
+:icons: font
+:guava: https://github.com/google/guava[Google Guava, window="_blank"]
+:jackson: https://github.com/FasterXML/jackson[Jackson 2, window="_blank"]
+:spring_boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
+:spring_rest: https://spring.io/guides/gs/rest-service/[Spring's REST support, window="_blank"]
+:thrift: https://thrift.apache.org/[Apache Thrift, window="_blank"]
+
+In my http://jonathanpearlin.com/blog/2015/02/24/thrift_json_rest_spring_boot_part_i.html[previous post, window="_blank"], I discussed how
+to create a custom {jackson} serializer to handle the conversion of JSON into {thrift} objects within a {spring_boot} application that uses
+{spring_rest}.  In this post, I am going to tackle the other side of the coin:  de-serialization, or converting an {thrift} object from JSON.
+
+== Custom De-serializer ==
+
+Much like the previous example, we need to create a custom {jackson} de-serializer to handle the conversion of {thrift}-based objects from JSON:
+
+[source,java]
+----
+package com.example.json;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.thrift.TBase;
+import org.apache.thrift.TException;
+import org.apache.thrift.TFieldIdEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.base.CaseFormat;
+
+/**
+ * This abstract class represents a generic de-serializer for converting JSON to Thrift-based entities.
+ *
+ * @param <E> An implementation of the {@link TFieldIdEnum} interface.
+ * @param <T> An implementation of the {@link TBase} interface.
+ */
+public abstract class AbstractThriftDeserializer<E extends TFieldIdEnum, T extends TBase<T, E>> extends JsonDeserializer<T> {
+
+    private static Logger log = LoggerFactory.getLogger(AbstractThriftDeserializer.class);
+
+    @Override
+    public T deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        final T instance = newInstance();
+        final ObjectMapper mapper = (ObjectMapper)jp.getCodec();
+        final ObjectNode rootNode = (ObjectNode)mapper.readTree(jp);
+        final Iterator<Map.Entry<String, JsonNode>> iterator = rootNode.fields();
+
+        while(iterator.hasNext()) {
+            final Map.Entry<String, JsonNode> currentField = iterator.next();
+            try {
+                /*
+                 * If the current node is not a null value, process it.  Otherwise,
+                 * skip it.  Jackson will treat the null as a 0 for primitive
+                 * number types, which in turn will make Thrift think the field
+                 * has been set.
+                 */
+                if(currentField.getValue().getNodeType() != JsonNodeType.NULL) {
+                    final E field = getField(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_UNDERSCORE, currentField.getKey()));
+                    final JsonParser parser = currentField.getValue().traverse();
+                    parser.setCodec(mapper);
+                    final Object value = mapper.readValue(parser, generateValueType(instance, field));
+                    if(value != null) {
+                        log.debug("Field {} produced value {} of type {}.", currentField.getKey(), value, value.getClass().getName());
+                        instance.setFieldValue(field, value);
+                    } else {
+                        log.debug("Field {} contains a null value.  Skipping...", currentField.getKey());
+                    }
+                } else {
+                    log.debug("Field {} contains a null value.  Skipping...", currentField.getKey());
+                }
+            } catch (final NoSuchFieldException | IllegalArgumentException e) {
+                log.error("Unable to de-serialize field '{}'.", currentField.getKey(), e);
+                ctxt.mappingException(e.getMessage());
+            }
+        }
+
+        try {
+            // Validate that the instance contains all required fields.
+            validate(instance);
+        } catch (final TException e) {
+            log.error("Unable to deserialize JSON '{}' to type '{}'.", jp.getValueAsString(), instance.getClass().getName(), e);
+            NewRelic.noticeError(e);
+            ctxt.mappingException(e.getMessage());
+        }
+
+        return instance;
+    }
+
+    /**
+     * Returns the {@code <E>} enumerated value that represents the target
+     * field in the Thrift entity referenced in the JSON document.
+     * @param fieldName The name of the Thrift entity target field.
+     * @return The {@code <E>} enumerated value that represents the target
+     *   field in the Thrift entity referenced in the JSON document.
+     */
+    protected abstract E getField(String fieldName);
+
+    /**
+     * Creates a new instance of the Thrift entity class represented by this deserializer.
+     * @return A new instance of the Thrift entity class represented by this deserializer.
+     */
+    protected abstract T newInstance();
+
+    /**
+     * Validates that the Thrift entity instance contains all required fields after deserialization.
+     * @param instance A Thrift entity instance.
+     * @throws TException if unable to validate the instance.
+     */
+    protected abstract void validate(T instance) throws TException;
+
+    /**
+     * Generates a {@link JavaType} that matches the target Thrift field represented by the provided
+     * {@code <E>} enumerated value.  If the field's type includes generics, the generics will
+     * be added to the generated {@link JavaType} to support proper conversion.
+     * @param thriftInstance The Thrift-generated class instance that will be converted to/from JSON.
+     * @param field A {@code <E>} enumerated value that represents a field in a Thrift-based entity.
+     * @return The {@link JavaType} representation of the type associated with the field.
+     * @throws NoSuchFieldException if unable to determine the field's type.
+     * @throws SecurityException if unable to determine the field's type.
+     */
+    protected JavaType generateValueType(final T thriftInstance, final E field) throws NoSuchFieldException, SecurityException {
+        final TypeFactory typeFactory = TypeFactory.defaultInstance();
+
+        final Field declaredField = thriftInstance.getClass().getDeclaredField(field.getFieldName());
+        if(declaredField.getType().equals(declaredField.getGenericType())) {
+            log.debug("Generating JavaType for type '{}'.", declaredField.getType());
+            return typeFactory.constructType(declaredField.getType());
+        } else {
+            final ParameterizedType type = (ParameterizedType)declaredField.getGenericType();
+            final Class<?>[] parameterizedTypes = new Class<?>[type.getActualTypeArguments().length];
+            for(int i=0; i<type.getActualTypeArguments().length; i++) {
+                parameterizedTypes[i] = (Class<?>)type.getActualTypeArguments()[i];
+            }
+            log.debug("Generating JavaType for type '{}' with generics '{}'", declaredField.getType(), parameterizedTypes);
+            return typeFactory.constructParametricType(declaredField.getType(), parameterizedTypes);
+        }
+    }
+}
+----
+
+This approach uses the `TFieldIdEnum` enumeration present in each {thrift} object that defines the available fields in the object
+to determine the mapping of the current JSON field into the {thrift} object.  In order to ensure proper type coercion, an additional
+method (`generateValueType`) is provided to handle cases where {jackson} needs to be instructed about possible generic types.  Finally,
+the generated {thrift} object is validated to ensure all required fields are present in the JSON.
+
+In order to make this solution re-usable, three `abstract` methods are provided so that this common logic for de-serialization can be re-used
+by more than one {thrift} object:
+
+[source,java]
+----
+package com.example.json;
+
+import org.apache.thrift.TException;
+
+import com.example.v2.Book;
+
+public class BookDeserializer extends AbstractThriftDeserializer<Book._Fields, Book> {
+
+    @Override
+    protected Book._Fields getField(final String fieldName) {
+        return Book._Fields.valueOf(fieldName);
+    }
+
+    @Override
+    protected Book newInstance() {
+        return new Book();
+    }
+
+    @Override
+    protected void validate(final Book instance) throws TException{
+        instance.validate();
+    }
+}
+----
+
+The final step is to register our custom de-serializer with {spring} in our controller, just like we did for the custom serializer:
+
+[source,java]
+----
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.v1.Book;
+import com.example.json.BookDeserializer;
+import com.example.json.BookSerializer;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
+@RestController
+@RequestMapping("/api/v1/books")
+public class BookController implements InitializingBean {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // Register the custom Thrift <> JSON deserializers/serializers.
+        final ObjectMapper mapper = mappingJackson2HttpMessageConverter.getObjectMapper();
+        final SimpleModule bookModule = new SimpleModule("Book", new Version(1,0,0,null,null,null));
+        bookModule.addSerializer(new BookSerializer());
+        bookModule.addDeserializer(new BookDeserializer());
+        mapper.registerModule(bookModule);
+    }
+
+    ....
+
+    @RequestMapping(method=RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.ALL_VALUE})
+    public ResponseEntity<Book> createBook(@RequestParam(@RequestBody final Book book) {
+        if(book != null) {
+            // Save the book!
+        } else {
+            return new ResponseEntity<Book>(HttpStatus.BAD_REQUEST);
+        }
+    }
+}
+----
+
+Now, whenever a JSON payload is provided to the `createBook` method via an HTTP POST, {jackson} will handle the conversion of the JSON
+into our {thrift} `Book` object!  By combining both the serialization and de-serialization code, you can now re-use your {thrift} model
+as your DTO's for an additional RESTful interface.
+

@@ -1,4 +1,4 @@
-= Using Thrift Genreated Classes with a JSON REST API in Spring Boot - Part I: Serialization
+= Using Thrift Generated Classes with a JSON REST API in Spring Boot - Part I: Serialization
 Jonathan Pearlin
 2015-02-24
 :jbake-type: post
@@ -97,7 +97,7 @@ cases where composition is used in the {thrift} definition file:
 
 [source,java]
 ----
-package com.example.controllers.json;
+package com.example.json;
 
 import java.io.IOException;
 import java.util.Collection;
