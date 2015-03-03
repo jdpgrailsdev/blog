@@ -90,7 +90,273 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
-                   <a href="/blog/2015/02/24/thrift_json_rest_spring_boot_part_i.html"><h1>Using Thrift Genreated Classes with a JSON REST API in Spring Boot - Part I</h1></a>
+                   <a href="/blog/2015/03/03/thrift_json_rest_spring_boot_ii.html"><h1>Using Thrift Generated Classes with a JSON REST API in Spring Boot - Part II</h1></a>
+                   <p>03 March 2015</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/spring.html">spring</a>
+        
+                <a href="/blog/tags/thrift.html">thrift</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/03/03/thrift_json_rest_spring_boot_ii.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/03/03/thrift_json_rest_spring_boot_ii.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/03/03/thrift_json_rest_spring_boot_ii.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In my <a href="http://jonathanpearlin.com/blog/2015/02/24/thrift_json_rest_spring_boot_part_i.html" target="_blank">previous post</a>, I discussed how
+to create a custom <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> serializer to handle the conversion of JSON into <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> objects within a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application that uses
+<a href="https://spring.io/guides/gs/rest-service/" target="_blank">Spring&#8217;s REST support</a>.  In this post, I am going to tackle the other side of the coin:  de-serialization, or converting an <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> object from JSON.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_custom_de_serializer">Custom De-serializer</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Much like the previous example, we need to create a custom <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> de-serializer to handle the conversion of <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a>-based objects from JSON:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">package com.example.json;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.thrift.TBase;
+import org.apache.thrift.TException;
+import org.apache.thrift.TFieldIdEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.base.CaseFormat;
+
+/**
+ * This abstract class represents a generic de-serializer for converting JSON to Thrift-based entities.
+ *
+ * @param &lt;E&gt; An implementation of the {@link TFieldIdEnum} interface.
+ * @param &lt;T&gt; An implementation of the {@link TBase} interface.
+ */
+public abstract class AbstractThriftDeserializer&lt;E extends TFieldIdEnum, T extends TBase&lt;T, E&gt;&gt; extends JsonDeserializer&lt;T&gt; {
+
+    private static Logger log = LoggerFactory.getLogger(AbstractThriftDeserializer.class);
+
+    @Override
+    public T deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        final T instance = newInstance();
+        final ObjectMapper mapper = (ObjectMapper)jp.getCodec();
+        final ObjectNode rootNode = (ObjectNode)mapper.readTree(jp);
+        final Iterator&lt;Map.Entry&lt;String, JsonNode&gt;&gt; iterator = rootNode.fields();
+
+        while(iterator.hasNext()) {
+            final Map.Entry&lt;String, JsonNode&gt; currentField = iterator.next();
+            try {
+                /*
+                 * If the current node is not a null value, process it.  Otherwise,
+                 * skip it.  Jackson will treat the null as a 0 for primitive
+                 * number types, which in turn will make Thrift think the field
+                 * has been set.
+                 */
+                if(currentField.getValue().getNodeType() != JsonNodeType.NULL) {
+                    final E field = getField(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_UNDERSCORE, currentField.getKey()));
+                    final JsonParser parser = currentField.getValue().traverse();
+                    parser.setCodec(mapper);
+                    final Object value = mapper.readValue(parser, generateValueType(instance, field));
+                    if(value != null) {
+                        log.debug("Field {} produced value {} of type {}.", currentField.getKey(), value, value.getClass().getName());
+                        instance.setFieldValue(field, value);
+                    } else {
+                        log.debug("Field {} contains a null value.  Skipping...", currentField.getKey());
+                    }
+                } else {
+                    log.debug("Field {} contains a null value.  Skipping...", currentField.getKey());
+                }
+            } catch (final NoSuchFieldException | IllegalArgumentException e) {
+                log.error("Unable to de-serialize field '{}'.", currentField.getKey(), e);
+                ctxt.mappingException(e.getMessage());
+            }
+        }
+
+        try {
+            // Validate that the instance contains all required fields.
+            validate(instance);
+        } catch (final TException e) {
+            log.error("Unable to deserialize JSON '{}' to type '{}'.", jp.getValueAsString(), instance.getClass().getName(), e);
+            NewRelic.noticeError(e);
+            ctxt.mappingException(e.getMessage());
+        }
+
+        return instance;
+    }
+
+    /**
+     * Returns the {@code &lt;E&gt;} enumerated value that represents the target
+     * field in the Thrift entity referenced in the JSON document.
+     * @param fieldName The name of the Thrift entity target field.
+     * @return The {@code &lt;E&gt;} enumerated value that represents the target
+     *   field in the Thrift entity referenced in the JSON document.
+     */
+    protected abstract E getField(String fieldName);
+
+    /**
+     * Creates a new instance of the Thrift entity class represented by this deserializer.
+     * @return A new instance of the Thrift entity class represented by this deserializer.
+     */
+    protected abstract T newInstance();
+
+    /**
+     * Validates that the Thrift entity instance contains all required fields after deserialization.
+     * @param instance A Thrift entity instance.
+     * @throws TException if unable to validate the instance.
+     */
+    protected abstract void validate(T instance) throws TException;
+
+    /**
+     * Generates a {@link JavaType} that matches the target Thrift field represented by the provided
+     * {@code &lt;E&gt;} enumerated value.  If the field's type includes generics, the generics will
+     * be added to the generated {@link JavaType} to support proper conversion.
+     * @param thriftInstance The Thrift-generated class instance that will be converted to/from JSON.
+     * @param field A {@code &lt;E&gt;} enumerated value that represents a field in a Thrift-based entity.
+     * @return The {@link JavaType} representation of the type associated with the field.
+     * @throws NoSuchFieldException if unable to determine the field's type.
+     * @throws SecurityException if unable to determine the field's type.
+     */
+    protected JavaType generateValueType(final T thriftInstance, final E field) throws NoSuchFieldException, SecurityException {
+        final TypeFactory typeFactory = TypeFactory.defaultInstance();
+
+        final Field declaredField = thriftInstance.getClass().getDeclaredField(field.getFieldName());
+        if(declaredField.getType().equals(declaredField.getGenericType())) {
+            log.debug("Generating JavaType for type '{}'.", declaredField.getType());
+            return typeFactory.constructType(declaredField.getType());
+        } else {
+            final ParameterizedType type = (ParameterizedType)declaredField.getGenericType();
+            final Class&lt;?&gt;[] parameterizedTypes = new Class&lt;?&gt;[type.getActualTypeArguments().length];
+            for(int i=0; i&lt;type.getActualTypeArguments().length; i++) {
+                parameterizedTypes[i] = (Class&lt;?&gt;)type.getActualTypeArguments()[i];
+            }
+            log.debug("Generating JavaType for type '{}' with generics '{}'", declaredField.getType(), parameterizedTypes);
+            return typeFactory.constructParametricType(declaredField.getType(), parameterizedTypes);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This approach uses the <code>TFieldIdEnum</code> enumeration present in each <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> object that defines the available fields in the object
+to determine the mapping of the current JSON field into the <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> object.  In order to ensure proper type coercion, an additional
+method (<code>generateValueType</code>) is provided to handle cases where <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> needs to be instructed about possible generic types.  Finally,
+the generated <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> object is validated to ensure all required fields are present in the JSON.</p>
+</div>
+<div class="paragraph">
+<p>In order to make this solution re-usable, three <code>abstract</code> methods are provided so that this common logic for de-serialization can be re-used
+by more than one <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> object:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">package com.example.json;
+
+import org.apache.thrift.TException;
+
+import com.example.v2.Book;
+
+public class BookDeserializer extends AbstractThriftDeserializer&lt;Book._Fields, Book&gt; {
+
+    @Override
+    protected Book._Fields getField(final String fieldName) {
+        return Book._Fields.valueOf(fieldName);
+    }
+
+    @Override
+    protected Book newInstance() {
+        return new Book();
+    }
+
+    @Override
+    protected void validate(final Book instance) throws TException{
+        instance.validate();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The final step is to register our custom de-serializer with {spring} in our controller, just like we did for the custom serializer:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.v1.Book;
+import com.example.json.BookDeserializer;
+import com.example.json.BookSerializer;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
+@RestController
+@RequestMapping("/api/v1/books")
+public class BookController implements InitializingBean {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // Register the custom Thrift &lt;&gt; JSON deserializers/serializers.
+        final ObjectMapper mapper = mappingJackson2HttpMessageConverter.getObjectMapper();
+        final SimpleModule bookModule = new SimpleModule("Book", new Version(1,0,0,null,null,null));
+        bookModule.addSerializer(new BookSerializer());
+        bookModule.addDeserializer(new BookDeserializer());
+        mapper.registerModule(bookModule);
+    }
+
+    ....
+
+    @RequestMapping(method=RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.ALL_VALUE})
+    public ResponseEntity&lt;Book&gt; createBook(@RequestParam(@RequestBody final Book book) {
+        if(book != null) {
+            // Save the book!
+        } else {
+            return new ResponseEntity&lt;Book&gt;(HttpStatus.BAD_REQUEST);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, whenever a JSON payload is provided to the <code>createBook</code> method via an HTTP POST, <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> will handle the conversion of the JSON
+into our <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> <code>Book</code> object!  By combining both the serialization and de-serialization code, you can now re-use your <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> model
+as your DTO&#8217;s for an additional RESTful interface.</p>
+</div>
+</div>
+</div></p>
+                <p><a href="/blog2015/03/03/thrift_json_rest_spring_boot_ii.html#disqus_thread">Comments</a></p>
+                   <a href="/blog/2015/02/24/thrift_json_rest_spring_boot_part_i.html"><h1>Using Thrift Generated Classes with a JSON REST API in Spring Boot - Part I</h1></a>
                    <p>24 February 2015</p>
                 <p><em>Tags: </em>
                 <a href="/blog/tags/spring.html">spring</a>
@@ -194,7 +460,7 @@ cases where composition is used in the <a href="https://thrift.apache.org/" targ
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">package com.example.controllers.json;
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">package com.example.json;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -659,44 +925,6 @@ names such as "BaseBusinessException" there is no need to use a FQN.</p>
 types to better control your rollback logic.</p>
 </div></p>
                 <p><a href="/blog2015/01/20/spring_transactions_rollback.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2015/01/13/jenkins_check_job_status.html"><h1>Check Jenkins Job Status via REST API</h1></a>
-                   <p>07 January 2015</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/jenkins.html">jenkins</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div class="paragraph">
-<p>There are a ton of <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> plugins out there that let you control when a job should run based on the status of
-other builds.  However, plugins typically become out of date pretty quickly.  If you don&#8217;t want to have to play
-the plugin update game, you can use a little bash magic to leverage the <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> REST API to check the status
-of other jobs before running your builds.  Let&#8217;s assume that you have a job named <code>other-job</code> that must be in
-a success state in order for another job to execute.  You can check the status of the <code>other-job</code> by using
-the <a href="http://jenkins-ci.org/" target="_blank">Jenkins</a> REST API as part of an executed shell in the job&#8217;s configuration:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-shell" data-lang="shell">job_status=`curl https://jenkins/view/job/other-job/lastBuild/api/json | grep "\"result\":\"SUCCESS\""`
-
-if [ -n "$job_status" ]
-then
-    # Run your script commands here
-else
-  echo "BUILD FAILURE: Other build is unsuccessful or status could not be obtained."
-  exit 1
-fi</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>then</code> block of this other job could even do something like invoke another build that has a parameterized configuration to run your
-actual build via the REST API.  This would allow you to have the job with the configuration above check the status of <code>other-job</code> first
-and then kick of a third job that actual performs the build, but only if the first job is successful, all without
-installing any additional plugins.</p>
-</div></p>
-                <p><a href="/blog2015/01/13/jenkins_check_job_status.html#disqus_thread">Comments</a></p>
 
                 <hr />
 

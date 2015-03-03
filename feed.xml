@@ -6,15 +6,276 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 24 Feb 2015 07:53:00 -0800</pubDate>
-        <lastBuildDate>Tue, 24 Feb 2015 07:53:00 -0800</lastBuildDate>
+        <pubDate>Tue, 3 Mar 2015 07:58:04 -0800</pubDate>
+        <lastBuildDate>Tue, 3 Mar 2015 07:58:04 -0800</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
         <item>
-            <title>Using Thrift Genreated Classes with a JSON REST API in Spring Boot - Part I</title>
+            <title>Using Thrift Generated Classes with a JSON REST API in Spring Boot - Part II</title>
+            <link>http://jdpgrailsdev.github.io/blog/2015/03/03/thrift_json_rest_spring_boot_ii.html</link>
+            <pubDate>Tue, 3 Mar 2015 00:00:00 -0800</pubDate>
+            <guid isPermaLink="false">2015/03/03/thrift_json_rest_spring_boot_ii.html</guid>
+            <description>
+                    &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In my &lt;a href=&quot;http://jonathanpearlin.com/blog/2015/02/24/thrift_json_rest_spring_boot_part_i.html&quot; target=&quot;_blank&quot;&gt;previous post&lt;/a&gt;, I discussed how
+to create a custom &lt;a href=&quot;https://github.com/FasterXML/jackson&quot; target=&quot;_blank&quot;&gt;Jackson 2&lt;/a&gt; serializer to handle the conversion of JSON into &lt;a href=&quot;https://thrift.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Thrift&lt;/a&gt; objects within a &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; application that uses
+&lt;a href=&quot;https://spring.io/guides/gs/rest-service/&quot; target=&quot;_blank&quot;&gt;Spring&amp;#8217;s REST support&lt;/a&gt;.  In this post, I am going to tackle the other side of the coin:  de-serialization, or converting an &lt;a href=&quot;https://thrift.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Thrift&lt;/a&gt; object from JSON.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_custom_de_serializer&quot;&gt;Custom De-serializer&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Much like the previous example, we need to create a custom &lt;a href=&quot;https://github.com/FasterXML/jackson&quot; target=&quot;_blank&quot;&gt;Jackson 2&lt;/a&gt; de-serializer to handle the conversion of &lt;a href=&quot;https://thrift.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Thrift&lt;/a&gt;-based objects from JSON:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;package com.example.json;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.thrift.TBase;
+import org.apache.thrift.TException;
+import org.apache.thrift.TFieldIdEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.base.CaseFormat;
+
+/**
+ * This abstract class represents a generic de-serializer for converting JSON to Thrift-based entities.
+ *
+ * @param &amp;lt;E&amp;gt; An implementation of the {@link TFieldIdEnum} interface.
+ * @param &amp;lt;T&amp;gt; An implementation of the {@link TBase} interface.
+ */
+public abstract class AbstractThriftDeserializer&amp;lt;E extends TFieldIdEnum, T extends TBase&amp;lt;T, E&amp;gt;&amp;gt; extends JsonDeserializer&amp;lt;T&amp;gt; {
+
+    private static Logger log = LoggerFactory.getLogger(AbstractThriftDeserializer.class);
+
+    @Override
+    public T deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        final T instance = newInstance();
+        final ObjectMapper mapper = (ObjectMapper)jp.getCodec();
+        final ObjectNode rootNode = (ObjectNode)mapper.readTree(jp);
+        final Iterator&amp;lt;Map.Entry&amp;lt;String, JsonNode&amp;gt;&amp;gt; iterator = rootNode.fields();
+
+        while(iterator.hasNext()) {
+            final Map.Entry&amp;lt;String, JsonNode&amp;gt; currentField = iterator.next();
+            try {
+                /*
+                 * If the current node is not a null value, process it.  Otherwise,
+                 * skip it.  Jackson will treat the null as a 0 for primitive
+                 * number types, which in turn will make Thrift think the field
+                 * has been set.
+                 */
+                if(currentField.getValue().getNodeType() != JsonNodeType.NULL) {
+                    final E field = getField(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_UNDERSCORE, currentField.getKey()));
+                    final JsonParser parser = currentField.getValue().traverse();
+                    parser.setCodec(mapper);
+                    final Object value = mapper.readValue(parser, generateValueType(instance, field));
+                    if(value != null) {
+                        log.debug(&quot;Field {} produced value {} of type {}.&quot;, currentField.getKey(), value, value.getClass().getName());
+                        instance.setFieldValue(field, value);
+                    } else {
+                        log.debug(&quot;Field {} contains a null value.  Skipping...&quot;, currentField.getKey());
+                    }
+                } else {
+                    log.debug(&quot;Field {} contains a null value.  Skipping...&quot;, currentField.getKey());
+                }
+            } catch (final NoSuchFieldException | IllegalArgumentException e) {
+                log.error(&quot;Unable to de-serialize field &apos;{}&apos;.&quot;, currentField.getKey(), e);
+                ctxt.mappingException(e.getMessage());
+            }
+        }
+
+        try {
+            // Validate that the instance contains all required fields.
+            validate(instance);
+        } catch (final TException e) {
+            log.error(&quot;Unable to deserialize JSON &apos;{}&apos; to type &apos;{}&apos;.&quot;, jp.getValueAsString(), instance.getClass().getName(), e);
+            NewRelic.noticeError(e);
+            ctxt.mappingException(e.getMessage());
+        }
+
+        return instance;
+    }
+
+    /**
+     * Returns the {@code &amp;lt;E&amp;gt;} enumerated value that represents the target
+     * field in the Thrift entity referenced in the JSON document.
+     * @param fieldName The name of the Thrift entity target field.
+     * @return The {@code &amp;lt;E&amp;gt;} enumerated value that represents the target
+     *   field in the Thrift entity referenced in the JSON document.
+     */
+    protected abstract E getField(String fieldName);
+
+    /**
+     * Creates a new instance of the Thrift entity class represented by this deserializer.
+     * @return A new instance of the Thrift entity class represented by this deserializer.
+     */
+    protected abstract T newInstance();
+
+    /**
+     * Validates that the Thrift entity instance contains all required fields after deserialization.
+     * @param instance A Thrift entity instance.
+     * @throws TException if unable to validate the instance.
+     */
+    protected abstract void validate(T instance) throws TException;
+
+    /**
+     * Generates a {@link JavaType} that matches the target Thrift field represented by the provided
+     * {@code &amp;lt;E&amp;gt;} enumerated value.  If the field&apos;s type includes generics, the generics will
+     * be added to the generated {@link JavaType} to support proper conversion.
+     * @param thriftInstance The Thrift-generated class instance that will be converted to/from JSON.
+     * @param field A {@code &amp;lt;E&amp;gt;} enumerated value that represents a field in a Thrift-based entity.
+     * @return The {@link JavaType} representation of the type associated with the field.
+     * @throws NoSuchFieldException if unable to determine the field&apos;s type.
+     * @throws SecurityException if unable to determine the field&apos;s type.
+     */
+    protected JavaType generateValueType(final T thriftInstance, final E field) throws NoSuchFieldException, SecurityException {
+        final TypeFactory typeFactory = TypeFactory.defaultInstance();
+
+        final Field declaredField = thriftInstance.getClass().getDeclaredField(field.getFieldName());
+        if(declaredField.getType().equals(declaredField.getGenericType())) {
+            log.debug(&quot;Generating JavaType for type &apos;{}&apos;.&quot;, declaredField.getType());
+            return typeFactory.constructType(declaredField.getType());
+        } else {
+            final ParameterizedType type = (ParameterizedType)declaredField.getGenericType();
+            final Class&amp;lt;?&amp;gt;[] parameterizedTypes = new Class&amp;lt;?&amp;gt;[type.getActualTypeArguments().length];
+            for(int i=0; i&amp;lt;type.getActualTypeArguments().length; i++) {
+                parameterizedTypes[i] = (Class&amp;lt;?&amp;gt;)type.getActualTypeArguments()[i];
+            }
+            log.debug(&quot;Generating JavaType for type &apos;{}&apos; with generics &apos;{}&apos;&quot;, declaredField.getType(), parameterizedTypes);
+            return typeFactory.constructParametricType(declaredField.getType(), parameterizedTypes);
+        }
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;This approach uses the &lt;code&gt;TFieldIdEnum&lt;/code&gt; enumeration present in each &lt;a href=&quot;https://thrift.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Thrift&lt;/a&gt; object that defines the available fields in the object
+to determine the mapping of the current JSON field into the &lt;a href=&quot;https://thrift.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Thrift&lt;/a&gt; object.  In order to ensure proper type coercion, an additional
+method (&lt;code&gt;generateValueType&lt;/code&gt;) is provided to handle cases where &lt;a href=&quot;https://github.com/FasterXML/jackson&quot; target=&quot;_blank&quot;&gt;Jackson 2&lt;/a&gt; needs to be instructed about possible generic types.  Finally,
+the generated &lt;a href=&quot;https://thrift.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Thrift&lt;/a&gt; object is validated to ensure all required fields are present in the JSON.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In order to make this solution re-usable, three &lt;code&gt;abstract&lt;/code&gt; methods are provided so that this common logic for de-serialization can be re-used
+by more than one &lt;a href=&quot;https://thrift.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Thrift&lt;/a&gt; object:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;package com.example.json;
+
+import org.apache.thrift.TException;
+
+import com.example.v2.Book;
+
+public class BookDeserializer extends AbstractThriftDeserializer&amp;lt;Book._Fields, Book&amp;gt; {
+
+    @Override
+    protected Book._Fields getField(final String fieldName) {
+        return Book._Fields.valueOf(fieldName);
+    }
+
+    @Override
+    protected Book newInstance() {
+        return new Book();
+    }
+
+    @Override
+    protected void validate(final Book instance) throws TException{
+        instance.validate();
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The final step is to register our custom de-serializer with {spring} in our controller, just like we did for the custom serializer:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.v1.Book;
+import com.example.json.BookDeserializer;
+import com.example.json.BookSerializer;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
+@RestController
+@RequestMapping(&quot;/api/v1/books&quot;)
+public class BookController implements InitializingBean {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // Register the custom Thrift &amp;lt;&amp;gt; JSON deserializers/serializers.
+        final ObjectMapper mapper = mappingJackson2HttpMessageConverter.getObjectMapper();
+        final SimpleModule bookModule = new SimpleModule(&quot;Book&quot;, new Version(1,0,0,null,null,null));
+        bookModule.addSerializer(new BookSerializer());
+        bookModule.addDeserializer(new BookDeserializer());
+        mapper.registerModule(bookModule);
+    }
+
+    ....
+
+    @RequestMapping(method=RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.ALL_VALUE})
+    public ResponseEntity&amp;lt;Book&amp;gt; createBook(@RequestParam(@RequestBody final Book book) {
+        if(book != null) {
+            // Save the book!
+        } else {
+            return new ResponseEntity&amp;lt;Book&amp;gt;(HttpStatus.BAD_REQUEST);
+        }
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Now, whenever a JSON payload is provided to the &lt;code&gt;createBook&lt;/code&gt; method via an HTTP POST, &lt;a href=&quot;https://github.com/FasterXML/jackson&quot; target=&quot;_blank&quot;&gt;Jackson 2&lt;/a&gt; will handle the conversion of the JSON
+into our &lt;a href=&quot;https://thrift.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Thrift&lt;/a&gt; &lt;code&gt;Book&lt;/code&gt; object!  By combining both the serialization and de-serialization code, you can now re-use your &lt;a href=&quot;https://thrift.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Thrift&lt;/a&gt; model
+as your DTO&amp;#8217;s for an additional RESTful interface.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
+        <item>
+            <title>Using Thrift Generated Classes with a JSON REST API in Spring Boot - Part I</title>
             <link>http://jdpgrailsdev.github.io/blog/2015/02/24/thrift_json_rest_spring_boot_part_i.html</link>
             <pubDate>Tue, 24 Feb 2015 00:00:00 -0800</pubDate>
             <guid isPermaLink="false">2015/02/24/thrift_json_rest_spring_boot_part_i.html</guid>
@@ -111,7 +372,7 @@ cases where composition is used in the &lt;a href=&quot;https://thrift.apache.or
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;package com.example.controllers.json;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;package com.example.json;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -595,114 +856,6 @@ fi&lt;/code&gt;&lt;/pre&gt;
 actual build via the REST API.  This would allow you to have the job with the configuration above check the status of &lt;code&gt;other-job&lt;/code&gt; first
 and then kick of a third job that actual performs the build, but only if the first job is successful, all without
 installing any additional plugins.&lt;/p&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Using CSS Parser and JSoup to Inline Styles for Web Mail</title>
-            <link>http://jdpgrailsdev.github.io/blog/2015/01/06/email_inline_style_jsoup_cssparser.html</link>
-            <pubDate>Tue, 6 Jan 2015 00:00:00 -0800</pubDate>
-            <guid isPermaLink="false">2015/01/06/email_inline_style_jsoup_cssparser.html</guid>
-            <description>
-                    &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;As part of an on-going project, we had a requirement to send pretty (CSS-ified) e-mails to communicate status.  Sending HTML-based e-mails from Java is pretty easy.  There
-are a ton of templating engines out there that can be used to generate HTML.  However, what most people fail to realize is that most web mail providers (e.g. Gmail, Yahoo!, etc) handle a limited
-subset of standard CSS.  You can find out what is supported by looking at &lt;a href=&quot;https://www.campaignmonitor.com/css/&quot; target=&quot;_blank&quot;&gt;Campaign Monitor CSS Support&lt;/a&gt;.  The first thing you might notice is that almost all of the web mail providers
-do not support CSS classes.  They do, however, support inline style declarations.  Being a good developer, you know that you want to keep all of your CSS in style sheets so
-that you do not have to find and replace styles in multiple templates/files.  This poses a problem if the clients can only support inline styles.  The solution?  A combination
-of &lt;a href=&quot;http://jsoup.org/&quot; target=&quot;_blank&quot;&gt;JSoup&lt;/a&gt; and &lt;a href=&quot;http://cssparser.sourceforge.net/&quot; target=&quot;_blank&quot;&gt;CSS Parser&lt;/a&gt; to load and convert a style sheet into inline style declarations.  The solution in this blog post uses &lt;a href=&quot;http://cssparser.sourceforge.net/&quot; target=&quot;_blank&quot;&gt;CSS Parser&lt;/a&gt; to parse a CSS style sheet file
-loaded from the classpath into a set of &lt;code&gt;CSSSytleRule&lt;/code&gt; objects.  It then uses &lt;a href=&quot;http://jsoup.org/&quot; target=&quot;_blank&quot;&gt;JSoup&lt;/a&gt; to walk the DOM in the HTML and find elements that match the rules present in the parsed style sheet.  To start, you
-need to include the &lt;a href=&quot;http://cssparser.sourceforge.net/&quot; target=&quot;_blank&quot;&gt;CSS Parser&lt;/a&gt; and &lt;a href=&quot;http://jsoup.org/&quot; target=&quot;_blank&quot;&gt;JSoup&lt;/a&gt; dependencies:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;compile &apos;org.jsoup:jsoup:1.8.1&apos;
-compile &apos;net.sourceforge.cssparser:cssparser:0.9.14&apos;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Next, create the &lt;code&gt;CSSOMParser&lt;/code&gt; used to parse the CSS style sheet and load the style sheet from the classpath:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;import com.steadystate.css.parser.CSSOMParser;
-
-import org.w3c.dom.css.CSSStyleSheet;
-
-...
-
-CSSOMParser parser = new CSSOMParser();
-CSSStyleSheet stylesheet = parser.parseStyleSheet(new InputSource(new InputStreamReader(getClass().getResourceAsStream(&quot;/css/styles.css&quot;))), null, null);&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Now that we have our style sheet loaded and parsed, we can use the following code to walk the DOM and add inline style declarations
-to elements that match the rules contained in the style sheet:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;final Document document = Jsoup.parse(originalHtml);
-final CSSRuleList rules = stylesheet.getCssRules();
-final Map&amp;lt;Element, Map&amp;lt;String, String&amp;gt;&amp;gt; elementStyles = new HashMap&amp;lt;&amp;gt;();
-
-/*
- * For each rule in the style sheet, find all HTML elements that match
- * based on its selector and store the style attributes in the map with
- * the selected element as the key.
- */
-for (int i = 0; i &amp;lt; rules.getLength(); i++) {
-    final CSSRule rule = rules.item(i);
-    if (rule instanceof CSSStyleRule) {
-        final CSSStyleRule styleRule = (CSSStyleRule) rule;
-        final String selector = styleRule.getSelectorText();
-
-        // Ignore pseudo classes, as JSoup&apos;s selector cannot handle
-        // them.
-        if (!selector.contains(&quot;:&quot;)) {
-            final Elements selectedElements = document.select(selector);
-            for (final Element selected : selectedElements) {
-                if (!elementStyles.containsKey(selected)) {
-                    elementStyles.put(selected, new LinkedHashMap&amp;lt;String, String&amp;gt;());
-                }
-
-                final CSSStyleDeclaration styleDeclaration = styleRule.getStyle();
-
-                for (int j = 0; j &amp;lt; styleDeclaration.getLength(); j++) {
-                    final String propertyName = styleDeclaration.item(j);
-                    final String propertyValue = styleDeclaration.getPropertyValue(propertyName);
-                    final Map&amp;lt;String, String&amp;gt; elementStyle = elementStyles.get(selected);
-                    elementStyle.put(propertyName, propertyValue);
-                }
-
-            }
-        }
-    }
-}
-
-/*
- * Apply the style attributes to each element and remove the &quot;class&quot;
- * attribute.
- */
-for (final Map.Entry&amp;lt;Element, Map&amp;lt;String, String&amp;gt;&amp;gt; elementEntry : elementStyles.entrySet()) {
-    final Element element = elementEntry.getKey();
-    final StringBuilder builder = new StringBuilder();
-    for (final Map.Entry&amp;lt;String, String&amp;gt; styleEntry : elementEntry.getValue().entrySet()) {
-        builder.append(styleEntry.getKey()).append(&quot;:&quot;).append(styleEntry.getValue()).append(&quot;;&quot;);
-    }
-    builder.append(element.attr(&quot;style&quot;));
-    element.attr(&quot;style&quot;, builder.toString());
-    element.removeAttr(&quot;class&quot;);
-}
-
-System.out.println(document.html());&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;One important thing to note in the code above is that &lt;a href=&quot;http://jsoup.org/&quot; target=&quot;_blank&quot;&gt;JSoup&lt;/a&gt; cannot handle pseudo classes in selectors.  Therefore, any
-selector that contains a colon (&quot;:&quot;) is ignored.  Otherwise, each selector contained in the parsed sytle sheet is applied
-to the HTML.  Inline styles are appended to each other, so ordering in your CSS stylesheet matters!  The output of the
-code above is the modified HTML with all styles that could be applied converted to inline style declarations.  Now, when
-this HTML is interpreted in a web mail client, it will look as it was intended to look by the developer.&lt;/p&gt;
 &lt;/div&gt;
             </description>
         </item>
