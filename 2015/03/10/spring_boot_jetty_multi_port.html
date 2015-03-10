@@ -87,90 +87,100 @@
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: spring</h1>
+        <h1>Configure Jetty to Listen on Multiple Ports in a Spring Boot Application</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>March 2015</h4>
-            <ul>
+    <p><em>10 March 2015</em></p>
 
-        <li>10 - <a href="/blog/2015/03/10/spring_boot_jetty_multi_port.html">Configure Jetty to Listen on Multiple Ports in a Spring Boot Application</a></li>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/03/10/spring_boot_jetty_multi_port.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/03/10/spring_boot_jetty_multi_port.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/03/10/spring_boot_jetty_multi_port.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>03 - <a href="/blog/2015/03/03/thrift_json_rest_spring_boot_ii.html">Using Thrift Generated Classes with a JSON REST API in Spring Boot - Part II</a></li>
-                </ul>
-                <h4>February 2015</h4>
-                <ul>
+    <p><div class="paragraph">
+<p>The <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html#howto-configure-jetty" target="_blank">documentation</a> and
+<a href="https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-jetty" target="_blank">sample applications</a> contain good information and examples
+of how to use <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> in a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application instead of the default embedded Apache Tomcat server.  However, the documentation and examples do not really address how to
+customize <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> as in depth as the Tomcat examples.  Recently, I found the need to make a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application using <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> listen on multiple ports for incoming HTTP traffic.
+While this is not necessarily a normal use case, it does come up often, especially when the need to listen for both HTTP and HTTPS traffic is a requirement.  In a
+<a href="http://jdpgrailsdev.github.io/blog/2014/10/07/spring_boot_jetty_thread_pool.html" target="_blank">previous post</a>, I showed how to customize the embedded <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> server in order to
+change the size of the thread pool used for incoming connections.  Just like the approach outlined in that post, the way to configure the embedded <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> server in your <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>
+application to listen to multiple ports is very similar:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">@Bean
+public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(
+        @Value("${server.port:8080}") final String mainPort,
+        @Value("#{'${server.secondary.ports}'.split(',')}") final List&lt;String&gt; secondaryPorts) {
 
-        <li>24 - <a href="/blog/2015/02/24/thrift_json_rest_spring_boot_part_i.html">Using Thrift Generated Classes with a JSON REST API in Spring Boot - Part I</a></li>
-                </ul>
-                <h4>January 2015</h4>
-                <ul>
+    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(mainPort));
 
-        <li>27 - <a href="/blog/2015/01/27/spring_jpa_postgresql_hstore.html">Custom PostgreSQL Hstore Data Type with Spring, JPA and Hibernate</a></li>
+    // Add customized Jetty configuration with non blocking connection handler
+    factory.addServerCustomizers(new JettyServerCustomizer() {
+        @Override
+        public void customize(final Server server) {
+            // Register an additional connector for each secondary port.
+            for(final String secondaryPort : secondaryPorts) {
+                final NetworkTrafficServerConnector connector = new NetworkTrafficServerConnector(server);
+                connector.setPort(Integer.valueOf(secondaryPort));
+                server.addConnector(connector);
+            }
 
-        <li>20 - <a href="/blog/2015/01/20/spring_transactions_rollback.html">Rollbacks with Spring Transactions</a></li>
+            // Additional configuration
+        }
+    });
+    return factory;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The example above uses the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> provided <code>JettyServerCustomizer</code> to register additional <code>NetworkTrafficServerConnector</code> instances for each
+secondary port provided in the application&#8217;s configuration.  Additionally, the <code>server.port</code> <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> property is still used for the
+main application port and is passed to the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <code>JettyEmbeddedServletContainerFactory</code>, just as it would be if you simply included
+the appropriate starter library and set the property, per the documentation.  Finally, the application configuration contains the following configuration
+to make it all work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-yaml" data-lang="yaml">server:
+  port: "8000"
+  secondary:
+    ports: "8082,8083,8084"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the application starts up, you can confirm that it is indeed listening on the multiple ports by looking for the following in the output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.eclipse.jetty.server.ServerConnector   : Started ServerConnector@121ee28d{HTTP/1.1}{0.0.0.0:8080}
+2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@36d64b9{HTTP/1.1}{0.0.0.0:8082}
+2015-03-09 15:13:35.487  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@e51235{HTTP/1.1}{0.0.0.0:8083}
+2015-03-09 15:13:35.488  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@3f0e5608{HTTP/1.1}{0.0.0.0:8084}
+2015-03-09 15:13:35.489  INFO 1416 --- [           main] .s.b.c.e.j.JettyEmbeddedServletContainer : Jetty started on port(s) 8080 (http/1.1), 8082 (http/1.1), 8083 (http/1.1), 8084 (http/1.1)
+2015-03-09 15:13:35.491  INFO 1416 --- [           main] com.test.Application                     : Started Application in 5.346 seconds (JVM running for 12.321)</code></pre>
+</div>
+</div></p>
 
-        <li>06 - <a href="/blog/2015/01/06/email_inline_style_jsoup_cssparser.html">Using CSS Parser and JSoup to Inline Styles for Web Mail</a></li>
-                </ul>
-                <h4>December 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2015/03/10/spring_boot_jetty_multi_port.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/03/10/spring_boot_jetty_multi_port.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/03/10/spring_boot_jetty_multi_port.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>30 - <a href="/blog/2014/12/30/groovy_script_spring_boot_yaml.html">Leverage Spring Boot&#8217;s YAML Configuration Files in Groovy Scripts</a></li>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2015/03/10/spring_boot_jetty_multi_port.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-        <li>16 - <a href="/blog/2014/12/16/spring_context_groovy_script.html">Spring Application Context and Groovy Scripts</a></li>
-
-        <li>09 - <a href="/blog/2014/12/09/email_inline_image_attachments.html">Use Inline Attachments as Image Sources in HTML Emails with Spring</a></li>
-                </ul>
-                <h4>November 2014</h4>
-                <ul>
-
-        <li>11 - <a href="/blog/2014/11/11/spring_boot_health_indicators_auto_config.html">Auto Configure Health Indicators in Spring Boot</a></li>
-                </ul>
-                <h4>October 2014</h4>
-                <ul>
-
-        <li>14 - <a href="/blog/2014/10/14/spring_boot_gradle_git_info.html">Include Git Commit Info in Spring Boot Application with Gradle</a></li>
-
-        <li>07 - <a href="/blog/2014/10/07/spring_boot_jetty_thread_pool.html">Configure Jetty&#8217;s Thread Pool in a Spring Boot Application</a></li>
-                </ul>
-                <h4>September 2014</h4>
-                <ul>
-
-        <li>30 - <a href="/blog/2014/09/30/spring_boot_jetty_jmx.html">Expose Jetty MBeans via JMX in a Spring Boot Application</a></li>
-
-        <li>09 - <a href="/blog/2014/09/09/spring_data_hibernate_join.html">Avoid Hibernate N+1 Problem with Joins in Spring-Data/JPA</a></li>
-                </ul>
-                <h4>July 2014</h4>
-                <ul>
-
-        <li>29 - <a href="/blog/2014/07/29/spring_boot_integration_tests.html">Leveraging Spring Boot Starters in Unit/Integration Tests</a></li>
-
-        <li>22 - <a href="/blog/2014/07/22/gradle_build_scripts_classpath.html">Discovering Gradle build scripts from classpath</a></li>
-
-        <li>15 - <a href="/blog/2014/07/15/spring_boot_remote_debug.html">Remote debugging a Spring Boot application launched by the Gradle plugin</a></li>
-
-        <li>08 - <a href="/blog/2014/07/08/spring_boot_env_vars.html">Setting system properties/environment variables with Spring Boot and Gradle</a></li>
-                </ul>
-                <h4>June 2014</h4>
-                <ul>
-
-        <li>03 - <a href="/blog/2014/06/03/spring_boot_jersey_2.html">Spring Boot, Jersey and Lazy Initialization</a></li>
-                </ul>
-                <h4>April 2014</h4>
-                <ul>
-
-        <li>08 - <a href="/blog/2014/04/08/spring_boot_gradle_newrelic.html">Using the New Relic agent with Spring-Boot and Gradle</a></li>
-                </ul>
-                <h4>March 2014</h4>
-                <ul>
-
-        <li>18 - <a href="/blog/2014/03/18/grails_bean_builder.html">Parsing the Grails Spring Beans DSL with Groovy</a></li>
-                </ul>
-                <h4>February 2014</h4>
-                <ul>
-
-        <li>19 - <a href="/blog/2014/02/19/spring_curator.html">Spring and Apache Curator</a></li>
-    </ul>
+    <hr>
 
             </div>
             <div id="push"></div>

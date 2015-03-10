@@ -6,13 +6,86 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 3 Mar 2015 07:58:04 -0800</pubDate>
-        <lastBuildDate>Tue, 3 Mar 2015 07:58:04 -0800</lastBuildDate>
+        <pubDate>Tue, 10 Mar 2015 07:48:34 -0700</pubDate>
+        <lastBuildDate>Tue, 10 Mar 2015 07:48:34 -0700</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Configure Jetty to Listen on Multiple Ports in a Spring Boot Application</title>
+            <link>http://jdpgrailsdev.github.io/blog/2015/03/10/spring_boot_jetty_multi_port.html</link>
+            <pubDate>Tue, 10 Mar 2015 00:00:00 -0700</pubDate>
+            <guid isPermaLink="false">2015/03/10/spring_boot_jetty_multi_port.html</guid>
+            <description>
+                    &lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; &lt;a href=&quot;http://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html#howto-configure-jetty&quot; target=&quot;_blank&quot;&gt;documentation&lt;/a&gt; and
+&lt;a href=&quot;https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-jetty&quot; target=&quot;_blank&quot;&gt;sample applications&lt;/a&gt; contain good information and examples
+of how to use &lt;a href=&quot;http://eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; in a &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; application instead of the default embedded Apache Tomcat server.  However, the documentation and examples do not really address how to
+customize &lt;a href=&quot;http://eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; as in depth as the Tomcat examples.  Recently, I found the need to make a &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; application using &lt;a href=&quot;http://eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; listen on multiple ports for incoming HTTP traffic.
+While this is not necessarily a normal use case, it does come up often, especially when the need to listen for both HTTP and HTTPS traffic is a requirement.  In a
+&lt;a href=&quot;http://jdpgrailsdev.github.io/blog/2014/10/07/spring_boot_jetty_thread_pool.html&quot; target=&quot;_blank&quot;&gt;previous post&lt;/a&gt;, I showed how to customize the embedded &lt;a href=&quot;http://eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; server in order to
+change the size of the thread pool used for incoming connections.  Just like the approach outlined in that post, the way to configure the embedded &lt;a href=&quot;http://eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; server in your &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;
+application to listen to multiple ports is very similar:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;@Bean
+public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(
+        @Value(&quot;${server.port:8080}&quot;) final String mainPort,
+        @Value(&quot;#{&apos;${server.secondary.ports}&apos;.split(&apos;,&apos;)}&quot;) final List&amp;lt;String&amp;gt; secondaryPorts) {
+
+    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(mainPort));
+
+    // Add customized Jetty configuration with non blocking connection handler
+    factory.addServerCustomizers(new JettyServerCustomizer() {
+        @Override
+        public void customize(final Server server) {
+            // Register an additional connector for each secondary port.
+            for(final String secondaryPort : secondaryPorts) {
+                final NetworkTrafficServerConnector connector = new NetworkTrafficServerConnector(server);
+                connector.setPort(Integer.valueOf(secondaryPort));
+                server.addConnector(connector);
+            }
+
+            // Additional configuration
+        }
+    });
+    return factory;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The example above uses the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; provided &lt;code&gt;JettyServerCustomizer&lt;/code&gt; to register additional &lt;code&gt;NetworkTrafficServerConnector&lt;/code&gt; instances for each
+secondary port provided in the application&amp;#8217;s configuration.  Additionally, the &lt;code&gt;server.port&lt;/code&gt; &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; property is still used for the
+main application port and is passed to the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; &lt;code&gt;JettyEmbeddedServletContainerFactory&lt;/code&gt;, just as it would be if you simply included
+the appropriate starter library and set the property, per the documentation.  Finally, the application configuration contains the following configuration
+to make it all work:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;server:
+  port: &quot;8000&quot;
+  secondary:
+    ports: &quot;8082,8083,8084&quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;When the application starts up, you can confirm that it is indeed listening on the multiple ports by looking for the following in the output:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code&gt;2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.eclipse.jetty.server.ServerConnector   : Started ServerConnector@121ee28d{HTTP/1.1}{0.0.0.0:8080}
+2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@36d64b9{HTTP/1.1}{0.0.0.0:8082}
+2015-03-09 15:13:35.487  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@e51235{HTTP/1.1}{0.0.0.0:8083}
+2015-03-09 15:13:35.488  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@3f0e5608{HTTP/1.1}{0.0.0.0:8084}
+2015-03-09 15:13:35.489  INFO 1416 --- [           main] .s.b.c.e.j.JettyEmbeddedServletContainer : Jetty started on port(s) 8080 (http/1.1), 8082 (http/1.1), 8083 (http/1.1), 8084 (http/1.1)
+2015-03-09 15:13:35.491  INFO 1416 --- [           main] com.test.Application                     : Started Application in 5.346 seconds (JVM running for 12.321)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Using Thrift Generated Classes with a JSON REST API in Spring Boot - Part II</title>
             <link>http://jdpgrailsdev.github.io/blog/2015/03/03/thrift_json_rest_spring_boot_ii.html</link>
@@ -821,41 +894,6 @@ names such as &quot;BaseBusinessException&quot; there is no need to use a FQN.&l
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;As you can see, it gives you the ability to provide rules to match certain sub-strings of exception
 types to better control your rollback logic.&lt;/p&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Check Jenkins Job Status via REST API</title>
-            <link>http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html</link>
-            <pubDate>Wed, 7 Jan 2015 00:00:00 -0800</pubDate>
-            <guid isPermaLink="false">2015/01/13/jenkins_check_job_status.html</guid>
-            <description>
-                    &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;There are a ton of &lt;a href=&quot;http://jenkins-ci.org/&quot; target=&quot;_blank&quot;&gt;Jenkins&lt;/a&gt; plugins out there that let you control when a job should run based on the status of
-other builds.  However, plugins typically become out of date pretty quickly.  If you don&amp;#8217;t want to have to play
-the plugin update game, you can use a little bash magic to leverage the &lt;a href=&quot;http://jenkins-ci.org/&quot; target=&quot;_blank&quot;&gt;Jenkins&lt;/a&gt; REST API to check the status
-of other jobs before running your builds.  Let&amp;#8217;s assume that you have a job named &lt;code&gt;other-job&lt;/code&gt; that must be in
-a success state in order for another job to execute.  You can check the status of the &lt;code&gt;other-job&lt;/code&gt; by using
-the &lt;a href=&quot;http://jenkins-ci.org/&quot; target=&quot;_blank&quot;&gt;Jenkins&lt;/a&gt; REST API as part of an executed shell in the job&amp;#8217;s configuration:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;job_status=`curl https://jenkins/view/job/other-job/lastBuild/api/json | grep &quot;\&quot;result\&quot;:\&quot;SUCCESS\&quot;&quot;`
-
-if [ -n &quot;$job_status&quot; ]
-then
-    # Run your script commands here
-else
-  echo &quot;BUILD FAILURE: Other build is unsuccessful or status could not be obtained.&quot;
-  exit 1
-fi&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The &lt;code&gt;then&lt;/code&gt; block of this other job could even do something like invoke another build that has a parameterized configuration to run your
-actual build via the REST API.  This would allow you to have the job with the configuration above check the status of &lt;code&gt;other-job&lt;/code&gt; first
-and then kick of a third job that actual performs the build, but only if the first job is successful, all without
-installing any additional plugins.&lt;/p&gt;
 &lt;/div&gt;
             </description>
         </item>

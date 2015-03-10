@@ -90,6 +90,84 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog/2015/03/10/spring_boot_jetty_multi_port.html"><h1>Configure Jetty to Listen on Multiple Ports in a Spring Boot Application</h1></a>
+                   <p>10 March 2015</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/spring.html">spring</a>
+        
+                <a href="/blog/tags/jetty.html">jetty</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/03/10/spring_boot_jetty_multi_port.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/03/10/spring_boot_jetty_multi_port.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/03/10/spring_boot_jetty_multi_port.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div class="paragraph">
+<p>The <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html#howto-configure-jetty" target="_blank">documentation</a> and
+<a href="https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-jetty" target="_blank">sample applications</a> contain good information and examples
+of how to use <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> in a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application instead of the default embedded Apache Tomcat server.  However, the documentation and examples do not really address how to
+customize <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> as in depth as the Tomcat examples.  Recently, I found the need to make a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application using <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> listen on multiple ports for incoming HTTP traffic.
+While this is not necessarily a normal use case, it does come up often, especially when the need to listen for both HTTP and HTTPS traffic is a requirement.  In a
+<a href="http://jdpgrailsdev.github.io/blog/2014/10/07/spring_boot_jetty_thread_pool.html" target="_blank">previous post</a>, I showed how to customize the embedded <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> server in order to
+change the size of the thread pool used for incoming connections.  Just like the approach outlined in that post, the way to configure the embedded <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> server in your <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>
+application to listen to multiple ports is very similar:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">@Bean
+public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(
+        @Value("${server.port:8080}") final String mainPort,
+        @Value("#{'${server.secondary.ports}'.split(',')}") final List&lt;String&gt; secondaryPorts) {
+
+    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(mainPort));
+
+    // Add customized Jetty configuration with non blocking connection handler
+    factory.addServerCustomizers(new JettyServerCustomizer() {
+        @Override
+        public void customize(final Server server) {
+            // Register an additional connector for each secondary port.
+            for(final String secondaryPort : secondaryPorts) {
+                final NetworkTrafficServerConnector connector = new NetworkTrafficServerConnector(server);
+                connector.setPort(Integer.valueOf(secondaryPort));
+                server.addConnector(connector);
+            }
+
+            // Additional configuration
+        }
+    });
+    return factory;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The example above uses the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> provided <code>JettyServerCustomizer</code> to register additional <code>NetworkTrafficServerConnector</code> instances for each
+secondary port provided in the application&#8217;s configuration.  Additionally, the <code>server.port</code> <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> property is still used for the
+main application port and is passed to the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <code>JettyEmbeddedServletContainerFactory</code>, just as it would be if you simply included
+the appropriate starter library and set the property, per the documentation.  Finally, the application configuration contains the following configuration
+to make it all work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-yaml" data-lang="yaml">server:
+  port: "8000"
+  secondary:
+    ports: "8082,8083,8084"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the application starts up, you can confirm that it is indeed listening on the multiple ports by looking for the following in the output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.eclipse.jetty.server.ServerConnector   : Started ServerConnector@121ee28d{HTTP/1.1}{0.0.0.0:8080}
+2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@36d64b9{HTTP/1.1}{0.0.0.0:8082}
+2015-03-09 15:13:35.487  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@e51235{HTTP/1.1}{0.0.0.0:8083}
+2015-03-09 15:13:35.488  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@3f0e5608{HTTP/1.1}{0.0.0.0:8084}
+2015-03-09 15:13:35.489  INFO 1416 --- [           main] .s.b.c.e.j.JettyEmbeddedServletContainer : Jetty started on port(s) 8080 (http/1.1), 8082 (http/1.1), 8083 (http/1.1), 8084 (http/1.1)
+2015-03-09 15:13:35.491  INFO 1416 --- [           main] com.test.Application                     : Started Application in 5.346 seconds (JVM running for 12.321)</code></pre>
+</div>
+</div></p>
+                <p><a href="/blog2015/03/10/spring_boot_jetty_multi_port.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2015/03/03/thrift_json_rest_spring_boot_ii.html"><h1>Using Thrift Generated Classes with a JSON REST API in Spring Boot - Part II</h1></a>
                    <p>03 March 2015</p>
                 <p><em>Tags: </em>
@@ -873,58 +951,6 @@ inside the custom <code>UserType</code> to handle the conversion to/from a <code
 class from the JDBC driver, as it may cause compatibility issues if you upgrade.</p>
 </div></p>
                 <p><a href="/blog2015/01/27/spring_jpa_postgresql_hstore.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2015/01/20/spring_transactions_rollback.html"><h1>Rollbacks with Spring Transactions</h1></a>
-                   <p>20 January 2015</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/java.html">java</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div class="paragraph">
-<p>By default, no rollback handling rules are defined if you simply add <code>@Transactional</code> to your method.  In order for the rollback to actually be executed upon failure,
-you must define one or more exceptions that you want to trigger a rollback via the <code>rollbackFor</code> or <code>rollbackForClassName</code> attributes of the annotation:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">@Transactional(rollbackForClassName={"Exception"})
-public void save(final Book book) {
-    Author author = new Author(book.getAuthorName());
-    authorRepository.saveAndFlush(author);
-    bookRepository.saveAndFlush(book);
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In the example above, the <code>@Transactional</code> annotation makes use of the <code>rollbackForClassName</code> attribute value to force
-a database rollback if any exception of type <code>java.lang.Exception</code> is thrown by the method (e.g. if any exception happens,
-roll both save operations back).  The <code>rollbackForClassName</code> attribute actually provides a little more flexibility than the
-<code>rollbackFor</code> attribute value.  From the <code>@Transactional</code> JavaDoc:</p>
-</div>
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p>Consider carefully how specific the pattern is, and whether
-to include package information (which isn&#8217;t mandatory). For example,
-"Exception" will match nearly anything, and will probably hide other rules.
-"java.lang.Exception" would be correct if "Exception" was meant to define
-a rule for all checked exceptions. With more unusual java.lang.Exception
-names such as "BaseBusinessException" there is no need to use a FQN.</p>
-</div>
-</blockquote>
-<div class="attribution">
-&#8212; org.springframework.transaction.annotation.Transactional#rollbackForClassName() JavaDoc
-</div>
-</div>
-<div class="paragraph">
-<p>As you can see, it gives you the ability to provide rules to match certain sub-strings of exception
-types to better control your rollback logic.</p>
-</div></p>
-                <p><a href="/blog2015/01/20/spring_transactions_rollback.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
