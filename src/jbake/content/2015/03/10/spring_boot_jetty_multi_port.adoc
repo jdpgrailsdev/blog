@@ -1,0 +1,74 @@
+= Configure Jetty to Listen on Multiple Ports in a Spring Boot Application
+Jonathan Pearlin
+2015-03-10
+:jbake-type: post
+:jbake-tags: spring,jetty
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: thrift_json_rest_spring_boot_part_i
+:icons: font
+:jetty: http://eclipse.org/jetty/[Jetty, window="_blank"]
+:spring_boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
+
+The {spring_boot} http://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html#howto-configure-jetty[documentation, window="_blank"] and
+https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-jetty[sample applications, window="_blank"] contain good information and examples
+of how to use {jetty} in a {spring_boot} application instead of the default embedded Apache Tomcat server.  However, the documentation and examples do not really address how to
+customize {jetty} as in depth as the Tomcat examples.  Recently, I found the need to make a {spring_boot} application using {jetty} listen on multiple ports for incoming HTTP traffic.
+While this is not necessarily a normal use case, it does come up often, especially when the need to listen for both HTTP and HTTPS traffic is a requirement.  In a
+http://jdpgrailsdev.github.io/blog/2014/10/07/spring_boot_jetty_thread_pool.html[previous post, window="_blank"], I showed how to customize the embedded {jetty} server in order to
+change the size of the thread pool used for incoming connections.  Just like the approach outlined in that post, the way to configure the embedded {jetty} server in your {spring_boot}
+application to listen to multiple ports is very similar:
+
+[source,java]
+----
+@Bean
+public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(
+        @Value("${server.port:8080}") final String mainPort,
+        @Value("#{'${server.secondary.ports}'.split(',')}") final List<String> secondaryPorts) {
+
+    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(mainPort));
+
+    // Add customized Jetty configuration with non blocking connection handler
+    factory.addServerCustomizers(new JettyServerCustomizer() {
+        @Override
+        public void customize(final Server server) {
+            // Register an additional connector for each secondary port.
+            for(final String secondaryPort : secondaryPorts) {
+                final NetworkTrafficServerConnector connector = new NetworkTrafficServerConnector(server);
+                connector.setPort(Integer.valueOf(secondaryPort));
+                server.addConnector(connector);
+            }
+
+            // Additional configuration
+        }
+    });
+    return factory;
+}
+----
+
+The example above uses the {spring_boot} provided `JettyServerCustomizer` to register additional `NetworkTrafficServerConnector` instances for each
+secondary port provided in the application's configuration.  Additionally, the `server.port` {spring_boot} property is still used for the
+main application port and is passed to the {spring_boot} `JettyEmbeddedServletContainerFactory`, just as it would be if you simply included
+the appropriate starter library and set the property, per the documentation.  Finally, the application configuration contains the following configuration
+to make it all work:
+
+[source,yaml]
+----
+server:
+  port: "8000"
+  secondary:
+    ports: "8082,8083,8084"
+----
+
+When the application starts up, you can confirm that it is indeed listening on the multiple ports by looking for the following in the output:
+
+[source]
+----
+2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.eclipse.jetty.server.ServerConnector   : Started ServerConnector@121ee28d{HTTP/1.1}{0.0.0.0:8080}
+2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@36d64b9{HTTP/1.1}{0.0.0.0:8082}
+2015-03-09 15:13:35.487  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@e51235{HTTP/1.1}{0.0.0.0:8083}
+2015-03-09 15:13:35.488  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@3f0e5608{HTTP/1.1}{0.0.0.0:8084}
+2015-03-09 15:13:35.489  INFO 1416 --- [           main] .s.b.c.e.j.JettyEmbeddedServletContainer : Jetty started on port(s) 8080 (http/1.1), 8082 (http/1.1), 8083 (http/1.1), 8084 (http/1.1)
+2015-03-09 15:13:35.491  INFO 1416 --- [           main] com.test.Application                     : Started Application in 5.346 seconds (JVM running for 12.321)
+----
