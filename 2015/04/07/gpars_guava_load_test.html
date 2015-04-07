@@ -87,20 +87,119 @@
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: jetty</h1>
+        <h1>Load Testing with GPars and Google Guava</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>April 2015</h4>
-            <ul>
+    <p><em>07 April 2015</em></p>
 
-        <li>07 - <a href="/blog/2015/04/07/gpars_guava_load_test.html">Load Testing with GPars and Google Guava</a></li>
-                </ul>
-                <h4>March 2015</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>10 - <a href="/blog/2015/03/10/spring_boot_jetty_multi_port.html">Configure Jetty to Listen on Multiple Ports in a Spring Boot Application</a></li>
-    </ul>
+    <p><div class="paragraph">
+<p>I set out a few days back to write a simple <a href="http://groovy-lang.org/" target="_blank">Groovy</a> script that would accomplish the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Send data to a <a href="http://kafka.apache.org/" target="_blank">Kafka</a> topic from X concurrent producers.</p>
+</li>
+<li>
+<p>Run for a set duration</p>
+</li>
+<li>
+<p>Achieve a set number of sends per minute</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To do so, I decided to use <a href="http://www.gpars.org/guide/index.html" target="_blank">GPars Framework</a>, which is a "concurrency and parallelism library for Java and Groovy
+that gives you a number of high-level abstractions for writing concurrent and parallel code in Groovy."  Additionally,
+I decided to make use of the <a href="https://github.com/google/guava" target="_blank">Google Guava</a> <a href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/RateLimiter.html" target="_blank">RateLimiter</a>
+class to control how much data is produced.  The resulting script is pretty simple:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">@Grapes([
+    @Grab(group='org.codehaus.gpars', module='gpars', version='1.2.1'),
+    @Grab(group='com.google.guava', module='guava', version='18.0'),
+    @GrabExclude('commons-logging:commons-logging')])
+
+def cli = new CliBuilder(usage:'groovy loadTest.groovy ')
+cli.p(longOpt:'parallelism', args: 1, argName: 'parallelism', 'The number of producers to execute in parallel.  Defaults to 10.')
+cli.d(longOpt:'duration', args: 1, argName: 'duration', 'The duration of the test in minutes.  Defaults to 1 minute.')
+cli.r(longOpt:'target-rate', args: 1, argName: 'targetRate', 'The target aggregate rate of messages to be produced per minute.  Defaults to 60.')
+cli.h(longOpt:'help', 'Displays the usage information for this script.')
+
+def run = { -&gt;
+    // Do the actual work here (e.g. publish a message, etc)
+}
+
+def setup = { -&gt;
+    // Do any pre-test setup here (e.g. retrieving data, configuration, etc)
+}
+
+def options = cli.parse(args)
+
+if(options?.h) {
+    cli.usage()
+} else {
+   def duration = options?.d ? TimeUnit.MINUTES.toMillis(options.d as long) :  TimeUnit.MINUTES.toMillis(1l)
+   def parallelism = options?.p ?: 10
+   def targetRate = options?.r ?: 60.0
+
+   println '***********************************************'
+   println 'Load Test'
+   println "Test will run for ${TimeUnit.MILLISECONDS.toMinutes(duration)} minute(s) using ${parallelism} producers with a target rate of ${targetRate} messages per minute."
+
+   setup()
+
+   println 'Starting the test....'
+
+   def rateLimiter = RateLimiter.create((targetRate as double)/TimeUnit.MINUTES.toSeconds(1))
+   def startTime = System.currentTimeMillis()
+   def total = 0
+   while((System.currentTimeMillis() - startTime) &lt; duration) {
+       GParsExecutorsPool.withPool(parallelism as int) { ExecutorService service -&gt;
+           (parallelism as int).times {
+               rateLimiter.acquire()
+               service.submit({ run() } as Runnable)
+           }
+           total += parallelism as int
+       }
+       println "Test iteration complete.  Total sent so far: ${total}, ${TimeUnit.MILLISECONDS.toSeconds(duration - (System.currentTimeMillis() - startTime))} second(s) remaining."
+   }
+   println 'Test complete.'
+   System.exit(0)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The key points in the script above is the use of the <code>GParsExecutorsPool</code> to handle the creation of a configured thread pool and the inclusion of
+the <code>RateLimiter</code> to slow down the execution loop to meet the target rate.  Finally, all of this is done in a <code>while</code> loop that keeps looping until
+the requested duration has been achieved.  The end result is a simple script that allows you to generate concurrent request load at a target rate for
+a set duration.</p>
+</div></p>
+
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2015/04/07/gpars_guava_load_test.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2015/04/07/gpars_guava_load_test.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    <hr>
 
             </div>
             <div id="push"></div>

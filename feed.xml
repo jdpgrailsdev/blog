@@ -6,13 +6,105 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 10 Mar 2015 07:48:34 -0700</pubDate>
-        <lastBuildDate>Tue, 10 Mar 2015 07:48:34 -0700</lastBuildDate>
+        <pubDate>Tue, 7 Apr 2015 07:45:23 -0700</pubDate>
+        <lastBuildDate>Tue, 7 Apr 2015 07:45:23 -0700</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Load Testing with GPars and Google Guava</title>
+            <link>http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html</link>
+            <pubDate>Tue, 7 Apr 2015 00:00:00 -0700</pubDate>
+            <guid isPermaLink="false">2015/04/07/gpars_guava_load_test.html</guid>
+            <description>
+                    &lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;I set out a few days back to write a simple &lt;a href=&quot;http://groovy-lang.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; script that would accomplish the following:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;ulist&quot;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Send data to a &lt;a href=&quot;http://kafka.apache.org/&quot; target=&quot;_blank&quot;&gt;Kafka&lt;/a&gt; topic from X concurrent producers.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Run for a set duration&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Achieve a set number of sends per minute&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;To do so, I decided to use &lt;a href=&quot;http://www.gpars.org/guide/index.html&quot; target=&quot;_blank&quot;&gt;GPars Framework&lt;/a&gt;, which is a &quot;concurrency and parallelism library for Java and Groovy
+that gives you a number of high-level abstractions for writing concurrent and parallel code in Groovy.&quot;  Additionally,
+I decided to make use of the &lt;a href=&quot;https://github.com/google/guava&quot; target=&quot;_blank&quot;&gt;Google Guava&lt;/a&gt; &lt;a href=&quot;http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/RateLimiter.html&quot; target=&quot;_blank&quot;&gt;RateLimiter&lt;/a&gt;
+class to control how much data is produced.  The resulting script is pretty simple:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;@Grapes([
+    @Grab(group=&apos;org.codehaus.gpars&apos;, module=&apos;gpars&apos;, version=&apos;1.2.1&apos;),
+    @Grab(group=&apos;com.google.guava&apos;, module=&apos;guava&apos;, version=&apos;18.0&apos;),
+    @GrabExclude(&apos;commons-logging:commons-logging&apos;)])
+
+def cli = new CliBuilder(usage:&apos;groovy loadTest.groovy &apos;)
+cli.p(longOpt:&apos;parallelism&apos;, args: 1, argName: &apos;parallelism&apos;, &apos;The number of producers to execute in parallel.  Defaults to 10.&apos;)
+cli.d(longOpt:&apos;duration&apos;, args: 1, argName: &apos;duration&apos;, &apos;The duration of the test in minutes.  Defaults to 1 minute.&apos;)
+cli.r(longOpt:&apos;target-rate&apos;, args: 1, argName: &apos;targetRate&apos;, &apos;The target aggregate rate of messages to be produced per minute.  Defaults to 60.&apos;)
+cli.h(longOpt:&apos;help&apos;, &apos;Displays the usage information for this script.&apos;)
+
+def run = { -&amp;gt;
+    // Do the actual work here (e.g. publish a message, etc)
+}
+
+def setup = { -&amp;gt;
+    // Do any pre-test setup here (e.g. retrieving data, configuration, etc)
+}
+
+def options = cli.parse(args)
+
+if(options?.h) {
+    cli.usage()
+} else {
+   def duration = options?.d ? TimeUnit.MINUTES.toMillis(options.d as long) :  TimeUnit.MINUTES.toMillis(1l)
+   def parallelism = options?.p ?: 10
+   def targetRate = options?.r ?: 60.0
+
+   println &apos;***********************************************&apos;
+   println &apos;Load Test&apos;
+   println &quot;Test will run for ${TimeUnit.MILLISECONDS.toMinutes(duration)} minute(s) using ${parallelism} producers with a target rate of ${targetRate} messages per minute.&quot;
+
+   setup()
+
+   println &apos;Starting the test....&apos;
+
+   def rateLimiter = RateLimiter.create((targetRate as double)/TimeUnit.MINUTES.toSeconds(1))
+   def startTime = System.currentTimeMillis()
+   def total = 0
+   while((System.currentTimeMillis() - startTime) &amp;lt; duration) {
+       GParsExecutorsPool.withPool(parallelism as int) { ExecutorService service -&amp;gt;
+           (parallelism as int).times {
+               rateLimiter.acquire()
+               service.submit({ run() } as Runnable)
+           }
+           total += parallelism as int
+       }
+       println &quot;Test iteration complete.  Total sent so far: ${total}, ${TimeUnit.MILLISECONDS.toSeconds(duration - (System.currentTimeMillis() - startTime))} second(s) remaining.&quot;
+   }
+   println &apos;Test complete.&apos;
+   System.exit(0)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The key points in the script above is the use of the &lt;code&gt;GParsExecutorsPool&lt;/code&gt; to handle the creation of a configured thread pool and the inclusion of
+the &lt;code&gt;RateLimiter&lt;/code&gt; to slow down the execution loop to meet the target rate.  Finally, all of this is done in a &lt;code&gt;while&lt;/code&gt; loop that keeps looping until
+the requested duration has been achieved.  The end result is a simple script that allows you to generate concurrent request load at a target rate for
+a set duration.&lt;/p&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Configure Jetty to Listen on Multiple Ports in a Spring Boot Application</title>
             <link>http://jdpgrailsdev.github.io/blog/2015/03/10/spring_boot_jetty_multi_port.html</link>
@@ -847,53 +939,6 @@ public class BookEntity {
 will be invoked to handle the data.  It is also worth noting that the &lt;a href=&quot;http://www.postgresql.org&quot; target=&quot;_blank&quot;&gt;PostgreSQL&lt;/a&gt; JDBC driver library does come with an &lt;code&gt;HStoreConverter&lt;/code&gt; class with static methods that could be leveraged from
 inside the custom &lt;code&gt;UserType&lt;/code&gt; to handle the conversion to/from a &lt;code&gt;Map&amp;lt;String,Object&amp;gt;&lt;/code&gt; to a &lt;code&gt;String&lt;/code&gt; and vice versa.  However, I would not recommend an implementation that depends on an internal
 class from the JDBC driver, as it may cause compatibility issues if you upgrade.&lt;/p&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Rollbacks with Spring Transactions</title>
-            <link>http://jdpgrailsdev.github.io/blog/2015/01/20/spring_transactions_rollback.html</link>
-            <pubDate>Tue, 20 Jan 2015 00:00:00 -0800</pubDate>
-            <guid isPermaLink="false">2015/01/20/spring_transactions_rollback.html</guid>
-            <description>
-                    &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;By default, no rollback handling rules are defined if you simply add &lt;code&gt;@Transactional&lt;/code&gt; to your method.  In order for the rollback to actually be executed upon failure,
-you must define one or more exceptions that you want to trigger a rollback via the &lt;code&gt;rollbackFor&lt;/code&gt; or &lt;code&gt;rollbackForClassName&lt;/code&gt; attributes of the annotation:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;@Transactional(rollbackForClassName={&quot;Exception&quot;})
-public void save(final Book book) {
-    Author author = new Author(book.getAuthorName());
-    authorRepository.saveAndFlush(author);
-    bookRepository.saveAndFlush(book);
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;In the example above, the &lt;code&gt;@Transactional&lt;/code&gt; annotation makes use of the &lt;code&gt;rollbackForClassName&lt;/code&gt; attribute value to force
-a database rollback if any exception of type &lt;code&gt;java.lang.Exception&lt;/code&gt; is thrown by the method (e.g. if any exception happens,
-roll both save operations back).  The &lt;code&gt;rollbackForClassName&lt;/code&gt; attribute actually provides a little more flexibility than the
-&lt;code&gt;rollbackFor&lt;/code&gt; attribute value.  From the &lt;code&gt;@Transactional&lt;/code&gt; JavaDoc:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;quoteblock&quot;&gt;
-&lt;blockquote&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Consider carefully how specific the pattern is, and whether
-to include package information (which isn&amp;#8217;t mandatory). For example,
-&quot;Exception&quot; will match nearly anything, and will probably hide other rules.
-&quot;java.lang.Exception&quot; would be correct if &quot;Exception&quot; was meant to define
-a rule for all checked exceptions. With more unusual java.lang.Exception
-names such as &quot;BaseBusinessException&quot; there is no need to use a FQN.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/blockquote&gt;
-&lt;div class=&quot;attribution&quot;&gt;
-&amp;#8212; org.springframework.transaction.annotation.Transactional#rollbackForClassName() JavaDoc
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;As you can see, it gives you the ability to provide rules to match certain sub-strings of exception
-types to better control your rollback logic.&lt;/p&gt;
 &lt;/div&gt;
             </description>
         </item>

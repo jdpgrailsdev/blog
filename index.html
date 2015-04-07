@@ -90,6 +90,103 @@
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog/2015/04/07/gpars_guava_load_test.html"><h1>Load Testing with GPars and Google Guava</h1></a>
+                   <p>07 April 2015</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/spring.html">spring</a>
+        
+                <a href="/blog/tags/jetty.html">jetty</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div class="paragraph">
+<p>I set out a few days back to write a simple <a href="http://groovy-lang.org/" target="_blank">Groovy</a> script that would accomplish the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Send data to a <a href="http://kafka.apache.org/" target="_blank">Kafka</a> topic from X concurrent producers.</p>
+</li>
+<li>
+<p>Run for a set duration</p>
+</li>
+<li>
+<p>Achieve a set number of sends per minute</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To do so, I decided to use <a href="http://www.gpars.org/guide/index.html" target="_blank">GPars Framework</a>, which is a "concurrency and parallelism library for Java and Groovy
+that gives you a number of high-level abstractions for writing concurrent and parallel code in Groovy."  Additionally,
+I decided to make use of the <a href="https://github.com/google/guava" target="_blank">Google Guava</a> <a href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/RateLimiter.html" target="_blank">RateLimiter</a>
+class to control how much data is produced.  The resulting script is pretty simple:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">@Grapes([
+    @Grab(group='org.codehaus.gpars', module='gpars', version='1.2.1'),
+    @Grab(group='com.google.guava', module='guava', version='18.0'),
+    @GrabExclude('commons-logging:commons-logging')])
+
+def cli = new CliBuilder(usage:'groovy loadTest.groovy ')
+cli.p(longOpt:'parallelism', args: 1, argName: 'parallelism', 'The number of producers to execute in parallel.  Defaults to 10.')
+cli.d(longOpt:'duration', args: 1, argName: 'duration', 'The duration of the test in minutes.  Defaults to 1 minute.')
+cli.r(longOpt:'target-rate', args: 1, argName: 'targetRate', 'The target aggregate rate of messages to be produced per minute.  Defaults to 60.')
+cli.h(longOpt:'help', 'Displays the usage information for this script.')
+
+def run = { -&gt;
+    // Do the actual work here (e.g. publish a message, etc)
+}
+
+def setup = { -&gt;
+    // Do any pre-test setup here (e.g. retrieving data, configuration, etc)
+}
+
+def options = cli.parse(args)
+
+if(options?.h) {
+    cli.usage()
+} else {
+   def duration = options?.d ? TimeUnit.MINUTES.toMillis(options.d as long) :  TimeUnit.MINUTES.toMillis(1l)
+   def parallelism = options?.p ?: 10
+   def targetRate = options?.r ?: 60.0
+
+   println '***********************************************'
+   println 'Load Test'
+   println "Test will run for ${TimeUnit.MILLISECONDS.toMinutes(duration)} minute(s) using ${parallelism} producers with a target rate of ${targetRate} messages per minute."
+
+   setup()
+
+   println 'Starting the test....'
+
+   def rateLimiter = RateLimiter.create((targetRate as double)/TimeUnit.MINUTES.toSeconds(1))
+   def startTime = System.currentTimeMillis()
+   def total = 0
+   while((System.currentTimeMillis() - startTime) &lt; duration) {
+       GParsExecutorsPool.withPool(parallelism as int) { ExecutorService service -&gt;
+           (parallelism as int).times {
+               rateLimiter.acquire()
+               service.submit({ run() } as Runnable)
+           }
+           total += parallelism as int
+       }
+       println "Test iteration complete.  Total sent so far: ${total}, ${TimeUnit.MILLISECONDS.toSeconds(duration - (System.currentTimeMillis() - startTime))} second(s) remaining."
+   }
+   println 'Test complete.'
+   System.exit(0)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The key points in the script above is the use of the <code>GParsExecutorsPool</code> to handle the creation of a configured thread pool and the inclusion of
+the <code>RateLimiter</code> to slow down the execution loop to meet the target rate.  Finally, all of this is done in a <code>while</code> loop that keeps looping until
+the requested duration has been achieved.  The end result is a simple script that allows you to generate concurrent request load at a target rate for
+a set duration.</p>
+</div></p>
+                <p><a href="/blog2015/04/07/gpars_guava_load_test.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2015/03/10/spring_boot_jetty_multi_port.html"><h1>Configure Jetty to Listen on Multiple Ports in a Spring Boot Application</h1></a>
                    <p>10 March 2015</p>
                 <p><em>Tags: </em>
@@ -748,209 +845,6 @@ generated <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a>
 </div>
 </div></p>
                 <p><a href="/blog2015/02/24/thrift_json_rest_spring_boot_part_i.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2015/01/27/spring_jpa_postgresql_hstore.html"><h1>Custom PostgreSQL Hstore Data Type with Spring, JPA and Hibernate</h1></a>
-                   <p>27 January 2015</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/java.html">java</a>
-        
-                <a href="/blog/tags/jpa.html">jpa</a>
-        
-                <a href="/blog/tags/postgresql.html">postgresql</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div class="paragraph">
-<p>Starting <a href="http://www.postgresql.org" target="_blank">PostgreSQL</a> version 9.0, the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank">PostgreSQL hstore datatype</a> data type was introduced, which allows for the storing of arbitrary sets of key/value pairs within a single column.  This
-data type can be leveraged for a bunch of different situations, such as for storing custom/random attributes, semi-structured data or in any scenario where the number and
-type of columns associated with an entity stored in a table varies.  As with most new/database vendor-specific features, support for the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank">PostgreSQL hstore datatype</a> data type does not exist
-as a first-level data type in the <a href="http://www.postgresql.org" target="_blank">PostgreSQL</a> dialect provided by <a href="https://hibernate.org" target="_blank">Hibernate</a>.  However, both JPA and <a href="https://hibernate.org" target="_blank">Hibernate</a> provide mechanisms that allow you to customize the
-way in which data stored in an entity is prepared for insertion into a database table and vice-versa.  The <a href="http://en.wikibooks.org/wiki/Java_Persistence/Basic_Attributes#Converters_.28JPA_2.1.29" target="_blank">JPA Attribute Converter</a> specification allows you to provide
-a custom <code>AttributeConverter</code> implementation that governs how data stored in a field of an entity gets converted for storage in the database and how to convert the column
-data back into a Java type.  Normally, this would be how you would implement support for an un-supported data type.  However, due to an <a href="https://hibernate.atlassian.net/browse/HHH-8804" target="_blank">Hibernate issue with Converters and parameterized types</a>, this won&#8217;t work
-for the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank">PostgreSQL hstore datatype</a>, unless you want to map it to a Java <code>String</code> type instead of a Java <code>Map&lt;String,Object&gt;</code> type, which makes more sense for an arbitrary key/value store.
-The solution?  Leverage <a href="https://docs.jboss.org/hibernate/orm/3.6/reference/en-US/html/types.html#types-custom-ut" target="_blank">Hibernate&#8217;s Custom Types</a> support!</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">package com.example.jpa.support;
-
-import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.usertype.UserType;
-
-/**
- * Custom Hibernate {@link UserType} used to convert between a {@link Map}
- * and PostgreSQL {@code hstore} data type.
- */
-public class HstoreUserType implements UserType {
-
-    /**
-     * PostgreSQL {@code hstore} field separator token.
-     */
-    private static final String HSTORE_SEPARATOR_TOKEN = "=&gt;";
-
-    /**
-     * {@link Pattern} used to find and split {@code hstore} entries.
-     */
-    private static final Pattern HSTORE_ENTRY_PATTERN = Pattern.compile(String.format("\"(.*)\"%s\"(.*)\"", HSTORE_SEPARATOR_TOKEN));
-
-    /**
-     * The PostgreSQL value for the {@code hstore} data type.
-     */
-    public static final int HSTORE_TYPE = 1111;
-
-    @Override
-    public int[] sqlTypes() {
-        return new int[] { HSTORE_TYPE };
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public Class returnedClass() {
-        return Map.class;
-    }
-
-    @Override
-    public boolean equals(final Object x, final Object y) throws HibernateException {
-        return x.equals(y);
-    }
-
-    @Override
-    public int hashCode(final Object x) throws HibernateException {
-        return x.hashCode();
-    }
-
-    @Override
-    public Object nullSafeGet(final ResultSet rs, final String[] names,
-            final SessionImplementor session, final Object owner)
-            throws HibernateException, SQLException {
-        return convertToEntityAttribute(rs.getString(names[0]));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void nullSafeSet(final PreparedStatement st, final Object value, final int index,
-            final SessionImplementor session) throws HibernateException, SQLException {
-        st.setObject(index, convertToDatabaseColumn((Map&lt;String,Object&gt;)value), HSTORE_TYPE);
-
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Object deepCopy(final Object value) throws HibernateException {
-        return new HashMap&lt;String,Object&gt;(((Map&lt;String,Object&gt;)value));
-    }
-
-    @Override
-    public boolean isMutable() {
-        return true;
-    }
-
-    @Override
-    public Serializable disassemble(final Object value) throws HibernateException {
-        return (Serializable) value;
-    }
-
-    @Override
-    public Object assemble(final Serializable cached, final Object owner)
-            throws HibernateException {
-        return cached;
-    }
-
-    @Override
-    public Object replace(final Object original, final Object target, final Object owner)
-            throws HibernateException {
-        return original;
-    }
-
-
-    private String convertToDatabaseColumn(final Map&lt;String, Object&gt; attribute) {
-        final StringBuilder builder = new StringBuilder();
-        for (final Map.Entry&lt;String, Object&gt; entry : attribute.entrySet()) {
-            if(builder.length() &gt; 1) {
-                builder.append(", ");
-            }
-            builder.append("\"");
-            builder.append(entry.getKey());
-            builder.append("\"");
-            builder.append(HSTORE_SEPARATOR_TOKEN);
-            builder.append("\"");
-            builder.append(entry.getValue().toString());
-            builder.append("\"");
-        }
-        return builder.toString();
-    }
-
-    private Map&lt;String, Object&gt; convertToEntityAttribute(final String dbData) {
-        final Map&lt;String, Object&gt; data = new HashMap&lt;String, Object&gt;();
-        final StringTokenizer tokenizer = new StringTokenizer(dbData, ",");
-
-        while(tokenizer.hasMoreTokens()) {
-            final Matcher matcher = HSTORE_ENTRY_PATTERN.matcher(tokenizer.nextToken().trim());
-            if(matcher.find()) {
-                data.put(matcher.group(1), matcher.group(2));
-            }
-        }
-
-        return data;
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The example above implements the <a href="https://hibernate.org" target="_blank">Hibernate</a> <code>UserType</code> interface and provides methods (<code>nullSafeGet</code> and <code>nullSafeSet</code>) to handle the conversion.  It also provides the appropriate
-data type value for the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank">PostgreSQL hstore datatype</a> (1111).  Now that you have a custom <code>UserType</code> implementation for the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank">PostgreSQL hstore datatype</a>, the next step is to annotate your entity class to instruct JPA to
-use the custom type during mapping:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">package com.example.jpa.entity;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-
-import com.example.jpa.support.HstoreUserType;
-
-@Entity
-@Table(name = "books")
-@TypeDef(name = "hstore", typeClass = HstoreUserType.class)
-public class BookEntity {
-
-    @Column(name="metadata")
-    @Type(type="hstore")
-    private Map&lt;String,Object&gt; metadata;
-
-    ...
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>TypeDef</code> is given a name so that it can be referenced when applied to the field via the <code>Type</code> annotation.  Now, when data is persisted or retrieved, our custom <code>UserType</code> implementation
-will be invoked to handle the data.  It is also worth noting that the <a href="http://www.postgresql.org" target="_blank">PostgreSQL</a> JDBC driver library does come with an <code>HStoreConverter</code> class with static methods that could be leveraged from
-inside the custom <code>UserType</code> to handle the conversion to/from a <code>Map&lt;String,Object&gt;</code> to a <code>String</code> and vice versa.  However, I would not recommend an implementation that depends on an internal
-class from the JDBC driver, as it may cause compatibility issues if you upgrade.</p>
-</div></p>
-                <p><a href="/blog2015/01/27/spring_jpa_postgresql_hstore.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
