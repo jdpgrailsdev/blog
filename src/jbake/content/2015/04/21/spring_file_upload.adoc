@@ -1,0 +1,63 @@
+= Upload File from Classpath/In-Memory Using Spring RestTemplate
+Jonathan Pearlin
+2015-04-21
+:jbake-type: post
+:jbake-tags: spring,java
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: spring_file_upload
+:icons: font
+:spring: http://projects.spring.io/spring-framework/[Spring Framework, window="_blank"]
+:spring_boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
+
+File uploads via an HTTP POST to an end point are pretty easy using the `RestTemplate` and `FileResource` classes of the {spring}.  However,
+this approach assumes that the file to be uploaded resides on disk.  What happens if you want to dynamically create the uploaded file in
+memory or want to use a file on the classpath?  The answer is to create a slight tweak to the `ByteArrayResource` implementation so that
+the proper from data header attributes are set in the POST body.  To do this, first extend the `ByteArrayResource` so that you can set
+the `filename` of the resource:
+
+[source,java]
+----
+public class FileMessageResource extends ByteArrayResource {
+
+    /**
+     * The filename to be associated with the {@link MimeMessage} in the form data.
+     */
+    private final String filename;
+
+    /**
+     * Constructs a new {@link MimeMessageRe
+     * @param byteArray A byte array containing data from a {@link MimeMessage}.
+     * @param filename The filename to be associated with the {@link MimeMessage} in
+     * 	the form data.
+     */
+    public MimeMessageResource(final byte[] byteArray, final String filename) {
+        super(byteArray);
+        this.filename = filename;
+    }
+
+    @Override
+    public String getFilename() {
+        return filename;
+    }
+}
+----
+
+Next, create your new resource and add it to the POST body.  From there, simply pass the POST body to the
+`RestTemplate` to send the file to the end point:
+
+[source,java]
+----
+final MultiValueMap<String,Object> data = new LinkedMultiValueMap<String,Object>();
+data.add("file", new FileMessageResource(fileBytes, "upload.txt"));
+final HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<MultiValueMap<String, Object>>(data);
+final ResponseEntity<Map<String,String>> response = getRestTemplate().exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Map<String,String>>() {});
+----
+
+The result is a form POST to the end point with the proper section header:
+
+[source]
+----
+Content-Disposition: form-data; name="file"; filename="upload.txt"
+----
