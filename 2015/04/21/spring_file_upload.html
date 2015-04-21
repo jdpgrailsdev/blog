@@ -87,61 +87,89 @@
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Tag: java</h1>
+        <h1>Upload File from Classpath/In-Memory Using Spring RestTemplate</h1>
     </div>
 
-    <!--<ul>-->
-            <h4>April 2015</h4>
-            <ul>
+    <p><em>21 April 2015</em></p>
 
-        <li>21 - <a href="/blog/2015/04/21/spring_file_upload.html">Upload File from Classpath/In-Memory Using Spring RestTemplate</a></li>
-                </ul>
-                <h4>January 2015</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/04/21/spring_file_upload.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/04/21/spring_file_upload.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/04/21/spring_file_upload.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>27 - <a href="/blog/2015/01/27/spring_jpa_postgresql_hstore.html">Custom PostgreSQL Hstore Data Type with Spring, JPA and Hibernate</a></li>
+    <p><div class="paragraph">
+<p>File uploads via an HTTP POST to an end point are pretty easy using the <code>RestTemplate</code> and <code>FileResource</code> classes of the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a>.  However,
+this approach assumes that the file to be uploaded resides on disk.  What happens if you want to dynamically create the uploaded file in
+memory or want to use a file on the classpath?  The answer is to create a slight tweak to the <code>ByteArrayResource</code> implementation so that
+the proper from data header attributes are set in the POST body.  To do this, first extend the <code>ByteArrayResource</code> so that you can set
+the <code>filename</code> of the resource:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">public class FileMessageResource extends ByteArrayResource {
 
-        <li>20 - <a href="/blog/2015/01/20/spring_transactions_rollback.html">Rollbacks with Spring Transactions</a></li>
+    /**
+     * The filename to be associated with the {@link MimeMessage} in the form data.
+     */
+    private final String filename;
 
-        <li>06 - <a href="/blog/2015/01/06/email_inline_style_jsoup_cssparser.html">Using CSS Parser and JSoup to Inline Styles for Web Mail</a></li>
-                </ul>
-                <h4>December 2014</h4>
-                <ul>
+    /**
+     * Constructs a new {@link MimeMessageRe
+     * @param byteArray A byte array containing data from a {@link MimeMessage}.
+     * @param filename The filename to be associated with the {@link MimeMessage} in
+     * 	the form data.
+     */
+    public MimeMessageResource(final byte[] byteArray, final String filename) {
+        super(byteArray);
+        this.filename = filename;
+    }
 
-        <li>09 - <a href="/blog/2014/12/09/email_inline_image_attachments.html">Use Inline Attachments as Image Sources in HTML Emails with Spring</a></li>
-                </ul>
-                <h4>November 2014</h4>
-                <ul>
+    @Override
+    public String getFilename() {
+        return filename;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, create your new resource and add it to the POST body.  From there, simply pass the POST body to the
+<code>RestTemplate</code> to send the file to the end point:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">final MultiValueMap&lt;String,Object&gt; data = new LinkedMultiValueMap&lt;String,Object&gt;();
+data.add("file", new FileMessageResource(fileBytes, "upload.txt"));
+final HttpEntity&lt;MultiValueMap&lt;String, Object&gt;&gt; requestEntity = new HttpEntity&lt;MultiValueMap&lt;String, Object&gt;&gt;(data);
+final ResponseEntity&lt;Map&lt;String,String&gt;&gt; response = getRestTemplate().exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference&lt;Map&lt;String,String&gt;&gt;() {});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The result is a form POST to the end point with the proper section header:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>Content-Disposition: form-data; name="file"; filename="upload.txt"</code></pre>
+</div>
+</div></p>
 
-        <li>11 - <a href="/blog/2014/11/11/spring_boot_health_indicators_auto_config.html">Auto Configure Health Indicators in Spring Boot</a></li>
-                </ul>
-                <h4>August 2014</h4>
-                <ul>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2015/04/21/spring_file_upload.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/04/21/spring_file_upload.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/04/21/spring_file_upload.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-        <li>12 - <a href="/blog/2014/08/12/gradle_javaexec_classpath.html">Dynamically Build JavaExec Classpath from BuildScript Dependencies in Gradle</a></li>
-                </ul>
-                <h4>May 2014</h4>
-                <ul>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2015/04/21/spring_file_upload.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-        <li>27 - <a href="/blog/2014/05/27/grails_maven_jdk_profile.html">Grails, Maven and JDK-based Profile Activation</a></li>
-
-        <li>20 - <a href="/blog/2014/05/20/grails_maven_coverage.html">Grails, Maven, Cobertura and Java 7</a></li>
-                </ul>
-                <h4>April 2014</h4>
-                <ul>
-
-        <li>03 - <a href="/blog/2014/04/03/maven_java8_javadoc.html">Maven, the JavaDoc plugin and Java 8</a></li>
-                </ul>
-                <h4>February 2014</h4>
-                <ul>
-
-        <li>19 - <a href="/blog/2014/02/19/spring_curator.html">Spring and Apache Curator</a></li>
-                </ul>
-                <h4>November 2011</h4>
-                <ul>
-
-        <li>19 - <a href="/blog/2011/11/19/spring_data_mongodb_exceptions.html">Where's My Exceptions, Spring Data MongoDB?</a></li>
-    </ul>
+    <hr>
 
             </div>
             <div id="push"></div>

@@ -6,13 +6,75 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 7 Apr 2015 07:45:23 -0700</pubDate>
-        <lastBuildDate>Tue, 7 Apr 2015 07:45:23 -0700</lastBuildDate>
+        <pubDate>Tue, 21 Apr 2015 07:53:27 -0700</pubDate>
+        <lastBuildDate>Tue, 21 Apr 2015 07:53:27 -0700</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Upload File from Classpath/In-Memory Using Spring RestTemplate</title>
+            <link>http://jdpgrailsdev.github.io/blog/2015/04/21/spring_file_upload.html</link>
+            <pubDate>Tue, 21 Apr 2015 00:00:00 -0700</pubDate>
+            <guid isPermaLink="false">2015/04/21/spring_file_upload.html</guid>
+            <description>
+                    &lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;File uploads via an HTTP POST to an end point are pretty easy using the &lt;code&gt;RestTemplate&lt;/code&gt; and &lt;code&gt;FileResource&lt;/code&gt; classes of the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt;.  However,
+this approach assumes that the file to be uploaded resides on disk.  What happens if you want to dynamically create the uploaded file in
+memory or want to use a file on the classpath?  The answer is to create a slight tweak to the &lt;code&gt;ByteArrayResource&lt;/code&gt; implementation so that
+the proper from data header attributes are set in the POST body.  To do this, first extend the &lt;code&gt;ByteArrayResource&lt;/code&gt; so that you can set
+the &lt;code&gt;filename&lt;/code&gt; of the resource:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;public class FileMessageResource extends ByteArrayResource {
+
+    /**
+     * The filename to be associated with the {@link MimeMessage} in the form data.
+     */
+    private final String filename;
+
+    /**
+     * Constructs a new {@link MimeMessageRe
+     * @param byteArray A byte array containing data from a {@link MimeMessage}.
+     * @param filename The filename to be associated with the {@link MimeMessage} in
+     * 	the form data.
+     */
+    public MimeMessageResource(final byte[] byteArray, final String filename) {
+        super(byteArray);
+        this.filename = filename;
+    }
+
+    @Override
+    public String getFilename() {
+        return filename;
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Next, create your new resource and add it to the POST body.  From there, simply pass the POST body to the
+&lt;code&gt;RestTemplate&lt;/code&gt; to send the file to the end point:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;final MultiValueMap&amp;lt;String,Object&amp;gt; data = new LinkedMultiValueMap&amp;lt;String,Object&amp;gt;();
+data.add(&quot;file&quot;, new FileMessageResource(fileBytes, &quot;upload.txt&quot;));
+final HttpEntity&amp;lt;MultiValueMap&amp;lt;String, Object&amp;gt;&amp;gt; requestEntity = new HttpEntity&amp;lt;MultiValueMap&amp;lt;String, Object&amp;gt;&amp;gt;(data);
+final ResponseEntity&amp;lt;Map&amp;lt;String,String&amp;gt;&amp;gt; response = getRestTemplate().exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference&amp;lt;Map&amp;lt;String,String&amp;gt;&amp;gt;() {});&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The result is a form POST to the end point with the proper section header:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code&gt;Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;upload.txt&quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Load Testing with GPars and Google Guava</title>
             <link>http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html</link>
@@ -745,200 +807,6 @@ an existing book, we will see the following JSON response:&lt;/p&gt;
 generated &lt;a href=&quot;https://thrift.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Thrift&lt;/a&gt; objects.  In the next post, I will show how to handle the custom deserialization of JSON into &lt;a href=&quot;https://thrift.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Thrift&lt;/a&gt; based objects.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Custom PostgreSQL Hstore Data Type with Spring, JPA and Hibernate</title>
-            <link>http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html</link>
-            <pubDate>Tue, 27 Jan 2015 00:00:00 -0800</pubDate>
-            <guid isPermaLink="false">2015/01/27/spring_jpa_postgresql_hstore.html</guid>
-            <description>
-                    &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Starting &lt;a href=&quot;http://www.postgresql.org&quot; target=&quot;_blank&quot;&gt;PostgreSQL&lt;/a&gt; version 9.0, the &lt;a href=&quot;http://www.postgresql.org/docs/9.4/static/hstore.html&quot; target=&quot;_blank&quot;&gt;PostgreSQL hstore datatype&lt;/a&gt; data type was introduced, which allows for the storing of arbitrary sets of key/value pairs within a single column.  This
-data type can be leveraged for a bunch of different situations, such as for storing custom/random attributes, semi-structured data or in any scenario where the number and
-type of columns associated with an entity stored in a table varies.  As with most new/database vendor-specific features, support for the &lt;a href=&quot;http://www.postgresql.org/docs/9.4/static/hstore.html&quot; target=&quot;_blank&quot;&gt;PostgreSQL hstore datatype&lt;/a&gt; data type does not exist
-as a first-level data type in the &lt;a href=&quot;http://www.postgresql.org&quot; target=&quot;_blank&quot;&gt;PostgreSQL&lt;/a&gt; dialect provided by &lt;a href=&quot;https://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt;.  However, both JPA and &lt;a href=&quot;https://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; provide mechanisms that allow you to customize the
-way in which data stored in an entity is prepared for insertion into a database table and vice-versa.  The &lt;a href=&quot;http://en.wikibooks.org/wiki/Java_Persistence/Basic_Attributes#Converters_.28JPA_2.1.29&quot; target=&quot;_blank&quot;&gt;JPA Attribute Converter&lt;/a&gt; specification allows you to provide
-a custom &lt;code&gt;AttributeConverter&lt;/code&gt; implementation that governs how data stored in a field of an entity gets converted for storage in the database and how to convert the column
-data back into a Java type.  Normally, this would be how you would implement support for an un-supported data type.  However, due to an &lt;a href=&quot;https://hibernate.atlassian.net/browse/HHH-8804&quot; target=&quot;_blank&quot;&gt;Hibernate issue with Converters and parameterized types&lt;/a&gt;, this won&amp;#8217;t work
-for the &lt;a href=&quot;http://www.postgresql.org/docs/9.4/static/hstore.html&quot; target=&quot;_blank&quot;&gt;PostgreSQL hstore datatype&lt;/a&gt;, unless you want to map it to a Java &lt;code&gt;String&lt;/code&gt; type instead of a Java &lt;code&gt;Map&amp;lt;String,Object&amp;gt;&lt;/code&gt; type, which makes more sense for an arbitrary key/value store.
-The solution?  Leverage &lt;a href=&quot;https://docs.jboss.org/hibernate/orm/3.6/reference/en-US/html/types.html#types-custom-ut&quot; target=&quot;_blank&quot;&gt;Hibernate&amp;#8217;s Custom Types&lt;/a&gt; support!&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;package com.example.jpa.support;
-
-import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.usertype.UserType;
-
-/**
- * Custom Hibernate {@link UserType} used to convert between a {@link Map}
- * and PostgreSQL {@code hstore} data type.
- */
-public class HstoreUserType implements UserType {
-
-    /**
-     * PostgreSQL {@code hstore} field separator token.
-     */
-    private static final String HSTORE_SEPARATOR_TOKEN = &quot;=&amp;gt;&quot;;
-
-    /**
-     * {@link Pattern} used to find and split {@code hstore} entries.
-     */
-    private static final Pattern HSTORE_ENTRY_PATTERN = Pattern.compile(String.format(&quot;\&quot;(.*)\&quot;%s\&quot;(.*)\&quot;&quot;, HSTORE_SEPARATOR_TOKEN));
-
-    /**
-     * The PostgreSQL value for the {@code hstore} data type.
-     */
-    public static final int HSTORE_TYPE = 1111;
-
-    @Override
-    public int[] sqlTypes() {
-        return new int[] { HSTORE_TYPE };
-    }
-
-    @SuppressWarnings(&quot;rawtypes&quot;)
-    @Override
-    public Class returnedClass() {
-        return Map.class;
-    }
-
-    @Override
-    public boolean equals(final Object x, final Object y) throws HibernateException {
-        return x.equals(y);
-    }
-
-    @Override
-    public int hashCode(final Object x) throws HibernateException {
-        return x.hashCode();
-    }
-
-    @Override
-    public Object nullSafeGet(final ResultSet rs, final String[] names,
-            final SessionImplementor session, final Object owner)
-            throws HibernateException, SQLException {
-        return convertToEntityAttribute(rs.getString(names[0]));
-    }
-
-    @SuppressWarnings(&quot;unchecked&quot;)
-    @Override
-    public void nullSafeSet(final PreparedStatement st, final Object value, final int index,
-            final SessionImplementor session) throws HibernateException, SQLException {
-        st.setObject(index, convertToDatabaseColumn((Map&amp;lt;String,Object&amp;gt;)value), HSTORE_TYPE);
-
-    }
-
-    @SuppressWarnings(&quot;unchecked&quot;)
-    @Override
-    public Object deepCopy(final Object value) throws HibernateException {
-        return new HashMap&amp;lt;String,Object&amp;gt;(((Map&amp;lt;String,Object&amp;gt;)value));
-    }
-
-    @Override
-    public boolean isMutable() {
-        return true;
-    }
-
-    @Override
-    public Serializable disassemble(final Object value) throws HibernateException {
-        return (Serializable) value;
-    }
-
-    @Override
-    public Object assemble(final Serializable cached, final Object owner)
-            throws HibernateException {
-        return cached;
-    }
-
-    @Override
-    public Object replace(final Object original, final Object target, final Object owner)
-            throws HibernateException {
-        return original;
-    }
-
-
-    private String convertToDatabaseColumn(final Map&amp;lt;String, Object&amp;gt; attribute) {
-        final StringBuilder builder = new StringBuilder();
-        for (final Map.Entry&amp;lt;String, Object&amp;gt; entry : attribute.entrySet()) {
-            if(builder.length() &amp;gt; 1) {
-                builder.append(&quot;, &quot;);
-            }
-            builder.append(&quot;\&quot;&quot;);
-            builder.append(entry.getKey());
-            builder.append(&quot;\&quot;&quot;);
-            builder.append(HSTORE_SEPARATOR_TOKEN);
-            builder.append(&quot;\&quot;&quot;);
-            builder.append(entry.getValue().toString());
-            builder.append(&quot;\&quot;&quot;);
-        }
-        return builder.toString();
-    }
-
-    private Map&amp;lt;String, Object&amp;gt; convertToEntityAttribute(final String dbData) {
-        final Map&amp;lt;String, Object&amp;gt; data = new HashMap&amp;lt;String, Object&amp;gt;();
-        final StringTokenizer tokenizer = new StringTokenizer(dbData, &quot;,&quot;);
-
-        while(tokenizer.hasMoreTokens()) {
-            final Matcher matcher = HSTORE_ENTRY_PATTERN.matcher(tokenizer.nextToken().trim());
-            if(matcher.find()) {
-                data.put(matcher.group(1), matcher.group(2));
-            }
-        }
-
-        return data;
-    }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The example above implements the &lt;a href=&quot;https://hibernate.org&quot; target=&quot;_blank&quot;&gt;Hibernate&lt;/a&gt; &lt;code&gt;UserType&lt;/code&gt; interface and provides methods (&lt;code&gt;nullSafeGet&lt;/code&gt; and &lt;code&gt;nullSafeSet&lt;/code&gt;) to handle the conversion.  It also provides the appropriate
-data type value for the &lt;a href=&quot;http://www.postgresql.org/docs/9.4/static/hstore.html&quot; target=&quot;_blank&quot;&gt;PostgreSQL hstore datatype&lt;/a&gt; (1111).  Now that you have a custom &lt;code&gt;UserType&lt;/code&gt; implementation for the &lt;a href=&quot;http://www.postgresql.org/docs/9.4/static/hstore.html&quot; target=&quot;_blank&quot;&gt;PostgreSQL hstore datatype&lt;/a&gt;, the next step is to annotate your entity class to instruct JPA to
-use the custom type during mapping:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;package com.example.jpa.entity;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-
-import com.example.jpa.support.HstoreUserType;
-
-@Entity
-@Table(name = &quot;books&quot;)
-@TypeDef(name = &quot;hstore&quot;, typeClass = HstoreUserType.class)
-public class BookEntity {
-
-    @Column(name=&quot;metadata&quot;)
-    @Type(type=&quot;hstore&quot;)
-    private Map&amp;lt;String,Object&amp;gt; metadata;
-
-    ...
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The &lt;code&gt;TypeDef&lt;/code&gt; is given a name so that it can be referenced when applied to the field via the &lt;code&gt;Type&lt;/code&gt; annotation.  Now, when data is persisted or retrieved, our custom &lt;code&gt;UserType&lt;/code&gt; implementation
-will be invoked to handle the data.  It is also worth noting that the &lt;a href=&quot;http://www.postgresql.org&quot; target=&quot;_blank&quot;&gt;PostgreSQL&lt;/a&gt; JDBC driver library does come with an &lt;code&gt;HStoreConverter&lt;/code&gt; class with static methods that could be leveraged from
-inside the custom &lt;code&gt;UserType&lt;/code&gt; to handle the conversion to/from a &lt;code&gt;Map&amp;lt;String,Object&amp;gt;&lt;/code&gt; to a &lt;code&gt;String&lt;/code&gt; and vice versa.  However, I would not recommend an implementation that depends on an internal
-class from the JDBC driver, as it may cause compatibility issues if you upgrade.&lt;/p&gt;
 &lt;/div&gt;
             </description>
         </item>
