@@ -90,25 +90,17 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
                 </div>
             </div>
             <div class="container">
-                <div class="page-header">
-                    <h1>The Flowers Are Still Standing</h1>
-                </div>
+    <div class="page-header">
+        <h1>Using Spock/CGLIB with Java 8 and Gradle</h1>
+    </div>
 
-                   <a href="/blog/2015/08/18/java_8_spock_cglib_gradle.html"><h1>Using Spock/CGLIB with Java 8 and Gradle</h1></a>
-                   <p>18 August 2015</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/gradle.html">gradle</a>
-        
-                <a href="/blog/tags/java.html">java</a>
-        
-                <a href="/blog/tags/groovy.html">groovy</a>
-        </p>
+    <p><em>18 August 2015</em></p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/08/18/java_8_spock_cglib_gradle.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/08/18/java_8_spock_cglib_gradle.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/08/18/java_8_spock_cglib_gradle.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/08/18/java_8_spock_cglib_gradle.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/08/18/java_8_spock_cglib_gradle.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/08/18/java_8_spock_cglib_gradle.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div class="paragraph">
+    <p><div class="paragraph">
 <p>Recently, I attempted to convert a project that uses <a href="https://github.com/cglib/cglib" target="_blank">CGLIB</a> and <a href="https://github.com/spockframework/spock" target="_blank">Spock Framework</a> to execute unit tests to use Java 8 source
 and target versions.  When I went to run the unit tests, I was met with a nasty <code>java.lang.IllegalArgumentException</code>.  Some
 quick internet searching showed that there is an existing issue with the currently released version of <a href="https://github.com/cglib/cglib" target="_blank">CGLIB</a> and the
@@ -136,253 +128,26 @@ dependencies {
 <p>You can generate this information using <a href="https://jitpack.io" target="_blank">JitPack.io</a> itself by going to the following URL:  <a href="https://jitpack.io/#cglib/cglib/52e118aca4" class="bare">https://jitpack.io/#cglib/cglib/52e118aca4</a>.  Now, my project will get <a href="https://jitpack.io" target="_blank">JitPack.io</a>
 to build the custom release of <a href="https://github.com/cglib/cglib" target="_blank">CGLIB</a> without me needing to build and push it into a repository!</p>
 </div></p>
-                <p><a href="/blog2015/08/18/java_8_spock_cglib_gradle.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2015/04/21/spring_file_upload.html"><h1>Upload File from Classpath/In-Memory Using Spring RestTemplate</h1></a>
-                   <p>21 April 2015</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/java.html">java</a>
-        </p>
 
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/04/21/spring_file_upload.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/04/21/spring_file_upload.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/04/21/spring_file_upload.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2015/08/18/java_8_spock_cglib_gradle.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/08/18/java_8_spock_cglib_gradle.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/08/18/java_8_spock_cglib_gradle.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div class="paragraph">
-<p>File uploads via an HTTP POST to an end point are pretty easy using the <code>RestTemplate</code> and <code>FileResource</code> classes of the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a>.  However,
-this approach assumes that the file to be uploaded resides on disk.  What happens if you want to dynamically create the uploaded file in
-memory or want to use a file on the classpath?  The answer is to create a slight tweak to the <code>ByteArrayResource</code> implementation so that
-the proper from data header attributes are set in the POST body.  To do this, first extend the <code>ByteArrayResource</code> so that you can set
-the <code>filename</code> of the resource:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">public class FileMessageResource extends ByteArrayResource {
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'jdpgrailsdevblog';
+        var disqus_identifier = '2015/08/18/java_8_spock_cglib_gradle.html';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-    /**
-     * The filename to be associated with the {@link MimeMessage} in the form data.
-     */
-    private final String filename;
-
-    /**
-     * Constructs a new {@link MimeMessageRe
-     * @param byteArray A byte array containing data from a {@link MimeMessage}.
-     * @param filename The filename to be associated with the {@link MimeMessage} in
-     * 	the form data.
-     */
-    public MimeMessageResource(final byte[] byteArray, final String filename) {
-        super(byteArray);
-        this.filename = filename;
-    }
-
-    @Override
-    public String getFilename() {
-        return filename;
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Next, create your new resource and add it to the POST body.  From there, simply pass the POST body to the
-<code>RestTemplate</code> to send the file to the end point:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">final MultiValueMap&lt;String,Object&gt; data = new LinkedMultiValueMap&lt;String,Object&gt;();
-data.add("file", new FileMessageResource(fileBytes, "upload.txt"));
-final HttpEntity&lt;MultiValueMap&lt;String, Object&gt;&gt; requestEntity = new HttpEntity&lt;MultiValueMap&lt;String, Object&gt;&gt;(data);
-final ResponseEntity&lt;Map&lt;String,String&gt;&gt; response = getRestTemplate().exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference&lt;Map&lt;String,String&gt;&gt;() {});</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The result is a form POST to the end point with the proper section header:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code>Content-Disposition: form-data; name="file"; filename="upload.txt"</code></pre>
-</div>
-</div></p>
-                <p><a href="/blog2015/04/21/spring_file_upload.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2015/04/07/gpars_guava_load_test.html"><h1>Load Testing with GPars and Google Guava</h1></a>
-                   <p>07 April 2015</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/jetty.html">jetty</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div class="paragraph">
-<p>I set out a few days back to write a simple <a href="http://groovy-lang.org/" target="_blank">Groovy</a> script that would accomplish the following:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Send data to a <a href="http://kafka.apache.org/" target="_blank">Kafka</a> topic from X concurrent producers.</p>
-</li>
-<li>
-<p>Run for a set duration</p>
-</li>
-<li>
-<p>Achieve a set number of sends per minute</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>To do so, I decided to use <a href="http://www.gpars.org/guide/index.html" target="_blank">GPars Framework</a>, which is a "concurrency and parallelism library for Java and Groovy
-that gives you a number of high-level abstractions for writing concurrent and parallel code in Groovy."  Additionally,
-I decided to make use of the <a href="https://github.com/google/guava" target="_blank">Google Guava</a> <a href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/RateLimiter.html" target="_blank">RateLimiter</a>
-class to control how much data is produced.  The resulting script is pretty simple:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">@Grapes([
-    @Grab(group='org.codehaus.gpars', module='gpars', version='1.2.1'),
-    @Grab(group='com.google.guava', module='guava', version='18.0'),
-    @GrabExclude('commons-logging:commons-logging')])
-
-def cli = new CliBuilder(usage:'groovy loadTest.groovy ')
-cli.p(longOpt:'parallelism', args: 1, argName: 'parallelism', 'The number of producers to execute in parallel.  Defaults to 10.')
-cli.d(longOpt:'duration', args: 1, argName: 'duration', 'The duration of the test in minutes.  Defaults to 1 minute.')
-cli.r(longOpt:'target-rate', args: 1, argName: 'targetRate', 'The target aggregate rate of messages to be produced per minute.  Defaults to 60.')
-cli.h(longOpt:'help', 'Displays the usage information for this script.')
-
-def run = { -&gt;
-    // Do the actual work here (e.g. publish a message, etc)
-}
-
-def setup = { -&gt;
-    // Do any pre-test setup here (e.g. retrieving data, configuration, etc)
-}
-
-def options = cli.parse(args)
-
-if(options?.h) {
-    cli.usage()
-} else {
-   def duration = options?.d ? TimeUnit.MINUTES.toMillis(options.d as long) :  TimeUnit.MINUTES.toMillis(1l)
-   def parallelism = options?.p ?: 10
-   def targetRate = options?.r ?: 60.0
-
-   println '***********************************************'
-   println 'Load Test'
-   println "Test will run for ${TimeUnit.MILLISECONDS.toMinutes(duration)} minute(s) using ${parallelism} producers with a target rate of ${targetRate} messages per minute."
-
-   setup()
-
-   println 'Starting the test....'
-
-   def rateLimiter = RateLimiter.create((targetRate as double)/TimeUnit.MINUTES.toSeconds(1))
-   def startTime = System.currentTimeMillis()
-   def total = 0
-   while((System.currentTimeMillis() - startTime) &lt; duration) {
-       GParsExecutorsPool.withPool(parallelism as int) { ExecutorService service -&gt;
-           (parallelism as int).times {
-               rateLimiter.acquire()
-               service.submit({ run() } as Runnable)
-           }
-           total += parallelism as int
-       }
-       println "Test iteration complete.  Total sent so far: ${total}, ${TimeUnit.MILLISECONDS.toSeconds(duration - (System.currentTimeMillis() - startTime))} second(s) remaining."
-   }
-   println 'Test complete.'
-   System.exit(0)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The key points in the script above is the use of the <code>GParsExecutorsPool</code> to handle the creation of a configured thread pool and the inclusion of
-the <code>RateLimiter</code> to slow down the execution loop to meet the target rate.  Finally, all of this is done in a <code>while</code> loop that keeps looping until
-the requested duration has been achieved.  The end result is a simple script that allows you to generate concurrent request load at a target rate for
-a set duration.</p>
-</div></p>
-                <p><a href="/blog2015/04/07/gpars_guava_load_test.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2015/03/10/spring_boot_jetty_multi_port.html"><h1>Configure Jetty to Listen on Multiple Ports in a Spring Boot Application</h1></a>
-                   <p>10 March 2015</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/jetty.html">jetty</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/03/10/spring_boot_jetty_multi_port.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/03/10/spring_boot_jetty_multi_port.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/03/10/spring_boot_jetty_multi_port.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div class="paragraph">
-<p>The <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html#howto-configure-jetty" target="_blank">documentation</a> and
-<a href="https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-jetty" target="_blank">sample applications</a> contain good information and examples
-of how to use <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> in a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application instead of the default embedded Apache Tomcat server.  However, the documentation and examples do not really address how to
-customize <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> as in depth as the Tomcat examples.  Recently, I found the need to make a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application using <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> listen on multiple ports for incoming HTTP traffic.
-While this is not necessarily a normal use case, it does come up often, especially when the need to listen for both HTTP and HTTPS traffic is a requirement.  In a
-<a href="http://jdpgrailsdev.github.io/blog/2014/10/07/spring_boot_jetty_thread_pool.html" target="_blank">previous post</a>, I showed how to customize the embedded <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> server in order to
-change the size of the thread pool used for incoming connections.  Just like the approach outlined in that post, the way to configure the embedded <a href="http://eclipse.org/jetty/" target="_blank">Jetty</a> server in your <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>
-application to listen to multiple ports is very similar:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">@Bean
-public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(
-        @Value("${server.port:8080}") final String mainPort,
-        @Value("#{'${server.secondary.ports}'.split(',')}") final List&lt;String&gt; secondaryPorts) {
-
-    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(mainPort));
-
-    // Add customized Jetty configuration with non blocking connection handler
-    factory.addServerCustomizers(new JettyServerCustomizer() {
-        @Override
-        public void customize(final Server server) {
-            // Register an additional connector for each secondary port.
-            for(final String secondaryPort : secondaryPorts) {
-                final NetworkTrafficServerConnector connector = new NetworkTrafficServerConnector(server);
-                connector.setPort(Integer.valueOf(secondaryPort));
-                server.addConnector(connector);
-            }
-
-            // Additional configuration
-        }
-    });
-    return factory;
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The example above uses the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> provided <code>JettyServerCustomizer</code> to register additional <code>NetworkTrafficServerConnector</code> instances for each
-secondary port provided in the application&#8217;s configuration.  Additionally, the <code>server.port</code> <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> property is still used for the
-main application port and is passed to the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <code>JettyEmbeddedServletContainerFactory</code>, just as it would be if you simply included
-the appropriate starter library and set the property, per the documentation.  Finally, the application configuration contains the following configuration
-to make it all work:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-yaml" data-lang="yaml">server:
-  port: "8000"
-  secondary:
-    ports: "8082,8083,8084"</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>When the application starts up, you can confirm that it is indeed listening on the multiple ports by looking for the following in the output:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code>2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.eclipse.jetty.server.ServerConnector   : Started ServerConnector@121ee28d{HTTP/1.1}{0.0.0.0:8080}
-2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@36d64b9{HTTP/1.1}{0.0.0.0:8082}
-2015-03-09 15:13:35.487  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@e51235{HTTP/1.1}{0.0.0.0:8083}
-2015-03-09 15:13:35.488  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@3f0e5608{HTTP/1.1}{0.0.0.0:8084}
-2015-03-09 15:13:35.489  INFO 1416 --- [           main] .s.b.c.e.j.JettyEmbeddedServletContainer : Jetty started on port(s) 8080 (http/1.1), 8082 (http/1.1), 8083 (http/1.1), 8084 (http/1.1)
-2015-03-09 15:13:35.491  INFO 1416 --- [           main] com.test.Application                     : Started Application in 5.346 seconds (JVM running for 12.321)</code></pre>
-</div>
-</div></p>
-                <p><a href="/blog2015/03/10/spring_boot_jetty_multi_port.html#disqus_thread">Comments</a></p>
-
-                <hr />
-
-                <p>Older posts are available in the <a href="/blog/archive.html">archive</a>.</p>
+    <hr>
 
             </div>
             <div id="push"></div>
