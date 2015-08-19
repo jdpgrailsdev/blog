@@ -1,0 +1,42 @@
+= Using Spock/CGLIB with Java 8 and Gradle
+Jonathan Pearlin
+2015-08-18
+:jbake-type: post
+:jbake-tags: gradle,java,groovy
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: java_8_spock_cglib_gradle
+:icons: font
+:cglib: https://github.com/cglib/cglib[CGLIB, window="_blank"]
+:gradle: https://gradle.org/[Gradle, window="_blank"]
+:jitpack: https://jitpack.io[JitPack.io, window="_blank"]
+:spock: https://github.com/spockframework/spock[Spock Framework, window="_blank"]
+
+Recently, I attempted to convert a project that uses {cglib} and {spock} to execute unit tests to use Java 8 source
+and target versions.  When I went to run the unit tests, I was met with a nasty `java.lang.IllegalArgumentException`.  Some
+quick internet searching showed that there is an existing issue with the currently released version of {cglib} and the
+version of the https://github.com/llbit/ow2-asm[ASM, window="_blank"] library it depends on.  Despite  https://github.com/cglib/cglib/issues/8[pleas, window="_blank"]
+from the community, an updated version of {cglib} with Java 8 compatibility has not yet been released.  However, there are commits on the project's trunk
+that add Java 8 compatibility.  Luckily, a quick look at the {spock} source code showed me how to get around this issue.  The trick is to use {jitpack} as a Maven
+repository in your build script to build a particular commit hash of the project and expose it as a dependency for your project.  After some digging through the
+source, I determined that https://github.com/cglib/cglib/commits/master[commit 52e118aca4,window="_blank"] is the proper one to use.
+To use this version of {cglib} in your `build.gradle` file, you simply need to add the following:
+
+[source,groovy]
+----
+
+
+repositories {
+    // ...
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    testCompile 'com.github.cglib:cglib:52e118aca4'
+    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+}
+----
+
+You can generate this information using {jitpack} itself by going to the following URL:  https://jitpack.io/#cglib/cglib/52e118aca4.  Now, my project will get {jitpack}
+to build the custom release of {cglib} without me needing to build and push it into a repository!
