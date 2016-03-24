@@ -1,0 +1,170 @@
+= Testing a custom Gradle plugin with Gradle Test Kit
+Jonathan Pearlin
+2016-03-29
+:jbake-type: post
+:jbake-tags: gradle,groovy
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: gradle_test_kit
+:icons: font
+:gradle: https://gradle.org/[Gradle, window="_blank"]
+:gradleTestKit: https://docs.gradle.org/current/userguide/test_kit.html[Gradle Test Kit, window="_blank"]
+:spock: https://github.com/spockframework/spock[Spock Framework, window="_blank"]
+
+With the release of {gradle} 2.10, the {gradleTestKit} was included as an "incubating" feature to "[aid] in testing  Gradle plugins and build logic generally."  Prior
+to the creation of the {gradleTestKit}, it had been fairly cumbersome to test custom {gradle} plugins.  Tests often involved using the https://docs.gradle.org/current/javadoc/org/gradle/testfixtures/ProjectBuilder.html[ProductBuilder]
+to create a dummy instance of a `Project` and retrieving a declared `Task` and executing it manually.  While this would test the task logic directly, it did not test the execution of the task as part of a
+normal {gradle} execution.  Furthermore, it would not exercise task-based caching, making it hard to verify that any configured inputs/outputs are being honored.  This is where the {gradleTestKit} can help.
+It is focused on functional testing, which means that it emulates what a user will see when attempting to run tasks via the command line or {gradle} wrapper.  Being an "incubating" feature, however, some of
+the documentation is lacking, especially when it comes to testing a custom {gradle} plugin within the project that contains the plugin definition and source.  In this post, we will explore how to set up
+your custom plugin's project to use the {gradleTestKit}.
+
+== Using the Gradle Test Kit
+
+The first step is to include the {gradleTestKit} as a `test` scoped dependency in your project's `build.gradle` file:
+
+[source,groovy]
+----
+dependencies {
+  ...
+
+  testCompile gradleTestKit()
+  testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+}
+----
+
+This will pull in the {gradleTestKit} libraries for use during the `test` phase of your project.
+
+
+== Creating the Plugin Classpath
+
+The next step, which is hard to determine from the documentation, is to make sure that custom plugin and its descriptor are on the classpath path when using the {gradleTestKit}.  In its current form,
+there is no easy way to pass/build this classpath as part of a {spock} test at runtime.  The trick is to follow what is outlined in section 43.2.1 of the {gradleTestKit} documentation, which outlines
+how to create a text file containing the classpath to be used by the {gradleTestKit}:
+
+[source,groovy]
+----
+task createPluginClasspath {
+    def outputDir = file("${buildDir}/resources/test")
+
+    inputs.files sourceSets.test.runtimeClasspath
+    outputs.dir outputDir
+
+    doLast {
+        outputDir.mkdirs()
+        file("${outputDir}/plugin-classpath.txt").text = sourceSets.test.runtimeClasspath.join('\n',)
+    }
+}
+----
+
+In the example above, we use the `runtime` classpath of the `test` configuration to generate the classpath list to be passed to the {gradleTestKit} runner.  The example in the {gradleTestKit} documentation
+uses the `main` configuration, which is fine if you don't need to provide any additional libraries for testing.  In my case, I needed to have some other custom plugins available for the functional test, but
+did not want those dependencies to be on my main `compile` or `runtime` classpath.  If you don't want to have to manually call this task each time you test your project, you can add the following your
+`build.gradle` script to tie its execution to the `test` task:
+
+[source,groovy]
+----
+test.dependsOn(['createPluginClasspath'])
+----
+
+Now that we have a task to generate the plugin classpath text file, we need to use it as part of our test.  In the example below, the contents of the `plugin-classpath.txt` file read, collected,
+converted into `File` objects and stored into a list:
+
+[source,groovy]
+----
+class MyPluginFunctionalSpec extends Specification {
+
+    @Rule
+    TemporaryFolder testProjectDir = new TemporaryFolder()
+
+    File buildFile
+
+    File propertiesFile
+
+    List pluginClasspath
+
+    def setup() {
+        buildFile = testProjectDir.newFile('build.gradle')
+        propertiesFile = testProjectDir.newFile('gradle.properties')
+        pluginClasspath = getClass().classLoader.findResource('plugin-classpath.txt').readLines().collect { new File(it) }
+    }
+
+    ...
+----
+
+The `pluginClasspath` list will be passed to the {gradleTestKit} runner via the `withPluginClasspath` method of the builder, which we will see in a bit.
+
+== Building the Functional Test
+
+Now that we have our classpath sorted out, the next step is to build test(s) to execute your custom plugin and task(s):
+
+[source,groovy]
+----
+def "test that when the custom plugin is applied to a project and the customTask is executed, the customTask completes successfully"() {
+    setup:
+        buildFile << '''
+            plugins {
+                id 'my-custom-plugin
+            }
+
+            dependencies {
+                compile 'com.google.guava:guava:19.0'
+                compile 'joda-time:joda-time:2.9.2'
+                compile 'org.slf4j:slf4j-api:1.7.13'
+
+                runtime 'org.slf4j:log4j-over-slf4j:1.7.13'
+
+                testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+            }
+
+            repositories {
+                mavenLocal()
+                mavenCentral()
+            }
+        '''
+    when:
+        GradleRunner runner = GradleRunner.create()
+            .withProjectDir(testProjectDir.getRoot())
+            .withArguments('customTask', '--stacktrace', '--refresh-dependencies')
+            .withPluginClasspath(pluginClasspath)
+        BuildResult result =  runner.build()
+    then:
+        result.task(':customTask').getOutcome() == TaskOutcome.SUCCESS
+}
+----
+
+In the example above, notice that we build a full build script, which includes the application of our custom {gradle} plugin, and output it to `buildFile` created in the setup seen
+previously.  This can be anything that you would do in a project's `build.gradle` file.  You could even store these files in `src/test/resources` and load and copy the contents of
+these files from the classpath and write it out to the file to be provided to the {gradleTestKit} runner.  In the `when` block, we see the {gradleTestKit} in action.  Here, we set
+the project directory to the `TemporaryFolder` that will contain the `build.gradle` file, the arguments to be passed to {gradle} (e.g. the task(s) and switches), and the plugin
+classpath we generated in the setup.  Without the plugin classpath, you will see errors related to {gradle} being unable to locate any plugins that match your custom plugin's
+ID.  Finally, in the `then` block, we see that we test to make sure the status of the task execution is the one we expected.  You can also inspect the output of the build by
+inspecting the `output` field of the `BuildResult`:
+
+[source,groovy]
+----
+result.output.contains('some text') == true
+----
+
+This is also useful for debugging, as you can print out the contents of the result output to see the full output of the {gradle} execution.
+
+== Test Failures and Xerces
+
+Depending on what is on your plugin classpath, you may have tests fail due to issues related to the Xerces library.  This is often due to multiple versions of Xerces being present
+on the classpath when the runner is executed and can be remedied by excluding Xerces from the generated classpath:
+
+[source,groovy]
+----
+pluginClasspath = getClass().classLoader.findResource('plugin-classpath.txt').readLines().collect { new File(it) }.findAll { !it.name.contains('xercesImpl') }
+----
+
+Notice that we added a step to find all the classpath entries that do not contain the string `xercesImpl` to ensure that we do not end up with duplicate Xerces
+implementations on the classpath provided to the test kit runner.
+
+== Summary
+
+The {gradleTestKit} provides an excellent way to functionally test your custom {gradle} plugins.  Because it uses actual build scripts, it is easy to build up a library of configurations
+that you want to continually test as changes are made to the custom plugin.  Furthermore, the {gradleTestKit} drastically reduces the amount of test code that you need to write,
+allowing you to more efficiently test your plugin.  All of these are great reasons to convert your plugin tests to use the {gradleTestKit} or to write tests for the first time
+if you don't currently have test coverage for your code.
