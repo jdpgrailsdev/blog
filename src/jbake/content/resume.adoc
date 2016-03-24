@@ -8,18 +8,21 @@ Jonathan Pearlin
 :id: résumé
 :boston_college: http://www.bc.edu/[Boston College, window="_blank"]
 :dealer: http://www.dealer.com[Dealer.com, window="_blank"]
+:docker: https://www.docker.com/[Docker, window="_blank"]
 :eclipse: http://eclipse.org/[Eclipse, window="_blank"]
 :git: http://git-scm.com/[Git, window="_blank"]
 :gradle: http://www.gradle.org/[Gradle, window="_blank"]
 :grails: http://grails.org[Grails, window="_blank"]
 :groovy: http://groovy.codehaus.org[Groovy, window="_blank"]
-:jenkins: http://jenkins-ci.org/[Jenkins, window="_blank"s]
+:jenkins: http://jenkins-ci.org/[Jenkins, window="_blank"]
 :junit: http://junit.org/[JUnit, window="_blank"]
+:kafka: http://kafka.apache.org/[Kafka, window="_blank"]
 :maven: http://maven.apache.org[Maven, window="_blank"]
 :mongo: http://www.mongodb.org[MongoDB, window="_blank"]
 :mysql: http://www.mysql.com/[MySQL, window="_blank"]
 :new_relic: http://newrelic.com/[New Relic, window="_blank"]
 :phi_beta_kappa: http://pbk.org[Phi Beta Kappa, window="_blank"]
+:postgresql:  http://www.postgresql.org/[PostgreSQL, window="_blank"]
 :rabbit: http://www.rabbitmq.com[RabbitMQ, window="_blank"]
 :red_sox: http://boston.redsox.mlb.com/index.jsp?c_id=bos[The Boston Red Sox, window="_blank"]
 :rest: http://en.wikipedia.org/wiki/Representational_state_transfer[REST, window="_blank"]
@@ -27,6 +30,7 @@ Jonathan Pearlin
 :spock: https://code.google.com/p/spock/[Spock, window="_blank"]
 :spring: http://spring.io[Spring, window="_blank"]
 :staples: http://www.staples.com["Staples, Inc.", window="_blank"]
+:thrift: https://thrift.apache.org/[Thrift, window="_blank"]
 :tomcat: http://tomcat.apache.org/[Apache Tomcat, window="_blank"]
 :zookeeper: http://zookeeper.apache.org/[Apache ZooKeeper, window="_blank"]
 :icons: font
@@ -48,15 +52,15 @@ with others.
 |=======
 3+<|Current
 |Java |{groovy} |{grails} |{spring} |{maven}
-|{git} |{spock} |{gradle} |{zookeeper} |{mongo}
-|{rabbit} |{tomcat} |{junit} |{eclipse} |{rest}
+|{git} |{spock} |{gradle} |{zookeeper} |{docker} |{thrift}
+|{kafka} |{postgresql} |{junit} |{eclipse} |{rest}
 |{jenkins} |HTML |CSS |JavaScript |{mysql} |SCRUM
 |=======
 
 [width="50%", cols="^m,^m,^m", frame="topbot", options="header"]
 |=======
 3+<|Previous
-|C |C++ |Microsoft SQL Server| PostgreSQL |JSP
+|{rabbit} |{tomcat} |{mongo} |C |C++ |Microsoft SQL Server| JSP
 |Java Servlets |Hibernate |OpenLDAP |Ant |Glassfish
 |IBM WebSphere | Subversion |CVS |StarTeam |JMS
 |VisualBasic |EJB 2/3 |JCA | ASP |AS/400
