@@ -28,6 +28,7 @@ public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory
             server.addBean(mbContainer);
         }
     });
+    return factory;
 }
 ----
 
