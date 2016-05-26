@@ -61,7 +61,7 @@ $(document).ready(function() {
                 } else if(githubEvent.type == 'IssueCommentEvent') {
                     octicon = "octicon-comment-discussion";
                     link = githubEvent.payload.issue.html_url;
-                    text = "Commented on " + (githubEvent.payload.issue.pull_request.url != null ? "pull request" : "issue") +
+                    text = "Commented on " + (githubEvent.payload.issue.pull_request != null ? "pull request" : "issue") +
                         " " + githubEvent.repo.name + "#" + githubEvent.payload.issue.number;
                 } else if(githubEvent.type == 'PullRequestEvent') {
                     octicon = 'octicon-git-pull-request';

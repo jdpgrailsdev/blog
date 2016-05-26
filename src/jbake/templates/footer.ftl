@@ -13,7 +13,7 @@
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="https://code.jquery.com/jquery.js" type="text/javascript"></script>
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js" type="text/javascript"></script>
-        <script src="/blog/js/run_prettify.js" type="text/javascript"></script>
+        <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
         <script src="/blog/js/github_activity.js" type="text/javascript"></script>
         <script type="text/javascript">
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
@@ -54,5 +54,6 @@
           ga('create', 'UA-47885115-1', 'jdpgrailsdev.github.io');
           ga('send', 'pageview');
         </script>
+        <script id="dsq-count-scr" src="//jdpearlin.disqus.com/count.js" async></script>
     </body>
 </html>
