@@ -6,18 +6,38 @@ buildscript {
     }
 
     dependencies {
-        classpath 'me.champeau.gradle:jbake-gradle-plugin:0.2'
         classpath 'org.asciidoctor:asciidoctorj:1.5.1'
         classpath 'org.freemarker:freemarker:2.3.19'
         classpath 'org.jbake:jbake-core:2.3.2'
         classpath 'org.pegdown:pegdown:1.4.2'
-        classpath 'org.ajoberstar:gradle-git:0.7.1'
     }
 }
 
-apply plugin: 'me.champeau.jbake'
-apply plugin: 'jetty'
-apply from: 'gradle/publish.gradle'
+plugins {
+    id 'java'
+    id 'war'
+    id 'me.champeau.jbake' version '0.2'
+    id 'org.akhikhl.gretty' version '1.4.0'
+    id 'org.ajoberstar.github-pages' version '1.5.1'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+githubPages {
+    repoUri = 'https://github.com/jdpgrailsdev/blog.git'
+    pages {
+        from(file('build/jbake')) {
+            into '.'
+        }
+    }
+}
+
+gretty {
+    httpPort = 8820
+    contextPath = 'blog'
+    servletContainer = 'jetty9'
+}
 
 jbake {
     input = file('src/jbake')
@@ -25,14 +45,23 @@ jbake {
     clearCache = true
 }
 
-jettyRun {
-    httpPort = 8820
-    contextPath = 'blog'
-    webAppSourceDirectory = file("$buildDir/jbake")
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
 }
 
-// Re-generate content using JBake before launching the local Jetty server.
-project.tasks.jettyRun.dependsOn([project.tasks.jbake])
+task publish(dependsOn: 'publishGhPages')
 
-// Re-generate content using JBake before publishing to GitHub.
-project.tasks.publish.dependsOn([project.tasks.jbake])
+task copyContent(type: Copy) {
+    from "$buildDir/jbake"
+    into "$buildDir/inplaceWebapp"
+}
+
+afterEvaluate { project ->
+    // Re-generate content using JBake before launching the local Jetty server.
+    project.tasks.jettyRun.dependsOn([project.tasks.jbake, project.tasks.copyContent])
+
+    // Re-generate content using JBake before publishing to GitHub.
+    project.tasks.publish.dependsOn([project.tasks.jbake])
+}
