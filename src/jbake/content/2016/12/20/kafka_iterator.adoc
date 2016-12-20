@@ -1,0 +1,72 @@
+= The Peculiar Case of the Kafka ConsumerIterator
+Jonathan Pearlin
+2016-12-20
+:jbake-type: post
+:jbake-tags: java,kafka
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: kafka_iterator
+:icons: font
+:apacheKafka: https://kafka.apache.org/[Apache Kafka, window="_blank"]
+:apacheKafka082: https://kafka.apache.org/082/documentation.html[Apache Kafka 0.8.2, window="_blank"]
+:consumerConnector: https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerConnector.scala[ConsumerConnector, window="_blank"]
+:consumerIterator: https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala[ConsumerIterator, window="_blank"]
+:consumerTimeout: https://kafka.apache.org/082/documentation.html#consumerconfigs[consumer.timeout.ms, window="_blank"]
+:consumerTimeoutException: https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala#L114[ConsumerTimeoutException, window="_blank"]
+:hasNext: https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html#hasNext--[hasNext(), window="_blank"]
+:iterator: https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html[Iterator, window="_blank"]
+:javaDocs: https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html[Java documentation, window="_blank"]
+:kafkaDocs: https://kafka.apache.org/082/documentation.html#consumerconfigs[Kafka documentation, window="_blank"]
+
+_This post is written using {apacheKafka082}_
+
+Creating a {apacheKafka} client is a pretty straight-forward and prescriptive endeavor.  What is not straight-forward or even expected is the behavior of the {iterator} that is
+used to poll a {apacheKafka} topic/partition for messages.  More on this in a moment.  First, let's look at the typical setup to consume data from a {apacheKafka} stream
+(for the sake of keeping this post brief, I am going to skip the details around creating and configuring a {consumerConnector}):
+
+[source,java]
+----
+final Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap =
+    consumerConnector.createMessageStreams(Collections.singletonMap("topic",1));
+final List<KafkaStream<byte[], byte[]>> streams = consumerMap.get("topic");
+final ConsumerIterator<byte[],byte[]> = streams.get(0).iterator();‍‍‍‍‍‍‍‍
+----
+
+With the {consumerIterator} in hand, the next step is to poll the {iterator} for incoming messages:
+
+[source,java]
+----
+while(iterator.hasNext()) {
+    MessageAndMetadata<byte[], byte[]> message = iterator.next();
+    ...
+}‍‍‍‍
+----
+‍
+‍This all seems pretty simple.  Now, back to the issue with this code:  the expectation is that this would check the {iterator} for a message and if not present loop immediately and check
+again (standard {iterator} behavior).  However, this is not the case.  The behavior of the {consumerIterator} is actually controlled by the {consumerTimeout} configuration setting.  This
+setting controls whether or not the {iterator} "`throw(s) a timeout exception to the consumer if no message is available for consumption after the specified interval`".  By default, this
+value is set to -1, which means that the call to `hasNext()` will block indefinitely until a message is available on the topic/partition assigned to the consumer.  The {javaDocs}
+for the {iterator} interface does not specify whether or not the {hasNext} method is allowed to block indefinitely, so its hard to say that the {consumerIterator} is violating the contract.
+However, this is certainly not the behavior anyone use to using the {iterator} pattern in Java would expect, as collections typically don't block until data is available in the data structure.
+If the {consumerTimeout} configuration setting is set to a positive value, the consumption code would need to be modified to handle a {consumerTimeoutException}:
+
+[source,java]
+----
+while(active) {
+    try {
+        if(iterator.hasNext()) {
+            MessageAndMetadata<byte[],byte[]> message = iterator.next();
+            ...
+        }
+    } catch(ConsumerTimeoutException e) {
+        // Do nothing -- this means no data is available on the topic/partition
+    }
+}‍‍‍‍‍‍‍‍‍‍
+----
+‍
+Now, the call to `hasNext()` will behave more like an {iterator} retrieved from a collection, which is to say it will not block indefinitely.  It is recommended that you do some testing to determine
+an acceptable timeout value to avoid looping too frequently, as this will cause an increase in CPU utilization by the loop.  It is also worth noting that the {kafkaDocs} does not directly
+link the configuration setting and the {consumerIterator} and this issue would most likely go unnoticed in scenarios where data is consistently available to the client.  In any case, this issue
+highlights the need to take a deeper look at any API or library you include in your application in order to ensure that you understand exactly how it works and what performance impacts it may have
+on the execution of your code.
