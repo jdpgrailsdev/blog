@@ -91,94 +91,15 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Include Git Commit Info in Spring Boot Application with Gradle</h1>
+        <h1>Tag: kafka</h1>
     </div>
 
-    <p><em>14 October 2014</em></p>
+    <!--<ul>-->
+            <h4>December 2016</h4>
+            <ul>
 
-    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/10/14/spring_boot_gradle_git_info.html"></div>
-    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/10/14/spring_boot_gradle_git_info.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/10/14/spring_boot_gradle_git_info.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-    <p><div class="paragraph">
-<p>One great way to track where and when your application came from when building is into include source control information.  With <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>, this
-functionality comes out of the box (more or less).  If you read the <a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-git-commit-information" target="_blank">documentation</a>,
-it suggests using the the <a href="https://github.com/ajoberstar/gradle-git" target="_blank">gradle-git plugin</a> to generate this data at build time.  However, there is a simple way to do this using Groovy that
-does not involve the use of a plugin:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">task generateGitProperties {
-    doLast {
-        try {
-            def branch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
-            def revision = 'git rev-list --max-count 1 --timestamp HEAD'.execute().text.trim()
-            def commitHash = revision.split(' ').last()
-            def timestamp = revision ? new java.util.Date(java.util.concurrent.TimeUnit.SECONDS.toMillis(revision.split(' ').first() as long)).format("yyyy-MM-dd'T'HH:mm:ssZ") : null
-
-            File resourcesDir = new File(project.getBuildDir(), 'resources/main')
-            File propertiesFile = new File(resourcesDir, 'git.properties')
-
-            if(timestamp) {
-                // The project may not have any resources, so create the directories and file
-                if(!propertiesFile.exists()) {
-                    resourcesDir.mkdirs()
-                    propertiesFile.createNewFile()
-                }
-                propertiesFile.text = """git.branch=${branch}
-        git.commit.id=${commitHash}
-        git.commit.time=${timestamp}
-                """
-            } else {
-               project.logger.error('Unable to generate Git properties file:  revision could not be retrieved from Git.')
-            }
-        } catch (e) {
-            project.logger.error('Unable to generate Git properties file.', e)
-        }
-    }
-}
-
-...
-
-// Generate the Git commit properties file prior to building the artifact
-project.tasks.jar.dependsOn('generateGitProperties')</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The task above will include the <code>git.properties</code> file in the packaged <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> JAR and can be accessed at the <code>/info</code> servlet to see what branch and hash were
-used to build your application.  It will also safely fail on systems that do not have Git installed or do not have Git on the path (such as if you try to execute
-this task from inside an IDE).</p>
-</div></p>
-
-    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/10/14/spring_boot_gradle_git_info.html"></div>
-    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/10/14/spring_boot_gradle_git_info.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/10/14/spring_boot_gradle_git_info.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-    <div id="disqus_thread"></div>
-    <script>
-    /**
-    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
-    */
-    /*
-    var disqus_config = function () {
-    this.page.url = '2014/10/14/spring_boot_gradle_git_info.html'; // Replace PAGE_URL with your page's canonical URL variable
-    this.page.identifier = 'Include Git Commit Info in Spring Boot Application with Gradle'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
-    };
-    */
-    (function() { // DON'T EDIT BELOW THIS LINE
-    var d = document, s = d.createElement('script');
-
-    s.src = '//jdpearlin.disqus.com/embed.js';
-
-    s.setAttribute('data-timestamp', +new Date());
-    (d.head || d.body).appendChild(s);
-    })();
-    </script>
-    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
-    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-
-    <hr>
+        <li>20 - <a href="/blog/2016/12/20/kafka_iterator.html">The Peculiar Case of the Kafka ConsumerIterator</a></li>
+    </ul>
 
             </div>
             <div id="push"></div>

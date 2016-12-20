@@ -94,6 +94,78 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog/2016/12/20/kafka_iterator.html"><h1>The Peculiar Case of the Kafka ConsumerIterator</h1></a>
+                   <p>20 December 2016</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/java.html">java</a>
+        
+                <a href="/blog/tags/kafka.html">kafka</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2016/12/20/kafka_iterator.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2016/12/20/kafka_iterator.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2016/12/20/kafka_iterator.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div class="paragraph">
+<p><em>This post is written using <a href="https://kafka.apache.org/082/documentation.html" target="_blank">Apache Kafka 0.8.2</a></em></p>
+</div>
+<div class="paragraph">
+<p>Creating a <a href="https://kafka.apache.org/" target="_blank">Apache Kafka</a> client is a pretty straight-forward and prescriptive endeavor.  What is not straight-forward or even expected is the behavior of the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> that is
+used to poll a <a href="https://kafka.apache.org/" target="_blank">Apache Kafka</a> topic/partition for messages.  More on this in a moment.  First, let&#8217;s look at the typical setup to consume data from a <a href="https://kafka.apache.org/" target="_blank">Apache Kafka</a> stream
+(for the sake of keeping this post brief, I am going to skip the details around creating and configuring a <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerConnector.scala" target="_blank">ConsumerConnector</a>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">final Map&lt;String, List&lt;KafkaStream&lt;byte[], byte[]&gt;&gt;&gt; consumerMap =
+    consumerConnector.createMessageStreams(Collections.singletonMap("topic",1));
+final List&lt;KafkaStream&lt;byte[], byte[]&gt;&gt; streams = consumerMap.get("topic");
+final ConsumerIterator&lt;byte[],byte[]&gt; = streams.get(0).iterator();‍‍‍‍‍‍‍‍</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank">ConsumerIterator</a> in hand, the next step is to poll the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> for incoming messages:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">while(iterator.hasNext()) {
+    MessageAndMetadata&lt;byte[], byte[]&gt; message = iterator.next();
+    ...
+}‍‍‍‍</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>‍
+‍This all seems pretty simple.  Now, back to the issue with this code:  the expectation is that this would check the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> for a message and if not present loop immediately and check
+again (standard <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> behavior).  However, this is not the case.  The behavior of the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank">ConsumerIterator</a> is actually controlled by the <a href="https://kafka.apache.org/082/documentation.html#consumerconfigs" target="_blank">consumer.timeout.ms</a> configuration setting.  This
+setting controls whether or not the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> &#8220;throw(s) a timeout exception to the consumer if no message is available for consumption after the specified interval&#8221;.  By default, this
+value is set to -1, which means that the call to <code>hasNext()</code> will block indefinitely until a message is available on the topic/partition assigned to the consumer.  The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Java documentation</a>
+for the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> interface does not specify whether or not the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html#hasNext--" target="_blank">hasNext()</a> method is allowed to block indefinitely, so its hard to say that the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank">ConsumerIterator</a> is violating the contract.
+However, this is certainly not the behavior anyone use to using the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> pattern in Java would expect, as collections typically don&#8217;t block until data is available in the data structure.
+If the <a href="https://kafka.apache.org/082/documentation.html#consumerconfigs" target="_blank">consumer.timeout.ms</a> configuration setting is set to a positive value, the consumption code would need to be modified to handle a <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala#L114" target="_blank">ConsumerTimeoutException</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">while(active) {
+    try {
+        if(iterator.hasNext()) {
+            MessageAndMetadata&lt;byte[],byte[]&gt; message = iterator.next();
+            ...
+        }
+    } catch(ConsumerTimeoutException e) {
+        // Do nothing -- this means no data is available on the topic/partition
+    }
+}‍‍‍‍‍‍‍‍‍‍</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>‍
+Now, the call to <code>hasNext()</code> will behave more like an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> retrieved from a collection, which is to say it will not block indefinitely.  It is recommended that you do some testing to determine
+an acceptable timeout value to avoid looping too frequently, as this will cause an increase in CPU utilization by the loop.  It is also worth noting that the <a href="https://kafka.apache.org/082/documentation.html#consumerconfigs" target="_blank">Kafka documentation</a> does not directly
+link the configuration setting and the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank">ConsumerIterator</a> and this issue would most likely go unnoticed in scenarios where data is consistently available to the client.  In any case, this issue
+highlights the need to take a deeper look at any API or library you include in your application in order to ensure that you understand exactly how it works and what performance impacts it may have
+on the execution of your code.</p>
+</div></p>
+                <p><a href="/blog2016/12/20/kafka_iterator.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2016/03/29/gradle_test_kit.html"><h1>Testing a custom Gradle plugin with Gradle Test Kit</h1></a>
                    <p>29 March 2016</p>
                 <p><em>Tags: </em>
@@ -405,103 +477,6 @@ final ResponseEntity&lt;Map&lt;String,String&gt;&gt; response = getRestTemplate(
 </div>
 </div></p>
                 <p><a href="/blog2015/04/21/spring_file_upload.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2015/04/07/gpars_guava_load_test.html"><h1>Load Testing with GPars and Google Guava</h1></a>
-                   <p>07 April 2015</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/spring.html">spring</a>
-        
-                <a href="/blog/tags/jetty.html">jetty</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div class="paragraph">
-<p>I set out a few days back to write a simple <a href="http://groovy-lang.org/" target="_blank">Groovy</a> script that would accomplish the following:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Send data to a <a href="http://kafka.apache.org/" target="_blank">Kafka</a> topic from X concurrent producers.</p>
-</li>
-<li>
-<p>Run for a set duration</p>
-</li>
-<li>
-<p>Achieve a set number of sends per minute</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>To do so, I decided to use <a href="http://www.gpars.org/guide/index.html" target="_blank">GPars Framework</a>, which is a "concurrency and parallelism library for Java and Groovy
-that gives you a number of high-level abstractions for writing concurrent and parallel code in Groovy."  Additionally,
-I decided to make use of the <a href="https://github.com/google/guava" target="_blank">Google Guava</a> <a href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/RateLimiter.html" target="_blank">RateLimiter</a>
-class to control how much data is produced.  The resulting script is pretty simple:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">@Grapes([
-    @Grab(group='org.codehaus.gpars', module='gpars', version='1.2.1'),
-    @Grab(group='com.google.guava', module='guava', version='18.0'),
-    @GrabExclude('commons-logging:commons-logging')])
-
-def cli = new CliBuilder(usage:'groovy loadTest.groovy ')
-cli.p(longOpt:'parallelism', args: 1, argName: 'parallelism', 'The number of producers to execute in parallel.  Defaults to 10.')
-cli.d(longOpt:'duration', args: 1, argName: 'duration', 'The duration of the test in minutes.  Defaults to 1 minute.')
-cli.r(longOpt:'target-rate', args: 1, argName: 'targetRate', 'The target aggregate rate of messages to be produced per minute.  Defaults to 60.')
-cli.h(longOpt:'help', 'Displays the usage information for this script.')
-
-def run = { -&gt;
-    // Do the actual work here (e.g. publish a message, etc)
-}
-
-def setup = { -&gt;
-    // Do any pre-test setup here (e.g. retrieving data, configuration, etc)
-}
-
-def options = cli.parse(args)
-
-if(options?.h) {
-    cli.usage()
-} else {
-   def duration = options?.d ? TimeUnit.MINUTES.toMillis(options.d as long) :  TimeUnit.MINUTES.toMillis(1l)
-   def parallelism = options?.p ?: 10
-   def targetRate = options?.r ?: 60.0
-
-   println '***********************************************'
-   println 'Load Test'
-   println "Test will run for ${TimeUnit.MILLISECONDS.toMinutes(duration)} minute(s) using ${parallelism} producers with a target rate of ${targetRate} messages per minute."
-
-   setup()
-
-   println 'Starting the test....'
-
-   def rateLimiter = RateLimiter.create((targetRate as double)/TimeUnit.MINUTES.toSeconds(1))
-   def startTime = System.currentTimeMillis()
-   def total = 0
-   while((System.currentTimeMillis() - startTime) &lt; duration) {
-       GParsExecutorsPool.withPool(parallelism as int) { ExecutorService service -&gt;
-           (parallelism as int).times {
-               rateLimiter.acquire()
-               service.submit({ run() } as Runnable)
-           }
-           total += parallelism as int
-       }
-       println "Test iteration complete.  Total sent so far: ${total}, ${TimeUnit.MILLISECONDS.toSeconds(duration - (System.currentTimeMillis() - startTime))} second(s) remaining."
-   }
-   println 'Test complete.'
-   System.exit(0)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The key points in the script above is the use of the <code>GParsExecutorsPool</code> to handle the creation of a configured thread pool and the inclusion of
-the <code>RateLimiter</code> to slow down the execution loop to meet the target rate.  Finally, all of this is done in a <code>while</code> loop that keeps looping until
-the requested duration has been achieved.  The end result is a simple script that allows you to generate concurrent request load at a target rate for
-a set duration.</p>
-</div></p>
-                <p><a href="/blog2015/04/07/gpars_guava_load_test.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
@@ -513,7 +488,7 @@ a set duration.</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.3.2</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

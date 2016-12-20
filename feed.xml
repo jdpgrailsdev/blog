@@ -6,13 +6,80 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Mon, 24 Oct 2016 08:18:04 -0700</pubDate>
-        <lastBuildDate>Mon, 24 Oct 2016 08:18:04 -0700</lastBuildDate>
+        <pubDate>Tue, 20 Dec 2016 08:59:39 -0800</pubDate>
+        <lastBuildDate>Tue, 20 Dec 2016 08:59:39 -0800</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>The Peculiar Case of the Kafka ConsumerIterator</title>
+            <link>http://jdpgrailsdev.github.io/blog/2016/12/20/kafka_iterator.html</link>
+            <pubDate>Tue, 20 Dec 2016 00:00:00 -0800</pubDate>
+            <guid isPermaLink="false">2016/12/20/kafka_iterator.html</guid>
+            <description>
+                    &lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;em&gt;This post is written using &lt;a href=&quot;https://kafka.apache.org/082/documentation.html&quot; target=&quot;_blank&quot;&gt;Apache Kafka 0.8.2&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Creating a &lt;a href=&quot;https://kafka.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Kafka&lt;/a&gt; client is a pretty straight-forward and prescriptive endeavor.  What is not straight-forward or even expected is the behavior of the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; that is
+used to poll a &lt;a href=&quot;https://kafka.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Kafka&lt;/a&gt; topic/partition for messages.  More on this in a moment.  First, let&amp;#8217;s look at the typical setup to consume data from a &lt;a href=&quot;https://kafka.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Kafka&lt;/a&gt; stream
+(for the sake of keeping this post brief, I am going to skip the details around creating and configuring a &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerConnector.scala&quot; target=&quot;_blank&quot;&gt;ConsumerConnector&lt;/a&gt;):&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;final Map&amp;lt;String, List&amp;lt;KafkaStream&amp;lt;byte[], byte[]&amp;gt;&amp;gt;&amp;gt; consumerMap =
+    consumerConnector.createMessageStreams(Collections.singletonMap(&quot;topic&quot;,1));
+final List&amp;lt;KafkaStream&amp;lt;byte[], byte[]&amp;gt;&amp;gt; streams = consumerMap.get(&quot;topic&quot;);
+final ConsumerIterator&amp;lt;byte[],byte[]&amp;gt; = streams.get(0).iterator();‍‍‍‍‍‍‍‍&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;With the &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala&quot; target=&quot;_blank&quot;&gt;ConsumerIterator&lt;/a&gt; in hand, the next step is to poll the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; for incoming messages:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;while(iterator.hasNext()) {
+    MessageAndMetadata&amp;lt;byte[], byte[]&amp;gt; message = iterator.next();
+    ...
+}‍‍‍‍&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;‍
+‍This all seems pretty simple.  Now, back to the issue with this code:  the expectation is that this would check the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; for a message and if not present loop immediately and check
+again (standard &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; behavior).  However, this is not the case.  The behavior of the &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala&quot; target=&quot;_blank&quot;&gt;ConsumerIterator&lt;/a&gt; is actually controlled by the &lt;a href=&quot;https://kafka.apache.org/082/documentation.html#consumerconfigs&quot; target=&quot;_blank&quot;&gt;consumer.timeout.ms&lt;/a&gt; configuration setting.  This
+setting controls whether or not the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; &amp;#8220;throw(s) a timeout exception to the consumer if no message is available for consumption after the specified interval&amp;#8221;.  By default, this
+value is set to -1, which means that the call to &lt;code&gt;hasNext()&lt;/code&gt; will block indefinitely until a message is available on the topic/partition assigned to the consumer.  The &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Java documentation&lt;/a&gt;
+for the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; interface does not specify whether or not the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html#hasNext--&quot; target=&quot;_blank&quot;&gt;hasNext()&lt;/a&gt; method is allowed to block indefinitely, so its hard to say that the &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala&quot; target=&quot;_blank&quot;&gt;ConsumerIterator&lt;/a&gt; is violating the contract.
+However, this is certainly not the behavior anyone use to using the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; pattern in Java would expect, as collections typically don&amp;#8217;t block until data is available in the data structure.
+If the &lt;a href=&quot;https://kafka.apache.org/082/documentation.html#consumerconfigs&quot; target=&quot;_blank&quot;&gt;consumer.timeout.ms&lt;/a&gt; configuration setting is set to a positive value, the consumption code would need to be modified to handle a &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala#L114&quot; target=&quot;_blank&quot;&gt;ConsumerTimeoutException&lt;/a&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;while(active) {
+    try {
+        if(iterator.hasNext()) {
+            MessageAndMetadata&amp;lt;byte[],byte[]&amp;gt; message = iterator.next();
+            ...
+        }
+    } catch(ConsumerTimeoutException e) {
+        // Do nothing -- this means no data is available on the topic/partition
+    }
+}‍‍‍‍‍‍‍‍‍‍&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;‍
+Now, the call to &lt;code&gt;hasNext()&lt;/code&gt; will behave more like an &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; retrieved from a collection, which is to say it will not block indefinitely.  It is recommended that you do some testing to determine
+an acceptable timeout value to avoid looping too frequently, as this will cause an increase in CPU utilization by the loop.  It is also worth noting that the &lt;a href=&quot;https://kafka.apache.org/082/documentation.html#consumerconfigs&quot; target=&quot;_blank&quot;&gt;Kafka documentation&lt;/a&gt; does not directly
+link the configuration setting and the &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala&quot; target=&quot;_blank&quot;&gt;ConsumerIterator&lt;/a&gt; and this issue would most likely go unnoticed in scenarios where data is consistently available to the client.  In any case, this issue
+highlights the need to take a deeper look at any API or library you include in your application in order to ensure that you understand exactly how it works and what performance impacts it may have
+on the execution of your code.&lt;/p&gt;
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>Testing a custom Gradle plugin with Gradle Test Kit</title>
             <link>http://jdpgrailsdev.github.io/blog/2016/03/29/gradle_test_kit.html</link>
@@ -396,79 +463,6 @@ if(options?.h) {
 the &lt;code&gt;RateLimiter&lt;/code&gt; to slow down the execution loop to meet the target rate.  Finally, all of this is done in a &lt;code&gt;while&lt;/code&gt; loop that keeps looping until
 the requested duration has been achieved.  The end result is a simple script that allows you to generate concurrent request load at a target rate for
 a set duration.&lt;/p&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Configure Jetty to Listen on Multiple Ports in a Spring Boot Application</title>
-            <link>http://jdpgrailsdev.github.io/blog/2015/03/10/spring_boot_jetty_multi_port.html</link>
-            <pubDate>Tue, 10 Mar 2015 00:00:00 -0700</pubDate>
-            <guid isPermaLink="false">2015/03/10/spring_boot_jetty_multi_port.html</guid>
-            <description>
-                    &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; &lt;a href=&quot;http://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html#howto-configure-jetty&quot; target=&quot;_blank&quot;&gt;documentation&lt;/a&gt; and
-&lt;a href=&quot;https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-jetty&quot; target=&quot;_blank&quot;&gt;sample applications&lt;/a&gt; contain good information and examples
-of how to use &lt;a href=&quot;http://eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; in a &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; application instead of the default embedded Apache Tomcat server.  However, the documentation and examples do not really address how to
-customize &lt;a href=&quot;http://eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; as in depth as the Tomcat examples.  Recently, I found the need to make a &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; application using &lt;a href=&quot;http://eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; listen on multiple ports for incoming HTTP traffic.
-While this is not necessarily a normal use case, it does come up often, especially when the need to listen for both HTTP and HTTPS traffic is a requirement.  In a
-&lt;a href=&quot;http://jdpgrailsdev.github.io/blog/2014/10/07/spring_boot_jetty_thread_pool.html&quot; target=&quot;_blank&quot;&gt;previous post&lt;/a&gt;, I showed how to customize the embedded &lt;a href=&quot;http://eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; server in order to
-change the size of the thread pool used for incoming connections.  Just like the approach outlined in that post, the way to configure the embedded &lt;a href=&quot;http://eclipse.org/jetty/&quot; target=&quot;_blank&quot;&gt;Jetty&lt;/a&gt; server in your &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt;
-application to listen to multiple ports is very similar:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;@Bean
-public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(
-        @Value(&quot;${server.port:8080}&quot;) final String mainPort,
-        @Value(&quot;#{&apos;${server.secondary.ports}&apos;.split(&apos;,&apos;)}&quot;) final List&amp;lt;String&amp;gt; secondaryPorts) {
-
-    final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(mainPort));
-
-    // Add customized Jetty configuration with non blocking connection handler
-    factory.addServerCustomizers(new JettyServerCustomizer() {
-        @Override
-        public void customize(final Server server) {
-            // Register an additional connector for each secondary port.
-            for(final String secondaryPort : secondaryPorts) {
-                final NetworkTrafficServerConnector connector = new NetworkTrafficServerConnector(server);
-                connector.setPort(Integer.valueOf(secondaryPort));
-                server.addConnector(connector);
-            }
-
-            // Additional configuration
-        }
-    });
-    return factory;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The example above uses the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; provided &lt;code&gt;JettyServerCustomizer&lt;/code&gt; to register additional &lt;code&gt;NetworkTrafficServerConnector&lt;/code&gt; instances for each
-secondary port provided in the application&amp;#8217;s configuration.  Additionally, the &lt;code&gt;server.port&lt;/code&gt; &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; property is still used for the
-main application port and is passed to the &lt;a href=&quot;http://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot;&gt;Spring Boot&lt;/a&gt; &lt;code&gt;JettyEmbeddedServletContainerFactory&lt;/code&gt;, just as it would be if you simply included
-the appropriate starter library and set the property, per the documentation.  Finally, the application configuration contains the following configuration
-to make it all work:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;server:
-  port: &quot;8000&quot;
-  secondary:
-    ports: &quot;8082,8083,8084&quot;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;When the application starts up, you can confirm that it is indeed listening on the multiple ports by looking for the following in the output:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code&gt;2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.eclipse.jetty.server.ServerConnector   : Started ServerConnector@121ee28d{HTTP/1.1}{0.0.0.0:8080}
-2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@36d64b9{HTTP/1.1}{0.0.0.0:8082}
-2015-03-09 15:13:35.487  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@e51235{HTTP/1.1}{0.0.0.0:8083}
-2015-03-09 15:13:35.488  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@3f0e5608{HTTP/1.1}{0.0.0.0:8084}
-2015-03-09 15:13:35.489  INFO 1416 --- [           main] .s.b.c.e.j.JettyEmbeddedServletContainer : Jetty started on port(s) 8080 (http/1.1), 8082 (http/1.1), 8083 (http/1.1), 8084 (http/1.1)
-2015-03-09 15:13:35.491  INFO 1416 --- [           main] com.test.Application                     : Started Application in 5.346 seconds (JVM running for 12.321)&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
 &lt;/div&gt;
             </description>
         </item>

@@ -91,68 +91,78 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
             </div>
             <div class="container">
     <div class="page-header">
-        <h1>Include Git Commit Info in Spring Boot Application with Gradle</h1>
+        <h1>The Peculiar Case of the Kafka ConsumerIterator</h1>
     </div>
 
-    <p><em>14 October 2014</em></p>
+    <p><em>20 December 2016</em></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2014/10/14/spring_boot_gradle_git_info.html"></div>
-    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/10/14/spring_boot_gradle_git_info.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/10/14/spring_boot_gradle_git_info.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2016/12/20/kafka_iterator.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2016/12/20/kafka_iterator.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2016/12/20/kafka_iterator.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph">
-<p>One great way to track where and when your application came from when building is into include source control information.  With <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>, this
-functionality comes out of the box (more or less).  If you read the <a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-git-commit-information" target="_blank">documentation</a>,
-it suggests using the the <a href="https://github.com/ajoberstar/gradle-git" target="_blank">gradle-git plugin</a> to generate this data at build time.  However, there is a simple way to do this using Groovy that
-does not involve the use of a plugin:</p>
+<p><em>This post is written using <a href="https://kafka.apache.org/082/documentation.html" target="_blank">Apache Kafka 0.8.2</a></em></p>
+</div>
+<div class="paragraph">
+<p>Creating a <a href="https://kafka.apache.org/" target="_blank">Apache Kafka</a> client is a pretty straight-forward and prescriptive endeavor.  What is not straight-forward or even expected is the behavior of the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> that is
+used to poll a <a href="https://kafka.apache.org/" target="_blank">Apache Kafka</a> topic/partition for messages.  More on this in a moment.  First, let&#8217;s look at the typical setup to consume data from a <a href="https://kafka.apache.org/" target="_blank">Apache Kafka</a> stream
+(for the sake of keeping this post brief, I am going to skip the details around creating and configuring a <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerConnector.scala" target="_blank">ConsumerConnector</a>):</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">task generateGitProperties {
-    doLast {
-        try {
-            def branch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
-            def revision = 'git rev-list --max-count 1 --timestamp HEAD'.execute().text.trim()
-            def commitHash = revision.split(' ').last()
-            def timestamp = revision ? new java.util.Date(java.util.concurrent.TimeUnit.SECONDS.toMillis(revision.split(' ').first() as long)).format("yyyy-MM-dd'T'HH:mm:ssZ") : null
-
-            File resourcesDir = new File(project.getBuildDir(), 'resources/main')
-            File propertiesFile = new File(resourcesDir, 'git.properties')
-
-            if(timestamp) {
-                // The project may not have any resources, so create the directories and file
-                if(!propertiesFile.exists()) {
-                    resourcesDir.mkdirs()
-                    propertiesFile.createNewFile()
-                }
-                propertiesFile.text = """git.branch=${branch}
-        git.commit.id=${commitHash}
-        git.commit.time=${timestamp}
-                """
-            } else {
-               project.logger.error('Unable to generate Git properties file:  revision could not be retrieved from Git.')
-            }
-        } catch (e) {
-            project.logger.error('Unable to generate Git properties file.', e)
-        }
-    }
-}
-
-...
-
-// Generate the Git commit properties file prior to building the artifact
-project.tasks.jar.dependsOn('generateGitProperties')</code></pre>
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">final Map&lt;String, List&lt;KafkaStream&lt;byte[], byte[]&gt;&gt;&gt; consumerMap =
+    consumerConnector.createMessageStreams(Collections.singletonMap("topic",1));
+final List&lt;KafkaStream&lt;byte[], byte[]&gt;&gt; streams = consumerMap.get("topic");
+final ConsumerIterator&lt;byte[],byte[]&gt; = streams.get(0).iterator();‍‍‍‍‍‍‍‍</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The task above will include the <code>git.properties</code> file in the packaged <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> JAR and can be accessed at the <code>/info</code> servlet to see what branch and hash were
-used to build your application.  It will also safely fail on systems that do not have Git installed or do not have Git on the path (such as if you try to execute
-this task from inside an IDE).</p>
+<p>With the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank">ConsumerIterator</a> in hand, the next step is to poll the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> for incoming messages:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">while(iterator.hasNext()) {
+    MessageAndMetadata&lt;byte[], byte[]&gt; message = iterator.next();
+    ...
+}‍‍‍‍</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>‍
+‍This all seems pretty simple.  Now, back to the issue with this code:  the expectation is that this would check the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> for a message and if not present loop immediately and check
+again (standard <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> behavior).  However, this is not the case.  The behavior of the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank">ConsumerIterator</a> is actually controlled by the <a href="https://kafka.apache.org/082/documentation.html#consumerconfigs" target="_blank">consumer.timeout.ms</a> configuration setting.  This
+setting controls whether or not the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> &#8220;throw(s) a timeout exception to the consumer if no message is available for consumption after the specified interval&#8221;.  By default, this
+value is set to -1, which means that the call to <code>hasNext()</code> will block indefinitely until a message is available on the topic/partition assigned to the consumer.  The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Java documentation</a>
+for the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> interface does not specify whether or not the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html#hasNext--" target="_blank">hasNext()</a> method is allowed to block indefinitely, so its hard to say that the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank">ConsumerIterator</a> is violating the contract.
+However, this is certainly not the behavior anyone use to using the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> pattern in Java would expect, as collections typically don&#8217;t block until data is available in the data structure.
+If the <a href="https://kafka.apache.org/082/documentation.html#consumerconfigs" target="_blank">consumer.timeout.ms</a> configuration setting is set to a positive value, the consumption code would need to be modified to handle a <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala#L114" target="_blank">ConsumerTimeoutException</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">while(active) {
+    try {
+        if(iterator.hasNext()) {
+            MessageAndMetadata&lt;byte[],byte[]&gt; message = iterator.next();
+            ...
+        }
+    } catch(ConsumerTimeoutException e) {
+        // Do nothing -- this means no data is available on the topic/partition
+    }
+}‍‍‍‍‍‍‍‍‍‍</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>‍
+Now, the call to <code>hasNext()</code> will behave more like an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank">Iterator</a> retrieved from a collection, which is to say it will not block indefinitely.  It is recommended that you do some testing to determine
+an acceptable timeout value to avoid looping too frequently, as this will cause an increase in CPU utilization by the loop.  It is also worth noting that the <a href="https://kafka.apache.org/082/documentation.html#consumerconfigs" target="_blank">Kafka documentation</a> does not directly
+link the configuration setting and the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank">ConsumerIterator</a> and this issue would most likely go unnoticed in scenarios where data is consistently available to the client.  In any case, this issue
+highlights the need to take a deeper look at any API or library you include in your application in order to ensure that you understand exactly how it works and what performance impacts it may have
+on the execution of your code.</p>
 </div></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/10/14/spring_boot_gradle_git_info.html"></div>
-    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/10/14/spring_boot_gradle_git_info.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/10/14/spring_boot_gradle_git_info.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2016/12/20/kafka_iterator.html"></div>
+    <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2016/12/20/kafka_iterator.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2016/12/20/kafka_iterator.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <div id="disqus_thread"></div>
     <script>
@@ -162,8 +172,8 @@ this task from inside an IDE).</p>
     */
     /*
     var disqus_config = function () {
-    this.page.url = '2014/10/14/spring_boot_gradle_git_info.html'; // Replace PAGE_URL with your page's canonical URL variable
-    this.page.identifier = 'Include Git Commit Info in Spring Boot Application with Gradle'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    this.page.url = '2016/12/20/kafka_iterator.html'; // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = 'The Peculiar Case of the Kafka ConsumerIterator'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
     };
     */
     (function() { // DON'T EDIT BELOW THIS LINE
