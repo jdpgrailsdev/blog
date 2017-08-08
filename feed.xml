@@ -6,8 +6,8 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 8 Aug 2017 15:04:37 -0400</pubDate>
-        <lastBuildDate>Tue, 8 Aug 2017 15:04:37 -0400</lastBuildDate>
+        <pubDate>Tue, 8 Aug 2017 15:09:46 -0400</pubDate>
+        <lastBuildDate>Tue, 8 Aug 2017 15:09:46 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
@@ -20,7 +20,7 @@
             <guid isPermaLink="false">2017/08/08/blog_post.html</guid>
             <description>
                     &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Earlier this year, I authored a &lt;a href=&quot;https://blog.newrelic.com/2017/05/18/alerts-microservices-environment-spring-boot/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;blog post&lt;/a&gt; for &lt;a href=&quot;https://www.newrelic.com/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;New Relic&lt;/a&gt; where I discussed how my team decided to use :springboot: to build microservices.  Recently, the post has been picked up by a bunch of other outlets and has been making the rounds on the interwebs.  Please give it a read and am interested in your thoughts on the subject!&lt;/p&gt;
+&lt;p&gt;Earlier this year, I authored a &lt;a href=&quot;https://blog.newrelic.com/2017/05/18/alerts-microservices-environment-spring-boot/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;blog post&lt;/a&gt; for &lt;a href=&quot;https://www.newrelic.com/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;New Relic&lt;/a&gt; where I discussed how my team decided to use &lt;a href=&quot;https://projects.spring.io/spring-boot/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Spring Boot&lt;/a&gt; to build microservices.  Recently, the post has been picked up by a bunch of other outlets and has been making the rounds on the interwebs.  Please give it a read and am interested in your thoughts on the subject!&lt;/p&gt;
 &lt;/div&gt;
             </description>
         </item>
