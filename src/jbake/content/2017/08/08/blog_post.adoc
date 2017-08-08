@@ -12,4 +12,4 @@ Jonathan Pearlin
 :newrelic: https://www.newrelic.com/[New Relic, window="_blank"]
 :springboot: https://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
 
-Earlier this year, I authored a {blogpost} for {newrelic} where I discussed how my team decided to use :springboot: to build microservices.  Recently, the post has been picked up by a bunch of other outlets and has been making the rounds on the interwebs.  Please give it a read and am interested in your thoughts on the subject!
+Earlier this year, I authored a {blogpost} for {newrelic} where I discussed how my team decided to use {springboot} to build microservices.  Recently, the post has been picked up by a bunch of other outlets and has been making the rounds on the interwebs.  Please give it a read and am interested in your thoughts on the subject!
