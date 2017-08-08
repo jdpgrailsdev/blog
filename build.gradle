@@ -6,6 +6,8 @@ plugins {
     id 'org.ajoberstar.git-publish' version '0.3.0'
 }
 
+def outputDir = "$buildDir/jbake"
+
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
@@ -13,11 +15,11 @@ gitPublish {
     repoUri = 'https://github.com/jdpgrailsdev/blog.git'
     branch = 'gh-pages'
     contents {
-        from(file('build/jbake')) {
+        from(file(outputDir)) {
             into '.'
         }
     }
-    commitMessage = 'Updating blog.'
+    commitMessage = 'Updated blog content.'
 }
 
 gretty {
@@ -27,8 +29,7 @@ gretty {
 }
 
 jbake {
-    srcDirName = 'src/jbake'
-    destDirName = 'build/jbake'
+    clearCache = true
     asciidoctorjVersion = '1.5.6'
     freemarkerVersion = '2.3.23'
     pegdownVersion = '1.6.0'
@@ -44,7 +45,7 @@ repositories {
 task publish(dependsOn: 'gitPublishPush')
 
 task copyContent(type: Copy) {
-    from "$buildDir/jbake"
+    from outputDir
     into "$buildDir/inplaceWebapp"
 }
 
