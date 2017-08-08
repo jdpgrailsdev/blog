@@ -69,7 +69,7 @@ with others.
 == Experience
 
 [big]*{new_relic} - https://goo.gl/maps/xorI1["Portland, OR", window="blank"]* +
-*__Senior Software Engineer__* +
+*__Lead Software Engineer__* +
 June 2014 - Present
 
 [big]*{dealer} - https://www.google.com/maps/place/Dealer.Com/@44.4662738,-73.2141733,18z/data=!3m1!4b1!4m2!3m1!1s0x4cca7baab44f0923:0x24999beb5fd91ff1["Burlington, VT", window="_blank"]* +

@@ -1,36 +1,23 @@
-buildscript {
-    repositories {
-        mavenLocal() // needed to use the local JBake 2.3.0 build
-        mavenCentral()
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'org.asciidoctor:asciidoctorj:1.5.1'
-        classpath 'org.freemarker:freemarker:2.3.19'
-        classpath 'org.jbake:jbake-core:2.5.0'
-        classpath 'org.pegdown:pegdown:1.4.2'
-    }
-}
-
 plugins {
     id 'java'
     id 'war'
-    id 'me.champeau.jbake' version '0.2'
-    id 'org.akhikhl.gretty' version '1.4.0'
-    id 'org.ajoberstar.github-pages' version '1.5.1'
+    id 'org.jbake.site' version '1.0.0'
+    id 'org.akhikhl.gretty' version '2.0.0'
+    id 'org.ajoberstar.git-publish' version '0.3.0'
 }
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-githubPages {
+gitPublish {
     repoUri = 'https://github.com/jdpgrailsdev/blog.git'
-    pages {
+    branch = 'gh-pages'
+    contents {
         from(file('build/jbake')) {
             into '.'
         }
     }
+    commitMessage = 'Updating blog.'
 }
 
 gretty {
@@ -40,9 +27,12 @@ gretty {
 }
 
 jbake {
-    input = file('src/jbake')
-    output = file('build/jbake')
-    clearCache = true
+    srcDirName = 'src/jbake'
+    destDirName = 'build/jbake'
+    asciidoctorjVersion = '1.5.6'
+    freemarkerVersion = '2.3.23'
+    pegdownVersion = '1.6.0'
+    version = '2.5.1'
 }
 
 repositories {
@@ -51,7 +41,7 @@ repositories {
     jcenter()
 }
 
-task publish(dependsOn: 'publishGhPages')
+task publish(dependsOn: 'gitPublishPush')
 
 task copyContent(type: Copy) {
     from "$buildDir/jbake"
@@ -60,8 +50,8 @@ task copyContent(type: Copy) {
 
 afterEvaluate { project ->
     // Re-generate content using JBake before launching the local Jetty server.
-    project.tasks.jettyRun.dependsOn([project.tasks.jbake, project.tasks.copyContent])
+    project.tasks.jettyRun.dependsOn([project.tasks.bake, project.tasks.copyContent])
 
     // Re-generate content using JBake before publishing to GitHub.
-    project.tasks.publish.dependsOn([project.tasks.jbake])
+    project.tasks.publish.dependsOn([project.tasks.bake])
 }
