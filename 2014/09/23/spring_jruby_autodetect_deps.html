@@ -101,31 +101,31 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/09/23/spring_jruby_autodetect_deps.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph">
-<p>I decided recently to try to use <a href="http://jruby.org/" target="_blank">JRuby</a> to help me use Ruby-based libraries as plugins in a Java application.  This is pretty easy to do if your Ruby code makes use
-of the stock modules included in <a href="http://jruby.org/" target="_blank">JRuby</a>.  However, what happens if the Ruby scripts need to access other libraries that typically would be found in external
-<a href="https://rubygems.org/" target="_blank">Ruby Gems</a>?  One answer is to use <a href="http://gradle.org" target="_blank">Gradle</a>, <a href="http://jruby.org/" target="_blank">JRuby</a> and the <a href="http://spring.io" target="_blank">Spring Framework</a> to automatically download, package and discover these dependencies at build and runtime.
+<p>I decided recently to try to use <a href="http://jruby.org/" target="_blank" rel="noopener">JRuby</a> to help me use Ruby-based libraries as plugins in a Java application.  This is pretty easy to do if your Ruby code makes use
+of the stock modules included in <a href="http://jruby.org/" target="_blank" rel="noopener">JRuby</a>.  However, what happens if the Ruby scripts need to access other libraries that typically would be found in external
+<a href="https://rubygems.org/" target="_blank" rel="noopener">Ruby Gems</a>?  One answer is to use <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>, <a href="http://jruby.org/" target="_blank" rel="noopener">JRuby</a> and the <a href="http://spring.io" target="_blank" rel="noopener">Spring Framework</a> to automatically download, package and discover these dependencies at build and runtime.
 Another way to put it is that we have three distinct operations that we need to perform in order to get all of this playing nicely together:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Use <a href="http://bundler.io/" target="_blank">Bundler</a> to find, download and install all required Ruby modules at build time (<a href="http://gradle.org" target="_blank">Gradle</a> + <a href="http://jruby.org/" target="_blank">JRuby</a>)</p>
+<p>Use <a href="http://bundler.io/" target="_blank" rel="noopener">Bundler</a> to find, download and install all required Ruby modules at build time (<a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> + <a href="http://jruby.org/" target="_blank" rel="noopener">JRuby</a>)</p>
 </li>
 <li>
-<p>Package Ruby modules with Ruby script(s) in JAR file (<a href="http://gradle.org" target="_blank">Gradle</a>)</p>
+<p>Package Ruby modules with Ruby script(s) in JAR file (<a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>)</p>
 </li>
 <li>
-<p>Auto-discover packaged Ruby modules at runtime and add them to the "load path" of the script that is to be executed (<a href="http://jruby.org/" target="_blank">JRuby</a> + <a href="http://spring.io" target="_blank">Spring Framework</a>)</p>
+<p>Auto-discover packaged Ruby modules at runtime and add them to the "load path" of the script that is to be executed (<a href="http://jruby.org/" target="_blank" rel="noopener">JRuby</a> + <a href="http://spring.io" target="_blank" rel="noopener">Spring Framework</a>)</p>
 </li>
 <li>
-<p>Execute the script (<a href="http://jruby.org/" target="_blank">JRuby</a>)</p>
+<p>Execute the script (<a href="http://jruby.org/" target="_blank" rel="noopener">JRuby</a>)</p>
 </li>
 </ol>
 </div>
 <div class="paragraph">
-<p>Let&#8217;s start with the first task:  Use <a href="http://bundler.io/" target="_blank">Bundler</a> to find, download and install all required Ruby modules at build time.  To accomplish this, I decided to
-use custom tasks in a <a href="http://gradle.org" target="_blank">Gradle</a> script to first install <a href="http://bundler.io/" target="_blank">Bundler</a> and then use <a href="http://bundler.io/" target="_blank">Bundler</a> to install any required Ruby modules found in the project&#8217;s <code>Gemfile</code>.
-This <a href="http://gradle.org" target="_blank">Gradle</a> script also needed to be able to copy the installed <a href="https://rubygems.org/" target="_blank">Ruby Gems</a> to a directory that would ensure their inclusion in the packaged JAR file.  Below
+<p>Let&#8217;s start with the first task:  Use <a href="http://bundler.io/" target="_blank" rel="noopener">Bundler</a> to find, download and install all required Ruby modules at build time.  To accomplish this, I decided to
+use custom tasks in a <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> script to first install <a href="http://bundler.io/" target="_blank" rel="noopener">Bundler</a> and then use <a href="http://bundler.io/" target="_blank" rel="noopener">Bundler</a> to install any required Ruby modules found in the project&#8217;s <code>Gemfile</code>.
+This <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> script also needed to be able to copy the installed <a href="https://rubygems.org/" target="_blank" rel="noopener">Ruby Gems</a> to a directory that would ensure their inclusion in the packaged JAR file.  Below
 is the script:</p>
 </div>
 <div class="listingblock">
@@ -240,16 +240,16 @@ def processSourceFiles(File newParent, File rootDir) {
 </div>
 </div>
 <div class="paragraph">
-<p>A couple of things to point out.  First, the script uses <a href="http://jruby.org/" target="_blank">JRuby</a> in custom <a href="http://gradle.org" target="_blank">Gradle</a> tasks to execute the Ruby-based commands.  Second, the script recursively
-walks through each of the installed <a href="https://rubygems.org/" target="_blank">Ruby Gems</a> to properly normalize any <code>require_relative</code> statements into absolute paths.  This is necessary as <a href="http://jruby.org/" target="_blank">JRuby</a> does
-not handle relative paths in included <a href="https://rubygems.org/" target="_blank">Ruby Gems</a> very well (or at all).</p>
+<p>A couple of things to point out.  First, the script uses <a href="http://jruby.org/" target="_blank" rel="noopener">JRuby</a> in custom <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> tasks to execute the Ruby-based commands.  Second, the script recursively
+walks through each of the installed <a href="https://rubygems.org/" target="_blank" rel="noopener">Ruby Gems</a> to properly normalize any <code>require_relative</code> statements into absolute paths.  This is necessary as <a href="http://jruby.org/" target="_blank" rel="noopener">JRuby</a> does
+not handle relative paths in included <a href="https://rubygems.org/" target="_blank" rel="noopener">Ruby Gems</a> very well (or at all).</p>
 </div>
 <div class="paragraph">
 <p>At this point, running <code>./gradlew build</code> on this project will produce a JAR file containing any Ruby scripts found in <code>src/main/ruby</code>, as well as any required
-<a href="https://rubygems.org/" target="_blank">Ruby Gems</a> installed by the script.  The next step to use a Ruby-based plugin in a Java application is to use <a href="http://jruby.org/" target="_blank">JRuby</a> to execute the script.  I&#8217;m not going
-to go into all of the details about wiring that up, as the <a href="http://jruby.org/" target="_blank">JRuby</a> tutorials cover this pretty well.  Instead, I am going to focus on how to extract the
-required <a href="https://rubygems.org/" target="_blank">Ruby Gems</a> that we included in the JAR and make sure that they are available to our Ruby script(s) when <a href="http://jruby.org/" target="_blank">JRuby</a> executes them.  To accomplish this,
-I decided to make use of the <a href="http://spring.io" target="_blank">Spring Framework</a>'s <code>PathMatchingResourcePatternResolver</code> to auto-discover the included <a href="https://rubygems.org/" target="_blank">Ruby Gems</a> and add them to <a href="http://jruby.org/" target="_blank">JRuby</a>'s load path:</p>
+<a href="https://rubygems.org/" target="_blank" rel="noopener">Ruby Gems</a> installed by the script.  The next step to use a Ruby-based plugin in a Java application is to use <a href="http://jruby.org/" target="_blank" rel="noopener">JRuby</a> to execute the script.  I&#8217;m not going
+to go into all of the details about wiring that up, as the <a href="http://jruby.org/" target="_blank" rel="noopener">JRuby</a> tutorials cover this pretty well.  Instead, I am going to focus on how to extract the
+required <a href="https://rubygems.org/" target="_blank" rel="noopener">Ruby Gems</a> that we included in the JAR and make sure that they are available to our Ruby script(s) when <a href="http://jruby.org/" target="_blank" rel="noopener">JRuby</a> executes them.  To accomplish this,
+I decided to make use of the <a href="http://spring.io" target="_blank" rel="noopener">Spring Framework</a>'s <code>PathMatchingResourcePatternResolver</code> to auto-discover the included <a href="https://rubygems.org/" target="_blank" rel="noopener">Ruby Gems</a> and add them to <a href="http://jruby.org/" target="_blank" rel="noopener">JRuby</a>'s load path:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -295,9 +295,9 @@ container.setLoadPaths(loadPaths);</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The snippet of Java code above makes use of the <code>PathMatchingResourcePatternResolver</code> from the <a href="http://spring.io" target="_blank">Spring Framework</a> to scan the classpath and find all <code>.rb</code> files under the
-<code>/&lt;plugin name&gt;/gems</code> path.  From this list, the URI of each (which is relative to the JAR file) is converted into a classpath-friendly string that <a href="http://jruby.org/" target="_blank">JRuby</a>
-understands and then added to the list of paths for <a href="http://jruby.org/" target="_blank">JRuby</a> to load prior to execution of the script.  At this point, if a Ruby script is executed via the
+<p>The snippet of Java code above makes use of the <code>PathMatchingResourcePatternResolver</code> from the <a href="http://spring.io" target="_blank" rel="noopener">Spring Framework</a> to scan the classpath and find all <code>.rb</code> files under the
+<code>/&lt;plugin name&gt;/gems</code> path.  From this list, the URI of each (which is relative to the JAR file) is converted into a classpath-friendly string that <a href="http://jruby.org/" target="_blank" rel="noopener">JRuby</a>
+understands and then added to the list of paths for <a href="http://jruby.org/" target="_blank" rel="noopener">JRuby</a> to load prior to execution of the script.  At this point, if a Ruby script is executed via the
 <code>ScriptingContainer</code> with the properly configured load paths, any references to required modules that are packaged in the plugin&#8217;s JAR file will be found and
 the script will execute just as if it were run via Ruby.</p>
 </div></p>
@@ -338,7 +338,7 @@ the script will execute just as if it were run via Ruby.</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

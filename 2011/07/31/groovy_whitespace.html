@@ -106,7 +106,10 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
   <li>Parse the file and find a particular element</li>
   <li>Edit the value of said element</li>
   <li>Update the file with the changes, preserving the original formatting and namespace(s) of the file.</li>
-</ol><p>Good luck. The builders are great for creating new documents. While you can use the <code>StreamingMarkupBuilder</code> to handle data read from a file, it does NOT preserve the white-space (and you have to know what additional calls need to be made to preserve any namespaces in the original XML document). This was a choice made by the implementer, which certainly makes sense for the normal use case of the <code>StreamingMarkupBuilder</code> (creating XML on the fly as a response to a request), where white-space is irrelevant (and takes up precious bytes ;) ). So, are we just doomed to lose are pretty, human readable formatting when editing XML? The answer is no. Luckily, there are some other classes provided by Groovy that will let you do things similar to the normal Groovy XML manipulation approach (slurper, markup builders and GPath).</p><h2>DOMination</h2><p>The solution to the problem above is to use the <code>groovy.xml.DOMBuilder</code> and <code>groovy.xml.dom.DOMCategory</code> classes to manipulate XML, while still preserving the formatting/white-space. Assume that you already have a <code>java.io.File</code> object pointing to an XML file. You can do the following to manipulate the contents of that file:</p>
+</ol>
+<p>Good luck. The builders are great for creating new documents. While you can use the <code>StreamingMarkupBuilder</code> to handle data read from a file, it does NOT preserve the white-space (and you have to know what additional calls need to be made to preserve any namespaces in the original XML document). This was a choice made by the implementer, which certainly makes sense for the normal use case of the <code>StreamingMarkupBuilder</code> (creating XML on the fly as a response to a request), where white-space is irrelevant (and takes up precious bytes ;) ). So, are we just doomed to lose are pretty, human readable formatting when editing XML? The answer is no. Luckily, there are some other classes provided by Groovy that will let you do things similar to the normal Groovy XML manipulation approach (slurper, markup builders and GPath).</p>
+<h2>DOMination</h2>
+<p>The solution to the problem above is to use the <code>groovy.xml.DOMBuilder</code> and <code>groovy.xml.dom.DOMCategory</code> classes to manipulate XML, while still preserving the formatting/white-space. Assume that you already have a <code>java.io.File</code> object pointing to an XML file. You can do the following to manipulate the contents of that file:</p>
 <pre><code>def xml = file.text
 def document = groovy.xml.DOMBuilder.parse(new StringReader(xml)))
 def root = document.documentElement
@@ -120,7 +123,8 @@ def result = groovy.xml.dom.DOMUtil.serialize(root)
 file.withWriter { w -&gt;
     w.write(result)
 }
-</code></pre><p>With 10-15 lines of Groovy code, we have just loaded XML from a file, manipulated its contents, and written it back out to file, while preserving all formatting from the original file. I wasted about 4 hours trying to figure this out before I stumbled upon the <code>DOMCategory</code> class. For more information on editing XML using <code>DOMCategory</code>, see the Groovy tutorial on it <a href="http://groovy.codehaus.org/Updating+XML+with+DOMCategory">here</a>.</p></p>
+</code></pre>
+<p>With 10-15 lines of Groovy code, we have just loaded XML from a file, manipulated its contents, and written it back out to file, while preserving all formatting from the original file. I wasted about 4 hours trying to figure this out before I stumbled upon the <code>DOMCategory</code> class. For more information on editing XML using <code>DOMCategory</code>, see the Groovy tutorial on it <a href="http://groovy.codehaus.org/Updating+XML+with+DOMCategory">here</a>.</p></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2011/07/31/groovy_whitespace.html"></div>
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2011/07/31/groovy_whitespace.html" data-counter="right"></script>
@@ -158,7 +162,7 @@ file.withWriter { w -&gt;
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

@@ -101,10 +101,10 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/03/18/grails_bean_builder.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph">
-<p>As part of a current project, I recently had the need to determine which of my <a href="http://grails.org" target="_blank">Grails</a> applications made use of certain <a href="http://spring.io" target="_blank">Spring</a> beans in order to prepare for a migration.  While it is possible to
-use the normal XML-based configuration in a <a href="http://grails.org" target="_blank">Grails</a> application (which in turn would have made parsing the configuration fairly straight forward), <a href="http://grails.org" target="_blank">Grails</a> applications typically make use of the built-in
-<a href="http://grails.org/doc/latest/guide/spring.html#springdslAdditional" target="_blank">Spring beans DSL</a> to declare their <a href="http://spring.io" target="_blank">Spring</a> configuration.  However, because the DSL is represented in <a href="http://groovy.codehaus.org" target="_blank">Groovy</a>, it meant that parsing it
-would not be as easy as if it were in XML.  I decided that the best approach would be to use the <code>grails.spring.BeanBuilder</code> outside of a <a href="http://grails.org" target="_blank">Grails</a> application in a <a href="http://groovy.codehaus.org" target="_blank">Groovy</a> script.  I was particularly interested
+<p>As part of a current project, I recently had the need to determine which of my <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> applications made use of certain <a href="http://spring.io" target="_blank" rel="noopener">Spring</a> beans in order to prepare for a migration.  While it is possible to
+use the normal XML-based configuration in a <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> application (which in turn would have made parsing the configuration fairly straight forward), <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> applications typically make use of the built-in
+<a href="http://grails.org/doc/latest/guide/spring.html#springdslAdditional" target="_blank" rel="noopener">Spring beans DSL</a> to declare their <a href="http://spring.io" target="_blank" rel="noopener">Spring</a> configuration.  However, because the DSL is represented in <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a>, it meant that parsing it
+would not be as easy as if it were in XML.  I decided that the best approach would be to use the <code>grails.spring.BeanBuilder</code> outside of a <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> application in a <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> script.  I was particularly interested
 in finding beans of type <code>org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean</code> class, which have <code>serviceInterface</code> and <code>serviceUrl</code> properties, so I wrote a script that loads and parses the
 DSL and then loops over each bean definition for beans that contained those properties:</p>
 </div>
@@ -145,7 +145,7 @@ beanBuilder.springConfig.beanConfigs.each {
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>The <code>grails.spring.BeanBuilder</code> can be used outside of <a href="http://grails.org" target="_blank">Grails</a> applications by including the <code>org.grails:grails-spring</code> module.</p>
+<p>The <code>grails.spring.BeanBuilder</code> can be used outside of <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> applications by including the <code>org.grails:grails-spring</code> module.</p>
 </li>
 <li>
 <p>The <code>resources.groovy</code> file (or any file that contains the proper DSL syntax) must have <code>beans</code> closure be the top level of the DSL and not be a variable (i.e. beans = { &#8230;&#8203; }) for the script to parse the file correctly.</p>
@@ -160,8 +160,8 @@ beanBuilder.springConfig.beanConfigs.each {
 </div>
 <div class="paragraph">
 <p>All and all, this script was pretty easy to create and can be used as part of a larger process to identify, convert and/or even re-write the <code>resources.groovy</code> file.  Additionally, this
-<a href="http://spring.io/blog/2014/03/03/groovy-bean-configuration-in-spring-framework-4" target="_blank">DSL has now been incorporated directly into the Spring Framework</a>), which means that not only can you now declare <a href="http://spring.io" target="_blank">Spring</a> beans via the <a href="http://groovy.codehaus.org" target="_blank">Groovy</a>
-DSL just like in <a href="http://grails.org" target="_blank">Grails</a>, but that you could use the same solution above to inspect that configuration outside of the application if the need should arise.</p>
+<a href="http://spring.io/blog/2014/03/03/groovy-bean-configuration-in-spring-framework-4" target="_blank" rel="noopener">DSL has now been incorporated directly into the Spring Framework</a>), which means that not only can you now declare <a href="http://spring.io" target="_blank" rel="noopener">Spring</a> beans via the <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a>
+DSL just like in <a href="http://grails.org" target="_blank" rel="noopener">Grails</a>, but that you could use the same solution above to inspect that configuration outside of the application if the need should arise.</p>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/03/18/grails_bean_builder.html"></div>
@@ -200,7 +200,7 @@ DSL just like in <a href="http://grails.org" target="_blank">Grails</a>, but tha
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

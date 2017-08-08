@@ -101,7 +101,7 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/22/gradle_build_scripts_classpath.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph">
-<p><a href="http://gradle.org" target="_blank">Gradle</a> currently supports two different way to reference other <code>.gradle</code> files from a build script:</p>
+<p><a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> currently supports two different way to reference other <code>.gradle</code> files from a build script:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -114,12 +114,12 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 </ol>
 </div>
 <div class="paragraph">
-<p>The first is great for one-off scripts in your project, but is not really helpful when you want to share <a href="http://gradle.org" target="_blank">Gradle</a> scripts among projects.  The second
+<p>The first is great for one-off scripts in your project, but is not really helpful when you want to share <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> scripts among projects.  The second
 approach would work for sharing, but is really limited with regards to the supported functionality (e.g. you cannot specify HTTP headers to handle login/security
 concerns, etc).  While you can obviously create a plugin that approximates the logic in the script that you want to share, its a pain to have to create a new
-project and push it to your artifact repository each time you want to share build logic.  The solution?  Create a single <a href="http://gradle.org" target="_blank">Gradle</a> plugin that is capable of scanning
+project and push it to your artifact repository each time you want to share build logic.  The solution?  Create a single <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin that is capable of scanning
 the build script classpath at execution time to find and apply <code>.gradle</code> files to the current project.  This approach uses the <code>PathMatchingResourcePatternResolver</code>
-class from the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a>  to locate each <code>.gradle</code> file.  Once the files have been located, the
+class from the <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a>  to locate each <code>.gradle</code> file.  Once the files have been located, the
 files are read from the classpath and extracted to a temporary <code>scripts</code> folder under the project&#8217;s build directory and then applied to the current project via
 the file-based approach outlined above.  Here is the entire plugin code:</p>
 </div>
@@ -198,7 +198,7 @@ buildscript {
 </ul>
 </div>
 <div class="paragraph">
-<p>It should be noted that the code above was written and used with <a href="http://gradle.org" target="_blank">Gradle</a> 1.12 and has not yet been tested with 2.0, though I don&#8217;t expect any issues.</p>
+<p>It should be noted that the code above was written and used with <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> 1.12 and has not yet been tested with 2.0, though I don&#8217;t expect any issues.</p>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/07/22/gradle_build_scripts_classpath.html"></div>
@@ -237,7 +237,7 @@ buildscript {
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

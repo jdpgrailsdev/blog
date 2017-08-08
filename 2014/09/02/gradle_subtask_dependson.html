@@ -101,8 +101,8 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/09/02/gradle_subtask_dependson.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph">
-<p>One of the great things (IMHO) about <a href="http://gradle.org" target="_blank">Gradle</a> is that it does a pretty good job of choosing sane conventions.  That being said, one place that seems to not always
-be a great choice is <a href="http://gradle.org" target="_blank">Gradle</a>'s convention to visit sub-projects in alpha-numerical order.  Let&#8217;s say that you have the following project structure:</p>
+<p>One of the great things (IMHO) about <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> is that it does a pretty good job of choosing sane conventions.  That being said, one place that seems to not always
+be a great choice is <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>'s convention to visit sub-projects in alpha-numerical order.  Let&#8217;s say that you have the following project structure:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -115,11 +115,11 @@ be a great choice is <a href="http://gradle.org" target="_blank">Gradle</a>'s co
 </div>
 </div>
 <div class="paragraph">
-<p>Based on the alpha-numerical ordering, you would probably expect <a href="http://gradle.org" target="_blank">Gradle</a> to visit the projects in the following order:  A, B, B:C, B:D, E.  However, this is not the case.
-<a href="http://gradle.org" target="_blank">Gradle</a> will visit the sub-projects in alpha-numerical order, within each level.  What you end up with is:  A, B, E, B:C, B:D.  Normally, this probably isn&#8217;t a big deal.
+<p>Based on the alpha-numerical ordering, you would probably expect <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to visit the projects in the following order:  A, B, B:C, B:D, E.  However, this is not the case.
+<a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> will visit the sub-projects in alpha-numerical order, within each level.  What you end up with is:  A, B, E, B:C, B:D.  Normally, this probably isn&#8217;t a big deal.
 This does become a big deal when one of those sub-projects builds a distribution that needs to include output from all of the other sub-projects.  Such is the case when
-building a fully-repackaged, executable JAR file with <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  The repackaged JAR built by the
-<a href="http://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-gradle-plugin.html" target="_blank">Spring Boot Gradle Plugin</a> includes all dependency JAR files
+building a fully-repackaged, executable JAR file with <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>.  The repackaged JAR built by the
+<a href="http://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-gradle-plugin.html" target="_blank" rel="noopener">Spring Boot Gradle Plugin</a> includes all dependency JAR files
 required to execute the application.  Let&#8217;s suppose in our example above, the sub-project E&#8217;s <code>build.gradle</code> script includes the following dependency block:</p>
 </div>
 <div class="listingblock">
@@ -144,7 +144,7 @@ project.tasks.jar.dependsOn(rootProject.getSubprojects().findAll { subproject -&
 </div>
 <div class="paragraph">
 <p>The logic above finds every other sub-project in the project and adds that sub-project&#8217;s "build" task as a dependency that first must execute before the current project&#8217;s
-JAR task can execute.  This ensures that all other projects have built their JAR files before <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> can create the re-packaged JAR.  You can apply this same trick to
+JAR task can execute.  This ensures that all other projects have built their JAR files before <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> can create the re-packaged JAR.  You can apply this same trick to
 any other scenario where the execution of tasks in other sub-projects (regardless of depth) must occur before a certain sub-project&#8217;s task(s).</p>
 </div></p>
 
@@ -184,7 +184,7 @@ any other scenario where the execution of tasks in other sub-projects (regardles
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

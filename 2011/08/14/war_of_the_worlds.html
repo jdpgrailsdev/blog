@@ -105,7 +105,10 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
   <li>The ability to run/launch Node.JS applications from Eclipse</li>
   <li>The ability to debug Node.JS applications from Eclipse</li>
   <li>Code-completion for Node.JS module</li>
-</ul><p>I set out to do all of the above with Eclipse, as it is my favorite IDE of choice. I was able to achieve all of the goals by following the instructions outlined in this post. Please keep in mind that the instructions that follow assumes version 0.4.10 of Node.JS and version “Indigo” (3.7) of Eclipse. All these instructions were tested on Mac OSX 10.6.8.</p><h2>One IDE to Rule Them All</h2><p>The first piece of the puzzle is to install Node.JS:</p>
+</ul>
+<p>I set out to do all of the above with Eclipse, as it is my favorite IDE of choice. I was able to achieve all of the goals by following the instructions outlined in this post. Please keep in mind that the instructions that follow assumes version 0.4.10 of Node.JS and version “Indigo” (3.7) of Eclipse. All these instructions were tested on Mac OSX 10.6.8.</p>
+<h2>One IDE to Rule Them All</h2>
+<p>The first piece of the puzzle is to install Node.JS:</p>
 <ul>
   <li>Download the tarball from <a href="http://nodejs.org/#download">http://nodejs.org/#download</a></li>
   <li>Untar/unzip the package with tar –xvf</li>
@@ -114,34 +117,39 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
   <li>Run make</li>
   <li>Run make install</li>
   <li>Verify node.js is installed by running node –version</li>
-</ul><p>Once you have installed and verified Node.JS, the next step (assuming that you already have Eclipse installed) is to install the Eclipse Debugger Plugin for V8 (Google):</p>
+</ul>
+<p>Once you have installed and verified Node.JS, the next step (assuming that you already have Eclipse installed) is to install the Eclipse Debugger Plugin for V8 (Google):</p>
 <ol>
   <li>Open Eclipse</li>
   <li>Select Help &gt; Install New Software…</li>
   <li>Click on the “Add…” button</li>
   <li>Enter the following information:
-  <ul>
-    <li>Name: Eclipse Debugger Plugin for V8 Update Site</li>
-    <li>Location: <a href="">http://chromedevtools.googlecode.com/svn/update/dev/</a></li>
-  </ul></li>
+    <ul>
+      <li>Name: Eclipse Debugger Plugin for V8 Update Site</li>
+      <li>Location: <a href="">http://chromedevtools.googlecode.com/svn/update/dev/</a></li>
+    </ul>
+  </li>
   <li>Click on “OK” to add the update site</li>
   <li>In the “Work with:” drop-down box, choose “Eclipse Debugger Plugin for V8 Update Site”. The plugin area should now be populated with the plugins offered by the update site.</li>
   <li>Check the box next to “Google Chrome Developer Tools” and click on “Next” to install.</li>
   <li>Walk through the wizard and install the plugin. Restart Eclipse when prompted for the changes to take effect.</li>
-</ol><p>The next plugin to install is the VJET Plugin from the good folks over at eBay:</p>
+</ol>
+<p>The next plugin to install is the VJET Plugin from the good folks over at eBay:</p>
 <ol>
   <li>In Eclipse, Select Help &gt; Install New Software…</li>
   <li>Click on the “Add…” button</li>
   <li>Enter the following information:
-  <ul>
-    <li>Name: VJET Update Site</li>
-    <li>Location: <a href="">https://www.ebayopensource.org/p2/vjet/eclipse</a></li>
-  </ul></li>
+    <ul>
+      <li>Name: VJET Update Site</li>
+      <li>Location: <a href="">https://www.ebayopensource.org/p2/vjet/eclipse</a></li>
+    </ul>
+  </li>
   <li>Click on “OK” to add the update site</li>
   <li>In the “Work with:” drop-down box, choose “VJET Update Site”. The plugin area should now be populated with the plugins offered by the update site.</li>
   <li>Check the box next to “VJET” and click on “Next” to install.</li>
   <li>Walk through the wizard and install the plugin. Restart Eclipse when prompted for the changes to take effect.</li>
-</ol><p>At this point, we have all the support we need to create, run, and debug V8 (and therefore Node.JS) applications. However, this is essentially what Cloud9ide.com provides. The cherry on top is the Node.JS code-completion support provided by the VJET plugin. The support is a separate project that needs to be installed in your Eclipse workspace. The VJET Type Library for Node.JS can be installed by following these steps:</p>
+</ol>
+<p>At this point, we have all the support we need to create, run, and debug V8 (and therefore Node.JS) applications. However, this is essentially what Cloud9ide.com provides. The cherry on top is the Node.JS code-completion support provided by the VJET plugin. The support is a separate project that needs to be installed in your Eclipse workspace. The VJET Type Library for Node.JS can be installed by following these steps:</p>
 <ol>
   <li>Download the VJET Type Library for Node.JS from <a href="">http://www.ebayopensource.org/p2/vjet/typelib/NodejsTL.zip</a></li>
   <li>In Eclipse, select File &gt; Import…</li>
@@ -151,58 +159,68 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
   <li>Navigate to the location where the NodejsTL.zip file is saved and select it for import.</li>
   <li>Select “Finish” to import the type library.</li>
   <li>Verify that the NodejsTL project appears in your Eclipse workspace.</li>
-</ol><p>Now we have everything we need to get started creating applications with Node.JS from eclipse. To create a Node.JS project in Eclipse, follow these steps:</p>
+</ol>
+<p>Now we have everything we need to get started creating applications with Node.JS from eclipse. To create a Node.JS project in Eclipse, follow these steps:</p>
 <ol>
   <li>In Eclipse, select File &gt; New &gt; Project…</li>
   <li>In the New Project wizard, select VJET &gt; VJET Project and click on the “Next” button.</li>
   <li>On the “Create a VJET Project” screen of the wizard, enter the project name and location (leave the default selections for all other input fields). Click on the “Next” button.</li>
   <li>On the “VJET Settings” screen of the wizard, click on the “Projects” tab.
-  <ul>
-    <li>Click on the “Add…” button.</li>
-    <li>Select the NodejsTL project and click on the “OK” button. This will add auto-completion for NodeJS modules/functions.</li>
-  </ul></li>
+    <ul>
+      <li>Click on the “Add…” button.</li>
+      <li>Select the NodejsTL project and click on the “OK” button. This will add auto-completion for NodeJS modules/functions.</li>
+    </ul>
+  </li>
   <li>Click on the “Finish” button to create the project</li>
-</ol><p>Assuming that you created a simple Node.JS application, the next step is to try to run your Node.JS application from WITHIN Eclipse:</p>
+</ol>
+<p>Assuming that you created a simple Node.JS application, the next step is to try to run your Node.JS application from WITHIN Eclipse:</p>
 <ol>
   <li>In Eclipse, select Run &gt; External Tools &gt; External Tools Configurations…</li>
   <li>In the External Tools Configurations window, select the “Program” node in the tree display on the left-hand side of the window.</li>
   <li>Click on the “New launch configuration” button (appears above the tree as a blank piece of paper with a yellow plus sign in the upper right-hand corner). The right-hand side of the window should populate with the launch configuration screen.</li>
   <li>Enter the following information:
-  <ul>
-    <li>Name: Debug Node</li>
-    <li>Location: /usr/local/bin/node</li>
-    <li>Working Directory: ${project_loc}</li>
-    <li>Arguments: --debug ${resource_name}</li>
-  </ul></li>
+    <ul>
+      <li>Name: Debug Node</li>
+      <li>Location: /usr/local/bin/node</li>
+      <li>Working Directory: ${project_loc}</li>
+      <li>Arguments: --debug ${resource_name}</li>
+    </ul>
+  </li>
   <li>Click on “Apply” to save the changes</li>
   <li>Click on “Close” to exit the “External Tools Configurations” window</li>
-</ol><p>To launch the application, select the “Debug Node” configuration under Run &gt; External Tools. Make sure that the .js file that you would normally pass to Node.JS from the command line is selected in the Script Explorer prior to running. Otherwise, you will get errors when Node.JS runs, as it will not know which file to execute.</p><p>Note that you can create multiple launch configurations, so if you would like to have one for debugging and one for running, simply duplicate the configuration, give it a new name (like “Run Node”) and remove the “—debug” option from the arguments. Assuming that you executed step 7 above, you can now attach the V8 remote debugger to the process so that you can set breakpoints and inspect your application:</p>
+</ol>
+<p>To launch the application, select the “Debug Node” configuration under Run &gt; External Tools. Make sure that the .js file that you would normally pass to Node.JS from the command line is selected in the Script Explorer prior to running. Otherwise, you will get errors when Node.JS runs, as it will not know which file to execute.</p>
+<p>Note that you can create multiple launch configurations, so if you would like to have one for debugging and one for running, simply duplicate the configuration, give it a new name (like “Run Node”) and remove the “—debug” option from the arguments. Assuming that you executed step 7 above, you can now attach the V8 remote debugger to the process so that you can set breakpoints and inspect your application:</p>
 <ol>
   <li>In Eclipse, select Run &gt; Debug Configurations</li>
   <li>In the Debug Configurations window, select the “Standalone V8 VM” node in the tree display on the left-hand side of the window.</li>
   <li>Click on the “New launch configuration” button (appears above the tree as a blank piece of paper with a yellow plus sign in the upper right-hand corner). The right-hand side of the window should populate with the launch configuration screen</li>
   <li>Enter the following information:
-  <ul>
-    <li>Name: Debug Node 5858</li>
-    <li>Host: localhost</li>
-    <li>Port: 5858</li>
-    <li>Breakpoint sync on launch: Merge local and remote breakpoints</li>
-  </ul></li>
+    <ul>
+      <li>Name: Debug Node 5858</li>
+      <li>Host: localhost</li>
+      <li>Port: 5858</li>
+      <li>Breakpoint sync on launch: Merge local and remote breakpoints</li>
+    </ul>
+  </li>
   <li>Click on “Apply” to save the changes</li>
   <li>Click on “Close” to exit the “Debug Configurations” window</li>
   <li>To launch the remote debugger, select the “Debug Node 5858” configuration from the Debug Configurations wizard and click on the “Debug” button. This assumes that the Node.JS process is already running and in debug mode, using the default debug port (5858).</li>
-</ol><p>Assuming that the remote debugging configuration connects successfully to your running application, you can place breakpoints in the code by locating the “virtual project” created by the V8 plugin. To do this, use the following directions (assumes that Eclipse is already open AND the remote debugger configuration created above is currently connected to a running Node.JS application in debug mode):</p>
+</ol>
+<p>Assuming that the remote debugging configuration connects successfully to your running application, you can place breakpoints in the code by locating the “virtual project” created by the V8 plugin. To do this, use the following directions (assumes that Eclipse is already open AND the remote debugger configuration created above is currently connected to a running Node.JS application in debug mode):</p>
 <ol>
   <li>Change to the VJET JS perspective
-  <ul>
-    <li>If the VJET JS perspective is not open, open it by selecting Window &gt; Open Perspective &gt; Other…</li>
-    <li>Select “VJET JS” from the list and click on the “OK” button.</li>
-  </ul></li>
+    <ul>
+      <li>If the VJET JS perspective is not open, open it by selecting Window &gt; Open Perspective &gt; Other…</li>
+      <li>Select “VJET JS” from the list and click on the “OK” button.</li>
+    </ul>
+  </li>
   <li>Locate the “Debug Node 5858” project that appears in the “Script Explorer” view on the left-hand side of the perspective.</li>
   <li>Expand the project and double click on the source file that you would like to set a breakpoint in to open it in the viewer.</li>
   <li>Right-click to the left of the line that you would like to place a breakpoint on in the file viewer and select “Toggle Breakpoint” to set the breakpoint.</li>
   <li>Interact with the Node.JS application. The application should pause when it hits the breakpoint set in Eclipse.</li>
-</ol><p>Note that the virtual project actually lets you see the code from the running Node.JS instance and NOT the source that you imported into Eclipse. In fact, if you just want to use Eclipse for setting breakpoints, you do not even need to import the source. You simply need to create the remote debugger configuration and set breakpoints in the virtual project once the remote debugger has connected to a running Node.JS instance in debug mode. According to the V8 documentation (links below), you can make Eclipse actually honor the breakpoints set in your project. However, I was not able to get this to work (and since the process is running from your code in the workspace anyways, the Virtual Project is actually already pointing at the same source files). And that's it! You now have the ability to create, run, and debug Node.JS applications from Eclipse with the added benefit of code-completion for the built-in modules in Node.JS. Also, because the code-completion comes from a project imported into Eclipse, you can always modify it to add additional support for internal libraries, etc. Below is a list of resources that I used to figure this all out:</p>
+</ol>
+<p>Note that the virtual project actually lets you see the code from the running Node.JS instance and NOT the source that you imported into Eclipse. In fact, if you just want to use Eclipse for setting breakpoints, you do not even need to import the source. You simply need to create the remote debugger configuration and set breakpoints in the virtual project once the remote debugger has connected to a running Node.JS instance in debug mode. According to the V8 documentation (links below), you can make Eclipse actually honor the breakpoints set in your project. However, I was not able to get this to work (and since the process is running from your code in the workspace anyways, the Virtual Project is actually already pointing at the same source files). And that's it! You now have the ability to create, run, and debug Node.JS applications from Eclipse with the added benefit of code-completion for the built-in modules in Node.JS. Also, because the code-completion comes from a project imported into Eclipse, you can always modify it to add additional support for internal libraries, etc. Below is a list of resources that I used to figure this all out:</p>
 <ul>
   <li><a href="http://nodejs.org/">Node.JS</a></li>
   <li><a href="http://code.google.com/p/chromedevtools/">Using Eclipse as a Node.JS Debugger </a></li>
@@ -247,7 +265,7 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

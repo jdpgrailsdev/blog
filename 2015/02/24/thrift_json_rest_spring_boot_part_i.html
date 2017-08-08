@@ -103,12 +103,12 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>If you use <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> in your project, sometimes you may run into situations where you would like to be able interact with your service using
-JSON and REST instead of the binary <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> protocol.  If you try to simply serialize/deserialize your <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> objects to/from JSON, you
+<p>If you use <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> in your project, sometimes you may run into situations where you would like to be able interact with your service using
+JSON and REST instead of the binary <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> protocol.  If you try to simply serialize/deserialize your <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> objects to/from JSON, you
 will notice that a lot of additional cruft is included (such as the <code>isSet</code> fields, etc).  Furthermore, you don&#8217;t have any control over
 include/excluding fields that have not yet been set, as most JSON libraries will happily include every field present in the class by default.
-Luckily, you can tackle all of these issues by using some custom <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> code in combination with <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> and <a href="https://spring.io/guides/gs/rest-service/" target="_blank">Spring&#8217;s REST support</a>.  In part
-one of this series, I will show how to handle the serialization of <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> objects into JSON.</p>
+Luckily, you can tackle all of these issues by using some custom <a href="https://github.com/FasterXML/jackson" target="_blank" rel="noopener">Jackson 2</a> code in combination with <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> and <a href="https://spring.io/guides/gs/rest-service/" target="_blank" rel="noopener">Spring&#8217;s REST support</a>.  In part
+one of this series, I will show how to handle the serialization of <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> objects into JSON.</p>
 </div>
 </div>
 </div>
@@ -116,8 +116,8 @@ one of this series, I will show how to handle the serialization of <a href="http
 <h2 id="_simple_rest_controller">Simple Rest Controller</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This first thing that you will need to create is a <code>RestController</code> to expose access to your <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> objects.  Let&#8217;s assume that you have
-the following <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> object defined in your <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> definition file:</p>
+<p>This first thing that you will need to create is a <code>RestController</code> to expose access to your <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> objects.  Let&#8217;s assume that you have
+the following <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> object defined in your <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> definition file:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -185,10 +185,10 @@ public class BookController {
 </div>
 <div class="paragraph">
 <p>When an HTTP GET is made to <a href="http://&lt;server&gt;:&lt;port&gt;/api/v1/books" class="bare">http://&lt;server&gt;:&lt;port&gt;/api/v1/books</a> with the query string <code>?title=&lt;some title&gt;</code> that matches a known book, the book will be
-returned in JSON format.  As mentioned earlier, this will work with <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> objects out of the box, as <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> includes <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> support for
+returned in JSON format.  As mentioned earlier, this will work with <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> objects out of the box, as <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> includes <a href="https://github.com/FasterXML/jackson" target="_blank" rel="noopener">Jackson 2</a> support for
 controllers annotated with the <code>RestController</code> annotation, but will included unwanted fields.  To address this, the next step is to add a custom
-<a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> serializer.  In this example, the code has been extracted to an abstract class to make it easier to add additional serializers and/or for
-cases where composition is used in the <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> definition file:</p>
+<a href="https://github.com/FasterXML/jackson" target="_blank" rel="noopener">Jackson 2</a> serializer.  In this example, the code has been extracted to an abstract class to make it easier to add additional serializers and/or for
+cases where composition is used in the <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> definition file:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -284,13 +284,13 @@ public abstract class AbstractThriftSerializer&lt;E extends TFieldIdEnum, T exte
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>AbstractThriftSerializer</code> extends the <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> <code>JsonSerializer</code> to provide instructions to <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> on how to convert
-a <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> based object to JSON.  In particular, it uses the <code>TFieldIdEnum</code> enumeration found in each <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> generated class
+<p>The <code>AbstractThriftSerializer</code> extends the <a href="https://github.com/FasterXML/jackson" target="_blank" rel="noopener">Jackson 2</a> <code>JsonSerializer</code> to provide instructions to <a href="https://github.com/FasterXML/jackson" target="_blank" rel="noopener">Jackson 2</a> on how to convert
+a <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> based object to JSON.  In particular, it uses the <code>TFieldIdEnum</code> enumeration found in each <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> generated class
 that provides metadata about each field in the class.  If a value has been set for the each field, the value is converted
 to JSON based on the Java type associated with that field.  In addition, some additional logic was added to convert the
-camel cased field names to lower case underscore format using <a href="https://github.com/google/guava" target="_blank">Google Guava</a>'s <code>CaseFormat</code> utility.  Implementations of this abstract
+camel cased field names to lower case underscore format using <a href="https://github.com/google/guava" target="_blank" rel="noopener">Google Guava</a>'s <code>CaseFormat</code> utility.  Implementations of this abstract
 class simply need to provide access to the <code>TFieldIdEnum</code> enumeration declared within the class, as well as the specific type
-for registration with <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a>:</p>
+for registration with <a href="https://github.com/FasterXML/jackson" target="_blank" rel="noopener">Jackson 2</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -314,7 +314,7 @@ public class BookSerializer extends AbstractThriftSerializer&lt;Book._Fields, Bo
 </div>
 </div>
 <div class="paragraph">
-<p>The final step is to register the custom serializer with <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> so that the REST
+<p>The final step is to register the custom serializer with <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> so that the REST
 controller will use it when converting our <code>Book</code> object to JSON.  Let&#8217;s re-visit the <code>BookController</code>:</p>
 </div>
 <div class="listingblock">
@@ -373,9 +373,9 @@ public class BookController implements InitializingBean {
 </div>
 <div class="paragraph">
 <p>So, what did we add?  First, we modified the <code>BookController</code> to implement the <code>InitializingBean</code> interface so that we could handle the
-<a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> configuration at bean creation time.  Second, we injected the <code>MappingJackson2HttpMessageConverter</code>, which is provided by
+<a href="https://github.com/FasterXML/jackson" target="_blank" rel="noopener">Jackson 2</a> configuration at bean creation time.  Second, we injected the <code>MappingJackson2HttpMessageConverter</code>, which is provided by
 {sprinb_boot} to handle the conversion of entities to JSON when a controller action is marked to produce JSON.  Finally, we implemented
-the <code>afterPropertiesSet</code> method of the <code>InitializingBean</code> interface to register our <code>BookSerializer</code> with the <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> <code>ObjectMapper</code>
+the <code>afterPropertiesSet</code> method of the <code>InitializingBean</code> interface to register our <code>BookSerializer</code> with the <a href="https://github.com/FasterXML/jackson" target="_blank" rel="noopener">Jackson 2</a> <code>ObjectMapper</code>
 used by the <code>MappingJackson2HttpMessageConverter</code>.  Now, when we perform an HTTP GET against our endpoint for a book title that matches
 an existing book, we will see the following JSON response:</p>
 </div>
@@ -395,9 +395,9 @@ an existing book, we will see the following JSON response:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>So, what did we accomplish.  First, we were able to customize how <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> converts an object to JSON.  Second, we were able to convert our
-<a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> objects to JSON in a manner of our choosing.  Third, we did all of this without having to create any new DTO&#8217;s or extend from our
-generated <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> objects.  In the next post, I will show how to handle the custom deserialization of JSON into <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> based objects.</p>
+<p>So, what did we accomplish.  First, we were able to customize how <a href="https://github.com/FasterXML/jackson" target="_blank" rel="noopener">Jackson 2</a> converts an object to JSON.  Second, we were able to convert our
+<a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> objects to JSON in a manner of our choosing.  Third, we did all of this without having to create any new DTO&#8217;s or extend from our
+generated <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> objects.  In the next post, I will show how to handle the custom deserialization of JSON into <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> based objects.</p>
 </div>
 </div>
 </div></p>
@@ -438,7 +438,7 @@ generated <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

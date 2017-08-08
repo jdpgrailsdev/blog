@@ -101,9 +101,9 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/08/05/docker_upgrade.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph">
-<p>Not too long ago, the <a href="http://www.docker.com/" target="_blank">Docker</a> project released 1.0 release, which among many improvements includes a new default port for <a href="http://www.docker.com/" target="_blank">Docker</a>.  To update from <a href="http://www.docker.com/" target="_blank">Docker</a>
- &lt; 1.0 to <a href="http://www.docker.com/" target="_blank">Docker</a> &gt;= 1.0, you may run into issues as the port that <a href="http://www.docker.com/" target="_blank">Docker</a> listens on by default has changed from 4243 to 2375.  While things
-may appear to start correctly after an upgrade, you may see the following error when attempting to run any <a href="http://www.docker.com/" target="_blank">Docker</a> client command:</p>
+<p>Not too long ago, the <a href="http://www.docker.com/" target="_blank" rel="noopener">Docker</a> project released 1.0 release, which among many improvements includes a new default port for <a href="http://www.docker.com/" target="_blank" rel="noopener">Docker</a>.  To update from <a href="http://www.docker.com/" target="_blank" rel="noopener">Docker</a>
+ &lt; 1.0 to <a href="http://www.docker.com/" target="_blank" rel="noopener">Docker</a> &gt;= 1.0, you may run into issues as the port that <a href="http://www.docker.com/" target="_blank" rel="noopener">Docker</a> listens on by default has changed from 4243 to 2375.  While things
+may appear to start correctly after an upgrade, you may see the following error when attempting to run any <a href="http://www.docker.com/" target="_blank" rel="noopener">Docker</a> client command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -113,8 +113,8 @@ Cannot connect to the Docker daemon. Is 'docker -d' running on this host?</code>
 </div>
 </div>
 <div class="paragraph">
-<p>This is because your <a href="https://www.virtualbox.org/" target="_blank">Virtual Box</a> "boot2docker-vm" image is still listening on the old port and therefore is not receiving the forwarded commands.  You can verify this by
-starting up <a href="https://github.com/boot2docker/boot2docker" target="_blank">Boot2Docker</a> and ssh&#8217;ing (<code>boot2docker ssh</code>) into the VM to check the port that docker is listening on:</p>
+<p>This is because your <a href="https://www.virtualbox.org/" target="_blank" rel="noopener">Virtual Box</a> "boot2docker-vm" image is still listening on the old port and therefore is not receiving the forwarded commands.  You can verify this by
+starting up <a href="https://github.com/boot2docker/boot2docker" target="_blank" rel="noopener">Boot2Docker</a> and ssh&#8217;ing (<code>boot2docker ssh</code>) into the VM to check the port that docker is listening on:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -128,7 +128,7 @@ tcp        0      0 :::4243                :::*                    LISTEN      6
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Update to latest <a href="https://github.com/boot2docker/boot2docker" target="_blank">Boot2Docker</a> and <a href="http://www.docker.com/" target="_blank">Docker</a> via <a href="http://brew.sh/" target="_blank">Homebrew</a> (installing <a href="https://github.com/boot2docker/boot2docker" target="_blank">Boot2Docker</a> will automatically install/update <a href="http://www.docker.com/" target="_blank">Docker</a> to the corresponding version).</p>
+<p>Update to latest <a href="https://github.com/boot2docker/boot2docker" target="_blank" rel="noopener">Boot2Docker</a> and <a href="http://www.docker.com/" target="_blank" rel="noopener">Docker</a> via <a href="http://brew.sh/" target="_blank" rel="noopener">Homebrew</a> (installing <a href="https://github.com/boot2docker/boot2docker" target="_blank" rel="noopener">Boot2Docker</a> will automatically install/update <a href="http://www.docker.com/" target="_blank" rel="noopener">Docker</a> to the corresponding version).</p>
 </li>
 <li>
 <p>Run <code>boot2docker delete</code>.</p>
@@ -140,7 +140,7 @@ tcp        0      0 :::4243                :::*                    LISTEN      6
 <p>Run <code>boot2docker init</code></p>
 </li>
 <li>
-<p>Open <a href="https://www.virtualbox.org/" target="_blank">Virtual Box</a>, select the <code>boot2docker-vm</code> and click on the "Settings" button.</p>
+<p>Open <a href="https://www.virtualbox.org/" target="_blank" rel="noopener">Virtual Box</a>, select the <code>boot2docker-vm</code> and click on the "Settings" button.</p>
 <div class="olist loweralpha">
 <ol class="loweralpha" type="a">
 <li>
@@ -156,7 +156,7 @@ tcp        0      0 :::4243                :::*                    LISTEN      6
 <p>Run <code>boot2docker ssh</code></p>
 </li>
 <li>
-<p>In the VM, run the following command to verify that <a href="http://www.docker.com/" target="_blank">Docker</a> is listening on port 2375:</p>
+<p>In the VM, run the following command to verify that <a href="http://www.docker.com/" target="_blank" rel="noopener">Docker</a> is listening on port 2375:</p>
 </li>
 </ol>
 </div>
@@ -169,7 +169,7 @@ tcp        0      0 :::2375                 :::*                    LISTEN      
 </div>
 </div>
 <div class="paragraph">
-<p>You should now be able to connect to <a href="http://www.docker.com/" target="_blank">Docker</a> and use the command line client and the REST API!</p>
+<p>You should now be able to connect to <a href="http://www.docker.com/" target="_blank" rel="noopener">Docker</a> and use the command line client and the REST API!</p>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/08/05/docker_upgrade.html"></div>
@@ -208,7 +208,7 @@ tcp        0      0 :::2375                 :::*                    LISTEN      
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

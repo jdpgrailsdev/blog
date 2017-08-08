@@ -103,19 +103,19 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Recently, I have been working a lot with <a href="http://zookeeper.apache.org/" target="_blank">Apache ZooKeeper</a>.  <a href="http://zookeeper.apache.org/" target="_blank">Apache ZooKeeper</a> provides a Java-based driver, but it does leave a little bit to be desired.  In steps <a href="http://curator.apache.org/" target="_blank">Apache Curator</a>, which was originally created and open-sourced
-by <a href="https://github.com/netflix/curator">Neflix</a> and is now maintained by Apache.  <a href="http://curator.apache.org/" target="_blank">Apache Curator</a> uses a fluent-style syntax to making using <a href="http://zookeeper.apache.org/" target="_blank">Apache ZooKeeper</a> much easier.  In particular, <a href="http://curator.apache.org/" target="_blank">Apache Curator</a> contains a more robust client class that handles things such
-as retry attempts, listeners and other utilities that would otherwise need to be manually wired up using the low-level Java-based driver.  In order to support the use of <a href="http://curator.apache.org/" target="_blank">Apache Curator</a> within a Spring-based application,
-I decided to create a library that makes it easy to define <a href="http://curator.apache.org/" target="_blank">Apache Curator</a> clients in a Spring configuration for use in an application.  One of the thinks to know about the <a href="http://curator.apache.org/" target="_blank">Apache Curator</a> client is that you only need one
-per instance/ensemble of <a href="http://zookeeper.apache.org/" target="_blank">Apache ZooKeeper</a>.  Therefore, using Spring to manage the injection of a Singleton bean into a class that needs access to the client is a perfect fit.  The repository can be found on
-<a href="https://github.com/jdpgrailsdev/spring-curator" target="_blank">GitHub</a>.  Please check it out and let me know what you think.  As always, contributions are welcome!</p>
+<p>Recently, I have been working a lot with <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a>.  <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a> provides a Java-based driver, but it does leave a little bit to be desired.  In steps <a href="http://curator.apache.org/" target="_blank" rel="noopener">Apache Curator</a>, which was originally created and open-sourced
+by <a href="https://github.com/netflix/curator">Neflix</a> and is now maintained by Apache.  <a href="http://curator.apache.org/" target="_blank" rel="noopener">Apache Curator</a> uses a fluent-style syntax to making using <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a> much easier.  In particular, <a href="http://curator.apache.org/" target="_blank" rel="noopener">Apache Curator</a> contains a more robust client class that handles things such
+as retry attempts, listeners and other utilities that would otherwise need to be manually wired up using the low-level Java-based driver.  In order to support the use of <a href="http://curator.apache.org/" target="_blank" rel="noopener">Apache Curator</a> within a Spring-based application,
+I decided to create a library that makes it easy to define <a href="http://curator.apache.org/" target="_blank" rel="noopener">Apache Curator</a> clients in a Spring configuration for use in an application.  One of the thinks to know about the <a href="http://curator.apache.org/" target="_blank" rel="noopener">Apache Curator</a> client is that you only need one
+per instance/ensemble of <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a>.  Therefore, using Spring to manage the injection of a Singleton bean into a class that needs access to the client is a perfect fit.  The repository can be found on
+<a href="https://github.com/jdpgrailsdev/spring-curator" target="_blank" rel="noopener">GitHub</a>.  Please check it out and let me know what you think.  As always, contributions are welcome!</p>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_future_enhancements">Future Enhancements</h3>
 <div class="paragraph">
-<p>Currently, the <a href="https://github.com/jdpgrailsdev/spring-curator" target="_blank">spring-curator</a> library only supports the definition, creation and injection of <a href="http://curator.apache.org/" target="_blank">Apache Curator</a> client instances.  In the future, I would like to add the
+<p>Currently, the <a href="https://github.com/jdpgrailsdev/spring-curator" target="_blank" rel="noopener">spring-curator</a> library only supports the definition, creation and injection of <a href="http://curator.apache.org/" target="_blank" rel="noopener">Apache Curator</a> client instances.  In the future, I would like to add the
 following support to the <code>spring-curator</code> library:</p>
 </div>
 <div class="ulist">
@@ -200,7 +200,7 @@ following support to the <code>spring-curator</code> library:</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

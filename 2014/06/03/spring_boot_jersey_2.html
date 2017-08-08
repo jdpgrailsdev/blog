@@ -101,21 +101,21 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/06/03/spring_boot_jersey_2.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph">
-<p>It is pretty simple to spin up a micro REST service using <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> and <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a>.  In fact, there are various tutorials out there that show how this can be done with very little code/configuration:</p>
+<p>It is pretty simple to spin up a micro REST service using <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> and <a href="https://jersey.java.net/" target="_blank" rel="noopener">Jersey 2.x</a>.  In fact, there are various tutorials out there that show how this can be done with very little code/configuration:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://github.com/dsyer/spring-boot-jersey" target="_blank">Spring Boot Jersey module</a></p>
+<p><a href="https://github.com/dsyer/spring-boot-jersey" target="_blank" rel="noopener">Spring Boot Jersey module</a></p>
 </li>
 <li>
-<p><a href="http://geowarin.github.io/spring-boot/jersey/2014/01/31/a-simple-spring-boot-and-jersey-application.html" target="_blank">A Simple Spring Boot and Jersey Application</a></p>
+<p><a href="http://geowarin.github.io/spring-boot/jersey/2014/01/31/a-simple-spring-boot-and-jersey-application.html" target="_blank" rel="noopener">A Simple Spring Boot and Jersey Application</a></p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p><a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a> also provides a nice <a href="https://jersey.java.net/documentation/latest/spring.html" target="_blank">Spring support module</a>, which makes it easy to register <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a> resources as Spring components.  The first step
-is to create a Spring-based <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a> resource configuration:</p>
+<p><a href="https://jersey.java.net/" target="_blank" rel="noopener">Jersey 2.x</a> also provides a nice <a href="https://jersey.java.net/documentation/latest/spring.html" target="_blank" rel="noopener">Spring support module</a>, which makes it easy to register <a href="https://jersey.java.net/" target="_blank" rel="noopener">Jersey 2.x</a> resources as Spring components.  The first step
+is to create a Spring-based <a href="https://jersey.java.net/" target="_blank" rel="noopener">Jersey 2.x</a> resource configuration:</p>
 </div>
 <div class="listingblock">
 <div class="title">JerseyConfig.java</div>
@@ -138,7 +138,7 @@ public class JerseyConfig extends ResourceConfig {
 </div>
 </div>
 <div class="paragraph">
-<p>Once you have the configuration created (and Spring set up to component scan it at startup up), you also need to create a servlet to register the configuration with <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a>:</p>
+<p>Once you have the configuration created (and Spring set up to component scan it at startup up), you also need to create a servlet to register the configuration with <a href="https://jersey.java.net/" target="_blank" rel="noopener">Jersey 2.x</a>:</p>
 </div>
 <div class="listingblock">
 <div class="title">ApplicationConfig.java</div>
@@ -166,7 +166,7 @@ public class ApplicationConfig {
 </div>
 </div>
 <div class="paragraph">
-<p>This is pretty simple, but when you start up the application and then make a call to your REST resource, you may notice that <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a> is not initialized until this first call:</p>
+<p>This is pretty simple, but when you start up the application and then make a call to your REST resource, you may notice that <a href="https://jersey.java.net/" target="_blank" rel="noopener">Jersey 2.x</a> is not initialized until this first call:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -176,8 +176,8 @@ public class ApplicationConfig {
 </div>
 </div>
 <div class="paragraph">
-<p>This means that the first request to your service incurs the cost of initializing <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a>.  Luckily, there is a simple fix that will ensure that <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a> is initialized on startup.  We can add
-a call to the <code>setLoadOnStartup()</code> method of the <code>ServletRegistration</code> instance in our Spring configuration to ensure that <a href="https://jersey.java.net/" target="_blank">Jersey 2.x</a> is initialized upon application start up:</p>
+<p>This means that the first request to your service incurs the cost of initializing <a href="https://jersey.java.net/" target="_blank" rel="noopener">Jersey 2.x</a>.  Luckily, there is a simple fix that will ensure that <a href="https://jersey.java.net/" target="_blank" rel="noopener">Jersey 2.x</a> is initialized on startup.  We can add
+a call to the <code>setLoadOnStartup()</code> method of the <code>ServletRegistration</code> instance in our Spring configuration to ensure that <a href="https://jersey.java.net/" target="_blank" rel="noopener">Jersey 2.x</a> is initialized upon application start up:</p>
 </div>
 <div class="listingblock">
 <div class="title">ApplicationConfig.java</div>
@@ -252,7 +252,7 @@ public class ApplicationConfig {
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

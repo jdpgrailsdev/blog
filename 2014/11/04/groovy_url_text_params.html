@@ -101,8 +101,8 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/11/04/groovy_url_text_params.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph">
-<p>A while back, I wrote a <a href="http://gradle.org" target="_blank">Gradle</a> plugin that would query the <a href="http://maven.apache.org/" target="_blank">Maven</a> metadata for an artifact in order to automatically determine the next version number
-for a sub-model artifact in a project.  To do so, I used the following code to retrieve and parse the <a href="http://maven.apache.org/" target="_blank">Maven</a> XML metadata:</p>
+<p>A while back, I wrote a <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin that would query the <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> metadata for an artifact in order to automatically determine the next version number
+for a sub-model artifact in a project.  To do so, I used the following code to retrieve and parse the <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> XML metadata:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -114,7 +114,7 @@ latestReleaseVersion = metadata.versioning.release</code></pre>
 <div class="paragraph">
 <p>The above code works great, until you run it in a scenario where you cannot connect to the URL provided by the repository.  When this happens, the code
 waits a long time to determine that the connection cannot be established (as it is using the <code>URL</code> defaults provided by Java for the connection and read
-timeouts).  To make this fail faster in the scenarios, I followed some pointers provided by <a href="http://mrhaki.blogspot.com/2011/09/groovy-goodness-use-connection.html" target="_blank">Mr. Haki</a>:</p>
+timeouts).  To make this fail faster in the scenarios, I followed some pointers provided by <a href="http://mrhaki.blogspot.com/2011/09/groovy-goodness-use-connection.html" target="_blank" rel="noopener">Mr. Haki</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -124,7 +124,7 @@ latestReleaseVersion = metadata.versioning.release</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>As of <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> 1.8.1, you can pass the underlying <code>URLConnection&#8217;s parameters to the `getText</code> method.  In the example above, we have passed both the <code>connectTimeout</code>
+<p>As of <a href="http://groovy.codehaus.org/" target="_blank" rel="noopener">Groovy</a> 1.8.1, you can pass the underlying <code>URLConnection&#8217;s parameters to the `getText</code> method.  In the example above, we have passed both the <code>connectTimeout</code>
 and <code>readTimeout</code> to the <code>getText</code> method to control when the connection will give up.  This ensures that the code will now fail faster in those offline scenarios.</p>
 </div></p>
 
@@ -164,7 +164,7 @@ and <code>readTimeout</code> to the <code>getText</code> method to control when 
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

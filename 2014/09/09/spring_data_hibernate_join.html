@@ -101,10 +101,10 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/09/09/spring_data_hibernate_join.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph">
-<p>If you have used <a href="http://hibernate.org" target="_blank">Hibernate</a> as your ORM for any length of time, you have inevitably run into the
-<a href="http://docs.jboss.org/hibernate/orm/3.3/reference/en-US/html/performance.html#performance-fetching-custom" target="_blank">N+1 problem</a>.  This occurs when
-<a href="http://hibernate.org" target="_blank">Hibernate</a> queries an entity that has a collection of children entities that does not use a <code>JOIN</code> fetch mode to retrieve the children.  The simple solution
-when using <a href="http://hibernate.org" target="_blank">Hibernate</a> directly is to set the <code>FetchMode</code> to <code>JOIN</code>:</p>
+<p>If you have used <a href="http://hibernate.org" target="_blank" rel="noopener">Hibernate</a> as your ORM for any length of time, you have inevitably run into the
+<a href="http://docs.jboss.org/hibernate/orm/3.3/reference/en-US/html/performance.html#performance-fetching-custom" target="_blank" rel="noopener">N+1 problem</a>.  This occurs when
+<a href="http://hibernate.org" target="_blank" rel="noopener">Hibernate</a> queries an entity that has a collection of children entities that does not use a <code>JOIN</code> fetch mode to retrieve the children.  The simple solution
+when using <a href="http://hibernate.org" target="_blank" rel="noopener">Hibernate</a> directly is to set the <code>FetchMode</code> to <code>JOIN</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -115,11 +115,11 @@ when using <a href="http://hibernate.org" target="_blank">Hibernate</a> directly
 </div>
 </div>
 <div class="paragraph">
-<p>However, if you are using <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank">JPA</a> on top of <a href="http://hibernate.org" target="_blank">Hibernate</a>, there is no way to set the <code>FetchMode</code> used by <a href="http://hibernate.org" target="_blank">Hibernate</a> to <code>JOIN</code>.  In fact, <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank">JPA</a> only
-supports two types of fetching:  <code>EAGER</code> and <code>LAZY</code>.  Luckily, there is another <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank">JPA</a> API that can be used to address this problem:  <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a>.  The
-<a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a> library provides a <a href="http://spring.io/blog/2011/04/26/advanced-spring-data-jpa-specifications-and-querydsl/" target="_blank">Domain Driven Design Specifications</a>
+<p>However, if you are using <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank" rel="noopener">JPA</a> on top of <a href="http://hibernate.org" target="_blank" rel="noopener">Hibernate</a>, there is no way to set the <code>FetchMode</code> used by <a href="http://hibernate.org" target="_blank" rel="noopener">Hibernate</a> to <code>JOIN</code>.  In fact, <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank" rel="noopener">JPA</a> only
+supports two types of fetching:  <code>EAGER</code> and <code>LAZY</code>.  Luckily, there is another <a href="http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html" target="_blank" rel="noopener">JPA</a> API that can be used to address this problem:  <a href="http://projects.spring.io/spring-data-jpa/" target="_blank" rel="noopener">Spring Data JPA</a>.  The
+<a href="http://projects.spring.io/spring-data-jpa/" target="_blank" rel="noopener">Spring Data JPA</a> library provides a <a href="http://spring.io/blog/2011/04/26/advanced-spring-data-jpa-specifications-and-querydsl/" target="_blank" rel="noopener">Domain Driven Design Specifications</a>
 API that allows you to control the behavior of the generated query.  This will allow you to tweak things such as the fetch mode to ensure the proper instruction
-is passed to <a href="http://hibernate.org" target="_blank">Hibernate</a> to address the N+1 problem.  I&#8217;m not going to go into a bunch of details on how to use the <code>JpaSpecificationExecutor</code>, as the <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a>
+is passed to <a href="http://hibernate.org" target="_blank" rel="noopener">Hibernate</a> to address the N+1 problem.  I&#8217;m not going to go into a bunch of details on how to use the <code>JpaSpecificationExecutor</code>, as the <a href="http://projects.spring.io/spring-data-jpa/" target="_blank" rel="noopener">Spring Data JPA</a>
 documentation does a pretty good job of covering it.  What is more important is how to control the fetch mode using it:</p>
 </div>
 <div class="listingblock">
@@ -141,7 +141,7 @@ List&lt;User&gt; users = userRepository.findAll(spec);</code></pre>
 <div class="paragraph">
 <p>There are two important pieces of the example above.  The first is the setting of the <code>distinct</code> flag on the query to ensure that the proper (unique) results are returned as
 a result of the join.  The second is the addition of a <code>fetch</code> hint to the root entity, telling the specification to perform a left join of the root to the entity mapped
-by the "permissions" field of the root entity.  This ensures that <a href="http://hibernate.org" target="_blank">Hibernate</a> will now perform a join instead of N+1 queries to fetch the root entity and its associated
+by the "permissions" field of the root entity.  This ensures that <a href="http://hibernate.org" target="_blank" rel="noopener">Hibernate</a> will now perform a join instead of N+1 queries to fetch the root entity and its associated
 children.</p>
 </div></p>
 
@@ -181,7 +181,7 @@ children.</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

@@ -103,9 +103,9 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <p><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>In my <a href="http://jonathanpearlin.com/blog/2015/02/24/thrift_json_rest_spring_boot_part_i.html" target="_blank">previous post</a>, I discussed how
-to create a custom <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> serializer to handle the conversion of JSON into <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> objects within a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application that uses
-<a href="https://spring.io/guides/gs/rest-service/" target="_blank">Spring&#8217;s REST support</a>.  In this post, I am going to tackle the other side of the coin:  de-serialization, or converting an <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> object from JSON.</p>
+<p>In my <a href="http://jonathanpearlin.com/blog/2015/02/24/thrift_json_rest_spring_boot_part_i.html" target="_blank" rel="noopener">previous post</a>, I discussed how
+to create a custom <a href="https://github.com/FasterXML/jackson" target="_blank" rel="noopener">Jackson 2</a> serializer to handle the conversion of JSON into <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> objects within a <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> application that uses
+<a href="https://spring.io/guides/gs/rest-service/" target="_blank" rel="noopener">Spring&#8217;s REST support</a>.  In this post, I am going to tackle the other side of the coin:  de-serialization, or converting an <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> object from JSON.</p>
 </div>
 </div>
 </div>
@@ -113,7 +113,7 @@ to create a custom <a href="https://github.com/FasterXML/jackson" target="_blank
 <h2 id="_custom_de_serializer">Custom De-serializer</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Much like the previous example, we need to create a custom <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> de-serializer to handle the conversion of <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a>-based objects from JSON:</p>
+<p>Much like the previous example, we need to create a custom <a href="https://github.com/FasterXML/jackson" target="_blank" rel="noopener">Jackson 2</a> de-serializer to handle the conversion of <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a>-based objects from JSON:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -254,14 +254,14 @@ public abstract class AbstractThriftDeserializer&lt;E extends TFieldIdEnum, T ex
 </div>
 </div>
 <div class="paragraph">
-<p>This approach uses the <code>TFieldIdEnum</code> enumeration present in each <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> object that defines the available fields in the object
-to determine the mapping of the current JSON field into the <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> object.  In order to ensure proper type coercion, an additional
-method (<code>generateValueType</code>) is provided to handle cases where <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> needs to be instructed about possible generic types.  Finally,
-the generated <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> object is validated to ensure all required fields are present in the JSON.</p>
+<p>This approach uses the <code>TFieldIdEnum</code> enumeration present in each <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> object that defines the available fields in the object
+to determine the mapping of the current JSON field into the <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> object.  In order to ensure proper type coercion, an additional
+method (<code>generateValueType</code>) is provided to handle cases where <a href="https://github.com/FasterXML/jackson" target="_blank" rel="noopener">Jackson 2</a> needs to be instructed about possible generic types.  Finally,
+the generated <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> object is validated to ensure all required fields are present in the JSON.</p>
 </div>
 <div class="paragraph">
 <p>In order to make this solution re-usable, three <code>abstract</code> methods are provided so that this common logic for de-serialization can be re-used
-by more than one <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> object:</p>
+by more than one <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> object:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -347,8 +347,8 @@ public class BookController implements InitializingBean {
 </div>
 </div>
 <div class="paragraph">
-<p>Now, whenever a JSON payload is provided to the <code>createBook</code> method via an HTTP POST, <a href="https://github.com/FasterXML/jackson" target="_blank">Jackson 2</a> will handle the conversion of the JSON
-into our <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> <code>Book</code> object!  By combining both the serialization and de-serialization code, you can now re-use your <a href="https://thrift.apache.org/" target="_blank">Apache Thrift</a> model
+<p>Now, whenever a JSON payload is provided to the <code>createBook</code> method via an HTTP POST, <a href="https://github.com/FasterXML/jackson" target="_blank" rel="noopener">Jackson 2</a> will handle the conversion of the JSON
+into our <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> <code>Book</code> object!  By combining both the serialization and de-serialization code, you can now re-use your <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Apache Thrift</a> model
 as your DTO&#8217;s for an additional RESTful interface.</p>
 </div>
 </div>
@@ -390,7 +390,7 @@ as your DTO&#8217;s for an additional RESTful interface.</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

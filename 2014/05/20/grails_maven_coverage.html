@@ -101,8 +101,8 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/05/20/grails_maven_coverage.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph">
-<p>When working on upgrading a few <a href="http://grails.org" target="_blank">Grails</a> plugins to 2.3.x and converting them to be built using the <a href="http://grails.org/doc/latest/guide/commandLine.html#4.5%20Ant%20and%20Maven" target="_blank">Grails Maven Plugin</a>, I ran into a weird issue when
-executing unit tests with the <a href="https://github.com/beckje01/grails-code-coverage" target="_blank">Grails Code Coverage Plugin</a> installed and enabled:</p>
+<p>When working on upgrading a few <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> plugins to 2.3.x and converting them to be built using the <a href="http://grails.org/doc/latest/guide/commandLine.html#4.5%20Ant%20and%20Maven" target="_blank" rel="noopener">Grails Maven Plugin</a>, I ran into a weird issue when
+executing unit tests with the <a href="https://github.com/beckje01/grails-code-coverage" target="_blank" rel="noopener">Grails Code Coverage Plugin</a> installed and enabled:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -203,11 +203,11 @@ Exception Details:
 </div>
 </div>
 <div class="paragraph">
-<p>I should point out that the same exact unit tests (without any modifications) passed, even with instrumentation for the code coverage calculation, prior to upgrading from <a href="http://grails.org" target="_blank">Grails</a> 2.0.x to 2.3.x.  Could this be one of those subtle
-<a href="http://groovy.codehaus.org" target="_blank">Groovy</a> low-level changes that causes code that once ran fine to all of a sudden be incorrect?  After doing some searching on the internets, I discovered that Java 7 introduced much stricter verification than previous Java versions.
-As I was using Java 7 with <a href="http://grails.org" target="_blank">Grails</a> 2.0.x, my guess is that something in the underlying <a href="http://groovy.codehaus.org" target="_blank">Groovy</a> code in the updated version of <a href="http://grails.org" target="_blank">Grails</a> does not contain a valid stack map (in Java 7&#8217;s eyes) for the method(s) in question.  Luckily, the verifier can be
-disabled until the issue is resolved by the framework.  The <code>-Xverify:none</code> JVM argument can be used to tell the Java 7 verifier not to do its thing.  In order to tell the <a href="http://grails.org/doc/latest/guide/commandLine.html#4.5%20Ant%20and%20Maven" target="_blank">Grails Maven Plugin</a>
-to pass this JVM argument to the forked <a href="http://grails.org" target="_blank">Grails</a> process, I had to make the following tweak to my Maven POM file:</p>
+<p>I should point out that the same exact unit tests (without any modifications) passed, even with instrumentation for the code coverage calculation, prior to upgrading from <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> 2.0.x to 2.3.x.  Could this be one of those subtle
+<a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> low-level changes that causes code that once ran fine to all of a sudden be incorrect?  After doing some searching on the internets, I discovered that Java 7 introduced much stricter verification than previous Java versions.
+As I was using Java 7 with <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> 2.0.x, my guess is that something in the underlying <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> code in the updated version of <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> does not contain a valid stack map (in Java 7&#8217;s eyes) for the method(s) in question.  Luckily, the verifier can be
+disabled until the issue is resolved by the framework.  The <code>-Xverify:none</code> JVM argument can be used to tell the Java 7 verifier not to do its thing.  In order to tell the <a href="http://grails.org/doc/latest/guide/commandLine.html#4.5%20Ant%20and%20Maven" target="_blank" rel="noopener">Grails Maven Plugin</a>
+to pass this JVM argument to the forked <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> process, I had to make the following tweak to my Maven POM file:</p>
 </div>
 <div class="listingblock">
 <div class="title">pom.xml</div>
@@ -236,7 +236,7 @@ to pass this JVM argument to the forked <a href="http://grails.org" target="_bla
 </div>
 </div>
 <div class="paragraph">
-<p>After add the argument and re-running the tests, everything passed as expected.  I am still not sure if the problem lies with <a href="http://grails.org" target="_blank">Grails</a>, <a href="http://groovy.codehaus.org" target="_blank">Groovy</a> or the instrumentation provided by the <a href="https://github.com/beckje01/grails-code-coverage" target="_blank">Grails Code Coverage Plugin</a> or
+<p>After add the argument and re-running the tests, everything passed as expected.  I am still not sure if the problem lies with <a href="http://grails.org" target="_blank" rel="noopener">Grails</a>, <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> or the instrumentation provided by the <a href="https://github.com/beckje01/grails-code-coverage" target="_blank" rel="noopener">Grails Code Coverage Plugin</a> or
 some combination of all of those.  I will continue to keep an eye out for updates that appear to affect this issue in the hopes that the verifier can be re-enabled in the future.</p>
 </div></p>
 
@@ -276,7 +276,7 @@ some combination of all of those.  I will continue to keep an eye out for update
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

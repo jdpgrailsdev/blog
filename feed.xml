@@ -6,26 +6,37 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Tue, 20 Dec 2016 08:59:39 -0800</pubDate>
-        <lastBuildDate>Tue, 20 Dec 2016 08:59:39 -0800</lastBuildDate>
+        <pubDate>Tue, 8 Aug 2017 15:04:37 -0400</pubDate>
+        <lastBuildDate>Tue, 8 Aug 2017 15:04:37 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
         <item>
+            <title>Choosing an Application Framework for Microservices</title>
+            <link>http://jdpgrailsdev.github.io/blog/2017/08/08/blog_post.html</link>
+            <pubDate>Tue, 8 Aug 2017 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">2017/08/08/blog_post.html</guid>
+            <description>
+                    &lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Earlier this year, I authored a &lt;a href=&quot;https://blog.newrelic.com/2017/05/18/alerts-microservices-environment-spring-boot/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;blog post&lt;/a&gt; for &lt;a href=&quot;https://www.newrelic.com/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;New Relic&lt;/a&gt; where I discussed how my team decided to use :springboot: to build microservices.  Recently, the post has been picked up by a bunch of other outlets and has been making the rounds on the interwebs.  Please give it a read and am interested in your thoughts on the subject!&lt;/p&gt;
+&lt;/div&gt;
+            </description>
+        </item>
+        <item>
             <title>The Peculiar Case of the Kafka ConsumerIterator</title>
             <link>http://jdpgrailsdev.github.io/blog/2016/12/20/kafka_iterator.html</link>
-            <pubDate>Tue, 20 Dec 2016 00:00:00 -0800</pubDate>
+            <pubDate>Tue, 20 Dec 2016 00:00:00 -0500</pubDate>
             <guid isPermaLink="false">2016/12/20/kafka_iterator.html</guid>
             <description>
                     &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;&lt;em&gt;This post is written using &lt;a href=&quot;https://kafka.apache.org/082/documentation.html&quot; target=&quot;_blank&quot;&gt;Apache Kafka 0.8.2&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;This post is written using &lt;a href=&quot;https://kafka.apache.org/082/documentation.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Apache Kafka 0.8.2&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Creating a &lt;a href=&quot;https://kafka.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Kafka&lt;/a&gt; client is a pretty straight-forward and prescriptive endeavor.  What is not straight-forward or even expected is the behavior of the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; that is
-used to poll a &lt;a href=&quot;https://kafka.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Kafka&lt;/a&gt; topic/partition for messages.  More on this in a moment.  First, let&amp;#8217;s look at the typical setup to consume data from a &lt;a href=&quot;https://kafka.apache.org/&quot; target=&quot;_blank&quot;&gt;Apache Kafka&lt;/a&gt; stream
-(for the sake of keeping this post brief, I am going to skip the details around creating and configuring a &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerConnector.scala&quot; target=&quot;_blank&quot;&gt;ConsumerConnector&lt;/a&gt;):&lt;/p&gt;
+&lt;p&gt;Creating a &lt;a href=&quot;https://kafka.apache.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Apache Kafka&lt;/a&gt; client is a pretty straight-forward and prescriptive endeavor.  What is not straight-forward or even expected is the behavior of the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Iterator&lt;/a&gt; that is
+used to poll a &lt;a href=&quot;https://kafka.apache.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Apache Kafka&lt;/a&gt; topic/partition for messages.  More on this in a moment.  First, let&amp;#8217;s look at the typical setup to consume data from a &lt;a href=&quot;https://kafka.apache.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Apache Kafka&lt;/a&gt; stream
+(for the sake of keeping this post brief, I am going to skip the details around creating and configuring a &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerConnector.scala&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;ConsumerConnector&lt;/a&gt;):&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
@@ -36,7 +47,7 @@ final ConsumerIterator&amp;lt;byte[],byte[]&amp;gt; = streams.get(0).iterator();
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;With the &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala&quot; target=&quot;_blank&quot;&gt;ConsumerIterator&lt;/a&gt; in hand, the next step is to poll the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; for incoming messages:&lt;/p&gt;
+&lt;p&gt;With the &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;ConsumerIterator&lt;/a&gt; in hand, the next step is to poll the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Iterator&lt;/a&gt; for incoming messages:&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
@@ -48,13 +59,13 @@ final ConsumerIterator&amp;lt;byte[],byte[]&amp;gt; = streams.get(0).iterator();
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;‍
-‍This all seems pretty simple.  Now, back to the issue with this code:  the expectation is that this would check the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; for a message and if not present loop immediately and check
-again (standard &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; behavior).  However, this is not the case.  The behavior of the &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala&quot; target=&quot;_blank&quot;&gt;ConsumerIterator&lt;/a&gt; is actually controlled by the &lt;a href=&quot;https://kafka.apache.org/082/documentation.html#consumerconfigs&quot; target=&quot;_blank&quot;&gt;consumer.timeout.ms&lt;/a&gt; configuration setting.  This
-setting controls whether or not the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; &amp;#8220;throw(s) a timeout exception to the consumer if no message is available for consumption after the specified interval&amp;#8221;.  By default, this
-value is set to -1, which means that the call to &lt;code&gt;hasNext()&lt;/code&gt; will block indefinitely until a message is available on the topic/partition assigned to the consumer.  The &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Java documentation&lt;/a&gt;
-for the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; interface does not specify whether or not the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html#hasNext--&quot; target=&quot;_blank&quot;&gt;hasNext()&lt;/a&gt; method is allowed to block indefinitely, so its hard to say that the &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala&quot; target=&quot;_blank&quot;&gt;ConsumerIterator&lt;/a&gt; is violating the contract.
-However, this is certainly not the behavior anyone use to using the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; pattern in Java would expect, as collections typically don&amp;#8217;t block until data is available in the data structure.
-If the &lt;a href=&quot;https://kafka.apache.org/082/documentation.html#consumerconfigs&quot; target=&quot;_blank&quot;&gt;consumer.timeout.ms&lt;/a&gt; configuration setting is set to a positive value, the consumption code would need to be modified to handle a &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala#L114&quot; target=&quot;_blank&quot;&gt;ConsumerTimeoutException&lt;/a&gt;:&lt;/p&gt;
+‍This all seems pretty simple.  Now, back to the issue with this code:  the expectation is that this would check the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Iterator&lt;/a&gt; for a message and if not present loop immediately and check
+again (standard &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Iterator&lt;/a&gt; behavior).  However, this is not the case.  The behavior of the &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;ConsumerIterator&lt;/a&gt; is actually controlled by the &lt;a href=&quot;https://kafka.apache.org/082/documentation.html#consumerconfigs&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;consumer.timeout.ms&lt;/a&gt; configuration setting.  This
+setting controls whether or not the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Iterator&lt;/a&gt; &amp;#8220;throw(s) a timeout exception to the consumer if no message is available for consumption after the specified interval&amp;#8221;.  By default, this
+value is set to -1, which means that the call to &lt;code&gt;hasNext()&lt;/code&gt; will block indefinitely until a message is available on the topic/partition assigned to the consumer.  The &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Java documentation&lt;/a&gt;
+for the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Iterator&lt;/a&gt; interface does not specify whether or not the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html#hasNext--&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;hasNext()&lt;/a&gt; method is allowed to block indefinitely, so its hard to say that the &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;ConsumerIterator&lt;/a&gt; is violating the contract.
+However, this is certainly not the behavior anyone use to using the &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Iterator&lt;/a&gt; pattern in Java would expect, as collections typically don&amp;#8217;t block until data is available in the data structure.
+If the &lt;a href=&quot;https://kafka.apache.org/082/documentation.html#consumerconfigs&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;consumer.timeout.ms&lt;/a&gt; configuration setting is set to a positive value, the consumption code would need to be modified to handle a &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala#L114&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;ConsumerTimeoutException&lt;/a&gt;:&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
@@ -72,9 +83,9 @@ If the &lt;a href=&quot;https://kafka.apache.org/082/documentation.html#consumer
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
 &lt;p&gt;‍
-Now, the call to &lt;code&gt;hasNext()&lt;/code&gt; will behave more like an &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot;&gt;Iterator&lt;/a&gt; retrieved from a collection, which is to say it will not block indefinitely.  It is recommended that you do some testing to determine
-an acceptable timeout value to avoid looping too frequently, as this will cause an increase in CPU utilization by the loop.  It is also worth noting that the &lt;a href=&quot;https://kafka.apache.org/082/documentation.html#consumerconfigs&quot; target=&quot;_blank&quot;&gt;Kafka documentation&lt;/a&gt; does not directly
-link the configuration setting and the &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala&quot; target=&quot;_blank&quot;&gt;ConsumerIterator&lt;/a&gt; and this issue would most likely go unnoticed in scenarios where data is consistently available to the client.  In any case, this issue
+Now, the call to &lt;code&gt;hasNext()&lt;/code&gt; will behave more like an &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Iterator&lt;/a&gt; retrieved from a collection, which is to say it will not block indefinitely.  It is recommended that you do some testing to determine
+an acceptable timeout value to avoid looping too frequently, as this will cause an increase in CPU utilization by the loop.  It is also worth noting that the &lt;a href=&quot;https://kafka.apache.org/082/documentation.html#consumerconfigs&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Kafka documentation&lt;/a&gt; does not directly
+link the configuration setting and the &lt;a href=&quot;https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;ConsumerIterator&lt;/a&gt; and this issue would most likely go unnoticed in scenarios where data is consistently available to the client.  In any case, this issue
 highlights the need to take a deeper look at any API or library you include in your application in order to ensure that you understand exactly how it works and what performance impacts it may have
 on the execution of your code.&lt;/p&gt;
 &lt;/div&gt;
@@ -83,19 +94,19 @@ on the execution of your code.&lt;/p&gt;
         <item>
             <title>Testing a custom Gradle plugin with Gradle Test Kit</title>
             <link>http://jdpgrailsdev.github.io/blog/2016/03/29/gradle_test_kit.html</link>
-            <pubDate>Tue, 29 Mar 2016 00:00:00 -0700</pubDate>
+            <pubDate>Tue, 29 Mar 2016 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2016/03/29/gradle_test_kit.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
 &lt;div class=&quot;sectionbody&quot;&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;With the release of &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; 2.10, the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt; was included as an &quot;incubating&quot; feature to &quot;[aid] in testing  Gradle plugins and build logic generally.&quot;  Prior
-to the creation of the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt;, it had been fairly cumbersome to test custom &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugins.  Tests often involved using the &lt;a href=&quot;https://docs.gradle.org/current/javadoc/org/gradle/testfixtures/ProjectBuilder.html&quot;&gt;ProductBuilder&lt;/a&gt;
+&lt;p&gt;With the release of &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle&lt;/a&gt; 2.10, the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; was included as an &quot;incubating&quot; feature to &quot;[aid] in testing  Gradle plugins and build logic generally.&quot;  Prior
+to the creation of the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt;, it had been fairly cumbersome to test custom &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle&lt;/a&gt; plugins.  Tests often involved using the &lt;a href=&quot;https://docs.gradle.org/current/javadoc/org/gradle/testfixtures/ProjectBuilder.html&quot;&gt;ProductBuilder&lt;/a&gt;
 to create a dummy instance of a &lt;code&gt;Project&lt;/code&gt; and retrieving a declared &lt;code&gt;Task&lt;/code&gt; and executing it manually.  While this would test the task logic directly, it did not test the execution of the task as part of a
-normal &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; execution.  Furthermore, it would not exercise task-based caching, making it hard to verify that any configured inputs/outputs are being honored.  This is where the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt; can help.
-It is focused on functional testing, which means that it emulates what a user will see when attempting to run tasks via the command line or &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; wrapper.  Being an &quot;incubating&quot; feature, however, some of
-the documentation is lacking, especially when it comes to testing a custom &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin within the project that contains the plugin definition and source.  In this post, we will explore how to set up
-your custom plugin&amp;#8217;s project to use the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt;.&lt;/p&gt;
+normal &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle&lt;/a&gt; execution.  Furthermore, it would not exercise task-based caching, making it hard to verify that any configured inputs/outputs are being honored.  This is where the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; can help.
+It is focused on functional testing, which means that it emulates what a user will see when attempting to run tasks via the command line or &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle&lt;/a&gt; wrapper.  Being an &quot;incubating&quot; feature, however, some of
+the documentation is lacking, especially when it comes to testing a custom &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle&lt;/a&gt; plugin within the project that contains the plugin definition and source.  In this post, we will explore how to set up
+your custom plugin&amp;#8217;s project to use the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt;.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -103,7 +114,7 @@ your custom plugin&amp;#8217;s project to use the &lt;a href=&quot;https://docs.
 &lt;h2 id=&quot;_using_the_gradle_test_kit&quot;&gt;Using the Gradle Test Kit&lt;/h2&gt;
 &lt;div class=&quot;sectionbody&quot;&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The first step is to include the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt; as a &lt;code&gt;test&lt;/code&gt; scoped dependency in your project&amp;#8217;s &lt;code&gt;build.gradle&lt;/code&gt; file:&lt;/p&gt;
+&lt;p&gt;The first step is to include the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; as a &lt;code&gt;test&lt;/code&gt; scoped dependency in your project&amp;#8217;s &lt;code&gt;build.gradle&lt;/code&gt; file:&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
@@ -116,7 +127,7 @@ your custom plugin&amp;#8217;s project to use the &lt;a href=&quot;https://docs.
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;This will pull in the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt; libraries for use during the &lt;code&gt;test&lt;/code&gt; phase of your project.&lt;/p&gt;
+&lt;p&gt;This will pull in the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; libraries for use during the &lt;code&gt;test&lt;/code&gt; phase of your project.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -124,9 +135,9 @@ your custom plugin&amp;#8217;s project to use the &lt;a href=&quot;https://docs.
 &lt;h2 id=&quot;_creating_the_plugin_classpath&quot;&gt;Creating the Plugin Classpath&lt;/h2&gt;
 &lt;div class=&quot;sectionbody&quot;&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The next step, which is hard to determine from the documentation, is to make sure that custom plugin and its descriptor are on the classpath path when using the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt;.  In its current form,
-there is no easy way to pass/build this classpath as part of a &lt;a href=&quot;https://github.com/spockframework/spock&quot; target=&quot;_blank&quot;&gt;Spock Framework&lt;/a&gt; test at runtime.  The trick is to follow what is outlined in section 43.2.1 of the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt; documentation, which outlines
-how to create a text file containing the classpath to be used by the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt;:&lt;/p&gt;
+&lt;p&gt;The next step, which is hard to determine from the documentation, is to make sure that custom plugin and its descriptor are on the classpath path when using the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt;.  In its current form,
+there is no easy way to pass/build this classpath as part of a &lt;a href=&quot;https://github.com/spockframework/spock&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Spock Framework&lt;/a&gt; test at runtime.  The trick is to follow what is outlined in section 43.2.1 of the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; documentation, which outlines
+how to create a text file containing the classpath to be used by the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt;:&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
@@ -144,7 +155,7 @@ how to create a text file containing the classpath to be used by the &lt;a href=
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;In the example above, we use the &lt;code&gt;runtime&lt;/code&gt; classpath of the &lt;code&gt;test&lt;/code&gt; configuration to generate the classpath list to be passed to the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt; runner.  The example in the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt; documentation
+&lt;p&gt;In the example above, we use the &lt;code&gt;runtime&lt;/code&gt; classpath of the &lt;code&gt;test&lt;/code&gt; configuration to generate the classpath list to be passed to the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; runner.  The example in the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; documentation
 uses the &lt;code&gt;main&lt;/code&gt; configuration, which is fine if you don&amp;#8217;t need to provide any additional libraries for testing.  In my case, I needed to have some other custom plugins available for the functional test, but
 did not want those dependencies to be on my main &lt;code&gt;compile&lt;/code&gt; or &lt;code&gt;runtime&lt;/code&gt; classpath.  If you don&amp;#8217;t want to have to manually call this task each time you test your project, you can add the following your
 &lt;code&gt;build.gradle&lt;/code&gt; script to tie its execution to the &lt;code&gt;test&lt;/code&gt; task:&lt;/p&gt;
@@ -181,7 +192,7 @@ converted into &lt;code&gt;File&lt;/code&gt; objects and stored into a list:&lt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The &lt;code&gt;pluginClasspath&lt;/code&gt; list will be passed to the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt; runner via the &lt;code&gt;withPluginClasspath&lt;/code&gt; method of the builder, which we will see in a bit.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;pluginClasspath&lt;/code&gt; list will be passed to the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; runner via the &lt;code&gt;withPluginClasspath&lt;/code&gt; method of the builder, which we will see in a bit.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -227,11 +238,11 @@ converted into &lt;code&gt;File&lt;/code&gt; objects and stored into a list:&lt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;In the example above, notice that we build a full build script, which includes the application of our custom &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugin, and output it to &lt;code&gt;buildFile&lt;/code&gt; created in the setup seen
+&lt;p&gt;In the example above, notice that we build a full build script, which includes the application of our custom &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle&lt;/a&gt; plugin, and output it to &lt;code&gt;buildFile&lt;/code&gt; created in the setup seen
 previously.  This can be anything that you would do in a project&amp;#8217;s &lt;code&gt;build.gradle&lt;/code&gt; file.  You could even store these files in &lt;code&gt;src/test/resources&lt;/code&gt; and load and copy the contents of
-these files from the classpath and write it out to the file to be provided to the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt; runner.  In the &lt;code&gt;when&lt;/code&gt; block, we see the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt; in action.  Here, we set
-the project directory to the &lt;code&gt;TemporaryFolder&lt;/code&gt; that will contain the &lt;code&gt;build.gradle&lt;/code&gt; file, the arguments to be passed to &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; (e.g. the task(s) and switches), and the plugin
-classpath we generated in the setup.  Without the plugin classpath, you will see errors related to &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; being unable to locate any plugins that match your custom plugin&amp;#8217;s
+these files from the classpath and write it out to the file to be provided to the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; runner.  In the &lt;code&gt;when&lt;/code&gt; block, we see the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; in action.  Here, we set
+the project directory to the &lt;code&gt;TemporaryFolder&lt;/code&gt; that will contain the &lt;code&gt;build.gradle&lt;/code&gt; file, the arguments to be passed to &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle&lt;/a&gt; (e.g. the task(s) and switches), and the plugin
+classpath we generated in the setup.  Without the plugin classpath, you will see errors related to &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle&lt;/a&gt; being unable to locate any plugins that match your custom plugin&amp;#8217;s
 ID.  Finally, in the &lt;code&gt;then&lt;/code&gt; block, we see that we test to make sure the status of the task execution is the one we expected.  You can also inspect the output of the build by
 inspecting the &lt;code&gt;output&lt;/code&gt; field of the &lt;code&gt;BuildResult&lt;/code&gt;:&lt;/p&gt;
 &lt;/div&gt;
@@ -241,7 +252,7 @@ inspecting the &lt;code&gt;output&lt;/code&gt; field of the &lt;code&gt;BuildRes
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;This is also useful for debugging, as you can print out the contents of the result output to see the full output of the &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; execution.&lt;/p&gt;
+&lt;p&gt;This is also useful for debugging, as you can print out the contents of the result output to see the full output of the &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle&lt;/a&gt; execution.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -267,9 +278,9 @@ implementations on the classpath provided to the test kit runner.&lt;/p&gt;
 &lt;h2 id=&quot;_summary&quot;&gt;Summary&lt;/h2&gt;
 &lt;div class=&quot;sectionbody&quot;&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt; provides an excellent way to functionally test your custom &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot;&gt;Gradle&lt;/a&gt; plugins.  Because it uses actual build scripts, it is easy to build up a library of configurations
-that you want to continually test as changes are made to the custom plugin.  Furthermore, the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt; drastically reduces the amount of test code that you need to write,
-allowing you to more efficiently test your plugin.  All of these are great reasons to convert your plugin tests to use the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot;&gt;Gradle Test Kit&lt;/a&gt; or to write tests for the first time
+&lt;p&gt;The &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; provides an excellent way to functionally test your custom &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle&lt;/a&gt; plugins.  Because it uses actual build scripts, it is easy to build up a library of configurations
+that you want to continually test as changes are made to the custom plugin.  Furthermore, the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; drastically reduces the amount of test code that you need to write,
+allowing you to more efficiently test your plugin.  All of these are great reasons to convert your plugin tests to use the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; or to write tests for the first time
 if you don&amp;#8217;t currently have test coverage for your code.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -279,19 +290,19 @@ if you don&amp;#8217;t currently have test coverage for your code.&lt;/p&gt;
         <item>
             <title>Using Spock/CGLIB with Java 8 and Gradle</title>
             <link>http://jdpgrailsdev.github.io/blog/2015/08/18/java_8_spock_cglib_gradle.html</link>
-            <pubDate>Tue, 18 Aug 2015 00:00:00 -0700</pubDate>
+            <pubDate>Tue, 18 Aug 2015 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2015/08/18/java_8_spock_cglib_gradle.html</guid>
             <description>
                     &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;Recently, I attempted to convert a project that uses &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot;&gt;CGLIB&lt;/a&gt; and &lt;a href=&quot;https://github.com/spockframework/spock&quot; target=&quot;_blank&quot;&gt;Spock Framework&lt;/a&gt; to execute unit tests to use Java 8 source
+&lt;p&gt;Recently, I attempted to convert a project that uses &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;CGLIB&lt;/a&gt; and &lt;a href=&quot;https://github.com/spockframework/spock&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Spock Framework&lt;/a&gt; to execute unit tests to use Java 8 source
 and target versions.  When I went to run the unit tests, I was met with a nasty &lt;code&gt;java.lang.IllegalArgumentException&lt;/code&gt;.  Some
-quick internet searching showed that there is an existing issue with the currently released version of &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot;&gt;CGLIB&lt;/a&gt; and the
-version of the &lt;a href=&quot;https://github.com/llbit/ow2-asm&quot; target=&quot;_blank&quot;&gt;ASM&lt;/a&gt; library it depends on.  Despite  &lt;a href=&quot;https://github.com/cglib/cglib/issues/8&quot; target=&quot;_blank&quot;&gt;pleas&lt;/a&gt;
-from the community, an updated version of &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot;&gt;CGLIB&lt;/a&gt; with Java 8 compatibility has not yet been released.  However, there are commits on the project&amp;#8217;s trunk
-that add Java 8 compatibility.  Luckily, a quick look at the &lt;a href=&quot;https://github.com/spockframework/spock&quot; target=&quot;_blank&quot;&gt;Spock Framework&lt;/a&gt; source code showed me how to get around this issue.  The trick is to use &lt;a href=&quot;https://jitpack.io&quot; target=&quot;_blank&quot;&gt;JitPack.io&lt;/a&gt; as a Maven
+quick internet searching showed that there is an existing issue with the currently released version of &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;CGLIB&lt;/a&gt; and the
+version of the &lt;a href=&quot;https://github.com/llbit/ow2-asm&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;ASM&lt;/a&gt; library it depends on.  Despite  &lt;a href=&quot;https://github.com/cglib/cglib/issues/8&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;pleas&lt;/a&gt;
+from the community, an updated version of &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;CGLIB&lt;/a&gt; with Java 8 compatibility has not yet been released.  However, there are commits on the project&amp;#8217;s trunk
+that add Java 8 compatibility.  Luckily, a quick look at the &lt;a href=&quot;https://github.com/spockframework/spock&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Spock Framework&lt;/a&gt; source code showed me how to get around this issue.  The trick is to use &lt;a href=&quot;https://jitpack.io&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;JitPack.io&lt;/a&gt; as a Maven
 repository in your build script to build a particular commit hash of the project and expose it as a dependency for your project.  After some digging through the
-source, I determined that &lt;a href=&quot;https://github.com/cglib/cglib/commits/master&quot; target=&quot;_blank&quot;&gt;commit 52e118aca4&lt;/a&gt; is the proper one to use.
-To use this version of &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot;&gt;CGLIB&lt;/a&gt; in your &lt;code&gt;build.gradle&lt;/code&gt; file, you simply need to add the following:&lt;/p&gt;
+source, I determined that &lt;a href=&quot;https://github.com/cglib/cglib/commits/master&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;commit 52e118aca4&lt;/a&gt; is the proper one to use.
+To use this version of &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;CGLIB&lt;/a&gt; in your &lt;code&gt;build.gradle&lt;/code&gt; file, you simply need to add the following:&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class=&quot;listingblock&quot;&gt;
 &lt;div class=&quot;content&quot;&gt;
@@ -307,19 +318,19 @@ dependencies {
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;You can generate this information using &lt;a href=&quot;https://jitpack.io&quot; target=&quot;_blank&quot;&gt;JitPack.io&lt;/a&gt; itself by going to the following URL:  &lt;a href=&quot;https://jitpack.io/#cglib/cglib/52e118aca4&quot; class=&quot;bare&quot;&gt;https://jitpack.io/#cglib/cglib/52e118aca4&lt;/a&gt;.  Now, my project will get &lt;a href=&quot;https://jitpack.io&quot; target=&quot;_blank&quot;&gt;JitPack.io&lt;/a&gt;
-to build the custom release of &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot;&gt;CGLIB&lt;/a&gt; without me needing to build and push it into a repository!&lt;/p&gt;
+&lt;p&gt;You can generate this information using &lt;a href=&quot;https://jitpack.io&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;JitPack.io&lt;/a&gt; itself by going to the following URL:  &lt;a href=&quot;https://jitpack.io/#cglib/cglib/52e118aca4&quot; class=&quot;bare&quot;&gt;https://jitpack.io/#cglib/cglib/52e118aca4&lt;/a&gt;.  Now, my project will get &lt;a href=&quot;https://jitpack.io&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;JitPack.io&lt;/a&gt;
+to build the custom release of &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;CGLIB&lt;/a&gt; without me needing to build and push it into a repository!&lt;/p&gt;
 &lt;/div&gt;
             </description>
         </item>
         <item>
             <title>Upload File from Classpath/In-Memory Using Spring RestTemplate</title>
             <link>http://jdpgrailsdev.github.io/blog/2015/04/21/spring_file_upload.html</link>
-            <pubDate>Tue, 21 Apr 2015 00:00:00 -0700</pubDate>
+            <pubDate>Tue, 21 Apr 2015 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2015/04/21/spring_file_upload.html</guid>
             <description>
                     &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;File uploads via an HTTP POST to an end point are pretty easy using the &lt;code&gt;RestTemplate&lt;/code&gt; and &lt;code&gt;FileResource&lt;/code&gt; classes of the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot;&gt;Spring Framework&lt;/a&gt;.  However,
+&lt;p&gt;File uploads via an HTTP POST to an end point are pretty easy using the &lt;code&gt;RestTemplate&lt;/code&gt; and &lt;code&gt;FileResource&lt;/code&gt; classes of the &lt;a href=&quot;http://projects.spring.io/spring-framework/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Spring Framework&lt;/a&gt;.  However,
 this approach assumes that the file to be uploaded resides on disk.  What happens if you want to dynamically create the uploaded file in
 memory or want to use a file on the classpath?  The answer is to create a slight tweak to the &lt;code&gt;ByteArrayResource&lt;/code&gt; implementation so that
 the proper from data header attributes are set in the POST body.  To do this, first extend the &lt;code&gt;ByteArrayResource&lt;/code&gt; so that you can set
@@ -371,98 +382,6 @@ final ResponseEntity&amp;lt;Map&amp;lt;String,String&amp;gt;&amp;gt; response = 
 &lt;div class=&quot;content&quot;&gt;
 &lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code&gt;Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;upload.txt&quot;&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Load Testing with GPars and Google Guava</title>
-            <link>http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html</link>
-            <pubDate>Tue, 7 Apr 2015 00:00:00 -0700</pubDate>
-            <guid isPermaLink="false">2015/04/07/gpars_guava_load_test.html</guid>
-            <description>
-                    &lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;I set out a few days back to write a simple &lt;a href=&quot;http://groovy-lang.org/&quot; target=&quot;_blank&quot;&gt;Groovy&lt;/a&gt; script that would accomplish the following:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;ulist&quot;&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Send data to a &lt;a href=&quot;http://kafka.apache.org/&quot; target=&quot;_blank&quot;&gt;Kafka&lt;/a&gt; topic from X concurrent producers.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Run for a set duration&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Achieve a set number of sends per minute&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;To do so, I decided to use &lt;a href=&quot;http://www.gpars.org/guide/index.html&quot; target=&quot;_blank&quot;&gt;GPars Framework&lt;/a&gt;, which is a &quot;concurrency and parallelism library for Java and Groovy
-that gives you a number of high-level abstractions for writing concurrent and parallel code in Groovy.&quot;  Additionally,
-I decided to make use of the &lt;a href=&quot;https://github.com/google/guava&quot; target=&quot;_blank&quot;&gt;Google Guava&lt;/a&gt; &lt;a href=&quot;http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/RateLimiter.html&quot; target=&quot;_blank&quot;&gt;RateLimiter&lt;/a&gt;
-class to control how much data is produced.  The resulting script is pretty simple:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&quot;listingblock&quot;&gt;
-&lt;div class=&quot;content&quot;&gt;
-&lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;@Grapes([
-    @Grab(group=&apos;org.codehaus.gpars&apos;, module=&apos;gpars&apos;, version=&apos;1.2.1&apos;),
-    @Grab(group=&apos;com.google.guava&apos;, module=&apos;guava&apos;, version=&apos;18.0&apos;),
-    @GrabExclude(&apos;commons-logging:commons-logging&apos;)])
-
-def cli = new CliBuilder(usage:&apos;groovy loadTest.groovy &apos;)
-cli.p(longOpt:&apos;parallelism&apos;, args: 1, argName: &apos;parallelism&apos;, &apos;The number of producers to execute in parallel.  Defaults to 10.&apos;)
-cli.d(longOpt:&apos;duration&apos;, args: 1, argName: &apos;duration&apos;, &apos;The duration of the test in minutes.  Defaults to 1 minute.&apos;)
-cli.r(longOpt:&apos;target-rate&apos;, args: 1, argName: &apos;targetRate&apos;, &apos;The target aggregate rate of messages to be produced per minute.  Defaults to 60.&apos;)
-cli.h(longOpt:&apos;help&apos;, &apos;Displays the usage information for this script.&apos;)
-
-def run = { -&amp;gt;
-    // Do the actual work here (e.g. publish a message, etc)
-}
-
-def setup = { -&amp;gt;
-    // Do any pre-test setup here (e.g. retrieving data, configuration, etc)
-}
-
-def options = cli.parse(args)
-
-if(options?.h) {
-    cli.usage()
-} else {
-   def duration = options?.d ? TimeUnit.MINUTES.toMillis(options.d as long) :  TimeUnit.MINUTES.toMillis(1l)
-   def parallelism = options?.p ?: 10
-   def targetRate = options?.r ?: 60.0
-
-   println &apos;***********************************************&apos;
-   println &apos;Load Test&apos;
-   println &quot;Test will run for ${TimeUnit.MILLISECONDS.toMinutes(duration)} minute(s) using ${parallelism} producers with a target rate of ${targetRate} messages per minute.&quot;
-
-   setup()
-
-   println &apos;Starting the test....&apos;
-
-   def rateLimiter = RateLimiter.create((targetRate as double)/TimeUnit.MINUTES.toSeconds(1))
-   def startTime = System.currentTimeMillis()
-   def total = 0
-   while((System.currentTimeMillis() - startTime) &amp;lt; duration) {
-       GParsExecutorsPool.withPool(parallelism as int) { ExecutorService service -&amp;gt;
-           (parallelism as int).times {
-               rateLimiter.acquire()
-               service.submit({ run() } as Runnable)
-           }
-           total += parallelism as int
-       }
-       println &quot;Test iteration complete.  Total sent so far: ${total}, ${TimeUnit.MILLISECONDS.toSeconds(duration - (System.currentTimeMillis() - startTime))} second(s) remaining.&quot;
-   }
-   println &apos;Test complete.&apos;
-   System.exit(0)
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&quot;paragraph&quot;&gt;
-&lt;p&gt;The key points in the script above is the use of the &lt;code&gt;GParsExecutorsPool&lt;/code&gt; to handle the creation of a configured thread pool and the inclusion of
-the &lt;code&gt;RateLimiter&lt;/code&gt; to slow down the execution loop to meet the target rate.  Finally, all of this is done in a &lt;code&gt;while&lt;/code&gt; loop that keeps looping until
-the requested duration has been achieved.  The end result is a simple script that allows you to generate concurrent request load at a target rate for
-a set duration.&lt;/p&gt;
 &lt;/div&gt;
             </description>
         </item>

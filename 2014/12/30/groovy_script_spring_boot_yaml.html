@@ -101,13 +101,13 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/30/groovy_script_spring_boot_yaml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph">
-<p>In a <a href="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html" target="_blank">previous</a> blog post, I discussed how to load
-an application&#8217;s <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> configuration in a <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script.  This is a great way to test portions of your application without running the
-entire application.  However, this approach has limits.  When trying this with a <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> application, you miss out on a bunch of the magical
-auto-enabling done by <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a>.  This includes the ability of <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> to find certain properties and configuration files and load their
-contents for use by <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a>'s property placeholder mechanism.  In this post, I&#8217;ll discuss how to include a little extra <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> sauce to get the
-<a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> context to load a YAML file from the classpath and use its values for property placeholder replacement.  Let&#8217;s start by looking at how
-to tell the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> context how to load the YAML file:</p>
+<p>In a <a href="http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html" target="_blank" rel="noopener">previous</a> blog post, I discussed how to load
+an application&#8217;s <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a> configuration in a <a href="http://groovy.codehaus.org/" target="_blank" rel="noopener">Groovy</a> script.  This is a great way to test portions of your application without running the
+entire application.  However, this approach has limits.  When trying this with a <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> application, you miss out on a bunch of the magical
+auto-enabling done by <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>.  This includes the ability of <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> to find certain properties and configuration files and load their
+contents for use by <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a>'s property placeholder mechanism.  In this post, I&#8217;ll discuss how to include a little extra <a href="http://groovy.codehaus.org/" target="_blank" rel="noopener">Groovy</a> sauce to get the
+<a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a> context to load a YAML file from the classpath and use its values for property placeholder replacement.  Let&#8217;s start by looking at how
+to tell the <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a> context how to load the YAML file:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -131,9 +131,9 @@ to tell the <a href="http://projects.spring.io/spring-framework/" target="_blank
 <div class="paragraph">
 <p>The code above defines a new <code>PropertySourceLoader</code> class that produces a <code>PropertySource</code> wrapping the loaded YAML file.  This bean is responsible for reading
 in the contents of the <code>Resource</code> that contains the YAML file loaded from the classpath and converting those values to a <code>Map</code> that can be used
-by the property placeholder resolver.  You may notice that it checks to see the <a href="https://code.google.com/p/snakeyaml/" target="_blank">Snakeyaml</a> library is on the classpath.  This code is a copy of
-the code found in the <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> <code>YamlPropertySourceLoader</code>, with a small tweak to use the <code>YamlMapFactoryBean</code> instead of the <code>YamlPropertiesFactoryBean</code>
-(more on this in a bit).  The next step is to create a new Java-based configuration class to register the new <code>YamlMapPropertySourceLoader</code> with the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a>
+by the property placeholder resolver.  You may notice that it checks to see the <a href="https://code.google.com/p/snakeyaml/" target="_blank" rel="noopener">Snakeyaml</a> library is on the classpath.  This code is a copy of
+the code found in the <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> <code>YamlPropertySourceLoader</code>, with a small tweak to use the <code>YamlMapFactoryBean</code> instead of the <code>YamlPropertiesFactoryBean</code>
+(more on this in a bit).  The next step is to create a new Java-based configuration class to register the new <code>YamlMapPropertySourceLoader</code> with the <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a>
 context:</p>
 </div>
 <div class="listingblock">
@@ -164,9 +164,9 @@ class YamlConfiguration {
 <div class="paragraph">
 <p>The configuration above creates two beans:  one to enable the resolving of property placeholders based on the active profile and another to
 actually find and load the YAML configuration file from the classpath.  The special <code>PropertySourcePlaceholderConfiguration</code> is necessary to make
-sure that the configuration loaded from the classpath is added to the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> framework context.  Otherwise, simply provided the loader is not
+sure that the configuration loaded from the classpath is added to the <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a> framework context.  Otherwise, simply provided the loader is not
 enough to expose the loaded data to the context.  This custom class provides a mechanism to merge the newly found and created property source with those
-provided by <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a>:</p>
+provided by <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -193,7 +193,7 @@ provided by <a href="http://projects.spring.io/spring-framework/" target="_blank
 </div>
 <div class="paragraph">
 <p>The custom configurer uses the loaded YAML property source and the configured <code>Environment</code> to create a combined set of property sources that can be used for property placeholder replacement.
-Once you have this new configuration class in place, you need to register it with the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> context:</p>
+Once you have this new configuration class in place, you need to register it with the <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a> context:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -203,7 +203,7 @@ ctx.refresh()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>After wiring all of this together and running the <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script, I noticed that the script was upset with some, but not all, of the property placeholders.  After some digging around, I noticed
+<p>After wiring all of this together and running the <a href="http://groovy.codehaus.org/" target="_blank" rel="noopener">Groovy</a> script, I noticed that the script was upset with some, but not all, of the property placeholders.  After some digging around, I noticed
 that it was having issues with finding nested values in the YAML configuration.  For instance, let&#8217;s say you have the following YAML configuration file:</p>
 </div>
 <div class="listingblock">
@@ -217,7 +217,7 @@ debug: false</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>You would expect to be able to do something like this using the <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring Framework</a> <code>Value</code> annotation:</p>
+<p>You would expect to be able to do something like this using the <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a> <code>Value</code> annotation:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -226,7 +226,7 @@ private String hostUrl;</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>However, because the <a href="https://code.google.com/p/snakeyaml/" target="_blank">Snakeyaml</a> library that backs the <code>YamlMapFactoryBean</code> does a literal translation of the configuration to map, separating keys wherever it finds a '.' character, the resolver
+<p>However, because the <a href="https://code.google.com/p/snakeyaml/" target="_blank" rel="noopener">Snakeyaml</a> library that backs the <code>YamlMapFactoryBean</code> does a literal translation of the configuration to map, separating keys wherever it finds a '.' character, the resolver
 cannot find the key <code>service.host.url</code> (it could find <code>service</code> and <code>host</code> under <code>service</code>, etc).  One way to resolve this is to flatten out the map after loading it, but before returning it from the
 property source:</p>
 </div>
@@ -265,7 +265,7 @@ property source:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>In this updated version of the <code>YamlMapPropertySourceLoader</code>, we use some <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a>-foo to flatten out the map so that the keys will match the strings provided to the <code>Value</code> annotation.  Now, when this is combined
+<p>In this updated version of the <code>YamlMapPropertySourceLoader</code>, we use some <a href="http://groovy.codehaus.org/" target="_blank" rel="noopener">Groovy</a>-foo to flatten out the map so that the keys will match the strings provided to the <code>Value</code> annotation.  Now, when this is combined
 together and executed, you can run:</p>
 </div>
 <div class="listingblock">
@@ -274,7 +274,7 @@ together and executed, you can run:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>to resolve a property placeholder value retrieved from a YAML configuration file in your <a href="http://groovy.codehaus.org/" target="_blank">Groovy</a> script!</p>
+<p>to resolve a property placeholder value retrieved from a YAML configuration file in your <a href="http://groovy.codehaus.org/" target="_blank" rel="noopener">Groovy</a> script!</p>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/12/30/groovy_script_spring_boot_yaml.html"></div>
@@ -313,7 +313,7 @@ together and executed, you can run:</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

@@ -104,8 +104,8 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 <div class="sectionbody">
 <div class="paragraph">
 <p>In all of my projects, I typically like to include unit tests and unit test coverage analysis to determine the effectiveness of my tests.  While there
-are different Java code coverage packages out there, I normally use <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a>, mostly due to ease of use, features and familiarity with it.  In this
-post, I am going to cover the different ways to configure and use <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> as part of <a href="http://maven.apache.org/" target="_blank">Maven</a>, <a href="http://grails.org" target="_blank">Grails</a> and <a href="http://gradle.org" target="_blank">Gradle</a> projects.</p>
+are different Java code coverage packages out there, I normally use <a href="http://cobertura.github.io/cobertura/" target="_blank" rel="noopener">Cobertura</a>, mostly due to ease of use, features and familiarity with it.  In this
+post, I am going to cover the different ways to configure and use <a href="http://cobertura.github.io/cobertura/" target="_blank" rel="noopener">Cobertura</a> as part of <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a>, <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> and <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> projects.</p>
 </div>
 </div>
 </div>
@@ -113,8 +113,8 @@ post, I am going to cover the different ways to configure and use <a href="http:
 <h2 id="_maven">Maven</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In order to perform <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> instrumentation and generate coverage reports in a <a href="http://maven.apache.org/" target="_blank">Maven</a> project, the first thing that you will need to do is to
-include the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank">Cobertura Maven Plugin</a> in your project&#8217;s <code>pom.xml</code> file:</p>
+<p>In order to perform <a href="http://cobertura.github.io/cobertura/" target="_blank" rel="noopener">Cobertura</a> instrumentation and generate coverage reports in a <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> project, the first thing that you will need to do is to
+include the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank" rel="noopener">Cobertura Maven Plugin</a> in your project&#8217;s <code>pom.xml</code> file:</p>
 </div>
 <div class="listingblock">
 <div class="title">pom.xml</div>
@@ -162,25 +162,25 @@ include the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Instructs <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> to ignore trivial methods, such as getters and setters when producing the coverage report(s).</td>
+<td>Instructs <a href="http://cobertura.github.io/cobertura/" target="_blank" rel="noopener">Cobertura</a> to ignore trivial methods, such as getters and setters when producing the coverage report(s).</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Instructs <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> to ignore any references to methods of the <code>org.slf4j.Logger</code> class when producing the coverage report(s).</td>
+<td>Instructs <a href="http://cobertura.github.io/cobertura/" target="_blank" rel="noopener">Cobertura</a> to ignore any references to methods of the <code>org.slf4j.Logger</code> class when producing the coverage report(s).</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>Provides <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> with a list of compiled class files to ignore when producing the coverage report(s).</td>
+<td>Provides <a href="http://cobertura.github.io/cobertura/" target="_blank" rel="noopener">Cobertura</a> with a list of compiled class files to ignore when producing the coverage report(s).</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>Binds the <code>cobertura</code> goal of the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank">Cobertura Maven Plugin</a> to the <code>package</code> phase of the <a href="https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference" target="_blank">Maven Build Lifecycle</a>.</td>
+<td>Binds the <code>cobertura</code> goal of the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank" rel="noopener">Cobertura Maven Plugin</a> to the <code>package</code> phase of the <a href="https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference" target="_blank" rel="noopener">Maven Build Lifecycle</a>.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The configuration of the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank">Cobertura Maven Plugin</a> shown above will cause the <code>cobertura</code> goal to execute automatically during the <code>package</code> phase of the
-<a href="http://maven.apache.org/" target="_blank">Maven</a> lifecycle.  For instance, if the following command is executed on a <a href="http://maven.apache.org/" target="_blank">Maven</a> project:</p>
+<p>The configuration of the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank" rel="noopener">Cobertura Maven Plugin</a> shown above will cause the <code>cobertura</code> goal to execute automatically during the <code>package</code> phase of the
+<a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> lifecycle.  For instance, if the following command is executed on a <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> project:</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -188,7 +188,7 @@ include the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_
 </div>
 </div>
 <div class="paragraph">
-<p>then the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank">Cobertura Maven Plugin</a> will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
+<p>then the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank" rel="noopener">Cobertura Maven Plugin</a> will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
 manually invoke the plugin by running the goal explicitly in the project:</p>
 </div>
 <div class="literalblock">
@@ -197,12 +197,12 @@ manually invoke the plugin by running the goal explicitly in the project:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>For additional information on the configuration and use of the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank">Cobertura Maven Plugin</a>, consult the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/usage.html" target="_blank">usage</a> and
-<a href="http://mojo.codehaus.org/cobertura-maven-plugin/cobertura-mojo.html" target="_blank">cobertura goal</a> documentation.</p>
+<p>For additional information on the configuration and use of the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank" rel="noopener">Cobertura Maven Plugin</a>, consult the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/usage.html" target="_blank" rel="noopener">usage</a> and
+<a href="http://mojo.codehaus.org/cobertura-maven-plugin/cobertura-mojo.html" target="_blank" rel="noopener">cobertura goal</a> documentation.</p>
 </div>
 <div class="paragraph">
-<p>Finally, this all assumes that you have unit tests that will execute as part of the <code>test</code> phase of the <a href="https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference" target="_blank">Maven Build Lifecycle</a>.  Take
-a look at the <a href="http://maven.apache.org/surefire/maven-surefire-plugin/" target="_blank">Maven Surefire Plugin</a> for an example of how to execute unit tests as part of a <a href="http://maven.apache.org/" target="_blank">Maven</a> build.</p>
+<p>Finally, this all assumes that you have unit tests that will execute as part of the <code>test</code> phase of the <a href="https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference" target="_blank" rel="noopener">Maven Build Lifecycle</a>.  Take
+a look at the <a href="http://maven.apache.org/surefire/maven-surefire-plugin/" target="_blank" rel="noopener">Maven Surefire Plugin</a> for an example of how to execute unit tests as part of a <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> build.</p>
 </div>
 </div>
 </div>
@@ -210,8 +210,8 @@ a look at the <a href="http://maven.apache.org/surefire/maven-surefire-plugin/" 
 <h2 id="_grails">Grails</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Like with <a href="http://maven.apache.org/" target="_blank">Maven</a>, there is a <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> plugin for the <a href="http://grails.org" target="_blank">Grails</a> framework.  The first step to enabling the generation of <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> code coverage report(s) in a <a href="http://grails.org" target="_blank">Grails</a> project is to
-include the <a href="http://grails.org/plugin/code-coverage" target="_blank">Cobertura Grails Plugin</a> as a dependency in your <code>BuildConfig.groovy</code>, <code>pom.xml</code> or <code>build.gradle</code>, depending on which build system your project uses:</p>
+<p>Like with <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a>, there is a <a href="http://cobertura.github.io/cobertura/" target="_blank" rel="noopener">Cobertura</a> plugin for the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> framework.  The first step to enabling the generation of <a href="http://cobertura.github.io/cobertura/" target="_blank" rel="noopener">Cobertura</a> code coverage report(s) in a <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> project is to
+include the <a href="http://grails.org/plugin/code-coverage" target="_blank" rel="noopener">Cobertura Grails Plugin</a> as a dependency in your <code>BuildConfig.groovy</code>, <code>pom.xml</code> or <code>build.gradle</code>, depending on which build system your project uses:</p>
 </div>
 <div class="listingblock">
 <div class="title">BuildConfig.groovy</div>
@@ -250,7 +250,7 @@ include the <a href="http://grails.org/plugin/code-coverage" target="_blank">Cob
 </div>
 </div>
 <div class="paragraph">
-<p>The next step is to configure the <a href="http://grails.org/plugin/code-coverage" target="_blank">Cobertura Grails Plugin</a>, also in <code>BuildConfig.groovy</code>:</p>
+<p>The next step is to configure the <a href="http://grails.org/plugin/code-coverage" target="_blank" rel="noopener">Cobertura Grails Plugin</a>, also in <code>BuildConfig.groovy</code>:</p>
 </div>
 <div class="listingblock">
 <div class="title">BuildConfig.groovy</div>
@@ -276,13 +276,13 @@ include the <a href="http://grails.org/plugin/code-coverage" target="_blank">Cob
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Provides <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> with a list of compiled class files to ignore when producing the coverage report(s).</td>
+<td>Provides <a href="http://cobertura.github.io/cobertura/" target="_blank" rel="noopener">Cobertura</a> with a list of compiled class files to ignore when producing the coverage report(s).</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The configuration of the <a href="http://grails.org/plugin/code-coverage" target="_blank">Cobertura Grails Plugin</a> shown above will cause the the plugin to execute automatically when running the <code>test-app</code> <a href="http://grails.org" target="_blank">Grails</a> command.  For instance,
-if the following command is executed on a <a href="http://grails.org" target="_blank">Grails</a> project:</p>
+<p>The configuration of the <a href="http://grails.org/plugin/code-coverage" target="_blank" rel="noopener">Cobertura Grails Plugin</a> shown above will cause the the plugin to execute automatically when running the <code>test-app</code> <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> command.  For instance,
+if the following command is executed on a <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> project:</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -290,7 +290,7 @@ if the following command is executed on a <a href="http://grails.org" target="_b
 </div>
 </div>
 <div class="paragraph">
-<p>then the <a href="http://grails.org/plugin/code-coverage" target="_blank">Cobertura Grails Plugin</a> will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
+<p>then the <a href="http://grails.org/plugin/code-coverage" target="_blank" rel="noopener">Cobertura Grails Plugin</a> will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
 manually invoke the plugin by adding an additional parameter to the <code>test-app</code> command:</p>
 </div>
 <div class="literalblock">
@@ -299,10 +299,10 @@ manually invoke the plugin by adding an additional parameter to the <code>test-a
 </div>
 </div>
 <div class="paragraph">
-<p>For additional information on the configuration and use of the <a href="http://grails.org/plugin/code-coverage" target="_blank">Cobertura Grails Plugin</a>, consult the <a href="https://github.com/beckje01/grails-code-coverage" target="_blank">Grails Code Coverage plugin</a> documentation.</p>
+<p>For additional information on the configuration and use of the <a href="http://grails.org/plugin/code-coverage" target="_blank" rel="noopener">Cobertura Grails Plugin</a>, consult the <a href="https://github.com/beckje01/grails-code-coverage" target="_blank" rel="noopener">Grails Code Coverage plugin</a> documentation.</p>
 </div>
 <div class="paragraph">
-<p>As with the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank">Cobertura Maven Plugin</a>, the code coverage report(s) will only be generated if there are unit tests or source files that can be under test present in the project.</p>
+<p>As with the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank" rel="noopener">Cobertura Maven Plugin</a>, the code coverage report(s) will only be generated if there are unit tests or source files that can be under test present in the project.</p>
 </div>
 </div>
 </div>
@@ -310,9 +310,9 @@ manually invoke the plugin by adding an additional parameter to the <code>test-a
 <h2 id="_gradle">Gradle</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>There are multiple <a href="http://gradle.org" target="_blank">Gradle</a> plugins that provide <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> functionality to a <a href="http://gradle.org" target="_blank">Gradle</a> project.  The one that I prefer to use is the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank">Cobertura Gradle Plugin</a> that is maintained by Steve Saliman.
-This plugin provides much better configuration option and has much better documentation (at the time of writing) than the others.  Below is a sample <a href="http://gradle.org" target="_blank">Gradle</a> project file that includes the
-<a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank">Cobertura Gradle Plugin</a>:</p>
+<p>There are multiple <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugins that provide <a href="http://cobertura.github.io/cobertura/" target="_blank" rel="noopener">Cobertura</a> functionality to a <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> project.  The one that I prefer to use is the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank" rel="noopener">Cobertura Gradle Plugin</a> that is maintained by Steve Saliman.
+This plugin provides much better configuration option and has much better documentation (at the time of writing) than the others.  Below is a sample <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> project file that includes the
+<a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank" rel="noopener">Cobertura Gradle Plugin</a>:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -371,11 +371,11 @@ test.finalizedBy(project.tasks.cobertura)			<i class="conum" data-value="7"></i>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Applies the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank">Cobertura Gradle Plugin</a> to this build script.  This means that the tasks registered by the plugin will be available to be executed by this project.</td>
+<td>Applies the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank" rel="noopener">Cobertura Gradle Plugin</a> to this build script.  This means that the tasks registered by the plugin will be available to be executed by this project.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Tells <a href="http://gradle.org" target="_blank">Gradle</a> to add the JAR that contains the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank">Cobertura Gradle Plugin</a> and its tasks to the classpath for the build script.  This is required for <a href="http://gradle.org" target="_blank">Gradle</a> to be able to find the plugin.</td>
+<td>Tells <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to add the JAR that contains the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank" rel="noopener">Cobertura Gradle Plugin</a> and its tasks to the classpath for the build script.  This is required for <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to be able to find the plugin.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
@@ -383,11 +383,11 @@ test.finalizedBy(project.tasks.cobertura)			<i class="conum" data-value="7"></i>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Instructs <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> to ignore trivial methods, such as getters and setters when producing the coverage report(s).</td>
+<td>Instructs <a href="http://cobertura.github.io/cobertura/" target="_blank" rel="noopener">Cobertura</a> to ignore trivial methods, such as getters and setters when producing the coverage report(s).</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>Instructs <a href="http://cobertura.github.io/cobertura/" target="_blank">Cobertura</a> to ignore any references to methods of the <code>org.slf4j.Logger</code> class when producing the coverage report(s).</td>
+<td>Instructs <a href="http://cobertura.github.io/cobertura/" target="_blank" rel="noopener">Cobertura</a> to ignore any references to methods of the <code>org.slf4j.Logger</code> class when producing the coverage report(s).</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
@@ -395,13 +395,13 @@ test.finalizedBy(project.tasks.cobertura)			<i class="conum" data-value="7"></i>
 </tr>
 <tr>
 <td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>Tells <a href="http://gradle.org" target="_blank">Gradle</a> to automatically execute the <code>cobertura</code> task after the <code>test</code> task has completed.</td>
+<td>Tells <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to automatically execute the <code>cobertura</code> task after the <code>test</code> task has completed.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The configuration of the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank">Cobertura Gradle Plugin</a> shown above will cause the the plugin to execute automatically after the <code>test</code> task completes.  For instance,
-if the following command is executed on a <a href="http://gradle.org" target="_blank">Gradle</a> project:</p>
+<p>The configuration of the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank" rel="noopener">Cobertura Gradle Plugin</a> shown above will cause the the plugin to execute automatically after the <code>test</code> task completes.  For instance,
+if the following command is executed on a <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> project:</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -409,7 +409,7 @@ if the following command is executed on a <a href="http://gradle.org" target="_b
 </div>
 </div>
 <div class="paragraph">
-<p>then the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank">Cobertura Gradle Plugin</a> will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
+<p>then the <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank" rel="noopener">Cobertura Gradle Plugin</a> will automatically execute, producing the coverage report(s) specified in the configuration.  Of course, you can always
 manually invoke the plugin by running the <code>cobertura</code> task explicitly:</p>
 </div>
 <div class="literalblock">
@@ -418,10 +418,10 @@ manually invoke the plugin by running the <code>cobertura</code> task explicitly
 </div>
 </div>
 <div class="paragraph">
-<p>For additional information on the configuration and use of the plugin, consult the documentation on its <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank">GitHub repository</a>.</p>
+<p>For additional information on the configuration and use of the plugin, consult the documentation on its <a href="https://github.com/stevesaliman/gradle-cobertura-plugin" target="_blank" rel="noopener">GitHub repository</a>.</p>
 </div>
 <div class="paragraph">
-<p>As with the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank">Cobertura Maven Plugin</a> and <a href="http://grails.org/plugin/code-coverage" target="_blank">Cobertura Grails Plugin</a>, the code coverage report(s) will only be generated if there are unit tests or source files that can be under test present in the project.</p>
+<p>As with the <a href="http://mojo.codehaus.org/cobertura-maven-plugin/" target="_blank" rel="noopener">Cobertura Maven Plugin</a> and <a href="http://grails.org/plugin/code-coverage" target="_blank" rel="noopener">Cobertura Grails Plugin</a>, the code coverage report(s) will only be generated if there are unit tests or source files that can be under test present in the project.</p>
 </div>
 </div>
 </div>
@@ -473,7 +473,7 @@ ensuring the stability of any code base.</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

@@ -121,7 +121,7 @@ decided to write a functional test suite that would perform the following steps:
 </ul>
 </div>
 <div class="paragraph">
-<p>The application(s) under test are <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> applications, which make use of <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a> for the presistence layer.  Below is an example of one of the repositories:</p>
+<p>The application(s) under test are <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> applications, which make use of <a href="http://projects.spring.io/spring-data-jpa/" target="_blank" rel="noopener">Spring Data JPA</a> for the presistence layer.  Below is an example of one of the repositories:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -134,7 +134,7 @@ public interface BookRepository extends JpaRepository&lt;Book, Long&gt; {
 </div>
 </div>
 <div class="paragraph">
-<p>Writing a functional test for just such a repository is pretty easy using <a href="https://code.google.com/p/spock/" target="_blank">Spock</a> and its built-in <a href="https://code.google.com/p/spock/wiki/SpringExtension" target="_blank">Spring extension</a>:</p>
+<p>Writing a functional test for just such a repository is pretty easy using <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a> and its built-in <a href="https://code.google.com/p/spock/wiki/SpringExtension" target="_blank" rel="noopener">Spring extension</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -171,8 +171,8 @@ class BookRepositoryFunctionalSpec extends Specification {
 </div>
 </div>
 <div class="paragraph">
-<p>The example <a href="https://code.google.com/p/spock/" target="_blank">Spock</a> specification above uses the <code>ActiveProfiles</code> and <code>ContextCongifuration</code> annotations to load the Spring configuration for use by the test.  This configuration contains
-all of the beans required by <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a> to connect to the database (data source, entity manager, etc). With the Spring configuration added to the test, we can now make use of Spring
+<p>The example <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a> specification above uses the <code>ActiveProfiles</code> and <code>ContextCongifuration</code> annotations to load the Spring configuration for use by the test.  This configuration contains
+all of the beans required by <a href="http://projects.spring.io/spring-data-jpa/" target="_blank" rel="noopener">Spring Data JPA</a> to connect to the database (data source, entity manager, etc). With the Spring configuration added to the test, we can now make use of Spring
 techniques, such as the auto-wiring of dependencies into the specification.  In the example above, we have auto-wired in the <code>BookRepository</code> that defines the query that we want to test.
 The next thing to notice is that the test uses the <code>deleteAll</code> method of the repository instance to remove any data in the table mapped by the <code>Book</code> entity after each test in the
 specification.  Finally, we have the test itself, which performs the following steps:</p>
@@ -191,10 +191,10 @@ specification.  Finally, we have the test itself, which performs the following s
 </ul>
 </div>
 <div class="paragraph">
-<p>Note that this could easily be broken up into two tests or refactored to use <a href="https://code.google.com/p/spock/" target="_blank">Spock</a>'s <code>@Unroll</code> annotation.  Now that I was armed with a way to build out functional tests against the actual database
-using <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a> and <a href="https://code.google.com/p/spock/" target="_blank">Spock</a>, I needed a way to execute the tests.  My first thought was to use <a href="http://gradle.org" target="_blank">Gradle</a> to run the tests.  However, due to a limitation of our build infrastructure (our deployment
-server does not have access to our artifact repository), <a href="http://gradle.org" target="_blank">Gradle</a> would not be able to run the tests, as the build script would not have access to the dependencies it needs to execute!  In the part two of
-this blog post, I will take a look at how I overcame this issue by executing the test suite inside of a <a href="https://www.docker.com/" target="_blank">Docker</a> container using <a href="http://gradle.org" target="_blank">Gradle</a>.</p>
+<p>Note that this could easily be broken up into two tests or refactored to use <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a>'s <code>@Unroll</code> annotation.  Now that I was armed with a way to build out functional tests against the actual database
+using <a href="http://projects.spring.io/spring-data-jpa/" target="_blank" rel="noopener">Spring Data JPA</a> and <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a>, I needed a way to execute the tests.  My first thought was to use <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to run the tests.  However, due to a limitation of our build infrastructure (our deployment
+server does not have access to our artifact repository), <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> would not be able to run the tests, as the build script would not have access to the dependencies it needs to execute!  In the part two of
+this blog post, I will take a look at how I overcame this issue by executing the test suite inside of a <a href="https://www.docker.com/" target="_blank" rel="noopener">Docker</a> container using <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>.</p>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/11/18/functional_tests_gradle_docker_part_i.html"></div>
@@ -233,7 +233,7 @@ this blog post, I will take a look at how I overcame this issue by executing the
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 
