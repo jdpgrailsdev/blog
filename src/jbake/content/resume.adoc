@@ -68,7 +68,7 @@ with others.
 
 == Experience
 
-[big]*{new_relic} - https://goo.gl/maps/xorI1["Portland, OR", window="blank"]* +
+[big]*{new_relic} - https://goo.gl/maps/xorI1["Portland, OR", window="_blank"] / https://www.google.com/maps/place/Massachusetts/@42.0594403,-72.8422666["Remote (Massachussets)", window="_blank"]* +
 *__Lead Software Engineer__* +
 June 2014 - Present
 
@@ -127,6 +127,7 @@ May 2002 – September 2002
 
 * http://www.scs-europe.net/services/ess2003/PDF/METH04.pdf["Simulation of a Distributed Mutual Exclusion Algorithm Using Multicast Communication", window="_blank"] - http://www.scs-europe.net/services/ess2003/[15th European Simulation Symposium and Exhibition, window="_blank"], Delft, The Netherlands, October 26-29, 2003
 * https://rawgithub.com/jdpgrailsdev/vt-code-camp-2013-presentation/master/index.html#/start["Centralized Configuration Management with Apache ZooKeeper", window="_blank"] - http://vtcodecamp.org/2013/schedule[VT Code Camp, window="_blank"], Burlington, VT, September 21, 2013
+* https://blog.newrelic.com/2017/05/18/alerts-microservices-environment-spring-boot/["How We Chose an Application Framework for New Relic Alerts", window="_blank"], May 18, 2017
 
 == Open Source Contributions
 
