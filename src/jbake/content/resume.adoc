@@ -18,6 +18,7 @@ Jonathan Pearlin
 :junit: http://junit.org/[JUnit, window="_blank"]
 :kafka: http://kafka.apache.org/[Kafka, window="_blank"]
 :maven: http://maven.apache.org[Maven, window="_blank"]
+:memcached: https://memcached.org/[Memcached, window="_blank"]
 :mongo: http://www.mongodb.org[MongoDB, window="_blank"]
 :mysql: http://www.mysql.com/[MySQL, window="_blank"]
 :new_relic: http://newrelic.com/[New Relic, window="_blank"]
@@ -29,6 +30,7 @@ Jonathan Pearlin
 :sparta: http://www.sparta.com["Sparta, Inc.", window="_blank"]
 :spock: https://code.google.com/p/spock/[Spock, window="_blank"]
 :spring: http://spring.io[Spring, window="_blank"]
+:springboot: https://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
 :staples: http://www.staples.com["Staples, Inc.", window="_blank"]
 :thrift: https://thrift.apache.org/[Thrift, window="_blank"]
 :tomcat: http://tomcat.apache.org/[Apache Tomcat, window="_blank"]
@@ -51,7 +53,7 @@ with others.
 [width="50%", float="left", cols="^m,^m,^m", frame="topbot", options="header"]
 |=======
 3+<|Current
-|Java |{groovy} |{grails} |{spring} |{maven}
+|Java |{groovy} |{springboot} |{spring} |{maven} |{memcached}
 |{git} |{spock} |{gradle} |{zookeeper} |{docker} |{thrift}
 |{kafka} |{postgresql} |{junit} |{eclipse} |{rest}
 |{jenkins} |HTML |CSS |JavaScript |{mysql} |SCRUM
@@ -60,10 +62,10 @@ with others.
 [width="50%", cols="^m,^m,^m", frame="topbot", options="header"]
 |=======
 3+<|Previous
-|{rabbit} |{tomcat} |{mongo} |C |C++ |Microsoft SQL Server| JSP
+|{grails} |{rabbit} |{tomcat} |{mongo} |C |C++ |JSP
 |Java Servlets |Hibernate |OpenLDAP |Ant |Glassfish
 |IBM WebSphere | Subversion |CVS |StarTeam |JMS
-|VisualBasic |EJB 2/3 |JCA | ASP |AS/400
+|Microsoft SQL Server |VisualBasic |EJB 2/3 |JCA | ASP |AS/400
 |=======
 
 == Experience
