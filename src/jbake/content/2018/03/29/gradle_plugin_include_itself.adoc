@@ -1,0 +1,31 @@
+= A Gradle Plugin That Applies Itself
+Jonathan Pearlin
+2018-03-29
+:jbake-type: post
+:jbake-tags: gradle,groovy
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: gradle_plugin_include_itself
+:icons: font
+:git: https://git-scm.com/[Git, window="_blank"]
+:gradle: https://gradle.org/[Gradle, window="_blank"]
+:groovy: http://groovy-lang.org/[Groovy, window="_blank"]
+:markdown: https://daringfireball.net/projects/markdown/[Markdown, window="_blank"]
+
+The plugin feature of {gradle} makes it very easy to codify functionality for re-use between different projects.  I personally like to use this functionality to provide common build and deploy
+functionality to many of my projects.  Recently, I found myself creating a plugin that will generate a {markdown} file containing all of the changes committed to {git}, organized by release.
+When I finished creating the plugin, I realized that I also wanted to use the plugin in the plugin project itself so that I could keep a log of changes to the plugin (so meta!).  However, releasing the plugin and including it as a dependency so it could be applied to itself seemed like a bad idea:  it would forever be one release behind, assuming that I remembered to update the
+dependency version each time.  That obviously is not a very maintainable solution.  The answer?  Apply the plugin to itself programmatically by taking advantage of some {groovy} magic:
+
+[source,groovy]
+----
+// Apply the changelog plugin to itself!
+def classpath = [file('src/main/groovy').absolutePath, file('src/main/resources').absolutePath] as String[]
+def pluginDescriptor = new Properties()
+pluginDescriptor.load(new InputStreamReader(new FileInputStream(file('src/main/resources/META-INF/gradle-plugins/changelog.properties').absolutePath)))
+apply plugin: new GroovyScriptEngine(classpath, this.getClass().getClassLoader()).loadScriptByName("${pluginDescriptor.getProperty('implementation-class').replaceAll('\\.', '/')}.groovy")
+----
+
+So, what is this code snippet doing exactly?  The first line ensures that the source folders of the plugin project are part of the classpath that will be used to find and load the plugin.  The
+second line simply creates a new Java `Properties` object, which will be used to hold the plugin's descriptor file.  The third line loads the {gradle} plugin descriptor file so that we can determine the main class of the plugin.  Finally, the last line uses the {groovy} `GroovyScriptEngine` class to load the class referenced the plugin descriptor so that it can be applied by {gradle} as a plugin.  After placing this code in the plugin's `build.gradle` file, we are now assured that the latest source in the plugin is applied to the plugin itself so that it can be used to generate the changelog for that project.
