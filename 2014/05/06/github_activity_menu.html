@@ -100,55 +100,39 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/05/06/github_activity_menu.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/05/06/github_activity_menu.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>In an effort to improve my (limited) front-end foo, I decided that I wanted to add a <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> activity stream to this blog.  I figured that it would
-not be difficult to combine <a href="http://jquery.com" target="_blank" rel="noopener">jQuery</a>, <a href="http://getbootstrap.com" target="_blank" rel="noopener">Bootstrap</a> and the <a href="https://developer.github.com/v3/" target="_blank" rel="noopener">GitHub API</a> to add a widget that would look like a simplified version that you can see
-on your own <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> page under the <a href="https://github.com/jdpgrailsdev?tab=activity" target="_blank" rel="noopener">Public Activity</a> tab on your account.  What follows
-is a recounting of how I added the widget that you now see to the left of this article.</p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_ingredients">Ingredients</h3>
-<div class="paragraph">
-<p>Let&#8217;s start by first listing the specific pieces that I used to create the widget:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="http://jquery.com" target="_blank" rel="noopener">jQuery 1.11.0</a></p>
-</li>
-<li>
-<p><a href="http://getbootstrap.com/components/#panels-list-group" target="_blank" rel="noopener">Bootstrap 3.1.1 Panels</a></p>
-</li>
-<li>
-<p><a href="http://fortawesome.github.io/Font-Awesome/" target="_blank" rel="noopener">Font Awesome 4.0.3</a></p>
-</li>
-<li>
-<p><a href="https://developer.github.com/v3/activity/events" target="_blank" rel="noopener">GitHub Events API</a></p>
-</li>
-<li>
-<p><a href="https://github.com/styleguide/css/7.0" target="_blank" rel="noopener">GitHub Octicon</a></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>My thought process was to use <a href="http://jquery.com" target="_blank" rel="noopener">jQuery</a> to perform an AJAX call to the <a href="https://developer.github.com/v3/activity/events" target="_blank" rel="noopener">GitHub Events API</a> to get the activity list for my
-account.  Upon retrieval, I would append line items to the <a href="http://getbootstrap.com/components/#panels-list-group">Bootstrap 3.1.1 list group panel</a> that I had placed on the left-hand side
-of every page on my site.  Finally, I wanted to make use of the <a href="https://github.com/styleguide/css/7.0" target="_blank" rel="noopener">GitHub Octicon</a> icon fonts to make have the same icon indicators
-that appear on the activity page on my <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> account.  Once I had this plan sketched out, the next step was to see about getting the pieces implemented.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_pretending_to_be_a_front_end_developer">Pretending to be a front-end developer</h3>
-<div class="paragraph">
-<p>The first thing that I did was add the example <a href="http://getbootstrap.com/components/#panels-list-group">Bootstrap list group panel</a> to my <code>menu</code> template just to see how it would fit:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;div class="panel panel-default"&gt;
+    <p><div id="preamble"> 
+ <div class="sectionbody"> 
+  <div class="paragraph"> 
+   <p>In an effort to improve my (limited) front-end foo, I decided that I wanted to add a <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> activity stream to this blog. I figured that it would not be difficult to combine <a href="http://jquery.com" target="_blank" rel="noopener">jQuery</a>, <a href="http://getbootstrap.com" target="_blank" rel="noopener">Bootstrap</a> and the <a href="https://developer.github.com/v3/" target="_blank" rel="noopener">GitHub API</a> to add a widget that would look like a simplified version that you can see on your own <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> page under the <a href="https://github.com/jdpgrailsdev?tab=activity" target="_blank" rel="noopener">Public Activity</a> tab on your account. What follows is a recounting of how I added the widget that you now see to the left of this article.</p> 
+  </div> 
+ </div> 
+</div> 
+<div class="sect2"> 
+ <h3 id="_ingredients">Ingredients</h3> 
+ <div class="paragraph"> 
+  <p>Let’s start by first listing the specific pieces that I used to create the widget:</p> 
+ </div> 
+ <div class="ulist"> 
+  <ul> 
+   <li> <p><a href="http://jquery.com" target="_blank" rel="noopener">jQuery 1.11.0</a></p> </li> 
+   <li> <p><a href="http://getbootstrap.com/components/#panels-list-group" target="_blank" rel="noopener">Bootstrap 3.1.1 Panels</a></p> </li> 
+   <li> <p><a href="http://fortawesome.github.io/Font-Awesome/" target="_blank" rel="noopener">Font Awesome 4.0.3</a></p> </li> 
+   <li> <p><a href="https://developer.github.com/v3/activity/events" target="_blank" rel="noopener">GitHub Events API</a></p> </li> 
+   <li> <p><a href="https://github.com/styleguide/css/7.0" target="_blank" rel="noopener">GitHub Octicon</a></p> </li> 
+  </ul> 
+ </div> 
+ <div class="paragraph"> 
+  <p>My thought process was to use <a href="http://jquery.com" target="_blank" rel="noopener">jQuery</a> to perform an AJAX call to the <a href="https://developer.github.com/v3/activity/events" target="_blank" rel="noopener">GitHub Events API</a> to get the activity list for my account. Upon retrieval, I would append line items to the <a href="http://getbootstrap.com/components/#panels-list-group">Bootstrap 3.1.1 list group panel</a> that I had placed on the left-hand side of every page on my site. Finally, I wanted to make use of the <a href="https://github.com/styleguide/css/7.0" target="_blank" rel="noopener">GitHub Octicon</a> icon fonts to make have the same icon indicators that appear on the activity page on my <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> account. Once I had this plan sketched out, the next step was to see about getting the pieces implemented.</p> 
+ </div> 
+</div> 
+<div class="sect2"> 
+ <h3 id="_pretending_to_be_a_front_end_developer">Pretending to be a front-end developer</h3> 
+ <div class="paragraph"> 
+  <p>The first thing that I did was add the example <a href="http://getbootstrap.com/components/#panels-list-group">Bootstrap list group panel</a> to my <code>menu</code> template just to see how it would fit:</p> 
+ </div> 
+ <div class="listingblock"> 
+  <div class="content"> 
+   <pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;div class="panel panel-default"&gt;
   &lt;!-- Default panel contents --&gt;
   &lt;div class="panel-heading"&gt;Panel heading&lt;/div&gt;
   &lt;div class="panel-body"&gt;
@@ -163,16 +147,15 @@ that appear on the activity page on my <a href="http://github.com" target="_blan
     &lt;li class="list-group-item"&gt;Porta ac consectetur ac&lt;/li&gt;
     &lt;li class="list-group-item"&gt;Vestibulum at eros&lt;/li&gt;
   &lt;/ul&gt;
-&lt;/div&gt;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Right away, I noticed a bunch of formatting issues, mostly related to positioning the panel relative to the menu at the top of the page and the content in the middle of the page.  I quickly
-solved the positioning issue by surrounding the panel with a new <code>&lt;div&gt;</code> element and making use of the <a href="http://getbootstrap.com" target="_blank" rel="noopener">Bootstrap</a> <code>pull-left</code> class:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;div id="activity" class="pull-left"&gt;
+&lt;/div&gt;</code></pre> 
+  </div> 
+ </div> 
+ <div class="paragraph"> 
+  <p>Right away, I noticed a bunch of formatting issues, mostly related to positioning the panel relative to the menu at the top of the page and the content in the middle of the page. I quickly solved the positioning issue by surrounding the panel with a new <code>&lt;div&gt;</code> element and making use of the <a href="http://getbootstrap.com" target="_blank" rel="noopener">Bootstrap</a> <code>pull-left</code> class:</p> 
+ </div> 
+ <div class="listingblock"> 
+  <div class="content"> 
+   <pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;div id="activity" class="pull-left"&gt;
     &lt;div class="panel panel-default"&gt;
       &lt;!-- Default panel contents --&gt;
       &lt;div class="panel-heading"&gt;Panel heading&lt;/div&gt;
@@ -189,42 +172,39 @@ solved the positioning issue by surrounding the panel with a new <code>&lt;div&g
         &lt;li class="list-group-item"&gt;Vestibulum at eros&lt;/li&gt;
       &lt;/ul&gt;
     &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The next step was to get the panel to not overlap the menu and to get it to hover a bit off from the left-hand edge of the screen.  To accomplish this, I added a new CSS selector for the
-newly added <code>activity</code> ID:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-css" data-lang="css">#activity {
+&lt;/div&gt;</code></pre> 
+  </div> 
+ </div> 
+ <div class="paragraph"> 
+  <p>The next step was to get the panel to not overlap the menu and to get it to hover a bit off from the left-hand edge of the screen. To accomplish this, I added a new CSS selector for the newly added <code>activity</code> ID:</p> 
+ </div> 
+ <div class="listingblock"> 
+  <div class="content"> 
+   <pre class="prettyprint highlight"><code class="language-css" data-lang="css">#activity {
   padding-top: 110px;
   padding-left: 20px;
   width: 275px;
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>I also decided to use the <code>panel-primary</code> <a href="http://getbootstrap.com" target="_blank" rel="noopener">Bootstrap</a>-provided style class to get the widget to be blue, closely matching <a href="http://github.com" target="_blank" rel="noopener">GitHub</a>'s color scheme:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;div id="activity" class="pull-left"&gt;
+}</code></pre> 
+  </div> 
+ </div> 
+ <div class="paragraph"> 
+  <p>I also decided to use the <code>panel-primary</code> <a href="http://getbootstrap.com" target="_blank" rel="noopener">Bootstrap</a>-provided style class to get the widget to be blue, closely matching <a href="http://github.com" target="_blank" rel="noopener">GitHub</a>'s color scheme:</p> 
+ </div> 
+ <div class="listingblock"> 
+  <div class="content"> 
+   <pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;div id="activity" class="pull-left"&gt;
     &lt;div class="panel panel-primary"&gt;
         ...
     &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>It was now time to get rid of the sample content from the example.  My first thought was to start with a spinner to indicate that the panel is attempting to load (as I was going
-to use AJAX to get the data) and an empty, unordered list that would be filled by the retrieved data.  I did some searching on the internets and found that <a href="http://getbootstrap.com" target="_blank" rel="noopener">Bootstrap</a> has built-in
-support for a loading spinner.  With one more line of HTML, I had something that I could work with:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;div id="activity" class="pull-left"&gt;
+&lt;/div&gt;</code></pre> 
+  </div> 
+ </div> 
+ <div class="paragraph"> 
+  <p>It was now time to get rid of the sample content from the example. My first thought was to start with a spinner to indicate that the panel is attempting to load (as I was going to use AJAX to get the data) and an empty, unordered list that would be filled by the retrieved data. I did some searching on the internets and found that <a href="http://getbootstrap.com" target="_blank" rel="noopener">Bootstrap</a> has built-in support for a loading spinner. With one more line of HTML, I had something that I could work with:</p> 
+ </div> 
+ <div class="listingblock"> 
+  <div class="content"> 
+   <pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;div id="activity" class="pull-left"&gt;
     &lt;div class="panel panel-primary"&gt;
           &lt;!-- Default panel contents --&gt;
           &lt;div class="panel-heading"&gt;
@@ -237,23 +217,21 @@ support for a loading spinner.  With one more line of HTML, I had something that
           &lt;ul class="list-group"&gt;
           &lt;/ul&gt;
     &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>At this point, I had my target all set up and ready to receive real data from <a href="http://github.com" target="_blank" rel="noopener">GitHub</a>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_time_for_some_javascript">Time for some JavaScript</h3>
-<div class="paragraph">
-<p>Now that I had a professional (in my opinion) looking widget, I decided to get to work on writing the JavaScript to get the content from <a href="http://github.com" target="_blank" rel="noopener">GitHub</a>.  <a href="http://jquery.com" target="_blank" rel="noopener">jQuery</a> has a <a href="http://api.jquery.com/ready/" target="_blank" rel="noopener">ready</a>
-call back method that is fired when the HTML document is loaded.  By combining this with <a href="http://jquery.com" target="_blank" rel="noopener">jQuery</a>'s <a href="https://api.jquery.com/jQuery.get/" target="_blank" rel="noopener">get</a> method, I could fire off the
-request to the <a href="https://developer.github.com/v3/" target="_blank" rel="noopener">GitHub API</a> once the DOM has been loaded, ensuring the HTML that I want to replace will be present:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-javascript" data-lang="javascript">// Load the GitHub activity widget on the document ready event.
+&lt;/div&gt;</code></pre> 
+  </div> 
+ </div> 
+ <div class="paragraph"> 
+  <p>At this point, I had my target all set up and ready to receive real data from <a href="http://github.com" target="_blank" rel="noopener">GitHub</a>.</p> 
+ </div> 
+</div> 
+<div class="sect2"> 
+ <h3 id="_time_for_some_javascript">Time for some JavaScript</h3> 
+ <div class="paragraph"> 
+  <p>Now that I had a professional (in my opinion) looking widget, I decided to get to work on writing the JavaScript to get the content from <a href="http://github.com" target="_blank" rel="noopener">GitHub</a>. <a href="http://jquery.com" target="_blank" rel="noopener">jQuery</a> has a <a href="http://api.jquery.com/ready/" target="_blank" rel="noopener">ready</a> call back method that is fired when the HTML document is loaded. By combining this with <a href="http://jquery.com" target="_blank" rel="noopener">jQuery</a>'s <a href="https://api.jquery.com/jQuery.get/" target="_blank" rel="noopener">get</a> method, I could fire off the request to the <a href="https://developer.github.com/v3/" target="_blank" rel="noopener">GitHub API</a> once the DOM has been loaded, ensuring the HTML that I want to replace will be present:</p> 
+ </div> 
+ <div class="listingblock"> 
+  <div class="content"> 
+   <pre class="prettyprint highlight"><code class="language-javascript" data-lang="javascript">// Load the GitHub activity widget on the document ready event.
 $(document).ready(function() {
     $.get("https://api.github.com/users/jdpgrailsdev/events", function(data) {
         // Remove the "Loading..." place holder.
@@ -280,18 +258,15 @@ $(document).ready(function() {
         $('#wrap &gt; #activity &gt; .panel &gt; .panel-body').remove();
         $('#wrap &gt; #activity &gt; .panel &gt; ul').append("&lt;li class=\"list-group-item\"&gt;&lt;span class=\"octicon octicon-alert\"&gt;&lt;/span&gt;GitHub activity could not be retrieved.&lt;/li&gt;");
     });
-});</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The code example above makes an AJAX request to <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> for my account&#8217;s activity.  If the request is successful, the placeholder text is removed from the view and each event is processed
-for display.  If a failure occurs, the <code>fail</code> function is invoked, which prints out a nice error message indicating the failure.  The next step was to actually implement the event handling code.
-I only wanted to handle a subset of <a href="https://developer.github.com/v3/activity/events/types/" target="_blank" rel="noopener">GitHub Event Types</a> exposed by the <a href="https://developer.github.com/v3/" target="_blank" rel="noopener">GitHub API</a>, so I decided to explicitly list out the event types that I was looking for.  Below is the code that handles the data returned
-by the <a href="https://developer.github.com/v3/" target="_blank" rel="noopener">GitHub API</a>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-javascript" data-lang="javascript">// Loop over each retrieved GitHub event and process.
+});</code></pre> 
+  </div> 
+ </div> 
+ <div class="paragraph"> 
+  <p>The code example above makes an AJAX request to <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> for my account’s activity. If the request is successful, the placeholder text is removed from the view and each event is processed for display. If a failure occurs, the <code>fail</code> function is invoked, which prints out a nice error message indicating the failure. The next step was to actually implement the event handling code. I only wanted to handle a subset of <a href="https://developer.github.com/v3/activity/events/types/" target="_blank" rel="noopener">GitHub Event Types</a> exposed by the <a href="https://developer.github.com/v3/" target="_blank" rel="noopener">GitHub API</a>, so I decided to explicitly list out the event types that I was looking for. Below is the code that handles the data returned by the <a href="https://developer.github.com/v3/" target="_blank" rel="noopener">GitHub API</a>:</p> 
+ </div> 
+ <div class="listingblock"> 
+  <div class="content"> 
+   <pre class="prettyprint highlight"><code class="language-javascript" data-lang="javascript">// Loop over each retrieved GitHub event and process.
 $.each(data, function(i, githubEvent) {
     // The icon font to be displayed with the event.
     var octicon = "";
@@ -349,33 +324,27 @@ $.each(data, function(i, githubEvent) {
             count++;
         }
     }
-});</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The code above sets the icon, link and text for each event found in the response, up to the number of events that I want displayed.  Once the data has been computed for a given event,
-it is injected into the HTML as a new list item via the <code>append</code> function on the container list.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_octicon">Octicon</h3>
-<div class="paragraph">
-<p>In order to make the widget look and feel just like the activity stream on <a href="http://github.com" target="_blank" rel="noopener">GitHub</a>, I decided that I wanted to use the {github_octicon} font icons.  Unfortunately, the CSS for these font icons
-does not appear to be publically available from <a href="http://github.com" target="_blank" rel="noopener">GitHub</a>.  Luckily, I came across <a href="https://github.com/rummik/octicon" target="_blank" rel="noopener">someone</a>, which is a port of the
-{github_octicon} font icons to a CSS file that can be included in your web application.  Armed with the CSS files from this port, I was able to make use of the CSS classes listed in the
-{github_octicon} style guide in my widget.  In order to not make a network call out to the <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> account that hosts the port, I downloaded these files and included them in my web resources.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_final_tweaks">Final tweaks</h3>
-<div class="paragraph">
-<p>After making the changes outlined so far in this post, I thought that I had a pretty solid solution.  However, as soon as I went to look at my site with different resolutions, I noticed that
-the widget was not always being displayed correctly.  I needed to find a way to make sure that the widget always stuck to the left-hand side of the page and did not encroach on the content
-displayed to the right of the widget.  After playing around with the CSS, I came up with the following solution:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-css" data-lang="css">#activity {
+});</code></pre> 
+  </div> 
+ </div> 
+ <div class="paragraph"> 
+  <p>The code above sets the icon, link and text for each event found in the response, up to the number of events that I want displayed. Once the data has been computed for a given event, it is injected into the HTML as a new list item via the <code>append</code> function on the container list.</p> 
+ </div> 
+</div> 
+<div class="sect2"> 
+ <h3 id="_octicon">Octicon</h3> 
+ <div class="paragraph"> 
+  <p>In order to make the widget look and feel just like the activity stream on <a href="http://github.com" target="_blank" rel="noopener">GitHub</a>, I decided that I wanted to use the {github_octicon} font icons. Unfortunately, the CSS for these font icons does not appear to be publically available from <a href="http://github.com" target="_blank" rel="noopener">GitHub</a>. Luckily, I came across <a href="https://github.com/rummik/octicon" target="_blank" rel="noopener">someone</a>, which is a port of the {github_octicon} font icons to a CSS file that can be included in your web application. Armed with the CSS files from this port, I was able to make use of the CSS classes listed in the {github_octicon} style guide in my widget. In order to not make a network call out to the <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> account that hosts the port, I downloaded these files and included them in my web resources.</p> 
+ </div> 
+</div> 
+<div class="sect2"> 
+ <h3 id="_final_tweaks">Final tweaks</h3> 
+ <div class="paragraph"> 
+  <p>After making the changes outlined so far in this post, I thought that I had a pretty solid solution. However, as soon as I went to look at my site with different resolutions, I noticed that the widget was not always being displayed correctly. I needed to find a way to make sure that the widget always stuck to the left-hand side of the page and did not encroach on the content displayed to the right of the widget. After playing around with the CSS, I came up with the following solution:</p> 
+ </div> 
+ <div class="listingblock"> 
+  <div class="content"> 
+   <pre class="prettyprint highlight"><code class="language-css" data-lang="css">#activity {
   padding-top: 110px;
   padding-left: 20px;
   width: 275px;
@@ -394,34 +363,32 @@ displayed to the right of the widget.  After playing around with the CSS, I came
   padding-left: 30px;
   display: inline-block;		<i class="conum" data-value="1"></i><b>(1)</b>
   width: 70%;			<i class="conum" data-value="2"></i><b>(2)</b>
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Displays the DIV inline next to the div that contains the <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> widget</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Ensures that some space is left for the widget</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>If you remember from the beginning of the post, the <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> widget applies the <code>pull-left</code> class, which ensures that it is left-aligned on the page.  The trick here is to make sure that
-the DIV that contains the main content (the blog posts themselves) is aligned side-by-side with the widget.  From the example above, you can see that it now uses the <code>inline-block</code> display
-attribute to achieve this.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_summary">Summary</h3>
-<div class="paragraph">
-<p>I do not claim to be an user interface developer, nor do I play one on TV.  This little side project certainly helped me to get a little bit more familiar with <a href="http://getbootstrap.com" target="_blank" rel="noopener">Bootstrap</a>, <a href="http://jquery.com" target="_blank" rel="noopener">jQuery</a>,
-the <a href="https://developer.github.com/v3/" target="_blank" rel="noopener">GitHub API</a>, CSS and icon fonts.  I&#8217;m sure that there are improvements that can be made to both the approach and the code.  Hopefully, I will be able to come back to this widget in the
-future as my skills in the area of front-end development grow.</p>
-</div>
+}</code></pre> 
+  </div> 
+ </div> 
+ <div class="colist arabic"> 
+  <table> 
+   <tbody>
+    <tr> 
+     <td><i class="conum" data-value="1"></i><b>1</b></td> 
+     <td>Displays the DIV inline next to the div that contains the <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> widget</td> 
+    </tr> 
+    <tr> 
+     <td><i class="conum" data-value="2"></i><b>2</b></td> 
+     <td>Ensures that some space is left for the widget</td> 
+    </tr> 
+   </tbody>
+  </table> 
+ </div> 
+ <div class="paragraph"> 
+  <p>If you remember from the beginning of the post, the <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> widget applies the <code>pull-left</code> class, which ensures that it is left-aligned on the page. The trick here is to make sure that the DIV that contains the main content (the blog posts themselves) is aligned side-by-side with the widget. From the example above, you can see that it now uses the <code>inline-block</code> display attribute to achieve this.</p> 
+ </div> 
+</div> 
+<div class="sect2"> 
+ <h3 id="_summary">Summary</h3> 
+ <div class="paragraph"> 
+  <p>I do not claim to be an user interface developer, nor do I play one on TV. This little side project certainly helped me to get a little bit more familiar with <a href="http://getbootstrap.com" target="_blank" rel="noopener">Bootstrap</a>, <a href="http://jquery.com" target="_blank" rel="noopener">jQuery</a>, the <a href="https://developer.github.com/v3/" target="_blank" rel="noopener">GitHub API</a>, CSS and icon fonts. I’m sure that there are improvements that can be made to both the approach and the code. Hopefully, I will be able to come back to this widget in the future as my skills in the area of front-end development grow.</p> 
+ </div> 
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/05/06/github_activity_menu.html"></div>
@@ -460,7 +427,7 @@ future as my skills in the area of front-end development grow.</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

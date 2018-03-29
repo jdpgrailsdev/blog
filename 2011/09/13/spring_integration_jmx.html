@@ -100,34 +100,21 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2011/09/13/spring_integration_jmx.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2011/09/13/spring_integration_jmx.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><p>The title pretty much says it all. This seems like a pretty simple task, right? I thought that I would just go to the Spring Integration reference documentation, follow the instructions, and boom, you can see all of your Spring Integration components via JMX from your favorite JMX monitoring client. If only it were that easy. The first hurdle I encountered was that the documentation at Spring's site fails to mention how to get the JMX schema included in your integration.xml or where the parsers/handlers live in the Spring library so that it can actually load and parse the integration.xml file. The second is that there appears to be some typos in it (it should be "jmx:mbean-export", not "jmx:mbean-exporter" and the attributes of that tag are also listed incorrectly). Grr (I guess you get what you pay for). So, without further ado, this is how to turn on the MBean Exporter for Spring Integration:</p>
-<ol>
-  <li>
-    <p>Declare the "jmx" namespace in your integration.xml file:</p>
-    <pre><code>xmlns:jmx=&quot;http://www.springframework.org/schema/integration/jmx&quot;
-</code></pre>
-  </li>
-  <li>
-    <p>Add the "jmx" schema to the "schemaLocation" attribute:</p>
-    <pre><code>xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    <p><p>The title pretty much says it all. This seems like a pretty simple task, right? I thought that I would just go to the Spring Integration reference documentation, follow the instructions, and boom, you can see all of your Spring Integration components via JMX from your favorite JMX monitoring client. If only it were that easy. The first hurdle I encountered was that the documentation at Spring's site fails to mention how to get the JMX schema included in your integration.xml or where the parsers/handlers live in the Spring library so that it can actually load and parse the integration.xml file. The second is that there appears to be some typos in it (it should be "jmx:mbean-export", not "jmx:mbean-exporter" and the attributes of that tag are also listed incorrectly). Grr (I guess you get what you pay for). So, without further ado, this is how to turn on the MBean Exporter for Spring Integration:</p> 
+<ol> 
+ <li> <p>Declare the "jmx" namespace in your integration.xml file:</p> <pre><code>xmlns:jmx="http://www.springframework.org/schema/integration/jmx"
+</code></pre> </li> 
+ <li> <p>Add the "jmx" schema to the "schemaLocation" attribute:</p> <pre><code>xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 http://www.springframework.org/schema/integration/jmx http://www.springframework.org/schema/integration/jmx/spring-integration-jmx-2.0.xsd
-http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd&quot;
-</code></pre>
-  </li>
-  <li>
-    <p>Declare the MBean server bean: </p>
-    <pre><code>&lt;bean class=&quot;org.springframework.jmx.support.MBeanServerFactoryBean&quot; id=&quot;mbeanServer&quot;&gt;
-    &lt;property name=&quot;locateExistingServerIfPossible&quot; value=&quot;true&quot;&gt;&lt;/property&gt;
+http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd"
+</code></pre> </li> 
+ <li> <p>Declare the MBean server bean:</p> <pre><code>&lt;bean class="org.springframework.jmx.support.MBeanServerFactoryBean" id="mbeanServer"&gt;
+	&lt;property name="locateExistingServerIfPossible" value="true"&gt;&lt;/property&gt;
 &lt;/bean&gt;
-</code></pre>
-  </li>
-  <li>
-    <p>Declare the Integration MBean Exporter: </p>
-    <pre><code>&lt;jmx:mbean-export default-domain=&quot;your.custom.domain&quot; server=&quot;mbeanServer&quot;&gt;&lt;/jmx:mbean-export&gt;
-</code></pre>
-  </li>
-  <li>
-  <p>Add the spring-integration-jmx library to your classpath.</p></li>
+</code></pre> </li> 
+ <li> <p>Declare the Integration MBean Exporter:</p> <pre><code>&lt;jmx:mbean-export default-domain="your.custom.domain" server="mbeanServer"&gt;&lt;/jmx:mbean-export&gt;
+</code></pre> </li> 
+ <li> <p>Add the spring-integration-jmx library to your classpath.</p> </li> 
 </ol></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2011/09/13/spring_integration_jmx.html"></div>
@@ -166,7 +153,7 @@ http://www.springframework.org/schema/integration http://www.springframework.org
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

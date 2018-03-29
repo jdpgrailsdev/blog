@@ -100,33 +100,27 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/11/11/spring_boot_health_indicators_auto_config.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/11/11/spring_boot_health_indicators_auto_config.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph">
-<p>Another great feature provided by <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> is the ability to expose <a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-health" target="_blank" rel="noopener">Spring Boot Custom Health Information</a> about your application with very little effort.  The simple approach is to
-implement the <code>HealthIndicator</code> interface and register your custom indicator as a Spring bean (or have it be <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/annotation/ComponentScan.html" target="_blank" rel="noopener">component scanned</a>).
-This is great for one-off indicators or in small projects.  But what happens when you want to have a common set of health indicators that you can use in all of your services (after all, one of the
-promises of <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> is that it makes it trivial to spin up new "micro" services)?  What do you do if not all of your services have the same components that need to be part of your suite of health indicators?  The solution
-is to leverage the <a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#getting-started-first-application-auto-configuration" target="_blank" rel="noopener">auto configuration</a> infrastructure provided by <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>.  The first step
-is to include the proper dependencies in your health indicator shared library:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">ext {
+    <p><div class="paragraph"> 
+ <p>Another great feature provided by <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> is the ability to expose <a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-health" target="_blank" rel="noopener">Spring Boot Custom Health Information</a> about your application with very little effort. The simple approach is to implement the <code>HealthIndicator</code> interface and register your custom indicator as a Spring bean (or have it be <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/annotation/ComponentScan.html" target="_blank" rel="noopener">component scanned</a>). This is great for one-off indicators or in small projects. But what happens when you want to have a common set of health indicators that you can use in all of your services (after all, one of the promises of <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> is that it makes it trivial to spin up new "micro" services)? What do you do if not all of your services have the same components that need to be part of your suite of health indicators? The solution is to leverage the <a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#getting-started-first-application-auto-configuration" target="_blank" rel="noopener">auto configuration</a> infrastructure provided by <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>. The first step is to include the proper dependencies in your health indicator shared library:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">ext {
     springBootVersion = '1.1.8.RELEASE'
 }
 
 dependencies {
     compile "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-actuator:${springBootVersion}"
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>spring-boot-autoconfigure</code> dependency provides the annotations that we will use to mark our configuration as able to partake in auto configuration.  The <code>spring-boot-actuator</code>
-dependency provides the <code>HealthIndicator</code> interface and other related classes needed to implement the health indicators.  The next step is to create a custom health indicator implementation:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import java.io.IOException;
+}</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>The <code>spring-boot-autoconfigure</code> dependency provides the annotations that we will use to mark our configuration as able to partake in auto configuration. The <code>spring-boot-actuator</code> dependency provides the <code>HealthIndicator</code> interface and other related classes needed to implement the health indicators. The next step is to create a custom health indicator implementation:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
@@ -173,17 +167,15 @@ public class KafkaConsumerHealthIndicator implements HealthIndicator {
             }
         }
     }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In this example, the health indicator attempts to make a socket connection to the connection string provided by the Kafka <code>ConsumerConfig</code>.  It&#8217;s a simple test to see if
-ZooKeeper is listening at the configured host/port.  The next step is to create an automatic configuration that will define and register this health indicator if the
-presence of a bean of type <code>ConsumerConfig</code> is detected:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import java.util.Map;
+}</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>In this example, the health indicator attempts to make a socket connection to the connection string provided by the Kafka <code>ConsumerConfig</code>. It’s a simple test to see if ZooKeeper is listening at the configured host/port. The next step is to create an automatic configuration that will define and register this health indicator if the presence of a bean of type <code>ConsumerConfig</code> is detected:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">import java.util.Map;
 
 import kafka.consumer.ConsumerConfig;
 
@@ -238,27 +230,20 @@ public class CustomHealthIndicatorAutoConfiguration {
             return composite;
         }
     }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This auto configuration ensures that it is enabled after the default <code>HealthIndicatorAutoConfiguration</code> provided by the <code>spring-boot-actuator</code> dependency has been
-loaded.  It also defines one Spring <code>Configuration</code> that is conditionally loaded based on the presence of a bean of type <code>ConsumerConfig</code>.  It can also be manually
-disabled by setting the <code>health.kafka.consumer.enabled</code> property to <code>false</code>.  The configuration also ensures that if more than one bean of type <code>ConsumerConfig</code> is
-present, a <code>CompositeHealthIndicator</code> is created.  The final piece required to tie all of this together is to provide Spring with the required metadata file that
-instructs it on which classes represent auto-configuration.  To do this, create a file named <code>spring.factories</code> in the <code>src/main/resources/META-INF</code> directory of
-your shared health indicator library:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code>org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.example.health.autoconfigure.CustomHealthIndicatorAutoConfiguration</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p><a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> will automatically scan for these metadata files when your application starts and register your custom auto configuration class to be enacted if it detects
-the <code>EnableAutoConfiguration</code> annotation on any of your Java-based configuration classes.  Now you can provide a full suite of health indicators that will be enabled if
-and only if certain conditions are met, as defined by the various configurations provided by your auto-configuration class!</p>
+}</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>This auto configuration ensures that it is enabled after the default <code>HealthIndicatorAutoConfiguration</code> provided by the <code>spring-boot-actuator</code> dependency has been loaded. It also defines one Spring <code>Configuration</code> that is conditionally loaded based on the presence of a bean of type <code>ConsumerConfig</code>. It can also be manually disabled by setting the <code>health.kafka.consumer.enabled</code> property to <code>false</code>. The configuration also ensures that if more than one bean of type <code>ConsumerConfig</code> is present, a <code>CompositeHealthIndicator</code> is created. The final piece required to tie all of this together is to provide Spring with the required metadata file that instructs it on which classes represent auto-configuration. To do this, create a file named <code>spring.factories</code> in the <code>src/main/resources/META-INF</code> directory of your shared health indicator library:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code>org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.example.health.autoconfigure.CustomHealthIndicatorAutoConfiguration</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p><a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> will automatically scan for these metadata files when your application starts and register your custom auto configuration class to be enacted if it detects the <code>EnableAutoConfiguration</code> annotation on any of your Java-based configuration classes. Now you can provide a full suite of health indicators that will be enabled if and only if certain conditions are met, as defined by the various configurations provided by your auto-configuration class!</p> 
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/11/11/spring_boot_health_indicators_auto_config.html"></div>
@@ -297,7 +282,7 @@ and only if certain conditions are met, as defined by the various configurations
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

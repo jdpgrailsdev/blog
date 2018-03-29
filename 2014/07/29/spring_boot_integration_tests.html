@@ -100,54 +100,44 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/07/29/spring_boot_integration_tests.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph">
-<p>The <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a> provides a nice <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank" rel="noopener">JUnit integration</a>, which allows one to write integration-style tests that make use of a fully loaded and configured Spring context.
-This is great help when writing an integration test suite to test something like a database, as you do not need to manually create all the code required to interact
-with the database.  Instead, you can rely upon Spring to configure the beans just as it would at runtime.  Recently, I found myself in a situation where I needed to
-write just such an integration test, though this time for an application that uses <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>.  You do not need to do anything special to leverage the <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank" rel="noopener">JUnit integration</a>
-integration, as that is provided by the <a href="https://github.com/spring-projects/spring-framework/tree/master/spring-test" target="_blank" rel="noopener">Spring Test module</a> of the <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a>
-project.  What you do not get by default, is all of the auto-configuration magic that <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> provides, including logging configuration.  With the release of <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>
-1.1.4, it is now possible to add the following to your <code>application.properties</code> or <code>application.yml</code> configuration file to control the logging output:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code>logging.level.org.springframework: ERROR</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Additionally, I wanted to be able to turn on SQL logging when executing my integration tests via the <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> JPA configuration:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code>spring.jpa.properties.hibernate.show_sql: true</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>However, simply using the <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank" rel="noopener">JUnit integration</a> does not cause <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> to load the configuration or perform any of the auto-configuration that it does when running the application.
-To enable <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> to work its magic when running unit/integration tests that load a context, the first step is to include the <code>spring-boot-starter-test</code> dependency:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">testCompile 'org.springframework.boot:spring-boot-starter-test:1.1.4.RELEASE'</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The presence of this dependency will cause <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> to perform all the normal start-up auto-configuration that occurs when running the application.  However, in order for this to
-actually happen, you need to tell JUnit to use the <code>SpringApplicationContextLoader</code> when loading the context:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">@RunWith(SpringJUnit4ClassRunner.class)
+    <p><div class="paragraph"> 
+ <p>The <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a> provides a nice <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank" rel="noopener">JUnit integration</a>, which allows one to write integration-style tests that make use of a fully loaded and configured Spring context. This is great help when writing an integration test suite to test something like a database, as you do not need to manually create all the code required to interact with the database. Instead, you can rely upon Spring to configure the beans just as it would at runtime. Recently, I found myself in a situation where I needed to write just such an integration test, though this time for an application that uses <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>. You do not need to do anything special to leverage the <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank" rel="noopener">JUnit integration</a> integration, as that is provided by the <a href="https://github.com/spring-projects/spring-framework/tree/master/spring-test" target="_blank" rel="noopener">Spring Test module</a> of the <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a> project. What you do not get by default, is all of the auto-configuration magic that <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> provides, including logging configuration. With the release of <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> 1.1.4, it is now possible to add the following to your <code>application.properties</code> or <code>application.yml</code> configuration file to control the logging output:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code>logging.level.org.springframework: ERROR</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>Additionally, I wanted to be able to turn on SQL logging when executing my integration tests via the <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> JPA configuration:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code>spring.jpa.properties.hibernate.show_sql: true</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>However, simply using the <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/testing.html#testcontext-junit4-runner" target="_blank" rel="noopener">JUnit integration</a> does not cause <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> to load the configuration or perform any of the auto-configuration that it does when running the application. To enable <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> to work its magic when running unit/integration tests that load a context, the first step is to include the <code>spring-boot-starter-test</code> dependency:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">testCompile 'org.springframework.boot:spring-boot-starter-test:1.1.4.RELEASE'</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>The presence of this dependency will cause <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> to perform all the normal start-up auto-configuration that occurs when running the application. However, in order for this to actually happen, you need to tell JUnit to use the <code>SpringApplicationContextLoader</code> when loading the context:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={TestConfiguration.class}, loader = SpringApplicationContextLoader.class)
 public class DatabaseIntegrationTests {
     ...
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>When the <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a> loads the test configuration, it does so via <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>'s <code>SpringApplicationContextLoader</code>, which is provided by the <code>spring-boot-starter-test</code>.  This
-context loader supports all of the auto-configuration magic that we know and love in <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>.  Now, you can adjust logging levels, provide configuration and have your contexts
-make use of the <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> auto-configuration annotations as part of your test suite!</p>
+}</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>When the <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a> loads the test configuration, it does so via <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>'s <code>SpringApplicationContextLoader</code>, which is provided by the <code>spring-boot-starter-test</code>. This context loader supports all of the auto-configuration magic that we know and love in <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>. Now, you can adjust logging levels, provide configuration and have your contexts make use of the <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> auto-configuration annotations as part of your test suite!</p> 
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/07/29/spring_boot_integration_tests.html"></div>
@@ -186,7 +176,7 @@ make use of the <a href="http://projects.spring.io/spring-boot/" target="_blank"
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

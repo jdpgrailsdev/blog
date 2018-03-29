@@ -100,17 +100,15 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/06/17/logback_tomcat_rolling_appender.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/06/17/logback_tomcat_rolling_appender.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph">
-<p>Recently, I needed to add a <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> configuration to an application that is deployed in <a href="http://tomcat.apache.org/" target="_blank" rel="noopener">Apache Tomcat</a>.  I wanted to
-ensure that my log files did not grow in an unbounded manner.  To protect against this, I decided to use the <code>RollingFileAppender</code> provided by <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a>.  That is an
-obvious choice to solve this problem, but I wanted to ensure that when running the application in <a href="http://tomcat.apache.org/" target="_blank" rel="noopener">Apache Tomcat</a>, the generated
-log files end up in <code>${catalina.base}/logs</code> and when running locally via something like the <a href="http://tomcat.apache.org/maven-plugin-trunk/tomcat7-maven-plugin/" target="_blank" rel="noopener">Maven Apache Tomcat Plugin</a>
-it chose an appropriate output directory.  I arrive at the following <a href="http://groovy.codehaus.org/" target="_blank" rel="noopener">Groovy</a>-based <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> configuration file:</p>
-</div>
-<div class="listingblock">
-<div class="title">logback.groovy</div>
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">import static ch.qos.logback.classic.Level.INFO
+    <p><div class="paragraph"> 
+ <p>Recently, I needed to add a <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> configuration to an application that is deployed in <a href="http://tomcat.apache.org/" target="_blank" rel="noopener">Apache Tomcat</a>. I wanted to ensure that my log files did not grow in an unbounded manner. To protect against this, I decided to use the <code>RollingFileAppender</code> provided by <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a>. That is an obvious choice to solve this problem, but I wanted to ensure that when running the application in <a href="http://tomcat.apache.org/" target="_blank" rel="noopener">Apache Tomcat</a>, the generated log files end up in <code>${catalina.base}/logs</code> and when running locally via something like the <a href="http://tomcat.apache.org/maven-plugin-trunk/tomcat7-maven-plugin/" target="_blank" rel="noopener">Maven Apache Tomcat Plugin</a> it chose an appropriate output directory. I arrive at the following <a href="http://groovy.codehaus.org/" target="_blank" rel="noopener">Groovy</a>-based <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> configuration file:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="title">
+  logback.groovy
+ </div> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">import static ch.qos.logback.classic.Level.INFO
 
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy
@@ -137,21 +135,21 @@ appender("WEBAPP", RollingFileAppender) {
     }
 }
 
-root(INFO, ["WEBAPP"])</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>If the <code>catalina.base</code> property is present and not blank, use it.  Otherwise, use the current user&#8217;s directory as the base for the log file.</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>The configuration above ensures that not only will the log files be rotated based on size, but that the files will be created in the appropriate location based
-on the inspection of the <code>catalina.base</code> and <code>user.dir</code> system properties.  Because the configuration is written in <a href="http://groovy.codehaus.org/" target="_blank" rel="noopener">Groovy</a>, we can
-use any sort of logic we want to manipulate the <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> configuration at runtime to ensure the proper setup for the logging infrastructure in our application.</p>
+root(INFO, ["WEBAPP"])</code></pre> 
+ </div> 
+</div> 
+<div class="colist arabic"> 
+ <table> 
+  <tbody>
+   <tr> 
+    <td><i class="conum" data-value="1"></i><b>1</b></td> 
+    <td>If the <code>catalina.base</code> property is present and not blank, use it. Otherwise, use the current user’s directory as the base for the log file.</td> 
+   </tr> 
+  </tbody>
+ </table> 
+</div> 
+<div class="paragraph"> 
+ <p>The configuration above ensures that not only will the log files be rotated based on size, but that the files will be created in the appropriate location based on the inspection of the <code>catalina.base</code> and <code>user.dir</code> system properties. Because the configuration is written in <a href="http://groovy.codehaus.org/" target="_blank" rel="noopener">Groovy</a>, we can use any sort of logic we want to manipulate the <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> configuration at runtime to ensure the proper setup for the logging infrastructure in our application.</p> 
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/06/17/logback_tomcat_rolling_appender.html"></div>
@@ -190,7 +188,7 @@ use any sort of logic we want to manipulate the <a href="http://logback.qos.ch/"
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

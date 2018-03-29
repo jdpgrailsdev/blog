@@ -100,46 +100,35 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/12/09/email_inline_image_attachments.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph">
-<p>If you are in the need of generating HTML-based e-mails with images, the simple approach is to simply host the image and link to it
-in the HTML.  This will work, but will cause the reciepients (in most e-mail clients) to be prompted as to whether or not they should
-download and show the image.  If you want to avoid this (and therefore the stigma of a perceived security threat), you can include
-the image as an attachment in the e-mail and reference it using the attachment&#8217;s content ID value:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;img src="cid:imageName.png"&gt;&lt;/img&gt;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>When the e-mail client loads the message, it will now resolve the image from the inlined attachments included in the e-mail.  This all
-sounds great, but how do you get the images in the e-mail?  The solution is to combine the
-<a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mail.html" target="_blank" rel="noopener">Spring JavaMailSender</a> with the
-<a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/resources.html" target="_blank" rel="noopener">Spring Resource interface</a> to
-load and store the image data in the generated e-mail.  The first step is to load the images as <code>Resource</code> objects, either from the
-file system or classpath (in this example, we will use the classpath):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import org.apache.commons.io.IOUtils;
+    <p><div class="paragraph"> 
+ <p>If you are in the need of generating HTML-based e-mails with images, the simple approach is to simply host the image and link to it in the HTML. This will work, but will cause the reciepients (in most e-mail clients) to be prompted as to whether or not they should download and show the image. If you want to avoid this (and therefore the stigma of a perceived security threat), you can include the image as an attachment in the e-mail and reference it using the attachment’s content ID value:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-html" data-lang="html">&lt;img src="cid:imageName.png"&gt;&lt;/img&gt;</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>When the e-mail client loads the message, it will now resolve the image from the inlined attachments included in the e-mail. This all sounds great, but how do you get the images in the e-mail? The solution is to combine the <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mail.html" target="_blank" rel="noopener">Spring JavaMailSender</a> with the <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/resources.html" target="_blank" rel="noopener">Spring Resource interface</a> to load and store the image data in the generated e-mail. The first step is to load the images as <code>Resource</code> objects, either from the file system or classpath (in this example, we will use the classpath):</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">import org.apache.commons.io.IOUtils;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamSource;
 
 ...
 
-InputStreamSource imageSource = new ByteArrayResource(IOUtils.toByteArray(getClass().getResourceAsStream("/images/logo.png")))</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The code snippet above uses the <a href="http://commons.apache.org/proper/commons-io/" target=""_blank'">Apache Commons IO library</a> to convert
-the image bytes (read from the classpath via the <code>getResourceAsStream()</code> method) into a byte array.  The byte array is then wrapped
-by the Spring <code>ByteArrayResource</code>, which we will use to create the inline attachment (we could also use the <code>ClassPathResource</code>).  The next
-step is to add the image to the MIME message as an attachment:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">import javax.mail.internet.MimeMessage;
+InputStreamSource imageSource = new ByteArrayResource(IOUtils.toByteArray(getClass().getResourceAsStream("/images/logo.png")))</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>The code snippet above uses the <a href="http://commons.apache.org/proper/commons-io/" target="" _blank'">Apache Commons IO library</a> to convert the image bytes (read from the classpath via the <code>getResourceAsStream()</code> method) into a byte array. The byte array is then wrapped by the Spring <code>ByteArrayResource</code>, which we will use to create the inline attachment (we could also use the <code>ClassPathResource</code>). The next step is to add the image to the MIME message as an attachment:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">import javax.mail.internet.MimeMessage;
 
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -153,21 +142,19 @@ MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
 // Add information to the message, such as subject, recipients, etc
 
-message.addInline("logo.png", imageSource);</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>addInline()</code> method of the <code>MimeMessageHelper</code> reads the byte data from the <code>InputStreamSource</code> and creates the inline MIME body part to hold the
-attachment.  It also sets the content ID to the name provided by the first parameter.  Now, all that&#8217;s left is to reference the image in our HTML body:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">message.setText("&lt;img src=\"cid:logo.png\"&gt;&lt;/img&gt;&lt;div&gt;My logo&lt;/div&gt;", true);</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now, when the e-mail is viewed in the reciepient&#8217;s e-mail client, the image will be displayed from the attachments.  Note that this works with most web mail clients, however,
-you should only attach images that are referenced by the HTML body, otherwise they may show up as actual attachments in the e-mail client.</p>
+message.addInline("logo.png", imageSource);</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>The <code>addInline()</code> method of the <code>MimeMessageHelper</code> reads the byte data from the <code>InputStreamSource</code> and creates the inline MIME body part to hold the attachment. It also sets the content ID to the name provided by the first parameter. Now, all that’s left is to reference the image in our HTML body:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">message.setText("&lt;img src=\"cid:logo.png\"&gt;&lt;/img&gt;&lt;div&gt;My logo&lt;/div&gt;", true);</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>Now, when the e-mail is viewed in the reciepient’s e-mail client, the image will be displayed from the attachments. Note that this works with most web mail clients, however, you should only attach images that are referenced by the HTML body, otherwise they may show up as actual attachments in the e-mail client.</p> 
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/12/09/email_inline_image_attachments.html"></div>
@@ -206,7 +193,7 @@ you should only attach images that are referenced by the HTML body, otherwise th
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

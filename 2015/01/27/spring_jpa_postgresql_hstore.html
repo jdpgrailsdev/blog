@@ -100,20 +100,12 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/27/spring_jpa_postgresql_hstore.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph">
-<p>Starting <a href="http://www.postgresql.org" target="_blank" rel="noopener">PostgreSQL</a> version 9.0, the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank" rel="noopener">PostgreSQL hstore datatype</a> data type was introduced, which allows for the storing of arbitrary sets of key/value pairs within a single column.  This
-data type can be leveraged for a bunch of different situations, such as for storing custom/random attributes, semi-structured data or in any scenario where the number and
-type of columns associated with an entity stored in a table varies.  As with most new/database vendor-specific features, support for the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank" rel="noopener">PostgreSQL hstore datatype</a> data type does not exist
-as a first-level data type in the <a href="http://www.postgresql.org" target="_blank" rel="noopener">PostgreSQL</a> dialect provided by <a href="https://hibernate.org" target="_blank" rel="noopener">Hibernate</a>.  However, both JPA and <a href="https://hibernate.org" target="_blank" rel="noopener">Hibernate</a> provide mechanisms that allow you to customize the
-way in which data stored in an entity is prepared for insertion into a database table and vice-versa.  The <a href="http://en.wikibooks.org/wiki/Java_Persistence/Basic_Attributes#Converters_.28JPA_2.1.29" target="_blank" rel="noopener">JPA Attribute Converter</a> specification allows you to provide
-a custom <code>AttributeConverter</code> implementation that governs how data stored in a field of an entity gets converted for storage in the database and how to convert the column
-data back into a Java type.  Normally, this would be how you would implement support for an un-supported data type.  However, due to an <a href="https://hibernate.atlassian.net/browse/HHH-8804" target="_blank" rel="noopener">Hibernate issue with Converters and parameterized types</a>, this won&#8217;t work
-for the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank" rel="noopener">PostgreSQL hstore datatype</a>, unless you want to map it to a Java <code>String</code> type instead of a Java <code>Map&lt;String,Object&gt;</code> type, which makes more sense for an arbitrary key/value store.
-The solution?  Leverage <a href="https://docs.jboss.org/hibernate/orm/3.6/reference/en-US/html/types.html#types-custom-ut" target="_blank" rel="noopener">Hibernate&#8217;s Custom Types</a> support!</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">package com.example.jpa.support;
+    <p><div class="paragraph"> 
+ <p>Starting <a href="http://www.postgresql.org" target="_blank" rel="noopener">PostgreSQL</a> version 9.0, the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank" rel="noopener">PostgreSQL hstore datatype</a> data type was introduced, which allows for the storing of arbitrary sets of key/value pairs within a single column. This data type can be leveraged for a bunch of different situations, such as for storing custom/random attributes, semi-structured data or in any scenario where the number and type of columns associated with an entity stored in a table varies. As with most new/database vendor-specific features, support for the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank" rel="noopener">PostgreSQL hstore datatype</a> data type does not exist as a first-level data type in the <a href="http://www.postgresql.org" target="_blank" rel="noopener">PostgreSQL</a> dialect provided by <a href="https://hibernate.org" target="_blank" rel="noopener">Hibernate</a>. However, both JPA and <a href="https://hibernate.org" target="_blank" rel="noopener">Hibernate</a> provide mechanisms that allow you to customize the way in which data stored in an entity is prepared for insertion into a database table and vice-versa. The <a href="http://en.wikibooks.org/wiki/Java_Persistence/Basic_Attributes#Converters_.28JPA_2.1.29" target="_blank" rel="noopener">JPA Attribute Converter</a> specification allows you to provide a custom <code>AttributeConverter</code> implementation that governs how data stored in a field of an entity gets converted for storage in the database and how to convert the column data back into a Java type. Normally, this would be how you would implement support for an un-supported data type. However, due to an <a href="https://hibernate.atlassian.net/browse/HHH-8804" target="_blank" rel="noopener">Hibernate issue with Converters and parameterized types</a>, this won’t work for the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank" rel="noopener">PostgreSQL hstore datatype</a>, unless you want to map it to a Java <code>String</code> type instead of a Java <code>Map&lt;String,Object&gt;</code> type, which makes more sense for an arbitrary key/value store. The solution? Leverage <a href="https://docs.jboss.org/hibernate/orm/3.6/reference/en-US/html/types.html#types-custom-ut" target="_blank" rel="noopener">Hibernate’s Custom Types</a> support!</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">package com.example.jpa.support;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -245,17 +237,15 @@ public class HstoreUserType implements UserType {
 
         return data;
     }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The example above implements the <a href="https://hibernate.org" target="_blank" rel="noopener">Hibernate</a> <code>UserType</code> interface and provides methods (<code>nullSafeGet</code> and <code>nullSafeSet</code>) to handle the conversion.  It also provides the appropriate
-data type value for the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank" rel="noopener">PostgreSQL hstore datatype</a> (1111).  Now that you have a custom <code>UserType</code> implementation for the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank" rel="noopener">PostgreSQL hstore datatype</a>, the next step is to annotate your entity class to instruct JPA to
-use the custom type during mapping:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">package com.example.jpa.entity;
+}</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>The example above implements the <a href="https://hibernate.org" target="_blank" rel="noopener">Hibernate</a> <code>UserType</code> interface and provides methods (<code>nullSafeGet</code> and <code>nullSafeSet</code>) to handle the conversion. It also provides the appropriate data type value for the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank" rel="noopener">PostgreSQL hstore datatype</a> (1111). Now that you have a custom <code>UserType</code> implementation for the <a href="http://www.postgresql.org/docs/9.4/static/hstore.html" target="_blank" rel="noopener">PostgreSQL hstore datatype</a>, the next step is to annotate your entity class to instruct JPA to use the custom type during mapping:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">package com.example.jpa.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -277,14 +267,11 @@ public class BookEntity {
     private Map&lt;String,Object&gt; metadata;
 
     ...
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>TypeDef</code> is given a name so that it can be referenced when applied to the field via the <code>Type</code> annotation.  Now, when data is persisted or retrieved, our custom <code>UserType</code> implementation
-will be invoked to handle the data.  It is also worth noting that the <a href="http://www.postgresql.org" target="_blank" rel="noopener">PostgreSQL</a> JDBC driver library does come with an <code>HStoreConverter</code> class with static methods that could be leveraged from
-inside the custom <code>UserType</code> to handle the conversion to/from a <code>Map&lt;String,Object&gt;</code> to a <code>String</code> and vice versa.  However, I would not recommend an implementation that depends on an internal
-class from the JDBC driver, as it may cause compatibility issues if you upgrade.</p>
+}</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>The <code>TypeDef</code> is given a name so that it can be referenced when applied to the field via the <code>Type</code> annotation. Now, when data is persisted or retrieved, our custom <code>UserType</code> implementation will be invoked to handle the data. It is also worth noting that the <a href="http://www.postgresql.org" target="_blank" rel="noopener">PostgreSQL</a> JDBC driver library does come with an <code>HStoreConverter</code> class with static methods that could be leveraged from inside the custom <code>UserType</code> to handle the conversion to/from a <code>Map&lt;String,Object&gt;</code> to a <code>String</code> and vice versa. However, I would not recommend an implementation that depends on an internal class from the JDBC driver, as it may cause compatibility issues if you upgrade.</p> 
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2015/01/27/spring_jpa_postgresql_hstore.html"></div>
@@ -323,7 +310,7 @@ class from the JDBC driver, as it may cause compatibility issues if you upgrade.
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

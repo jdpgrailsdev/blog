@@ -100,16 +100,12 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/08/19/gradle_tests_jenkins.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/08/19/gradle_tests_jenkins.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph">
-<p>One of the nice features of <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> is the task execution caching, which prevent tasks whose inputs/outputs have not changed since the last successful execution from
-executing in order to speed up build times.  Sometimes, however this causes issues when integrating your <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> build into other systems.  I ran into one such issue
-when building a <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> application from <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a>.  The <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a> build job is configured to publish the results of the <code>test</code> task (the test reports output by <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>).
-It did not occur to me that if I did not invoke the <code>clean</code> task and let <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> only re-generate the test reports if any of the compiled code had changed (other file changes
-to the project would trigger the CI build) that <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a> would fail the build due to stale test reports.  However, that is exactly what happened:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code>BUILD SUCCESSFUL
+    <p><div class="paragraph"> 
+ <p>One of the nice features of <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> is the task execution caching, which prevent tasks whose inputs/outputs have not changed since the last successful execution from executing in order to speed up build times. Sometimes, however this causes issues when integrating your <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> build into other systems. I ran into one such issue when building a <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> application from <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a>. The <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a> build job is configured to publish the results of the <code>test</code> task (the test reports output by <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>). It did not occur to me that if I did not invoke the <code>clean</code> task and let <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> only re-generate the test reports if any of the compiled code had changed (other file changes to the project would trigger the CI build) that <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a> would fail the build due to stale test reports. However, that is exactly what happened:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code>BUILD SUCCESSFUL
 
 Total time: 15.323 secs
 Build step 'Invoke Gradle script' changed build result to SUCCESS
@@ -117,28 +113,20 @@ Test reports were found but none of them are new. Did tests run?
 For example, /var/jenkins/jobs/test-job/workspace/build/test-results/TEST-com.example.TestSpec.xml is 12 hours 15 minutes old
 
 Build step 'Publish JUnit test result report' changed build result to FAILURE
-Finished: FAILURE</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>By not cleaning out the previously compiled code, the caching mechanism for the <code>test</code> task kicked in and left the previous test results in place, as it properly detected that
-nothing had changed and therefore is no need to re-run the tests.  However, Jenkins apparently bases its ability to publish the results of the tests based on a timestamp and not
-just the presence of the tests results in the directory specified in the job&#8217;s configuration.  One easy fix is to always run the <code>clean</code> task, but that eliminates a lot of <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>'s
-performance enhancements around only running task incrementally, based on their inputs/outputs.  Another option is to add the <code>--rerun-tasks</code> option, which effectively does the same
-thing as the <code>clean</code> task, except it doesn&#8217;t remove any artifacts&#8201;&#8212;&#8201;it just simply forces <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to run each task regardless of the caching status.  Neither of these options really
-get us what we want.  One other alternative is to make use of the <code>upToDateWhen</code> configuration closure on a tasks declared outputs to control caching on a per-task basis:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">    // Always execute the tests -- needed for Jenkins to be happy
-    test.outputs.upToDateWhen { false }</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The example above directs <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to always run the <code>test</code> task regardless of what the task cache tells <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> about it.  This gives us fine grained control over which tasks
-that we want to take advantage of caching and which ones we want to always run.  By adding the one line above to my project&#8217;s <code>build.gradle</code> script, I was able to make <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a>
-happy with always providing up-to-date unit tests results, regardless of which files (source or otherwise) have changed in my project.  This also means that <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> will take
-advantage of task caching for other tasks in the project (such as compilation, packaging, etc), which helps to reduce build time.</p>
+Finished: FAILURE</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>By not cleaning out the previously compiled code, the caching mechanism for the <code>test</code> task kicked in and left the previous test results in place, as it properly detected that nothing had changed and therefore is no need to re-run the tests. However, Jenkins apparently bases its ability to publish the results of the tests based on a timestamp and not just the presence of the tests results in the directory specified in the job’s configuration. One easy fix is to always run the <code>clean</code> task, but that eliminates a lot of <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>'s performance enhancements around only running task incrementally, based on their inputs/outputs. Another option is to add the <code>--rerun-tasks</code> option, which effectively does the same thing as the <code>clean</code> task, except it doesn’t remove any artifacts — it just simply forces <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to run each task regardless of the caching status. Neither of these options really get us what we want. One other alternative is to make use of the <code>upToDateWhen</code> configuration closure on a tasks declared outputs to control caching on a per-task basis:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">    // Always execute the tests -- needed for Jenkins to be happy
+    test.outputs.upToDateWhen { false }</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>The example above directs <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to always run the <code>test</code> task regardless of what the task cache tells <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> about it. This gives us fine grained control over which tasks that we want to take advantage of caching and which ones we want to always run. By adding the one line above to my project’s <code>build.gradle</code> script, I was able to make <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a> happy with always providing up-to-date unit tests results, regardless of which files (source or otherwise) have changed in my project. This also means that <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> will take advantage of task caching for other tasks in the project (such as compilation, packaging, etc), which helps to reduce build time.</p> 
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/08/19/gradle_tests_jenkins.html"></div>
@@ -177,7 +165,7 @@ advantage of task caching for other tasks in the project (such as compilation, p
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

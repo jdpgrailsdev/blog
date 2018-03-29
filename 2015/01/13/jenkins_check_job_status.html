@@ -100,17 +100,12 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/01/13/jenkins_check_job_status.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph">
-<p>There are a ton of <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a> plugins out there that let you control when a job should run based on the status of
-other builds.  However, plugins typically become out of date pretty quickly.  If you don&#8217;t want to have to play
-the plugin update game, you can use a little bash magic to leverage the <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a> REST API to check the status
-of other jobs before running your builds.  Let&#8217;s assume that you have a job named <code>other-job</code> that must be in
-a success state in order for another job to execute.  You can check the status of the <code>other-job</code> by using
-the <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a> REST API as part of an executed shell in the job&#8217;s configuration:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-shell" data-lang="shell">job_status=`curl https://jenkins/view/job/other-job/lastBuild/api/json | grep "\"result\":\"SUCCESS\""`
+    <p><div class="paragraph"> 
+ <p>There are a ton of <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a> plugins out there that let you control when a job should run based on the status of other builds. However, plugins typically become out of date pretty quickly. If you don’t want to have to play the plugin update game, you can use a little bash magic to leverage the <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a> REST API to check the status of other jobs before running your builds. Let’s assume that you have a job named <code>other-job</code> that must be in a success state in order for another job to execute. You can check the status of the <code>other-job</code> by using the <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a> REST API as part of an executed shell in the job’s configuration:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-shell" data-lang="shell">job_status=`curl https://jenkins/view/job/other-job/lastBuild/api/json | grep "\"result\":\"SUCCESS\""`
 
 if [ -n "$job_status" ]
 then
@@ -118,14 +113,11 @@ then
 else
   echo "BUILD FAILURE: Other build is unsuccessful or status could not be obtained."
   exit 1
-fi</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>then</code> block of this other job could even do something like invoke another build that has a parameterized configuration to run your
-actual build via the REST API.  This would allow you to have the job with the configuration above check the status of <code>other-job</code> first
-and then kick of a third job that actual performs the build, but only if the first job is successful, all without
-installing any additional plugins.</p>
+fi</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>The <code>then</code> block of this other job could even do something like invoke another build that has a parameterized configuration to run your actual build via the REST API. This would allow you to have the job with the configuration above check the status of <code>other-job</code> first and then kick of a third job that actual performs the build, but only if the first job is successful, all without installing any additional plugins.</p> 
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2015/01/13/jenkins_check_job_status.html"></div>
@@ -164,7 +156,7 @@ installing any additional plugins.</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

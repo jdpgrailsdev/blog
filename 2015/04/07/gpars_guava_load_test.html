@@ -100,31 +100,22 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2015/04/07/gpars_guava_load_test.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph">
-<p>I set out a few days back to write a simple <a href="http://groovy-lang.org/" target="_blank" rel="noopener">Groovy</a> script that would accomplish the following:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Send data to a <a href="http://kafka.apache.org/" target="_blank" rel="noopener">Kafka</a> topic from X concurrent producers.</p>
-</li>
-<li>
-<p>Run for a set duration</p>
-</li>
-<li>
-<p>Achieve a set number of sends per minute</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>To do so, I decided to use <a href="http://www.gpars.org/guide/index.html" target="_blank" rel="noopener">GPars Framework</a>, which is a "concurrency and parallelism library for Java and Groovy
-that gives you a number of high-level abstractions for writing concurrent and parallel code in Groovy."  Additionally,
-I decided to make use of the <a href="https://github.com/google/guava" target="_blank" rel="noopener">Google Guava</a> <a href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/RateLimiter.html" target="_blank" rel="noopener">RateLimiter</a>
-class to control how much data is produced.  The resulting script is pretty simple:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">@Grapes([
+    <p><div class="paragraph"> 
+ <p>I set out a few days back to write a simple <a href="http://groovy-lang.org/" target="_blank" rel="noopener">Groovy</a> script that would accomplish the following:</p> 
+</div> 
+<div class="ulist"> 
+ <ul> 
+  <li> <p>Send data to a <a href="http://kafka.apache.org/" target="_blank" rel="noopener">Kafka</a> topic from X concurrent producers.</p> </li> 
+  <li> <p>Run for a set duration</p> </li> 
+  <li> <p>Achieve a set number of sends per minute</p> </li> 
+ </ul> 
+</div> 
+<div class="paragraph"> 
+ <p>To do so, I decided to use <a href="http://www.gpars.org/guide/index.html" target="_blank" rel="noopener">GPars Framework</a>, which is a "concurrency and parallelism library for Java and Groovy that gives you a number of high-level abstractions for writing concurrent and parallel code in Groovy." Additionally, I decided to make use of the <a href="https://github.com/google/guava" target="_blank" rel="noopener">Google Guava</a> <a href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/RateLimiter.html" target="_blank" rel="noopener">RateLimiter</a> class to control how much data is produced. The resulting script is pretty simple:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">@Grapes([
     @Grab(group='org.codehaus.gpars', module='gpars', version='1.2.1'),
     @Grab(group='com.google.guava', module='guava', version='18.0'),
     @GrabExclude('commons-logging:commons-logging')])
@@ -175,14 +166,11 @@ if(options?.h) {
    }
    println 'Test complete.'
    System.exit(0)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The key points in the script above is the use of the <code>GParsExecutorsPool</code> to handle the creation of a configured thread pool and the inclusion of
-the <code>RateLimiter</code> to slow down the execution loop to meet the target rate.  Finally, all of this is done in a <code>while</code> loop that keeps looping until
-the requested duration has been achieved.  The end result is a simple script that allows you to generate concurrent request load at a target rate for
-a set duration.</p>
+}</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>The key points in the script above is the use of the <code>GParsExecutorsPool</code> to handle the creation of a configured thread pool and the inclusion of the <code>RateLimiter</code> to slow down the execution loop to meet the target rate. Finally, all of this is done in a <code>while</code> loop that keeps looping until the requested duration has been achieved. The end result is a simple script that allows you to generate concurrent request load at a target rate for a set duration.</p> 
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2015/04/07/gpars_guava_load_test.html"></div>
@@ -221,7 +209,7 @@ a set duration.</p>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

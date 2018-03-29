@@ -100,15 +100,12 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/09/30/spring_boot_jetty_jmx.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/09/30/spring_boot_jetty_jmx.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph">
-<p><a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> provides monitoring and management over JMX <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-jmx.html" target="_blank" rel="noopener">out of the box</a>.  If you include a library
-that exposes <a href="http://docs.oracle.com/javase/tutorial/jmx/mbeans/" target="_blank" rel="noopener">MBeans</a>, they will automatically be registered and exposed with the MBean server provided by <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>.  However, some packages don&#8217;t enable their MBeans by default.  Jetty is one of those
-libraries.  If you are using Jetty instead of Tomcat (Tomcat is the default option in <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>), you can enable Jetty&#8217;s MBeans by adding a <code>customizer</code> to a custom override of the <code>JettyEmbeddedServletContainerFactory</code>
-bean:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">@Bean
+    <p><div class="paragraph"> 
+ <p><a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> provides monitoring and management over JMX <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-jmx.html" target="_blank" rel="noopener">out of the box</a>. If you include a library that exposes <a href="http://docs.oracle.com/javase/tutorial/jmx/mbeans/" target="_blank" rel="noopener">MBeans</a>, they will automatically be registered and exposed with the MBean server provided by <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>. However, some packages don’t enable their MBeans by default. Jetty is one of those libraries. If you are using Jetty instead of Tomcat (Tomcat is the default option in <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>), you can enable Jetty’s MBeans by adding a <code>customizer</code> to a custom override of the <code>JettyEmbeddedServletContainerFactory</code> bean:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">@Bean
 public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(@Value("${server.port:8080}") final String port) {
     final JettyEmbeddedServletContainerFactory factory =  new JettyEmbeddedServletContainerFactory(Integer.valueOf(port));
     factory.addServerCustomizers(new JettyServerCustomizer() {
@@ -120,17 +117,15 @@ public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory
         }
     });
     return factory;
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The code sample above will register Jetty&#8217;s MBeans with the default platform MBean server (which is provided by <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>).  This will allow you to see things like the number of threads in use in Jetty&#8217;s
-connection pool and other fun facts that can be very useful when debugging Jetty or configuring it for better performance.  It is also worth noting that you will need to include the following dependencies
-in order to expose the Jetty MBeans:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">ext {
+}</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>The code sample above will register Jetty’s MBeans with the default platform MBean server (which is provided by <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>). This will allow you to see things like the number of threads in use in Jetty’s connection pool and other fun facts that can be very useful when debugging Jetty or configuring it for better performance. It is also worth noting that you will need to include the following dependencies in order to expose the Jetty MBeans:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">ext {
     jettyVersion = '9.0.3.v20130506'
 }
 
@@ -142,8 +137,8 @@ dependencies {
   compile "org.eclipse.jetty:jetty-util:$jettyVersion"
 
   ...
-}</code></pre>
-</div>
+}</code></pre> 
+ </div> 
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/09/30/spring_boot_jetty_jmx.html"></div>
@@ -182,7 +177,7 @@ dependencies {
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

@@ -100,17 +100,15 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2014/06/24/logback_grails.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2014/06/24/logback_grails.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph">
-<p><a href="http://jonathanpearlin.com/2014/03/24/grails_logback.html" target="_blank" rel="noopener">Previously</a>, I blogged about using <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> with <a href="http://grails.org" target="_blank" rel="noopener">Grails</a>.  While the contents of that post are mostly accurate, I have uncovered a few issues
-with that approach, mostly related to the use of the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a>.  The <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> is intended to only work the <code>logback</code> DSL in <code>grails-app/conf/*Config.groovy</code>.  If you attempt to use your own custom <code>logback.xml</code>
-or <code>logback.groovy</code>, it is ignored, even though <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> may report that it was loaded.  My suspicion is that the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> plugin is re-initializing <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> after the fact, thus erasing any configuration loaded
-from the configuration files.  Additionally, the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> depends on version 1.0.12 of <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a>, which is about 3 to 4 release behind the latest release.  I arrived at the conclusion that the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> was interferring with
-my configuration files by using the following <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> configuration:</p>
-</div>
-<div class="listingblock">
-<div class="title">logback.groovy</div>
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">import static ch.qos.logback.classic.Level.ERROR
+    <p><div class="paragraph"> 
+ <p><a href="http://jonathanpearlin.com/2014/03/24/grails_logback.html" target="_blank" rel="noopener">Previously</a>, I blogged about using <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> with <a href="http://grails.org" target="_blank" rel="noopener">Grails</a>. While the contents of that post are mostly accurate, I have uncovered a few issues with that approach, mostly related to the use of the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a>. The <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> is intended to only work the <code>logback</code> DSL in <code>grails-app/conf/*Config.groovy</code>. If you attempt to use your own custom <code>logback.xml</code> or <code>logback.groovy</code>, it is ignored, even though <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> may report that it was loaded. My suspicion is that the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> plugin is re-initializing <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> after the fact, thus erasing any configuration loaded from the configuration files. Additionally, the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> depends on version 1.0.12 of <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a>, which is about 3 to 4 release behind the latest release. I arrived at the conclusion that the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> was interferring with my configuration files by using the following <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> configuration:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="title">
+  logback.groovy
+ </div> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">import static ch.qos.logback.classic.Level.ERROR
 import static ch.qos.logback.classic.Level.INFO
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.core.ConsoleAppender
@@ -138,43 +136,43 @@ logger('grails.plugin', ERROR, ['STDOUT'], false)
 logger('org.grails.plugin', ERROR, ['STDOUT'], false)
 logger('grails.app', INFO, ['STDOUT'], false)
 
-root(INFO, ['STDOUT'])</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>When starting the application with this configuration, the only output reported by <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> is the following:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code>13:27:25,368 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@61b99295 - Added status listener of type [ch.qos.logback.core.status.OnConsoleStatusListener]
+root(INFO, ['STDOUT'])</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>When starting the application with this configuration, the only output reported by <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> is the following:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code>13:27:25,368 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@61b99295 - Added status listener of type [ch.qos.logback.core.status.OnConsoleStatusListener]
 13:27:25,549 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@61b99295 - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
-13:27:25,550 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@61b99295 - Naming appender as [STDOUT]</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This is very strange, as <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> was not reporting that any loggers were created or that those loggers have been associated with one or more appenders.  After some digging through
-the <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> <code>ch.qos.logback.classic.gaffer.ConfigurationDelegate</code> class, which handles the DSL from the above configuration, I noticed that the most recent version of <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> (1.1.2)
-has much better output during startup.  I decided to change my <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> application to explicitly depend on the latest <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> version:</p>
-</div>
-<div class="listingblock">
-<div class="title">BuildConfig.groovy</div>
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">plugins {
+13:27:25,550 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@61b99295 - Naming appender as [STDOUT]</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>This is very strange, as <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> was not reporting that any loggers were created or that those loggers have been associated with one or more appenders. After some digging through the <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> <code>ch.qos.logback.classic.gaffer.ConfigurationDelegate</code> class, which handles the DSL from the above configuration, I noticed that the most recent version of <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> (1.1.2) has much better output during startup. I decided to change my <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> application to explicitly depend on the latest <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> version:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="title">
+  BuildConfig.groovy
+ </div> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">plugins {
     compile ':logback:0.3.1'
 }
 
 dependencies {
     compile 'ch.qos.logback:logback-core:1.1.2'
     compile 'ch.qos.logback:logback-classic:1.1.2'
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>After restarting the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> application, I saw the following output:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code>13:32:36,412 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Added status listener of type [ch.qos.logback.core.status.OnConsoleStatusListener]
+}</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>After restarting the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> application, I saw the following output:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code>13:32:36,412 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Added status listener of type [ch.qos.logback.core.status.OnConsoleStatusListener]
 13:32:36,556 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
 13:32:36,557 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Naming appender as [STDOUT]
 13:32:36,981 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [org.codehaus.groovy.grails] to ERROR
@@ -192,24 +190,24 @@ dependencies {
 13:32:37,073 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [grails.app] to INFO
 13:32:37,073 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[grails.app]
 13:32:37,074 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Setting level of logger [ROOT] to INFO
-13:32:37,074 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[ROOT]</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Sweet.  <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> appeared to be configured and working as expected.  After clicking around my application and not seeing anything log to the console, I became very suspicious that I had solved the problem simply
-by updating the version of <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> used by the application.  I decided to print out the appenders associated with one of the loggers to verify that the <code>ConfigurationDelegate</code> actually set things up properly:</p>
-</div>
-<div class="listingblock">
-<div class="title">Bootstrap.groovy</div>
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">def init = { servletContext -&gt;
+13:32:37,074 |-INFO in ch.qos.logback.classic.gaffer.ConfigurationDelegate@55e6490 - Attaching appender named [STDOUT] to Logger[ROOT]</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>Sweet. <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> appeared to be configured and working as expected. After clicking around my application and not seeing anything log to the console, I became very suspicious that I had solved the problem simply by updating the version of <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> used by the application. I decided to print out the appenders associated with one of the loggers to verify that the <code>ConfigurationDelegate</code> actually set things up properly:</p> 
+</div> 
+<div class="listingblock"> 
+ <div class="title">
+  Bootstrap.groovy
+ </div> 
+ <div class="content"> 
+  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">def init = { servletContext -&gt;
     println "Appenders = ${LoggerFactory.getLogger('grails.app').aai.appenderList"
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The code above printed out an empty list.  After some head scratching, I determined that the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> was somehow overwriting/replacing the <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> configuration set up by the <code>logback.groovy</code> file.  I decided
-to remove the dependency on the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> from <code>grails-app/conf/BuildConfig.groovy</code> as I am not using the DSL from <code>grails-app/conf/*Config.groovy</code>. After removing the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> entirely, everything worked as expected!</p>
+}</code></pre> 
+ </div> 
+</div> 
+<div class="paragraph"> 
+ <p>The code above printed out an empty list. After some head scratching, I determined that the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> was somehow overwriting/replacing the <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> configuration set up by the <code>logback.groovy</code> file. I decided to remove the dependency on the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> from <code>grails-app/conf/BuildConfig.groovy</code> as I am not using the DSL from <code>grails-app/conf/*Config.groovy</code>. After removing the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> entirely, everything worked as expected!</p> 
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/blog2014/06/24/logback_grails.html"></div>
@@ -248,7 +246,7 @@ to remove the dependency on the <a href="http://grails.org/plugin/logback" targe
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.5.1</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 
