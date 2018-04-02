@@ -1,0 +1,14 @@
+= Using Rolling Deployments to Limit Service Disruptions
+Jonathan Pearlin
+2018-04-02
+:jbake-type: post
+:jbake-tags: java,microservices
+:jbake-status: published
+:source-highlighter: prettify
+:linkattrs:
+:id: rolling_deployments_micro_services
+:icons: font
+:blogpost: https://blog.newrelic.com/2018/04/02/rolling-deployments/[blog post, window="_blank"]
+:newrelic: https://www.newrelic.com/[New Relic, window="_blank"]
+
+Please check out my latest {blogpost} for {newrelic} where I discuss how we deploy our high throughput, backend microservices. Please give it a read and am interested in your thoughts on the subject!
