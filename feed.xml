@@ -6,13 +6,24 @@
         <atom:link href="http://jdpgrailsdev.github.io/blog//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Thu, 29 Mar 2018 09:48:09 -0400</pubDate>
-        <lastBuildDate>Thu, 29 Mar 2018 09:48:09 -0400</lastBuildDate>
+        <pubDate>Mon, 2 Apr 2018 12:43:32 -0400</pubDate>
+        <lastBuildDate>Mon, 2 Apr 2018 12:43:32 -0400</lastBuildDate>
         <image>
             <url>http://jdpgrailsdev.github.io/blog//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
             <link>http://jdpgrailsdev.github.io/blog/</link>
         </image>
+        <item>
+            <title>Using Rolling Deployments to Limit Service Disruptions</title>
+            <link>http://jdpgrailsdev.github.io/blog/2018/04/02/blog_post.html</link>
+            <pubDate>Mon, 2 Apr 2018 00:00:00 -0400</pubDate>
+            <guid isPermaLink="false">2018/04/02/blog_post.html</guid>
+            <description>
+                    &lt;div class=&quot;paragraph&quot;&gt; 
+ &lt;p&gt;Please check out my latest &lt;a href=&quot;https://blog.newrelic.com/2018/04/02/rolling-deployments/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;blog post&lt;/a&gt; for &lt;a href=&quot;https://www.newrelic.com/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;New Relic&lt;/a&gt; where I discuss how we deploy our high throughput, backend microservices. Please give it a read and am interested in your thoughts on the subject!&lt;/p&gt; 
+&lt;/div&gt;
+            </description>
+        </item>
         <item>
             <title>A Gradle Plugin That Applies Itself</title>
             <link>http://jdpgrailsdev.github.io/blog/2018/03/29/gradle_plugin_include_itself.html</link>
@@ -270,33 +281,6 @@ final ConsumerIterator&amp;lt;byte[],byte[]&amp;gt; = streams.get(0).iterator();
    &lt;p&gt;The &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; provides an excellent way to functionally test your custom &lt;a href=&quot;https://gradle.org/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle&lt;/a&gt; plugins. Because it uses actual build scripts, it is easy to build up a library of configurations that you want to continually test as changes are made to the custom plugin. Furthermore, the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; drastically reduces the amount of test code that you need to write, allowing you to more efficiently test your plugin. All of these are great reasons to convert your plugin tests to use the &lt;a href=&quot;https://docs.gradle.org/current/userguide/test_kit.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Gradle Test Kit&lt;/a&gt; or to write tests for the first time if you don’t currently have test coverage for your code.&lt;/p&gt; 
   &lt;/div&gt; 
  &lt;/div&gt; 
-&lt;/div&gt;
-            </description>
-        </item>
-        <item>
-            <title>Using Spock/CGLIB with Java 8 and Gradle</title>
-            <link>http://jdpgrailsdev.github.io/blog/2015/08/18/java_8_spock_cglib_gradle.html</link>
-            <pubDate>Tue, 18 Aug 2015 00:00:00 -0400</pubDate>
-            <guid isPermaLink="false">2015/08/18/java_8_spock_cglib_gradle.html</guid>
-            <description>
-                    &lt;div class=&quot;paragraph&quot;&gt; 
- &lt;p&gt;Recently, I attempted to convert a project that uses &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;CGLIB&lt;/a&gt; and &lt;a href=&quot;https://github.com/spockframework/spock&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Spock Framework&lt;/a&gt; to execute unit tests to use Java 8 source and target versions. When I went to run the unit tests, I was met with a nasty &lt;code&gt;java.lang.IllegalArgumentException&lt;/code&gt;. Some quick internet searching showed that there is an existing issue with the currently released version of &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;CGLIB&lt;/a&gt; and the version of the &lt;a href=&quot;https://github.com/llbit/ow2-asm&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;ASM&lt;/a&gt; library it depends on. Despite &lt;a href=&quot;https://github.com/cglib/cglib/issues/8&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;pleas&lt;/a&gt; from the community, an updated version of &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;CGLIB&lt;/a&gt; with Java 8 compatibility has not yet been released. However, there are commits on the project’s trunk that add Java 8 compatibility. Luckily, a quick look at the &lt;a href=&quot;https://github.com/spockframework/spock&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Spock Framework&lt;/a&gt; source code showed me how to get around this issue. The trick is to use &lt;a href=&quot;https://jitpack.io&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;JitPack.io&lt;/a&gt; as a Maven repository in your build script to build a particular commit hash of the project and expose it as a dependency for your project. After some digging through the source, I determined that &lt;a href=&quot;https://github.com/cglib/cglib/commits/master&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;commit 52e118aca4&lt;/a&gt; is the proper one to use. To use this version of &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;CGLIB&lt;/a&gt; in your &lt;code&gt;build.gradle&lt;/code&gt; file, you simply need to add the following:&lt;/p&gt; 
-&lt;/div&gt; 
-&lt;div class=&quot;listingblock&quot;&gt; 
- &lt;div class=&quot;content&quot;&gt; 
-  &lt;pre class=&quot;prettyprint highlight&quot;&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;repositories {
-    // ...
-    maven { url &quot;https://jitpack.io&quot; }
-}
-
-dependencies {
-    testCompile &apos;com.github.cglib:cglib:52e118aca4&apos;
-    testCompile &apos;org.spockframework:spock-core:0.7-groovy-2.0&apos;
-}&lt;/code&gt;&lt;/pre&gt; 
- &lt;/div&gt; 
-&lt;/div&gt; 
-&lt;div class=&quot;paragraph&quot;&gt; 
- &lt;p&gt;You can generate this information using &lt;a href=&quot;https://jitpack.io&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;JitPack.io&lt;/a&gt; itself by going to the following URL: &lt;a href=&quot;https://jitpack.io/#cglib/cglib/52e118aca4&quot; class=&quot;bare&quot;&gt;https://jitpack.io/#cglib/cglib/52e118aca4&lt;/a&gt;. Now, my project will get &lt;a href=&quot;https://jitpack.io&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;JitPack.io&lt;/a&gt; to build the custom release of &lt;a href=&quot;https://github.com/cglib/cglib&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;CGLIB&lt;/a&gt; without me needing to build and push it into a repository!&lt;/p&gt; 
 &lt;/div&gt;
             </description>
         </item>

@@ -94,6 +94,22 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
                     <h1>The Flowers Are Still Standing</h1>
                 </div>
 
+                   <a href="/blog/2018/04/02/blog_post.html"><h1>Using Rolling Deployments to Limit Service Disruptions</h1></a>
+                   <p>02 April 2018</p>
+                <p><em>Tags: </em>
+                <a href="/blog/tags/java.html">java</a>
+        
+                <a href="/blog/tags/microservices.html">microservices</a>
+        </p>
+
+                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2018/04/02/blog_post.html"></div>
+                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2018/04/02/blog_post.html" data-counter="right"></script>
+                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2018/04/02/blog_post.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                   <p><div class="paragraph"> 
+ <p>Please check out my latest <a href="https://blog.newrelic.com/2018/04/02/rolling-deployments/" target="_blank" rel="noopener">blog post</a> for <a href="https://www.newrelic.com/" target="_blank" rel="noopener">New Relic</a> where I discuss how we deploy our high throughput, backend microservices. Please give it a read and am interested in your thoughts on the subject!</p> 
+</div></p>
+                <p><a href="/blog2018/04/02/blog_post.html#disqus_thread">Comments</a></p>
                    <a href="/blog/2018/03/29/gradle_plugin_include_itself.html"><h1>A Gradle Plugin That Applies Itself</h1></a>
                    <p>29 March 2018</p>
                 <p><em>Tags: </em>
@@ -198,184 +214,6 @@ final ConsumerIterator&lt;byte[],byte[]&gt; = streams.get(0).iterator();‍‍�
  <p>‍ Now, the call to <code>hasNext()</code> will behave more like an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> retrieved from a collection, which is to say it will not block indefinitely. It is recommended that you do some testing to determine an acceptable timeout value to avoid looping too frequently, as this will cause an increase in CPU utilization by the loop. It is also worth noting that the <a href="https://kafka.apache.org/082/documentation.html#consumerconfigs" target="_blank" rel="noopener">Kafka documentation</a> does not directly link the configuration setting and the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank" rel="noopener">ConsumerIterator</a> and this issue would most likely go unnoticed in scenarios where data is consistently available to the client. In any case, this issue highlights the need to take a deeper look at any API or library you include in your application in order to ensure that you understand exactly how it works and what performance impacts it may have on the execution of your code.</p> 
 </div></p>
                 <p><a href="/blog2016/12/20/kafka_iterator.html#disqus_thread">Comments</a></p>
-                   <a href="/blog/2016/03/29/gradle_test_kit.html"><h1>Testing a custom Gradle plugin with Gradle Test Kit</h1></a>
-                   <p>29 March 2016</p>
-                <p><em>Tags: </em>
-                <a href="/blog/tags/gradle.html">gradle</a>
-        
-                <a href="/blog/tags/groovy.html">groovy</a>
-        </p>
-
-                <div class="g-plusone" data-size="medium" data-href="http://jdpgrailsdev.github.io/blog/2016/03/29/gradle_test_kit.html"></div>
-                <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/blog/2016/03/29/gradle_test_kit.html" data-counter="right"></script>
-                <div class="fb-like" data-href="http://jdpgrailsdev.github.io/blog/2016/03/29/gradle_test_kit.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-
-                   <p><div id="preamble"> 
- <div class="sectionbody"> 
-  <div class="paragraph"> 
-   <p>With the release of <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> 2.10, the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a> was included as an "incubating" feature to "[aid] in testing Gradle plugins and build logic generally." Prior to the creation of the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a>, it had been fairly cumbersome to test custom <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> plugins. Tests often involved using the <a href="https://docs.gradle.org/current/javadoc/org/gradle/testfixtures/ProjectBuilder.html">ProductBuilder</a> to create a dummy instance of a <code>Project</code> and retrieving a declared <code>Task</code> and executing it manually. While this would test the task logic directly, it did not test the execution of the task as part of a normal <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> execution. Furthermore, it would not exercise task-based caching, making it hard to verify that any configured inputs/outputs are being honored. This is where the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a> can help. It is focused on functional testing, which means that it emulates what a user will see when attempting to run tasks via the command line or <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> wrapper. Being an "incubating" feature, however, some of the documentation is lacking, especially when it comes to testing a custom <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> plugin within the project that contains the plugin definition and source. In this post, we will explore how to set up your custom plugin’s project to use the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a>.</p> 
-  </div> 
- </div> 
-</div> 
-<div class="sect1"> 
- <h2 id="_using_the_gradle_test_kit">Using the Gradle Test Kit</h2> 
- <div class="sectionbody"> 
-  <div class="paragraph"> 
-   <p>The first step is to include the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a> as a <code>test</code> scoped dependency in your project’s <code>build.gradle</code> file:</p> 
-  </div> 
-  <div class="listingblock"> 
-   <div class="content"> 
-    <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">dependencies {
-  ...
-
-  testCompile gradleTestKit()
-  testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
-}</code></pre> 
-   </div> 
-  </div> 
-  <div class="paragraph"> 
-   <p>This will pull in the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a> libraries for use during the <code>test</code> phase of your project.</p> 
-  </div> 
- </div> 
-</div> 
-<div class="sect1"> 
- <h2 id="_creating_the_plugin_classpath">Creating the Plugin Classpath</h2> 
- <div class="sectionbody"> 
-  <div class="paragraph"> 
-   <p>The next step, which is hard to determine from the documentation, is to make sure that custom plugin and its descriptor are on the classpath path when using the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a>. In its current form, there is no easy way to pass/build this classpath as part of a <a href="https://github.com/spockframework/spock" target="_blank" rel="noopener">Spock Framework</a> test at runtime. The trick is to follow what is outlined in section 43.2.1 of the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a> documentation, which outlines how to create a text file containing the classpath to be used by the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a>:</p> 
-  </div> 
-  <div class="listingblock"> 
-   <div class="content"> 
-    <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">task createPluginClasspath {
-    def outputDir = file("${buildDir}/resources/test")
-
-    inputs.files sourceSets.test.runtimeClasspath
-    outputs.dir outputDir
-
-    doLast {
-        outputDir.mkdirs()
-        file("${outputDir}/plugin-classpath.txt").text = sourceSets.test.runtimeClasspath.join('\n',)
-    }
-}</code></pre> 
-   </div> 
-  </div> 
-  <div class="paragraph"> 
-   <p>In the example above, we use the <code>runtime</code> classpath of the <code>test</code> configuration to generate the classpath list to be passed to the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a> runner. The example in the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a> documentation uses the <code>main</code> configuration, which is fine if you don’t need to provide any additional libraries for testing. In my case, I needed to have some other custom plugins available for the functional test, but did not want those dependencies to be on my main <code>compile</code> or <code>runtime</code> classpath. If you don’t want to have to manually call this task each time you test your project, you can add the following your <code>build.gradle</code> script to tie its execution to the <code>test</code> task:</p> 
-  </div> 
-  <div class="listingblock"> 
-   <div class="content"> 
-    <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">test.dependsOn(['createPluginClasspath'])</code></pre> 
-   </div> 
-  </div> 
-  <div class="paragraph"> 
-   <p>Now that we have a task to generate the plugin classpath text file, we need to use it as part of our test. In the example below, the contents of the <code>plugin-classpath.txt</code> file read, collected, converted into <code>File</code> objects and stored into a list:</p> 
-  </div> 
-  <div class="listingblock"> 
-   <div class="content"> 
-    <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">class MyPluginFunctionalSpec extends Specification {
-
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
-
-    File buildFile
-
-    File propertiesFile
-
-    List pluginClasspath
-
-    def setup() {
-        buildFile = testProjectDir.newFile('build.gradle')
-        propertiesFile = testProjectDir.newFile('gradle.properties')
-        pluginClasspath = getClass().classLoader.findResource('plugin-classpath.txt').readLines().collect { new File(it) }
-    }
-
-    ...</code></pre> 
-   </div> 
-  </div> 
-  <div class="paragraph"> 
-   <p>The <code>pluginClasspath</code> list will be passed to the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a> runner via the <code>withPluginClasspath</code> method of the builder, which we will see in a bit.</p> 
-  </div> 
- </div> 
-</div> 
-<div class="sect1"> 
- <h2 id="_building_the_functional_test">Building the Functional Test</h2> 
- <div class="sectionbody"> 
-  <div class="paragraph"> 
-   <p>Now that we have our classpath sorted out, the next step is to build test(s) to execute your custom plugin and task(s):</p> 
-  </div> 
-  <div class="listingblock"> 
-   <div class="content"> 
-    <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">def "test that when the custom plugin is applied to a project and the customTask is executed, the customTask completes successfully"() {
-    setup:
-        buildFile &lt;&lt; '''
-            plugins {
-                id 'my-custom-plugin
-            }
-
-            dependencies {
-                compile 'com.google.guava:guava:19.0'
-                compile 'joda-time:joda-time:2.9.2'
-                compile 'org.slf4j:slf4j-api:1.7.13'
-
-                runtime 'org.slf4j:log4j-over-slf4j:1.7.13'
-
-                testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
-            }
-
-            repositories {
-                mavenLocal()
-                mavenCentral()
-            }
-        '''
-    when:
-        GradleRunner runner = GradleRunner.create()
-            .withProjectDir(testProjectDir.getRoot())
-            .withArguments('customTask', '--stacktrace', '--refresh-dependencies')
-            .withPluginClasspath(pluginClasspath)
-        BuildResult result =  runner.build()
-    then:
-        result.task(':customTask').getOutcome() == TaskOutcome.SUCCESS
-}</code></pre> 
-   </div> 
-  </div> 
-  <div class="paragraph"> 
-   <p>In the example above, notice that we build a full build script, which includes the application of our custom <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> plugin, and output it to <code>buildFile</code> created in the setup seen previously. This can be anything that you would do in a project’s <code>build.gradle</code> file. You could even store these files in <code>src/test/resources</code> and load and copy the contents of these files from the classpath and write it out to the file to be provided to the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a> runner. In the <code>when</code> block, we see the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a> in action. Here, we set the project directory to the <code>TemporaryFolder</code> that will contain the <code>build.gradle</code> file, the arguments to be passed to <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> (e.g. the task(s) and switches), and the plugin classpath we generated in the setup. Without the plugin classpath, you will see errors related to <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> being unable to locate any plugins that match your custom plugin’s ID. Finally, in the <code>then</code> block, we see that we test to make sure the status of the task execution is the one we expected. You can also inspect the output of the build by inspecting the <code>output</code> field of the <code>BuildResult</code>:</p> 
-  </div> 
-  <div class="listingblock"> 
-   <div class="content"> 
-    <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">result.output.contains('some text') == true</code></pre> 
-   </div> 
-  </div> 
-  <div class="paragraph"> 
-   <p>This is also useful for debugging, as you can print out the contents of the result output to see the full output of the <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> execution.</p> 
-  </div> 
- </div> 
-</div> 
-<div class="sect1"> 
- <h2 id="_test_failures_and_xerces">Test Failures and Xerces</h2> 
- <div class="sectionbody"> 
-  <div class="paragraph"> 
-   <p>Depending on what is on your plugin classpath, you may have tests fail due to issues related to the Xerces library. This is often due to multiple versions of Xerces being present on the classpath when the runner is executed and can be remedied by excluding Xerces from the generated classpath:</p> 
-  </div> 
-  <div class="listingblock"> 
-   <div class="content"> 
-    <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">pluginClasspath = getClass().classLoader.findResource('plugin-classpath.txt').readLines().collect { new File(it) }.findAll { !it.name.contains('xercesImpl') }</code></pre> 
-   </div> 
-  </div> 
-  <div class="paragraph"> 
-   <p>Notice that we added a step to find all the classpath entries that do not contain the string <code>xercesImpl</code> to ensure that we do not end up with duplicate Xerces implementations on the classpath provided to the test kit runner.</p> 
-  </div> 
- </div> 
-</div> 
-<div class="sect1"> 
- <h2 id="_summary">Summary</h2> 
- <div class="sectionbody"> 
-  <div class="paragraph"> 
-   <p>The <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a> provides an excellent way to functionally test your custom <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> plugins. Because it uses actual build scripts, it is easy to build up a library of configurations that you want to continually test as changes are made to the custom plugin. Furthermore, the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a> drastically reduces the amount of test code that you need to write, allowing you to more efficiently test your plugin. All of these are great reasons to convert your plugin tests to use the <a href="https://docs.gradle.org/current/userguide/test_kit.html" target="_blank" rel="noopener">Gradle Test Kit</a> or to write tests for the first time if you don’t currently have test coverage for your code.</p> 
-  </div> 
- </div> 
-</div></p>
-                <p><a href="/blog2016/03/29/gradle_test_kit.html#disqus_thread">Comments</a></p>
 
                 <hr />
 
