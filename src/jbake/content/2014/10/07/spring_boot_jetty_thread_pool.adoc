@@ -35,6 +35,8 @@ public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory
             threadPool.setIdleTimeout(Integer.valueOf(idleTimeout));
         }
     });
+
+    return factory;
 }
 ----
 
