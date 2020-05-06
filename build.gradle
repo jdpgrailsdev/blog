@@ -29,7 +29,7 @@ gitPublish {
 
 gretty {
     httpPort = 8820
-    contextPath = 'blog'
+    contextPath = '/'
     servletContainer = 'jetty9'
 }
 

@@ -1,11 +1,29 @@
-To build:
+# Blog
 
-`./gradlew -i jbake`
+Personal blog of interesting technical achievements.
 
-To test locally:
+The blog is hosted at [http://www.jonathanpearlin.com](http://www.jonathanpearlin.com).
 
-`./gradlew jettyRun`	// Automatically runs the `jbake` task first, if necessary.
+## Build and Deploy
 
-To publish:
+### Build
 
-`./gradlew publish`		// Automatically runs the `jbake` task first, if necessary.
+```sh
+> ./gradlew clean build
+```
+
+### Local Testing
+
+```sh
+> ./gradlew jettyRun
+```
+
+### Deploy
+
+```sh
+> ./gradlew clean build publish
+```
+
+## License
+
+Copyright 2011-2020.  Release under the [Apache 2.0 license](LICENSE).
