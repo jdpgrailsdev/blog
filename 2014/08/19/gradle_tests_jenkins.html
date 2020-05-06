@@ -96,9 +96,9 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 
     <p><em>19 August 2014</em></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com2014/08/19/gradle_tests_jenkins.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2014/08/19/gradle_tests_jenkins.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2014/08/19/gradle_tests_jenkins.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/2014/08/19/gradle_tests_jenkins.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/08/19/gradle_tests_jenkins.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/08/19/gradle_tests_jenkins.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph"> 
  <p>One of the nice features of <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> is the task execution caching, which prevent tasks whose inputs/outputs have not changed since the last successful execution from executing in order to speed up build times. Sometimes, however this causes issues when integrating your <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> build into other systems. I ran into one such issue when building a <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> application from <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a>. The <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a> build job is configured to publish the results of the <code>test</code> task (the test reports output by <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>). It did not occur to me that if I did not invoke the <code>clean</code> task and let <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> only re-generate the test reports if any of the compiled code had changed (other file changes to the project would trigger the CI build) that <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a> would fail the build due to stale test reports. However, that is exactly what happened:</p> 
@@ -129,9 +129,9 @@ Finished: FAILURE</code></pre>
  <p>The example above directs <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to always run the <code>test</code> task regardless of what the task cache tells <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> about it. This gives us fine grained control over which tasks that we want to take advantage of caching and which ones we want to always run. By adding the one line above to my project’s <code>build.gradle</code> script, I was able to make <a href="http://jenkins-ci.org/" target="_blank" rel="noopener">Jenkins</a> happy with always providing up-to-date unit tests results, regardless of which files (source or otherwise) have changed in my project. This also means that <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> will take advantage of task caching for other tasks in the project (such as compilation, packaging, etc), which helps to reduce build time.</p> 
 </div></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.comblog2014/08/19/gradle_tests_jenkins.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2014/08/19/gradle_tests_jenkins.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2014/08/19/gradle_tests_jenkins.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/08/19/gradle_tests_jenkins.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/08/19/gradle_tests_jenkins.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/08/19/gradle_tests_jenkins.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <div id="disqus_thread"></div>
     <script>

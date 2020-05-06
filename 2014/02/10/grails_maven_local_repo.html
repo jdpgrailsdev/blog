@@ -96,9 +96,9 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 
     <p><em>10 February 2014</em></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com2014/02/10/grails_maven_local_repo.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2014/02/10/grails_maven_local_repo.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2014/02/10/grails_maven_local_repo.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/2014/02/10/grails_maven_local_repo.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/02/10/grails_maven_local_repo.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/02/10/grails_maven_local_repo.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph"> 
  <p>One of the great new features in <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> 2.3 is the ability to use <a href="http://www.eclipse.org/aether/" target="_blank" rel="noopener">Aether</a> to resolve dependencies in place of Ivy. This is great news if you already use <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> to build other projects, as it now means you can have predictable builds between your <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> and non-http://grails.org[Grails, window="_blank"] applications. However, like any new feature, there are a few rough edges. I ran into one the other day when trying to determine why one of my <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> applications was not picking up dependencies from the local <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> cache (<code>~/.m2/repository</code>). After some digging around, I ran across <a href="http://jira.grails.org/browse/GRAILS-10921" target="_blank" rel="noopener">this bug</a>. According to it, the mavenLocal directive in the repositories section of <code>BuildConfig.groovy</code> is not honored when using the <a href="http://www.eclipse.org/aether/" target="_blank" rel="noopener">Aether</a> resolver. So that stinks. I quickly realized that we could make the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> dependency resolver DSL pick up the local <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> repository by simply adding a new file-based repository:</p> 
@@ -162,9 +162,9 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
  <p>It’s worth noting that in the example above, I not only set the <code>grails.dependency.cache.dir</code> <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> build property, but I also set the <code>localRepository</code> property of the dependency resolution DSL to ensure that the <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> dependency resolution is using it both as a place to check for dependencies AND a place to store the cached dependencies (see the <a href="https://github.com/grails/grails-core/blob/2.3.x/grails-aether/src/main/groovy/org/codehaus/groovy/grails/resolve/maven/aether/AetherDependencyManager.groovy" target="_blank" rel="noopener">AetherDependencyManager.groovy</a> source file in the <code>grails-aether</code> module for more details). Now when the application builds on Jenkins, not only does it have a local <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> repository as part of the list of repositories, but that repository is stored in the workspace for the Jenkins build job.</p> 
 </div></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.comblog2014/02/10/grails_maven_local_repo.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2014/02/10/grails_maven_local_repo.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2014/02/10/grails_maven_local_repo.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/02/10/grails_maven_local_repo.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/02/10/grails_maven_local_repo.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/02/10/grails_maven_local_repo.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <div id="disqus_thread"></div>
     <script>

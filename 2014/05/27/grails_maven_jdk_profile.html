@@ -96,9 +96,9 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 
     <p><em>27 May 2014</em></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com2014/05/27/grails_maven_jdk_profile.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2014/05/27/grails_maven_jdk_profile.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2014/05/27/grails_maven_jdk_profile.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/2014/05/27/grails_maven_jdk_profile.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/05/27/grails_maven_jdk_profile.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/05/27/grails_maven_jdk_profile.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph"> 
  <p>Recently, I have been spending my time converting <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> applications to use <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> POM files for dependency management. For the last couple releases, <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> has included the ability to rely on a POM file for dependencies, instead of declaring the repositories and dependencies directly in your <code>grails-app/conf/BuildConfig.groovy</code>. This works exactly as expected — that is <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> retrieves the dependency declarations from the POM file and uses them to build/run the application when using the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> CLI. However, there is a bug in the way <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> dynamically validates and uses the POM file. I came across this issue when attempting to use the JDK version-based profile activation that I discussed in <a href="http://www.jonathanpearlin.com/2014/04/03/maven_java8_javadoc.html" target="_blank" rel="noopener">a previous post</a>. When a JDK-activated profile is present in the POM file used by <a href="http://grails.org" target="_blank" rel="noopener">Grails</a>, the application will report the following error:</p> 
@@ -149,9 +149,9 @@ modelRequest.setModelResolver(new GrailsModelResolver(repositorySystem, session,
  <p>After re-testing with the modified code, the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> happily accepted the JDK-based <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> profile without exception. I have created a <a href="https://github.com/grails/grails-core/pull/492" target="_blank" rel="noopener">pull request</a>, which has been merged into the 2.4.x version of <a href="http://grails.org" target="_blank" rel="noopener">Grails</a>. If you need access to this fix earlier, I would suggest creating a branch off of the tagged version of <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> that you are currently using and cherry-picking the commit that contains the change. You can then build the <code>grails-aether</code> JAR and drop it into the <code>dist</code> folder of your <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> installation to consume the change.</p> 
 </div></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.comblog2014/05/27/grails_maven_jdk_profile.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2014/05/27/grails_maven_jdk_profile.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2014/05/27/grails_maven_jdk_profile.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/05/27/grails_maven_jdk_profile.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/05/27/grails_maven_jdk_profile.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/05/27/grails_maven_jdk_profile.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <div id="disqus_thread"></div>
     <script>

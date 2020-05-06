@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>The Flowers Are Still Standing</title>
-        <link>http://www.jonathanpearlin.com</link>
-        <atom:link href="http://www.jonathanpearlin.com/feed.xml" rel="self" type="application/rss+xml" />
+        <link>http://www.jonathanpearlin.com/</link>
+        <atom:link href="http://www.jonathanpearlin.com//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Wed, 6 May 2020 13:30:00 -0400</pubDate>
-        <lastBuildDate>Wed, 6 May 2020 13:30:00 -0400</lastBuildDate>
+        <pubDate>Wed, 6 May 2020 13:33:46 -0400</pubDate>
+        <lastBuildDate>Wed, 6 May 2020 13:33:46 -0400</lastBuildDate>
         <image>
-            <url>http://www.jonathanpearlin.com/img/robot_devil.png</url>
+            <url>http://www.jonathanpearlin.com//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
-            <link>http://www.jonathanpearlin.com</link>
+            <link>http://www.jonathanpearlin.com/</link>
         </image>
         <item>
             <title>Using Rolling Deployments to Limit Service Disruptions</title>
-            <link>http://www.jonathanpearlin.com2018/04/02/blog_post.html</link>
+            <link>http://www.jonathanpearlin.com/2018/04/02/blog_post.html</link>
             <pubDate>Mon, 2 Apr 2018 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2018/04/02/blog_post.html</guid>
             <description>
@@ -26,7 +26,7 @@
         </item>
         <item>
             <title>A Gradle Plugin That Applies Itself</title>
-            <link>http://www.jonathanpearlin.com2018/03/29/gradle_plugin_include_itself.html</link>
+            <link>http://www.jonathanpearlin.com/2018/03/29/gradle_plugin_include_itself.html</link>
             <pubDate>Thu, 29 Mar 2018 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2018/03/29/gradle_plugin_include_itself.html</guid>
             <description>
@@ -49,7 +49,7 @@ apply plugin: new GroovyScriptEngine(classpath, this.getClass().getClassLoader()
         </item>
         <item>
             <title>Choosing an Application Framework for Microservices</title>
-            <link>http://www.jonathanpearlin.com2017/08/08/blog_post.html</link>
+            <link>http://www.jonathanpearlin.com/2017/08/08/blog_post.html</link>
             <pubDate>Tue, 8 Aug 2017 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2017/08/08/blog_post.html</guid>
             <description>
@@ -60,7 +60,7 @@ apply plugin: new GroovyScriptEngine(classpath, this.getClass().getClassLoader()
         </item>
         <item>
             <title>The Peculiar Case of the Kafka ConsumerIterator</title>
-            <link>http://www.jonathanpearlin.com2016/12/20/kafka_iterator.html</link>
+            <link>http://www.jonathanpearlin.com/2016/12/20/kafka_iterator.html</link>
             <pubDate>Tue, 20 Dec 2016 00:00:00 -0500</pubDate>
             <guid isPermaLink="false">2016/12/20/kafka_iterator.html</guid>
             <description>
@@ -113,7 +113,7 @@ final ConsumerIterator&amp;lt;byte[],byte[]&amp;gt; = streams.get(0).iterator();
         </item>
         <item>
             <title>Testing a custom Gradle plugin with Gradle Test Kit</title>
-            <link>http://www.jonathanpearlin.com2016/03/29/gradle_test_kit.html</link>
+            <link>http://www.jonathanpearlin.com/2016/03/29/gradle_test_kit.html</link>
             <pubDate>Tue, 29 Mar 2016 00:00:00 -0400</pubDate>
             <guid isPermaLink="false">2016/03/29/gradle_test_kit.html</guid>
             <description>

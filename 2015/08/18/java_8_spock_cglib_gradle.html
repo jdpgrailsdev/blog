@@ -96,9 +96,9 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 
     <p><em>18 August 2015</em></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com2015/08/18/java_8_spock_cglib_gradle.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2015/08/18/java_8_spock_cglib_gradle.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2015/08/18/java_8_spock_cglib_gradle.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/2015/08/18/java_8_spock_cglib_gradle.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2015/08/18/java_8_spock_cglib_gradle.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2015/08/18/java_8_spock_cglib_gradle.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph"> 
  <p>Recently, I attempted to convert a project that uses <a href="https://github.com/cglib/cglib" target="_blank" rel="noopener">CGLIB</a> and <a href="https://github.com/spockframework/spock" target="_blank" rel="noopener">Spock Framework</a> to execute unit tests to use Java 8 source and target versions. When I went to run the unit tests, I was met with a nasty <code>java.lang.IllegalArgumentException</code>. Some quick internet searching showed that there is an existing issue with the currently released version of <a href="https://github.com/cglib/cglib" target="_blank" rel="noopener">CGLIB</a> and the version of the <a href="https://github.com/llbit/ow2-asm" target="_blank" rel="noopener">ASM</a> library it depends on. Despite <a href="https://github.com/cglib/cglib/issues/8" target="_blank" rel="noopener">pleas</a> from the community, an updated version of <a href="https://github.com/cglib/cglib" target="_blank" rel="noopener">CGLIB</a> with Java 8 compatibility has not yet been released. However, there are commits on the project’s trunk that add Java 8 compatibility. Luckily, a quick look at the <a href="https://github.com/spockframework/spock" target="_blank" rel="noopener">Spock Framework</a> source code showed me how to get around this issue. The trick is to use <a href="https://jitpack.io" target="_blank" rel="noopener">JitPack.io</a> as a Maven repository in your build script to build a particular commit hash of the project and expose it as a dependency for your project. After some digging through the source, I determined that <a href="https://github.com/cglib/cglib/commits/master" target="_blank" rel="noopener">commit 52e118aca4</a> is the proper one to use. To use this version of <a href="https://github.com/cglib/cglib" target="_blank" rel="noopener">CGLIB</a> in your <code>build.gradle</code> file, you simply need to add the following:</p> 
@@ -120,9 +120,9 @@ dependencies {
  <p>You can generate this information using <a href="https://jitpack.io" target="_blank" rel="noopener">JitPack.io</a> itself by going to the following URL: <a href="https://jitpack.io/#cglib/cglib/52e118aca4" class="bare">https://jitpack.io/#cglib/cglib/52e118aca4</a>. Now, my project will get <a href="https://jitpack.io" target="_blank" rel="noopener">JitPack.io</a> to build the custom release of <a href="https://github.com/cglib/cglib" target="_blank" rel="noopener">CGLIB</a> without me needing to build and push it into a repository!</p> 
 </div></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.comblog2015/08/18/java_8_spock_cglib_gradle.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2015/08/18/java_8_spock_cglib_gradle.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2015/08/18/java_8_spock_cglib_gradle.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2015/08/18/java_8_spock_cglib_gradle.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2015/08/18/java_8_spock_cglib_gradle.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2015/08/18/java_8_spock_cglib_gradle.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <div id="disqus_thread"></div>
     <script>

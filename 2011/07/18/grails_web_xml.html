@@ -96,9 +96,9 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 
     <p><em>18 July 2011</em></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com2011/07/18/grails_web_xml.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2011/07/18/grails_web_xml.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2011/07/18/grails_web_xml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/2011/07/18/grails_web_xml.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2011/07/18/grails_web_xml.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2011/07/18/grails_web_xml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><p>Grails provides a nice feature in each plugin's descriptor file that allows the plugin to make modifications to the web.xml file created by Grails application that includes the plugin at build time. This can be done by implementing the <code>doWithWebDescriptor</code> closure in the plugin's descriptor file (see the Grails documentation for more information). This works fine if you have a limited number of Grails plugins in your application that want to modify the web.xml file or have plugins whose changes to the <code>web.xml</code> file do not require some sort of order. I recently ran into an issue where we needed to make sure that a custom Grails plugin added a servlet filter to the web.xml that came BEFORE the filters added by the Spring Security plugin. I did not want to modify the Spring Security plugin to make sure its modifications to the web.xml came after the custom plugin's modifications, nor did I want to assume that the plugins would be installed in a particular order by Grails when building the main application.</p> 
 <h2>The Solution</h2> 
@@ -132,9 +132,9 @@ if(webXml.exists()) {
 </code></pre> 
 <p>This solution allowed me to create a script that could re-order the contents of the <code>web.xml</code> file and handle all cases with regards to whether or not the servlet filter entries in question are present or not in the <code>web.xml</code> file used as input. It is also important to note that this solution can be extended to help in any other situation where you need to make last second modifications to files to be included in the WAR file at build time.</p></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.comblog2011/07/18/grails_web_xml.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2011/07/18/grails_web_xml.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2011/07/18/grails_web_xml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2011/07/18/grails_web_xml.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2011/07/18/grails_web_xml.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2011/07/18/grails_web_xml.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <div id="disqus_thread"></div>
     <script>

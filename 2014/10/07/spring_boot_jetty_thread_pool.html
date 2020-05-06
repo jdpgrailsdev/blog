@@ -96,9 +96,9 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 
     <p><em>07 October 2014</em></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com2014/10/07/spring_boot_jetty_thread_pool.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2014/10/07/spring_boot_jetty_thread_pool.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2014/10/07/spring_boot_jetty_thread_pool.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/2014/10/07/spring_boot_jetty_thread_pool.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/10/07/spring_boot_jetty_thread_pool.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/10/07/spring_boot_jetty_thread_pool.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph"> 
  <p>In a <a href="http://www.jonathanpearlin.com/2014/09/30/spring_boot_jetty_jmx.html" target="_blank" rel="noopener">previous post</a>, I discussed how to use <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> as the servlet container in a <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> application over the default implementation (Apache Tomcat) and also how to enable <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a>'s registered MBeans via JMX. In addition to this configuration, you can also configure <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> so that it is not using the factory default settings for the servlet container. One setting that you typically want to control is the size of the thread pool used by <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> to service incoming requests. This is pretty easy to do with <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> by adding a <a href="http://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/embedded/jetty/JettyServerCustomizer.html" target="blank">JettyServerCustomizer</a> implementation to gain access to <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a>'s <code>Server</code> instance:</p> 
@@ -149,9 +149,9 @@ dependencies {
  <p>This example can be extended to configure any bean registered with the <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> <code>Server</code> instance. To figure out what is available, connect to your running application using a JMX console and view the beans exposed by <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a>.</p> 
 </div></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.comblog2014/10/07/spring_boot_jetty_thread_pool.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2014/10/07/spring_boot_jetty_thread_pool.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2014/10/07/spring_boot_jetty_thread_pool.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/10/07/spring_boot_jetty_thread_pool.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/10/07/spring_boot_jetty_thread_pool.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/10/07/spring_boot_jetty_thread_pool.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <div id="disqus_thread"></div>
     <script>

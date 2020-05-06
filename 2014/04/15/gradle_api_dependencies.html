@@ -96,9 +96,9 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 
     <p><em>15 April 2014</em></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com2014/04/15/gradle_api_dependencies.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2014/04/15/gradle_api_dependencies.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2014/04/15/gradle_api_dependencies.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/2014/04/15/gradle_api_dependencies.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/04/15/gradle_api_dependencies.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/04/15/gradle_api_dependencies.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph"> 
  <p>Recently, I have been working on porting the <a href="http://raml.org" target="_blank" rel="noopener">RAML</a> <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> plugin to a <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin and ran into a limitation with <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> and its API jars. An interesting difference between <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> and <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> is that <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> does not want you to rely on its API jars from a <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> repository (unlike <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a>, whose API jars are all stored in the central <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> repository). Instead, the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> team has built in some special dependency handlers that in effect treat the required <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> (and <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> dependencies, if need be) as "provided" dependencies:</p> 
@@ -342,9 +342,9 @@ Caused by: java.lang.NoSuchMethodError: org.yaml.snakeyaml.nodes.MappingNode.isM
  <p>Somehow, this dependency is winning out over the transitively included dependency from the <a href="http://raml.org" target="_blank" rel="noopener">RAML</a> dependency, eventhough when printing out the resloved dependency tree via the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> <code>dependencies</code> task, it shows only version 1.13. Because there is no way (at least that I have found so far) to exclude the dependencies that are brought in by the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> API, this means that if you have a <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin project that uses any of the dependencies that are also used by the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> API, you are effectively stuck at the versions of those dependencies that match what <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> currently depends on. I have brought this issue up on the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> forum and I noticed that a few other people have asked for a feature to allow for excluding dependencies from the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> API. I will keep you posted on this issue and if I get an answer and/or resolution.</p> 
 </div></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.comblog2014/04/15/gradle_api_dependencies.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2014/04/15/gradle_api_dependencies.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2014/04/15/gradle_api_dependencies.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/04/15/gradle_api_dependencies.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/04/15/gradle_api_dependencies.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/04/15/gradle_api_dependencies.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <div id="disqus_thread"></div>
     <script>

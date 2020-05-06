@@ -96,9 +96,9 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 
     <p><em>11 November 2014</em></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com2014/11/11/spring_boot_health_indicators_auto_config.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2014/11/11/spring_boot_health_indicators_auto_config.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2014/11/11/spring_boot_health_indicators_auto_config.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/2014/11/11/spring_boot_health_indicators_auto_config.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/11/11/spring_boot_health_indicators_auto_config.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/11/11/spring_boot_health_indicators_auto_config.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph"> 
  <p>Another great feature provided by <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> is the ability to expose <a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-health" target="_blank" rel="noopener">Spring Boot Custom Health Information</a> about your application with very little effort. The simple approach is to implement the <code>HealthIndicator</code> interface and register your custom indicator as a Spring bean (or have it be <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/annotation/ComponentScan.html" target="_blank" rel="noopener">component scanned</a>). This is great for one-off indicators or in small projects. But what happens when you want to have a common set of health indicators that you can use in all of your services (after all, one of the promises of <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> is that it makes it trivial to spin up new "micro" services)? What do you do if not all of your services have the same components that need to be part of your suite of health indicators? The solution is to leverage the <a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#getting-started-first-application-auto-configuration" target="_blank" rel="noopener">auto configuration</a> infrastructure provided by <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>. The first step is to include the proper dependencies in your health indicator shared library:</p> 
@@ -246,9 +246,9 @@ com.example.health.autoconfigure.CustomHealthIndicatorAutoConfiguration</code></
  <p><a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> will automatically scan for these metadata files when your application starts and register your custom auto configuration class to be enacted if it detects the <code>EnableAutoConfiguration</code> annotation on any of your Java-based configuration classes. Now you can provide a full suite of health indicators that will be enabled if and only if certain conditions are met, as defined by the various configurations provided by your auto-configuration class!</p> 
 </div></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.comblog2014/11/11/spring_boot_health_indicators_auto_config.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2014/11/11/spring_boot_health_indicators_auto_config.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2014/11/11/spring_boot_health_indicators_auto_config.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/11/11/spring_boot_health_indicators_auto_config.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/11/11/spring_boot_health_indicators_auto_config.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/11/11/spring_boot_health_indicators_auto_config.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <div id="disqus_thread"></div>
     <script>

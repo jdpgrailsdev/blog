@@ -96,9 +96,9 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 
     <p><em>06 January 2015</em></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com2015/01/06/email_inline_style_jsoup_cssparser.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2015/01/06/email_inline_style_jsoup_cssparser.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2015/01/06/email_inline_style_jsoup_cssparser.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/2015/01/06/email_inline_style_jsoup_cssparser.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2015/01/06/email_inline_style_jsoup_cssparser.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2015/01/06/email_inline_style_jsoup_cssparser.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph"> 
  <p>As part of an on-going project, we had a requirement to send pretty (CSS-ified) e-mails to communicate status. Sending HTML-based e-mails from Java is pretty easy. There are a ton of templating engines out there that can be used to generate HTML. However, what most people fail to realize is that most web mail providers (e.g. Gmail, Yahoo!, etc) handle a limited subset of standard CSS. You can find out what is supported by looking at <a href="https://www.campaignmonitor.com/css/" target="_blank" rel="noopener">Campaign Monitor CSS Support</a>. The first thing you might notice is that almost all of the web mail providers do not support CSS classes. They do, however, support inline style declarations. Being a good developer, you know that you want to keep all of your CSS in style sheets so that you do not have to find and replace styles in multiple templates/files. This poses a problem if the clients can only support inline styles. The solution? A combination of <a href="http://jsoup.org/" target="_blank" rel="noopener">JSoup</a> and <a href="http://cssparser.sourceforge.net/" target="_blank" rel="noopener">CSS Parser</a> to load and convert a style sheet into inline style declarations. The solution in this blog post uses <a href="http://cssparser.sourceforge.net/" target="_blank" rel="noopener">CSS Parser</a> to parse a CSS style sheet file loaded from the classpath into a set of <code>CSSSytleRule</code> objects. It then uses <a href="http://jsoup.org/" target="_blank" rel="noopener">JSoup</a> to walk the DOM in the HTML and find elements that match the rules present in the parsed style sheet. To start, you need to include the <a href="http://cssparser.sourceforge.net/" target="_blank" rel="noopener">CSS Parser</a> and <a href="http://jsoup.org/" target="_blank" rel="noopener">JSoup</a> dependencies:</p> 
@@ -189,9 +189,9 @@ System.out.println(document.html());</code></pre>
  <p>One important thing to note in the code above is that <a href="http://jsoup.org/" target="_blank" rel="noopener">JSoup</a> cannot handle pseudo classes in selectors. Therefore, any selector that contains a colon (":") is ignored. Otherwise, each selector contained in the parsed sytle sheet is applied to the HTML. Inline styles are appended to each other, so ordering in your CSS stylesheet matters! The output of the code above is the modified HTML with all styles that could be applied converted to inline style declarations. Now, when this HTML is interpreted in a web mail client, it will look as it was intended to look by the developer.</p> 
 </div></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.comblog2015/01/06/email_inline_style_jsoup_cssparser.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2015/01/06/email_inline_style_jsoup_cssparser.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2015/01/06/email_inline_style_jsoup_cssparser.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2015/01/06/email_inline_style_jsoup_cssparser.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2015/01/06/email_inline_style_jsoup_cssparser.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2015/01/06/email_inline_style_jsoup_cssparser.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <div id="disqus_thread"></div>
     <script>

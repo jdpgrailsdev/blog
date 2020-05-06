@@ -96,9 +96,9 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 
     <p><em>09 September 2014</em></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com2014/09/09/spring_data_hibernate_join.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2014/09/09/spring_data_hibernate_join.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2014/09/09/spring_data_hibernate_join.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/2014/09/09/spring_data_hibernate_join.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/09/09/spring_data_hibernate_join.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/09/09/spring_data_hibernate_join.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <p><div class="paragraph"> 
  <p>If you have used <a href="http://hibernate.org" target="_blank" rel="noopener">Hibernate</a> as your ORM for any length of time, you have inevitably run into the <a href="http://docs.jboss.org/hibernate/orm/3.3/reference/en-US/html/performance.html#performance-fetching-custom" target="_blank" rel="noopener">N+1 problem</a>. This occurs when <a href="http://hibernate.org" target="_blank" rel="noopener">Hibernate</a> queries an entity that has a collection of children entities that does not use a <code>JOIN</code> fetch mode to retrieve the children. The simple solution when using <a href="http://hibernate.org" target="_blank" rel="noopener">Hibernate</a> directly is to set the <code>FetchMode</code> to <code>JOIN</code>:</p> 
@@ -134,9 +134,9 @@ List&lt;User&gt; users = userRepository.findAll(spec);</code></pre>
  <p>There are two important pieces of the example above. The first is the setting of the <code>distinct</code> flag on the query to ensure that the proper (unique) results are returned as a result of the join. The second is the addition of a <code>fetch</code> hint to the root entity, telling the specification to perform a left join of the root to the entity mapped by the "permissions" field of the root entity. This ensures that <a href="http://hibernate.org" target="_blank" rel="noopener">Hibernate</a> will now perform a join instead of N+1 queries to fetch the root entity and its associated children.</p> 
 </div></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.comblog2014/09/09/spring_data_hibernate_join.html"></div>
-    <script type="IN/Share" data-url="http://www.jonathanpearlin.com2014/09/09/spring_data_hibernate_join.html" data-counter="right"></script>
-    <div class="fb-like" data-href="http://www.jonathanpearlin.com2014/09/09/spring_data_hibernate_join.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/09/09/spring_data_hibernate_join.html"></div>
+    <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/09/09/spring_data_hibernate_join.html" data-counter="right"></script>
+    <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/09/09/spring_data_hibernate_join.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
     <div id="disqus_thread"></div>
     <script>
