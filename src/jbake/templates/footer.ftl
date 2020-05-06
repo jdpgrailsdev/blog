@@ -14,7 +14,7 @@
         <script src="https://code.jquery.com/jquery.js" type="text/javascript"></script>
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js" type="text/javascript"></script>
         <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
-        <script src="/blog/js/github_activity.js" type="text/javascript"></script>
+        <script src="/js/github_activity.js" type="text/javascript"></script>
         <script type="text/javascript">
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
             var disqus_shortname = 'jdpearlin'; // required: replace example with your forum shortname

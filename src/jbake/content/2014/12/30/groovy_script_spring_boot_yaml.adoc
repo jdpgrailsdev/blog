@@ -13,7 +13,7 @@ Jonathan Pearlin
 :spring: http://projects.spring.io/spring-framework/[Spring Framework, window="_blank"]
 :spring-boot: http://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
 
-In a http://jdpgrailsdev.github.io/blog/2014/12/16/spring_context_groovy_script.html[previous, window="_blank"] blog post, I discussed how to load
+In a http://www.jonathanpearlin.com/2014/12/16/spring_context_groovy_script.html[previous, window="_blank"] blog post, I discussed how to load
 an application's {spring} configuration in a {groovy} script.  This is a great way to test portions of your application without running the
 entire application.  However, this approach has limits.  When trying this with a {spring-boot} application, you miss out on a bunch of the magical
 auto-enabling done by {spring-boot}.  This includes the ability of {spring-boot} to find certain properties and configuration files and load their

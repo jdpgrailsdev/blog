@@ -16,7 +16,7 @@ https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/s
 of how to use {jetty} in a {spring_boot} application instead of the default embedded Apache Tomcat server.  However, the documentation and examples do not really address how to
 customize {jetty} as in depth as the Tomcat examples.  Recently, I found the need to make a {spring_boot} application using {jetty} listen on multiple ports for incoming HTTP traffic.
 While this is not necessarily a normal use case, it does come up often, especially when the need to listen for both HTTP and HTTPS traffic is a requirement.  In a
-http://jdpgrailsdev.github.io/blog/2014/10/07/spring_boot_jetty_thread_pool.html[previous post, window="_blank"], I showed how to customize the embedded {jetty} server in order to
+http://www.jonathanpearlin.com/2014/10/07/spring_boot_jetty_thread_pool.html[previous post, window="_blank"], I showed how to customize the embedded {jetty} server in order to
 change the size of the thread pool used for incoming connections.  Just like the approach outlined in that post, the way to configure the embedded {jetty} server in your {spring_boot}
 application to listen to multiple ports is very similar:
 

@@ -12,7 +12,7 @@ Jonathan Pearlin
 :spock: https://code.google.com/p/spock/[Spock, window="_blank"]
 :docker: https://www.docker.com/[Docker, window="_blank"]
 
-In http://jdpgrailsdev.github.io/blog/2014/11/18/functional_tests_gradle_docker_part_i.html[part one, window="_blank"] of this blog post, I discussed how to
+In http://www.jonathanpearlin.com/2014/11/18/functional_tests_gradle_docker_part_i.html[part one, window="_blank"] of this blog post, I discussed how to
 build a functional test using {spock} and {gradle}.  Normally, this is all that you would need to be able to test the part of your application that relies
 on a data source.  However, what can you do if you find yourself in a situation where you do not have access to dependencies or the repositories that provide
 them?  The solution is to bundle your tests along with the dependencies and execute them as an application.  In this post, I will discuss how I accomplished

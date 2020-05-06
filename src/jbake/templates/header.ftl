@@ -16,15 +16,15 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
         </script>
         <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-        <link href="/blog/css/asciidoctor.css" rel="stylesheet">
-        <link href="/blog/css/base.css" rel="stylesheet">
+        <link href="/css/asciidoctor.css" rel="stylesheet">
+        <link href="/css/base.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
         <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
-        <link href='/blog/css/octicons.min.css' rel='stylesheet' type='text/css'>
+        <link href='/css/octicons.min.css' rel='stylesheet' type='text/css'>
 
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
-              <script src="/blog/js/html5shiv.js"></script>
+              <script src="/js/html5shiv.js"></script>
         <![endif]-->
 
         <!-- Fav and touch icons -->
@@ -34,7 +34,7 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png" />
         <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png" />
         -->
-        <link rel="shortcut icon" href="/blog/favicon.ico" />
+        <link rel="shortcut icon" href="/favicon.ico" />
     </head>
     <body>
         <div id="wrap">

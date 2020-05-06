@@ -14,7 +14,7 @@ Jonathan Pearlin
 Recently, I have been spending my time converting {grails} applications to use {maven} POM files for dependency management.  For the last couple releases, {grails} has included the ability to
 rely on a POM file for dependencies, instead of declaring the repositories and dependencies directly in your `grails-app/conf/BuildConfig.groovy`.  This works exactly as expected -- that is {grails}
 retrieves the dependency declarations from the POM file and uses them to build/run the application when using the {grails} CLI.  However, there is a bug in the way {grails} dynamically validates and
-uses the POM file.  I came across this issue when attempting to use the JDK version-based profile activation that I discussed in http://jonathanpearlin.com/blog/2014/04/03/maven_java8_javadoc.html[a previous post, window="_blank"].
+uses the POM file.  I came across this issue when attempting to use the JDK version-based profile activation that I discussed in http://www.jonathanpearlin.com/2014/04/03/maven_java8_javadoc.html[a previous post, window="_blank"].
 When a JDK-activated profile is present in the POM file used by {grails}, the application will report the following error:
 
 [source]

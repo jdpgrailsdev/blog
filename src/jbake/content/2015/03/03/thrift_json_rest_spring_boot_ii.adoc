@@ -14,7 +14,7 @@ Jonathan Pearlin
 :spring_rest: https://spring.io/guides/gs/rest-service/[Spring's REST support, window="_blank"]
 :thrift: https://thrift.apache.org/[Apache Thrift, window="_blank"]
 
-In my http://jonathanpearlin.com/blog/2015/02/24/thrift_json_rest_spring_boot_part_i.html[previous post, window="_blank"], I discussed how
+In my http://www.jonathanpearlin.com/2015/02/24/thrift_json_rest_spring_boot_part_i.html[previous post, window="_blank"], I discussed how
 to create a custom {jackson} serializer to handle the conversion of JSON into {thrift} objects within a {spring_boot} application that uses
 {spring_rest}.  In this post, I am going to tackle the other side of the coin:  de-serialization, or converting an {thrift} object from JSON.
 

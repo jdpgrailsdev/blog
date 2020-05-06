@@ -16,7 +16,7 @@ Jonathan Pearlin
 :maven: http://maven.apache.org/[Maven, window="_blank"]
 :icons: font
 
-In a http://jonathanpearlin.com/blog/2014/03/24/grails_logback.html[previous post, window="_blank"], I discussed how to switch a {grails} application to use {logback} instead of Log4j for logging.  In that post, I
+In a http://www.jonathanpearlin.com/2014/03/24/grails_logback.html[previous post, window="_blank"], I discussed how to switch a {grails} application to use {logback} instead of Log4j for logging.  In that post, I
 covered using both the {maven} support in Grails to configure the dependencies required to use {logback} with {grails}, as well as how to use the built in dependency management support via the
 `BuildConfig.groovy` dependencies DSL.  I did not cover how to make this all work with {gradle}.  The same caveats and issues, as mentioned previously, still apply with regards to the {logback} DSL
 defined in `Config.groovy` and the use of the `logback.groovy` file in its place, so I will not re-hash that here.  Instead, I will point out a couple of issues with regards to getting the
