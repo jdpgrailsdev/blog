@@ -3,7 +3,7 @@ plugins {
     id 'war'
     id 'org.jbake.site' version '1.1.1'
     id 'org.akhikhl.gretty' version '2.0.0'
-    id 'org.ajoberstar.git-publish' version '0.3.2'
+    id 'org.ajoberstar.git-publish' version '3.0.0-rc.1'
 }
 
 def outputDir = "$buildDir/jbake"
@@ -12,13 +12,18 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 gitPublish {
-    repoUri = 'https://github.com/jdpgrailsdev/blog.git'
+    repoUri = 'git@github.com:jdpgrailsdev/blog.git'
     branch = 'gh-pages'
+
     contents {
+        from(projectDir) {
+            include 'CNAME'
+        }
         from(file(outputDir)) {
             into '.'
         }
     }
+
     commitMessage = 'Updated blog content.'
 }
 
@@ -42,17 +47,17 @@ repositories {
     jcenter()
 }
 
-task publish(dependsOn: 'gitPublishPush')
-
 task copyContent(type: Copy) {
     from outputDir
     into "$buildDir/inplaceWebapp"
 }
 
+task publish {}
+
+project.tasks.publish.dependsOn([project.tasks.bake, project.tasks.build, project.tasks.gitPublishPush])
+project.tasks.gitPublishPush.outputs.upToDateWhen { false }
+
 afterEvaluate { project ->
     // Re-generate content using JBake before launching the local Jetty server.
     project.tasks.jettyRun.dependsOn([project.tasks.bake, project.tasks.copyContent])
-
-    // Re-generate content using JBake before publishing to GitHub.
-    project.tasks.publish.dependsOn([project.tasks.bake])
 }
