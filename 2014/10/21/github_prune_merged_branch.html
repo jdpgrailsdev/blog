@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -100,49 +101,64 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/10/21/github_prune_merged_branch.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/10/21/github_prune_merged_branch.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph"> 
- <p>If you use <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> or any <a href="http://git-scm.com/" target="_blank" rel="noopener">Git</a>-related tool that supports pull requests, you probably find yourself constantly deleting, pruning and merging branches to get your feature code into your main development branch. After doing this over and over, I decided there must be a simple way using bash to put together a function that would automate these steps:</p> 
-</div> 
-<div class="ulist"> 
- <ul> 
-  <li> <p>Check out the master branch (or whatever your mainline development branch is)</p> </li> 
-  <li> <p>Fetch all remote branches</p> </li> 
-  <li> <p>Pull updates to the master branch</p> </li> 
-  <li> <p>Prune remote branches that have been deleted</p> </li> 
-  <li> <p>Delete my local copy of the feature branch that has been merged to master</p> </li> 
- </ul> 
-</div> 
-<div class="paragraph"> 
- <p>I started with adding <a href="http://git-scm.com/" target="_blank" rel="noopener">Git</a> status information to my shell by following <a href="http://www.newfinds.com/Ramblings/Bash-Promt/" target="_blank" rel="noopener">these instructions</a>:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code>function parse_git_dirty {
+    <p><div class="paragraph">
+<p>If you use <a href="http://github.com" target="_blank" rel="noopener">GitHub</a> or any <a href="http://git-scm.com/" target="_blank" rel="noopener">Git</a>-related tool that supports pull requests, you probably find yourself constantly
+deleting, pruning and merging branches to get your feature code into your main development branch.  After doing
+this over and over, I decided there must be a simple way using bash to put together a function that would
+automate these steps:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Check out the master branch (or whatever your mainline development branch is)</p>
+</li>
+<li>
+<p>Fetch all remote branches</p>
+</li>
+<li>
+<p>Pull updates to the master branch</p>
+</li>
+<li>
+<p>Prune remote branches that have been deleted</p>
+</li>
+<li>
+<p>Delete my local copy of the feature branch that has been merged to master</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>I started with adding <a href="http://git-scm.com/" target="_blank" rel="noopener">Git</a> status information to my shell by following
+<a href="http://www.newfinds.com/Ramblings/Bash-Promt/" target="_blank" rel="noopener">these instructions</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>function parse_git_dirty {
   [[ $(git status 2&gt; /dev/null | tail -n1) != "nothing to commit, working directory clean" ]] &amp;&amp; echo " *"
 }
 
 function parse_git_branch () {
   git branch 2&gt; /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/ (\1$(parse_git_dirty))/"
-}</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>Next, I added a new function to use the current branch (the one being merged/deleted/pruned) to turn the steps mentioned above into a command:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code>function prune_merged_branch () {
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, I added a new function to use the current branch (the one being merged/deleted/pruned) to turn
+the steps mentioned above into a command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>function prune_merged_branch () {
     prunedBranch=`echo "$(parse_git_branch)" | sed -e 's/(//g' | sed -e 's/)//g' | tr -d ' '`
     git checkout master;git fetch --all;git pull;git remote prune origin;git branch -D "$prunedBranch"
-}</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>Now, I can run <code>prune_merged_branch</code> from the command line to do all of these steps in one swoop:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code>$ prune_merged_branch
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, I can run <code>prune_merged_branch</code> from the command line to do all of these steps in one swoop:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>$ prune_merged_branch
 Switched to branch 'master'
 Your branch is up-to-date with 'origin/master'.
 Fetching origin
@@ -156,8 +172,8 @@ Fast-forwarded master to b10695cdd910f064964d10e4f6d3d9ac78e3c1c6.
 Pruning origin
 URL: https://github.com/&lt;username&gt;/&lt;repo&gt;.git
  * [pruned] origin/some-branch
-Deleted branch some-branch (was 27da761).</code></pre> 
- </div> 
+Deleted branch some-branch (was 27da761).</code></pre>
+</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/10/21/github_prune_merged_branch.html"></div>
@@ -196,7 +212,7 @@ Deleted branch some-branch (was 27da761).</code></pre>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.5</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

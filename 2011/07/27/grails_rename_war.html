@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -100,12 +101,12 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2011/07/27/grails_rename_war.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://www.jonathanpearlin.com/2011/07/27/grails_rename_war.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><p>One of the constant problems with the Grails Maven integration is the competing conventions imposed by the two technologies. An obvious example of this is the naming convention used for WAR files by the two. The Maven convention is to use the following when creating a WAR file:</p> 
+    <p><p>One of the constant problems with the Grails Maven integration is the competing conventions imposed by the two technologies.  An obvious example of this is the naming convention used for WAR files by the two.  The Maven convention is to use the following when creating a WAR file:</p>
 <pre><code>${project.artifactId}-${project.version}.war
-</code></pre> 
-<p>When building your Grails application as a WAR file using the Grails command line (i.e. grails prod war), the value of the grails.project.war.file configuration property found in the application's <code>BuildConfig.groovy</code> file is used. This is obviously not the same convention as the one used by Maven, as described above, and depending on which goals you use with the Grails Maven plugin, you may end up with a WAR named using the Maven convention instead of the Grails convention. This is because the Grails Maven plugin includes two WAR building Mojos: <code>GrailsWarMojo</code> and <code>MvnWarMojo</code>. The former is not tied to any specific phase and is executed if the war goal is executed. The latter is tied to a phase (package) and therefore is executed automatically if the Grails Maven plugin is included in your POM file and package is specified as a phase to execute (and your project packaging is grails-app). This Mojo uses the Maven WAR naming convention outlined above. Therefore, building your Grails application using mvn clean package will result in a WAR named as outlined above.</p> 
-<h2>Cutting Against The Grain</h2> 
-<p>So, now that we know about the two competing conventions, how do we make the Maven build do what we want (that is, how do we make it produce a WAR file named using the Grails naming convention)? The best solution that I have found is to use the maven-antrun-plugin. Normally, I don't condone the use of the Ant plugin in Maven, as it is essentially a way to shell out control away from Maven and it is very easy to violate the conventions set for by Maven with this solution. However, in this case we are trying to break Maven's convention, so the following solution feels acceptable. To rename the WAR after Maven is done creating it, simply add the following plugin definition to your POM file AFTER the declaration to use the Grails Maven plugin:</p> 
+</code></pre>
+<p>When building your Grails application as a WAR file using the Grails command line (i.e. grails prod war), the value of the grails.project.war.file configuration property found in the application's <code>BuildConfig.groovy</code> file is used.  This is obviously not the same convention as the one used by Maven, as described above, and depending on which goals you use with the Grails Maven plugin, you may end up with a WAR named using the Maven convention instead of the Grails convention.  This is because the Grails Maven plugin includes two WAR building Mojos:  <code>GrailsWarMojo</code> and <code>MvnWarMojo</code>.  The former is not tied to any specific phase and is executed if the war goal is executed.  The latter is tied to a phase (package) and therefore is executed automatically if the Grails Maven plugin is included in your POM file and package is specified as a phase to execute (and your project packaging is grails-app).  This Mojo uses the Maven WAR naming convention outlined above.  Therefore, building your Grails application using mvn clean package will result in a WAR named as outlined above.</p>
+<h2>Cutting Against The Grain</h2>
+<p>So, now that we know about the two competing conventions, how do we make the Maven build do what we want (that is, how do we make it produce a WAR file named using the Grails naming convention)?  The best solution that I have found is to use the maven-antrun-plugin.  Normally, I don't condone the use of the Ant plugin in Maven, as it is essentially a way to shell out control away from Maven and it is very easy to violate the conventions set for by Maven with this solution.  However, in this case we are trying to break Maven's convention, so the following solution feels acceptable.  To rename the WAR after Maven is done creating it, simply add the following plugin definition to your POM file AFTER the declaration to use the Grails Maven plugin:</p>
 <pre><code>&lt;plugin&gt;
     &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
     &lt;artifactId&gt;maven-antrun-plugin&lt;/artifactId&gt;
@@ -118,14 +119,15 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
             &lt;/goals&gt;
             &lt;configuration&gt;
                 &lt;tasks&gt;
-                    &lt;move file="${project.build.directory}/${project.artifactId}-${project.version}.war" tofile="${project.build.directory}/${project.artifactId}.war" /&gt;
+                    &lt;move file=&quot;${project.build.directory}/${project.artifactId}-${project.version}.war&quot; tofile=&quot;${project.build.directory}/${project.artifactId}.war&quot; /&gt;
                 &lt;/tasks&gt;
             &lt;/configuration&gt;
         &lt;/execution&gt;
     &lt;/executions&gt;
 &lt;/plugin&gt;
-</code></pre> 
-<p>This will rename (by moving) the WAR produced with the Maven WAR naming convention to the Grails WAR naming convention, leaving it in the target directory (or whatever you have configured via Maven to be the <code>project.build.directory</code>).</p></p>
+</code></pre>
+<p>This will rename (by moving) the WAR produced with the Maven WAR naming convention to the Grails WAR naming convention, leaving it in the target directory (or whatever you have configured via Maven to be the <code>project.build.directory</code>).</p>
+</p>
 
     <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2011/07/27/grails_rename_war.html"></div>
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2011/07/27/grails_rename_war.html" data-counter="right"></script>
@@ -163,7 +165,7 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.5</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

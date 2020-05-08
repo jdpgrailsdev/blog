@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -100,25 +101,32 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/03/11/grails_test_system_properties.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/03/11/grails_test_system_properties.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph"> 
- <p>We have a <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> application that relies on <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a> for some of its data. This application makes use of the <a href="http://curator.apache.org/" target="_blank" rel="noopener">Apache Curator</a> library to connect to <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a>. The <a href="http://curator.apache.org/" target="_blank" rel="noopener">Apache Curator</a> library also includes a testing server to make it easy to write unit tests for the classes that need to interact with <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a>. Our <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a> implementation makes uses of SASL-based authentication to prevent unwanted access to different parts of the data stored in <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a>. Unfortunately, the ability to set which configuration file to use when connecting to <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a> is set via JVM system properties. This is fine when the application is running, but can make unit testing difficult, as developers have to remember to set the appropriate system properties before executing unit test. Luckily, <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> has a nice events framework that fires as certain stages in execution are hit. I decided that it would be trivial to add an event hook that listens for the start of the test phase and sets the appropriate system properties required to simulate the same access control when interacting with the <a href="http://curator.apache.org/" target="_blank" rel="noopener">Apache Curator</a> test server. I made the following modification to the <code>scripts/Events.groovy</code> file in the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> application:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="title">
-  scripts/Events.groovy
- </div> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">eventTestPhaseStart = { args -&gt;
+    <p><div class="paragraph">
+<p>We have a <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> application that relies on <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a> for some of its data.  This application makes use of the <a href="http://curator.apache.org/" target="_blank" rel="noopener">Apache Curator</a> library to connect to <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a>.  The <a href="http://curator.apache.org/" target="_blank" rel="noopener">Apache Curator</a> library also includes
+a testing server to make it easy to write unit tests for the classes that need to interact with <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a>.  Our <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a> implementation makes uses of SASL-based authentication to prevent
+unwanted access to different parts of the data stored in <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a>.  Unfortunately, the ability to set which configuration file to use when connecting to <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Apache ZooKeeper</a> is set via JVM system
+properties.  This is fine when the application is running, but can make unit testing difficult, as developers have to remember to set the appropriate system properties before executing unit
+test.  Luckily, <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> has a nice events framework that fires as certain stages in execution are hit.  I decided that it would be trivial to add an event hook that listens for the
+start of the test phase and sets the appropriate system properties required to simulate the same access control when interacting with the <a href="http://curator.apache.org/" target="_blank" rel="noopener">Apache Curator</a> test server.  I made the following modification
+to the <code>scripts/Events.groovy</code> file in the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> application:</p>
+</div>
+<div class="listingblock">
+<div class="title">scripts/Events.groovy</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="groovy">eventTestPhaseStart = { args -&gt;
     //Add the required ZooKeeper auth system properties so that tests will pass!
     System.setProperty('java.security.auth.login.config', "${System.getProperty('user.dir')}/test/unit/jaas_test.config")
     System.setProperty('zookeeper.authProvider.1', 'org.apache.zookeeper.server.auth.SASLAuthenticationProvider')
     grailsConsole.addStatus "Running tests with the following system properties:"
     grailsConsole.addStatus "${System.getProperties()}"
-}</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>The above event is fired right before the first test is executed by <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> when using the <code>grails test-app</code> command. It sets the login configuration file to one that is packaged within the project and sets the <code>authProvider</code> to the appropriate type (in our case, SASL). There are many other events that you can listen for in order to perform logic upon firing. You can see more information about <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> events in the <a href="http://grails.org/doc/2.3.x/guide/commandLine.html#events" target="_blank" rel="noopener">documentation</a> or by looking through the <a href="http://gant.codehaus.org/" target="_blank" rel="noopener">Gant</a> scripts in the <code>scripts</code> folder of the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> installation.</p> 
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above event is fired right before the first test is executed by <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> when using the <code>grails test-app</code> command.  It sets the login configuration file to
+one that is packaged within the project and sets the <code>authProvider</code> to the appropriate type (in our case, SASL).  There are many other events that you can listen
+for in order to perform logic upon firing.  You can see more information about <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> events in the <a href="http://grails.org/doc/2.3.x/guide/commandLine.html#events" target="_blank" rel="noopener">documentation</a> or
+by looking through the <a href="http://gant.codehaus.org/" target="_blank" rel="noopener">Gant</a> scripts in the <code>scripts</code> folder of the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> installation.</p>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/03/11/grails_test_system_properties.html"></div>
@@ -157,7 +165,7 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.5</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

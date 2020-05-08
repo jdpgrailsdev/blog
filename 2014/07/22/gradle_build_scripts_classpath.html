@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -100,21 +101,32 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/07/22/gradle_build_scripts_classpath.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/07/22/gradle_build_scripts_classpath.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph"> 
- <p><a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> currently supports two different way to reference other <code>.gradle</code> files from a build script:</p> 
-</div> 
-<div class="olist arabic"> 
- <ol class="arabic"> 
-  <li> <p>Apply a script from file via <code>apply from: 'path/to/some/script.gradle'</code></p> </li> 
-  <li> <p>Apply a script from URL via <code>apply from: 'http://some/url/script.gradle'</code></p> </li> 
- </ol> 
-</div> 
-<div class="paragraph"> 
- <p>The first is great for one-off scripts in your project, but is not really helpful when you want to share <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> scripts among projects. The second approach would work for sharing, but is really limited with regards to the supported functionality (e.g. you cannot specify HTTP headers to handle login/security concerns, etc). While you can obviously create a plugin that approximates the logic in the script that you want to share, its a pain to have to create a new project and push it to your artifact repository each time you want to share build logic. The solution? Create a single <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin that is capable of scanning the build script classpath at execution time to find and apply <code>.gradle</code> files to the current project. This approach uses the <code>PathMatchingResourcePatternResolver</code> class from the <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a> to locate each <code>.gradle</code> file. Once the files have been located, the files are read from the classpath and extracted to a temporary <code>scripts</code> folder under the project’s build directory and then applied to the current project via the file-based approach outlined above. Here is the entire plugin code:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">class BuildScriptSupportPlugin implements Plugin&lt;Project&gt; {
+    <p><div class="paragraph">
+<p><a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> currently supports two different way to reference other <code>.gradle</code> files from a build script:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Apply a script from file via <code>apply from: 'path/to/some/script.gradle'</code></p>
+</li>
+<li>
+<p>Apply a script from URL via <code>apply from: 'http://some/url/script.gradle'</code></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The first is great for one-off scripts in your project, but is not really helpful when you want to share <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> scripts among projects.  The second
+approach would work for sharing, but is really limited with regards to the supported functionality (e.g. you cannot specify HTTP headers to handle login/security
+concerns, etc).  While you can obviously create a plugin that approximates the logic in the script that you want to share, its a pain to have to create a new
+project and push it to your artifact repository each time you want to share build logic.  The solution?  Create a single <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin that is capable of scanning
+the build script classpath at execution time to find and apply <code>.gradle</code> files to the current project.  This approach uses the <code>PathMatchingResourcePatternResolver</code>
+class from the <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a>  to locate each <code>.gradle</code> file.  Once the files have been located, the
+files are read from the classpath and extracted to a temporary <code>scripts</code> folder under the project&#8217;s build directory and then applied to the current project via
+the file-based approach outlined above.  Here is the entire plugin code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="groovy">class BuildScriptSupportPlugin implements Plugin&lt;Project&gt; {
 
     /**
      * Spring {@link PathMatchingResourcePatternResolver} used to find all Gradle scripts
@@ -146,15 +158,17 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
             }
         }
     }
-}</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>By convention, the plugin looks for the extra scripts in the <code>scripts</code> package on the classpath. In practice, I put the scripts in <code>src/main/resources/scripts</code> in the projects/libraries that I use to bundle up the shared scripts. To use the plugin and any libraries that may contain build scripts in your project, simply add them to your <code>build.gradle</code> script in the <code>buildScript</code> section:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">apply plugin: 'build-script-support'
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By convention, the plugin looks for the extra scripts in the <code>scripts</code> package on the classpath.  In practice, I put the scripts in <code>src/main/resources/scripts</code>
+in the projects/libraries that I use to bundle up the shared scripts.  To use the plugin and any libraries that may contain build scripts in your project, simply add
+them to your <code>build.gradle</code> script in the <code>buildScript</code> section:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="groovy">apply plugin: 'build-script-support'
 
 buildscript {
     repositories {
@@ -165,21 +179,27 @@ buildscript {
         classpath('org.gradle.plugins:gradle-build-script-support-plugin:1.0.0-SNAPSHOT')
         classpath('com.example:custom-gradle-scripts:1.0.0-SNAPSHOT')
     }
-}</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>Future enhancements to this plugin will/could include the following:</p> 
-</div> 
-<div class="ulist"> 
- <ul> 
-  <li> <p>Include/Exclude patterns for script names when scanning</p> </li> 
-  <li> <p>Script name disambiguation to avoid two scripts from two different JAR’s with the same name clobbering each other.</p> </li> 
-  <li> <p>Ability to explicitly specify location of script on classpath to scan (to support situations where a script cannot be moved to the conventional place).</p> </li> 
- </ul> 
-</div> 
-<div class="paragraph"> 
- <p>It should be noted that the code above was written and used with <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> 1.12 and has not yet been tested with 2.0, though I don’t expect any issues.</p> 
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Future enhancements to this plugin will/could include the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Include/Exclude patterns for script names when scanning</p>
+</li>
+<li>
+<p>Script name disambiguation to avoid two scripts from two different JAR&#8217;s with the same name clobbering each other.</p>
+</li>
+<li>
+<p>Ability to explicitly specify location of script on classpath to scan (to support situations where a script cannot be moved to the conventional place).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It should be noted that the code above was written and used with <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> 1.12 and has not yet been tested with 2.0, though I don&#8217;t expect any issues.</p>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/07/22/gradle_build_scripts_classpath.html"></div>
@@ -218,7 +238,7 @@ buildscript {
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.5</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

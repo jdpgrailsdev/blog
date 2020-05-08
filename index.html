@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -106,8 +107,8 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/2018/04/02/blog_post.html" data-counter="right"></script>
                 <div class="fb-like" data-href="http://jdpgrailsdev.github.io/2018/04/02/blog_post.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div class="paragraph"> 
- <p>Please check out my latest <a href="https://blog.newrelic.com/2018/04/02/rolling-deployments/" target="_blank" rel="noopener">blog post</a> for <a href="https://www.newrelic.com/" target="_blank" rel="noopener">New Relic</a> where I discuss how we deploy our high throughput, backend microservices. Please give it a read and am interested in your thoughts on the subject!</p> 
+                   <p><div class="paragraph">
+<p>Please check out my latest <a href="https://blog.newrelic.com/2018/04/02/rolling-deployments/" target="_blank" rel="noopener">blog post</a> for <a href="https://www.newrelic.com/" target="_blank" rel="noopener">New Relic</a> where I discuss how we deploy our high throughput, backend microservices. Please give it a read and am interested in your thoughts on the subject!</p>
 </div></p>
                 <p><a href="/blog2018/04/02/blog_post.html#disqus_thread">Comments</a></p>
                    <a href="/2018/03/29/gradle_plugin_include_itself.html"><h1>A Gradle Plugin That Applies Itself</h1></a>
@@ -122,20 +123,24 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/2018/03/29/gradle_plugin_include_itself.html" data-counter="right"></script>
                 <div class="fb-like" data-href="http://jdpgrailsdev.github.io/2018/03/29/gradle_plugin_include_itself.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div class="paragraph"> 
- <p>The plugin feature of <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> makes it very easy to codify functionality for re-use between different projects. I personally like to use this functionality to provide common build and deploy functionality to many of my projects. Recently, I found myself creating a plugin that will generate a <a href="https://daringfireball.net/projects/markdown/" target="_blank" rel="noopener">Markdown</a> file containing all of the changes committed to <a href="https://git-scm.com/" target="_blank" rel="noopener">Git</a>, organized by release. When I finished creating the plugin, I realized that I also wanted to use the plugin in the plugin project itself so that I could keep a log of changes to the plugin (so meta!). However, releasing the plugin and including it as a dependency so it could be applied to itself seemed like a bad idea: it would forever be one release behind, assuming that I remembered to update the dependency version each time. That obviously is not a very maintainable solution. The answer? Apply the plugin to itself programmatically by taking advantage of some <a href="http://groovy-lang.org/" target="_blank" rel="noopener">Groovy</a> magic:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">// Apply the changelog plugin to itself!
+                   <p><div class="paragraph">
+<p>The plugin feature of <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> makes it very easy to codify functionality for re-use between different projects.  I personally like to use this functionality to provide common build and deploy
+functionality to many of my projects.  Recently, I found myself creating a plugin that will generate a <a href="https://daringfireball.net/projects/markdown/" target="_blank" rel="noopener">Markdown</a> file containing all of the changes committed to <a href="https://git-scm.com/" target="_blank" rel="noopener">Git</a>, organized by release.
+When I finished creating the plugin, I realized that I also wanted to use the plugin in the plugin project itself so that I could keep a log of changes to the plugin (so meta!).  However, releasing the plugin and including it as a dependency so it could be applied to itself seemed like a bad idea:  it would forever be one release behind, assuming that I remembered to update the
+dependency version each time.  That obviously is not a very maintainable solution.  The answer?  Apply the plugin to itself programmatically by taking advantage of some <a href="http://groovy-lang.org/" target="_blank" rel="noopener">Groovy</a> magic:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="groovy">// Apply the changelog plugin to itself!
 def classpath = [file('src/main/groovy').absolutePath, file('src/main/resources').absolutePath] as String[]
 def pluginDescriptor = new Properties()
 pluginDescriptor.load(new InputStreamReader(new FileInputStream(file('src/main/resources/META-INF/gradle-plugins/changelog.properties').absolutePath)))
-apply plugin: new GroovyScriptEngine(classpath, this.getClass().getClassLoader()).loadScriptByName("${pluginDescriptor.getProperty('implementation-class').replaceAll('\\.', '/')}.groovy")</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>So, what is this code snippet doing exactly? The first line ensures that the source folders of the plugin project are part of the classpath that will be used to find and load the plugin. The second line simply creates a new Java <code>Properties</code> object, which will be used to hold the plugin’s descriptor file. The third line loads the <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> plugin descriptor file so that we can determine the main class of the plugin. Finally, the last line uses the <a href="http://groovy-lang.org/" target="_blank" rel="noopener">Groovy</a> <code>GroovyScriptEngine</code> class to load the class referenced the plugin descriptor so that it can be applied by <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> as a plugin. After placing this code in the plugin’s <code>build.gradle</code> file, we are now assured that the latest source in the plugin is applied to the plugin itself so that it can be used to generate the changelog for that project.</p> 
+apply plugin: new GroovyScriptEngine(classpath, this.getClass().getClassLoader()).loadScriptByName("${pluginDescriptor.getProperty('implementation-class').replaceAll('\\.', '/')}.groovy")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So, what is this code snippet doing exactly?  The first line ensures that the source folders of the plugin project are part of the classpath that will be used to find and load the plugin.  The
+second line simply creates a new Java <code>Properties</code> object, which will be used to hold the plugin&#8217;s descriptor file.  The third line loads the <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> plugin descriptor file so that we can determine the main class of the plugin.  Finally, the last line uses the <a href="http://groovy-lang.org/" target="_blank" rel="noopener">Groovy</a> <code>GroovyScriptEngine</code> class to load the class referenced the plugin descriptor so that it can be applied by <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> as a plugin.  After placing this code in the plugin&#8217;s <code>build.gradle</code> file, we are now assured that the latest source in the plugin is applied to the plugin itself so that it can be used to generate the changelog for that project.</p>
 </div></p>
                 <p><a href="/blog2018/03/29/gradle_plugin_include_itself.html#disqus_thread">Comments</a></p>
                    <a href="/2017/08/08/blog_post.html"><h1>Choosing an Application Framework for Microservices</h1></a>
@@ -152,8 +157,8 @@ apply plugin: new GroovyScriptEngine(classpath, this.getClass().getClassLoader()
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/2017/08/08/blog_post.html" data-counter="right"></script>
                 <div class="fb-like" data-href="http://jdpgrailsdev.github.io/2017/08/08/blog_post.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div class="paragraph"> 
- <p>Earlier this year, I authored a <a href="https://blog.newrelic.com/2017/05/18/alerts-microservices-environment-spring-boot/" target="_blank" rel="noopener">blog post</a> for <a href="https://www.newrelic.com/" target="_blank" rel="noopener">New Relic</a> where I discussed how my team decided to use <a href="https://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> to build microservices. Recently, the post has been picked up by a bunch of other outlets and has been making the rounds on the interwebs. Please give it a read and am interested in your thoughts on the subject!</p> 
+                   <p><div class="paragraph">
+<p>Earlier this year, I authored a <a href="https://blog.newrelic.com/2017/05/18/alerts-microservices-environment-spring-boot/" target="_blank" rel="noopener">blog post</a> for <a href="https://www.newrelic.com/" target="_blank" rel="noopener">New Relic</a> where I discussed how my team decided to use <a href="https://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> to build microservices.  Recently, the post has been picked up by a bunch of other outlets and has been making the rounds on the interwebs.  Please give it a read and am interested in your thoughts on the subject!</p>
 </div></p>
                 <p><a href="/blog2017/08/08/blog_post.html#disqus_thread">Comments</a></p>
                    <a href="/2016/12/20/kafka_iterator.html"><h1>The Peculiar Case of the Kafka ConsumerIterator</h1></a>
@@ -168,37 +173,46 @@ apply plugin: new GroovyScriptEngine(classpath, this.getClass().getClassLoader()
                 <script type="IN/Share" data-url="http://jdpgrailsdev.github.io/2016/12/20/kafka_iterator.html" data-counter="right"></script>
                 <div class="fb-like" data-href="http://jdpgrailsdev.github.io/2016/12/20/kafka_iterator.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-                   <p><div class="paragraph"> 
- <p><em>This post is written using <a href="https://kafka.apache.org/082/documentation.html" target="_blank" rel="noopener">Apache Kafka 0.8.2</a></em></p> 
-</div> 
-<div class="paragraph"> 
- <p>Creating a <a href="https://kafka.apache.org/" target="_blank" rel="noopener">Apache Kafka</a> client is a pretty straight-forward and prescriptive endeavor. What is not straight-forward or even expected is the behavior of the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> that is used to poll a <a href="https://kafka.apache.org/" target="_blank" rel="noopener">Apache Kafka</a> topic/partition for messages. More on this in a moment. First, let’s look at the typical setup to consume data from a <a href="https://kafka.apache.org/" target="_blank" rel="noopener">Apache Kafka</a> stream (for the sake of keeping this post brief, I am going to skip the details around creating and configuring a <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerConnector.scala" target="_blank" rel="noopener">ConsumerConnector</a>):</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">final Map&lt;String, List&lt;KafkaStream&lt;byte[], byte[]&gt;&gt;&gt; consumerMap =
+                   <p><div class="paragraph">
+<p><em>This post is written using <a href="https://kafka.apache.org/082/documentation.html" target="_blank" rel="noopener">Apache Kafka 0.8.2</a></em></p>
+</div>
+<div class="paragraph">
+<p>Creating a <a href="https://kafka.apache.org/" target="_blank" rel="noopener">Apache Kafka</a> client is a pretty straight-forward and prescriptive endeavor.  What is not straight-forward or even expected is the behavior of the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> that is
+used to poll a <a href="https://kafka.apache.org/" target="_blank" rel="noopener">Apache Kafka</a> topic/partition for messages.  More on this in a moment.  First, let&#8217;s look at the typical setup to consume data from a <a href="https://kafka.apache.org/" target="_blank" rel="noopener">Apache Kafka</a> stream
+(for the sake of keeping this post brief, I am going to skip the details around creating and configuring a <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerConnector.scala" target="_blank" rel="noopener">ConsumerConnector</a>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">final Map&lt;String, List&lt;KafkaStream&lt;byte[], byte[]&gt;&gt;&gt; consumerMap =
     consumerConnector.createMessageStreams(Collections.singletonMap("topic",1));
 final List&lt;KafkaStream&lt;byte[], byte[]&gt;&gt; streams = consumerMap.get("topic");
-final ConsumerIterator&lt;byte[],byte[]&gt; = streams.get(0).iterator();‍‍‍‍‍‍‍‍</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>With the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank" rel="noopener">ConsumerIterator</a> in hand, the next step is to poll the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> for incoming messages:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">while(iterator.hasNext()) {
+final ConsumerIterator&lt;byte[],byte[]&gt; = streams.get(0).iterator();‍‍‍‍‍‍‍‍</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank" rel="noopener">ConsumerIterator</a> in hand, the next step is to poll the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> for incoming messages:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">while(iterator.hasNext()) {
     MessageAndMetadata&lt;byte[], byte[]&gt; message = iterator.next();
     ...
-}‍‍‍‍</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>‍ ‍This all seems pretty simple. Now, back to the issue with this code: the expectation is that this would check the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> for a message and if not present loop immediately and check again (standard <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> behavior). However, this is not the case. The behavior of the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank" rel="noopener">ConsumerIterator</a> is actually controlled by the <a href="https://kafka.apache.org/082/documentation.html#consumerconfigs" target="_blank" rel="noopener">consumer.timeout.ms</a> configuration setting. This setting controls whether or not the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> “throw(s) a timeout exception to the consumer if no message is available for consumption after the specified interval”. By default, this value is set to -1, which means that the call to <code>hasNext()</code> will block indefinitely until a message is available on the topic/partition assigned to the consumer. The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Java documentation</a> for the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> interface does not specify whether or not the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html#hasNext--" target="_blank" rel="noopener">hasNext()</a> method is allowed to block indefinitely, so its hard to say that the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank" rel="noopener">ConsumerIterator</a> is violating the contract. However, this is certainly not the behavior anyone use to using the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> pattern in Java would expect, as collections typically don’t block until data is available in the data structure. If the <a href="https://kafka.apache.org/082/documentation.html#consumerconfigs" target="_blank" rel="noopener">consumer.timeout.ms</a> configuration setting is set to a positive value, the consumption code would need to be modified to handle a <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala#L114" target="_blank" rel="noopener">ConsumerTimeoutException</a>:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">while(active) {
+}‍‍‍‍</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>‍
+‍This all seems pretty simple.  Now, back to the issue with this code:  the expectation is that this would check the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> for a message and if not present loop immediately and check
+again (standard <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> behavior).  However, this is not the case.  The behavior of the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank" rel="noopener">ConsumerIterator</a> is actually controlled by the <a href="https://kafka.apache.org/082/documentation.html#consumerconfigs" target="_blank" rel="noopener">consumer.timeout.ms</a> configuration setting.  This
+setting controls whether or not the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> &#8220;throw(s) a timeout exception to the consumer if no message is available for consumption after the specified interval&#8221;.  By default, this
+value is set to -1, which means that the call to <code>hasNext()</code> will block indefinitely until a message is available on the topic/partition assigned to the consumer.  The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Java documentation</a>
+for the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> interface does not specify whether or not the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html#hasNext--" target="_blank" rel="noopener">hasNext()</a> method is allowed to block indefinitely, so its hard to say that the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank" rel="noopener">ConsumerIterator</a> is violating the contract.
+However, this is certainly not the behavior anyone use to using the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> pattern in Java would expect, as collections typically don&#8217;t block until data is available in the data structure.
+If the <a href="https://kafka.apache.org/082/documentation.html#consumerconfigs" target="_blank" rel="noopener">consumer.timeout.ms</a> configuration setting is set to a positive value, the consumption code would need to be modified to handle a <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala#L114" target="_blank" rel="noopener">ConsumerTimeoutException</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">while(active) {
     try {
         if(iterator.hasNext()) {
             MessageAndMetadata&lt;byte[],byte[]&gt; message = iterator.next();
@@ -207,11 +221,16 @@ final ConsumerIterator&lt;byte[],byte[]&gt; = streams.get(0).iterator();‍‍�
     } catch(ConsumerTimeoutException e) {
         // Do nothing -- this means no data is available on the topic/partition
     }
-}‍‍‍‍‍‍‍‍‍‍</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>‍ Now, the call to <code>hasNext()</code> will behave more like an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> retrieved from a collection, which is to say it will not block indefinitely. It is recommended that you do some testing to determine an acceptable timeout value to avoid looping too frequently, as this will cause an increase in CPU utilization by the loop. It is also worth noting that the <a href="https://kafka.apache.org/082/documentation.html#consumerconfigs" target="_blank" rel="noopener">Kafka documentation</a> does not directly link the configuration setting and the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank" rel="noopener">ConsumerIterator</a> and this issue would most likely go unnoticed in scenarios where data is consistently available to the client. In any case, this issue highlights the need to take a deeper look at any API or library you include in your application in order to ensure that you understand exactly how it works and what performance impacts it may have on the execution of your code.</p> 
+}‍‍‍‍‍‍‍‍‍‍</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>‍
+Now, the call to <code>hasNext()</code> will behave more like an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html" target="_blank" rel="noopener">Iterator</a> retrieved from a collection, which is to say it will not block indefinitely.  It is recommended that you do some testing to determine
+an acceptable timeout value to avoid looping too frequently, as this will cause an increase in CPU utilization by the loop.  It is also worth noting that the <a href="https://kafka.apache.org/082/documentation.html#consumerconfigs" target="_blank" rel="noopener">Kafka documentation</a> does not directly
+link the configuration setting and the <a href="https://github.com/apache/kafka/blob/0.8.2/core/src/main/scala/kafka/consumer/ConsumerIterator.scala" target="_blank" rel="noopener">ConsumerIterator</a> and this issue would most likely go unnoticed in scenarios where data is consistently available to the client.  In any case, this issue
+highlights the need to take a deeper look at any API or library you include in your application in order to ensure that you understand exactly how it works and what performance impacts it may have
+on the execution of your code.</p>
 </div></p>
                 <p><a href="/blog2016/12/20/kafka_iterator.html#disqus_thread">Comments</a></p>
 
@@ -225,7 +244,7 @@ final ConsumerIterator&lt;byte[],byte[]&gt; = streams.get(0).iterator();‍‍�
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.5</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

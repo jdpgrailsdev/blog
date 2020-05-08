@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -100,94 +101,92 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/04/22/grails_gradle_logback.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/04/22/grails_gradle_logback.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph"> 
- <p>In a <a href="http://www.jonathanpearlin.com/2014/03/24/grails_logback.html" target="_blank" rel="noopener">previous post</a>, I discussed how to switch a <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> application to use <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> instead of Log4j for logging. In that post, I covered using both the <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> support in Grails to configure the dependencies required to use <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> with <a href="http://grails.org" target="_blank" rel="noopener">Grails</a>, as well as how to use the built in dependency management support via the <code>BuildConfig.groovy</code> dependencies DSL. I did not cover how to make this all work with <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>. The same caveats and issues, as mentioned previously, still apply with regards to the <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> DSL defined in <code>Config.groovy</code> and the use of the <code>logback.groovy</code> file in its place, so I will not re-hash that here. Instead, I will point out a couple of issues with regards to getting the dependencies configured correctly in the <code>build.gradle</code> file. Similar to the other approaches, you still need to provide global excludes for the Log4J related dependencies:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="title">
-  build.gradle
- </div> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">configurations {
+    <p><div class="paragraph">
+<p>In a <a href="http://www.jonathanpearlin.com/2014/03/24/grails_logback.html" target="_blank" rel="noopener">previous post</a>, I discussed how to switch a <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> application to use <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> instead of Log4j for logging.  In that post, I
+covered using both the <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> support in Grails to configure the dependencies required to use <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> with <a href="http://grails.org" target="_blank" rel="noopener">Grails</a>, as well as how to use the built in dependency management support via the
+<code>BuildConfig.groovy</code> dependencies DSL.  I did not cover how to make this all work with <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>.  The same caveats and issues, as mentioned previously, still apply with regards to the <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> DSL
+defined in <code>Config.groovy</code> and the use of the <code>logback.groovy</code> file in its place, so I will not re-hash that here.  Instead, I will point out a couple of issues with regards to getting the
+dependencies configured correctly in the <code>build.gradle</code> file.  Similar to the other approaches, you still need to provide global excludes for the Log4J related dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="groovy">configurations {
      all*.exclude group: 'org.grails', module: 'grails-plugin-log4j'		<i class="conum" data-value="1"></i><b>(1)</b>
      all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'			<i class="conum" data-value="2"></i><b>(2)</b>
-}</code></pre> 
- </div> 
-</div> 
-<div class="colist arabic"> 
- <table> 
-  <tbody>
-   <tr> 
-    <td><i class="conum" data-value="1"></i><b>1</b></td> 
-    <td>Exclude the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> Log4J plugin, per the instructions provided by the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a>.</td> 
-   </tr> 
-   <tr> 
-    <td><i class="conum" data-value="2"></i><b>2</b></td> 
-    <td>Exclude the Log4J SLF4J binding, as <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> provides its own SLF4J binding.</td> 
-   </tr> 
-  </tbody>
- </table> 
-</div> 
-<div class="paragraph"> 
- <p>Next, include the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> as a dependency:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="title">
-  build.gradle
- </div> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">dependencies {
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Exclude the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> Log4J plugin, per the instructions provided by the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Exclude the Log4J SLF4J binding, as <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> provides its own SLF4J binding.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Next, include the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a> as a dependency:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="groovy">dependencies {
     compile ('org.grails.plugins:logback:0.3.1') {
         exclude(module:'slf4j-api')								<i class="conum" data-value="1"></i><b>(1)</b>
     }
     compile ('ch.qos.logback:logback-classic:1.1.1') {						<i class="conum" data-value="2"></i><b>(2)</b>
         exclude(module:'slf4j-api')
     }
-}</code></pre> 
- </div> 
-</div> 
-<div class="colist arabic"> 
- <table> 
-  <tbody>
-   <tr> 
-    <td><i class="conum" data-value="1"></i><b>1</b></td> 
-    <td>Exclude the SLF4J transitive dependency so that it does not conflict with the version provided by <a href="http://grails.org" target="_blank" rel="noopener">Grails</a></td> 
-   </tr> 
-   <tr> 
-    <td><i class="conum" data-value="2"></i><b>2</b></td> 
-    <td>I added an explicit dependency for <code>logback-classic</code> so that I could use a newer version than the one transitively provided by the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a>.</td> 
-   </tr> 
-  </tbody>
- </table> 
-</div> 
-<div class="paragraph"> 
- <p>I thought that this would be enough to build my application’s WAR file using the <code>grails-war</code> task of the <a href="https://github.com/grails/grails-gradle-plugin/" target="_blank" rel="noopener">Grails Gradle Plugin</a>. However, when I went to execute the task, the build failed with the following exception:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code>| Error Error generating web.xml file
-org.codehaus.groovy.runtime.typehandling.GroovyCastException: Cannot cast object 'org.slf4j.helpers.NOPLoggerFactory@7f4cfb5' with class 'org.slf4j.helpers.NOPLoggerFactory' to class 'ch.qos.logback.classic.LoggerContext'</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>What is really strange is that this does not happen when using the <code>grails-run-app</code> <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> task. Additionally, the following also appears in the output when attempting to build the WAR file:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code>SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Exclude the SLF4J transitive dependency so that it does not conflict with the version provided by <a href="http://grails.org" target="_blank" rel="noopener">Grails</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>I added an explicit dependency for <code>logback-classic</code> so that I could use a newer version than the one transitively provided by the <a href="http://grails.org/plugin/logback" target="_blank" rel="noopener">Grails Logback Plugin</a>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>I thought that this would be enough to build my application&#8217;s WAR file using the <code>grails-war</code> task of the <a href="https://github.com/grails/grails-gradle-plugin/" target="_blank" rel="noopener">Grails Gradle Plugin</a>.  However, when I went to execute the task, the
+build failed with the following exception:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>| Error Error generating web.xml file
+org.codehaus.groovy.runtime.typehandling.GroovyCastException: Cannot cast object 'org.slf4j.helpers.NOPLoggerFactory@7f4cfb5' with class 'org.slf4j.helpers.NOPLoggerFactory' to class 'ch.qos.logback.classic.LoggerContext'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>What is really strange is that this does not happen when using the <code>grails-run-app</code> <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> task.  Additionally, the following also appears in the output when attempting to build the WAR file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
 SLF4J: Defaulting to no-operation (NOP) logger implementation
-SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>A quick search of the internets for both of these issues indicate that you are either A) do not have any SLF4J binding on your classpath, thus causing SLF$J to default to the no-op binding, or B) have an SLF4J binding on the classpath in addition to the one provided by <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a>. Those two statements obviously contradict with each other. After scratching my head for a while, I realized that the <a href="https://github.com/grails/grails-gradle-plugin/" target="_blank" rel="noopener">Grails Gradle Plugin</a> has a <code>bootstrap</code> dependency scope, which is used to provide dependencies to the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> commands, which themselves are GAnt scripts written in <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a>. These scripts also need a logger to output the status of what is being executed. I decided to add a duplicate dependency to the <code>build.gradle</code> build file to see if that would fix the problem:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="title">
-  build.gradle
- </div> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">dependencies {
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A quick search of the internets for both of these issues indicate that you are either A) do not have any SLF4J binding on your classpath, thus causing SLF$J to default to the no-op binding, or B) have an
+SLF4J binding on the classpath in addition to the one provided by <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a>.  Those two statements obviously contradict with each other.  After scratching my head for a while, I realized that the <a href="https://github.com/grails/grails-gradle-plugin/" target="_blank" rel="noopener">Grails Gradle Plugin</a>
+has a <code>bootstrap</code> dependency scope, which is used to provide dependencies to the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> commands, which themselves are GAnt scripts written in <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a>.  These scripts also need a logger to output
+the status of what is being executed.  I decided to add a duplicate dependency to the <code>build.gradle</code> build file to see if that would fix the problem:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="groovy">dependencies {
     compile ('org.grails.plugins:logback:0.3.1') {
         exclude(module:'slf4j-api')
     }
@@ -195,23 +194,25 @@ SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further detail
         exclude(module:'slf4j-api')
     }
     bootstrap 'ch.qos.logback:logback-classic:1.1.1'
-}</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>After adding the dependency to the separate <code>bootstrap</code> scope, I once again ran the <code>grails-war</code> <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> task and got a much better outcome:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code>| Done creating WAR build/distributions/test-1.0.0.war
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After adding the dependency to the separate <code>bootstrap</code> scope, I once again ran the <code>grails-war</code> <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> task and got a much better outcome:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>| Done creating WAR build/distributions/test-1.0.0.war
 
 BUILD SUCCESSFUL
 
-Total time: 17.166 secs</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>Much better. It’s important to remember that the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> build eco-system is itself a Java-based application that requires its own set of dependencies just to execute. When using the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> command line arguments or building via <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a>, this classpath is management automatically. However, when using the <a href="https://github.com/grails/grails-gradle-plugin/" target="_blank" rel="noopener">Grails Gradle Plugin</a> plugin, you currently have to manage any additions to this yourself via the <code>bootstrap</code> scope (an interesting side note here is that now <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> is using <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> for all logging, not just when executing the application).</p> 
+Total time: 17.166 secs</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Much better.  It&#8217;s important to remember that the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> build eco-system is itself a Java-based application that requires its own set of dependencies just to execute.  When using the <a href="http://grails.org" target="_blank" rel="noopener">Grails</a>
+command line arguments or building via <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a>, this classpath is management automatically.  However, when using the <a href="https://github.com/grails/grails-gradle-plugin/" target="_blank" rel="noopener">Grails Gradle Plugin</a> plugin, you currently have to manage any additions to this yourself
+via the <code>bootstrap</code> scope (an interesting side note here is that now <a href="http://grails.org" target="_blank" rel="noopener">Grails</a> is using <a href="http://logback.qos.ch/" target="_blank" rel="noopener">Logback</a> for all logging, not just when executing the application).</p>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/04/22/grails_gradle_logback.html"></div>
@@ -250,7 +251,7 @@ Total time: 17.166 secs</code></pre>
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.5</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

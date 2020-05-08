@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -100,12 +101,16 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2015/04/21/spring_file_upload.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://www.jonathanpearlin.com/2015/04/21/spring_file_upload.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph"> 
- <p>File uploads via an HTTP POST to an end point are pretty easy using the <code>RestTemplate</code> and <code>FileResource</code> classes of the <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a>. However, this approach assumes that the file to be uploaded resides on disk. What happens if you want to dynamically create the uploaded file in memory or want to use a file on the classpath? The answer is to create a slight tweak to the <code>ByteArrayResource</code> implementation so that the proper from data header attributes are set in the POST body. To do this, first extend the <code>ByteArrayResource</code> so that you can set the <code>filename</code> of the resource:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">public class FileMessageResource extends ByteArrayResource {
+    <p><div class="paragraph">
+<p>File uploads via an HTTP POST to an end point are pretty easy using the <code>RestTemplate</code> and <code>FileResource</code> classes of the <a href="http://projects.spring.io/spring-framework/" target="_blank" rel="noopener">Spring Framework</a>.  However,
+this approach assumes that the file to be uploaded resides on disk.  What happens if you want to dynamically create the uploaded file in
+memory or want to use a file on the classpath?  The answer is to create a slight tweak to the <code>ByteArrayResource</code> implementation so that
+the proper from data header attributes are set in the POST body.  To do this, first extend the <code>ByteArrayResource</code> so that you can set
+the <code>filename</code> of the resource:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">public class FileMessageResource extends ByteArrayResource {
 
     /**
      * The filename to be associated with the {@link MimeMessage} in the form data.
@@ -127,27 +132,28 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     public String getFilename() {
         return filename;
     }
-}</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>Next, create your new resource and add it to the POST body. From there, simply pass the POST body to the <code>RestTemplate</code> to send the file to the end point:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">final MultiValueMap&lt;String,Object&gt; data = new LinkedMultiValueMap&lt;String,Object&gt;();
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, create your new resource and add it to the POST body.  From there, simply pass the POST body to the
+<code>RestTemplate</code> to send the file to the end point:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">final MultiValueMap&lt;String,Object&gt; data = new LinkedMultiValueMap&lt;String,Object&gt;();
 data.add("file", new FileMessageResource(fileBytes, "upload.txt"));
 final HttpEntity&lt;MultiValueMap&lt;String, Object&gt;&gt; requestEntity = new HttpEntity&lt;MultiValueMap&lt;String, Object&gt;&gt;(data);
-final ResponseEntity&lt;Map&lt;String,String&gt;&gt; response = getRestTemplate().exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference&lt;Map&lt;String,String&gt;&gt;() {});</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>The result is a form POST to the end point with the proper section header:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code>Content-Disposition: form-data; name="file"; filename="upload.txt"</code></pre> 
- </div> 
+final ResponseEntity&lt;Map&lt;String,String&gt;&gt; response = getRestTemplate().exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference&lt;Map&lt;String,String&gt;&gt;() {});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The result is a form POST to the end point with the proper section header:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>Content-Disposition: form-data; name="file"; filename="upload.txt"</code></pre>
+</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2015/04/21/spring_file_upload.html"></div>
@@ -186,7 +192,7 @@ final ResponseEntity&lt;Map&lt;String,String&gt;&gt; response = getRestTemplate(
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.5</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

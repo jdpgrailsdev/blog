@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -100,36 +101,45 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/11/18/functional_tests_gradle_docker_part_i.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/11/18/functional_tests_gradle_docker_part_i.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph"> 
- <p>One of the applications that I have been working on recently has a lot of complex SQL queries that cannot be tested very well with traditional unit tests. To fill this gap, we decided to write a functional test suite that would perform the following steps:</p> 
-</div> 
-<div class="ulist"> 
- <ul> 
-  <li> <p>Persist a bunch of data to the table(s) that are used by the query under test to an actual database instance.</p> </li> 
-  <li> <p>Execute the query under test against an actual database instance.</p> </li> 
-  <li> <p>Verify the expected results.</p> </li> 
-  <li> <p>Clean down the table(s) used in the test to avoid pollution against other tests.</p> </li> 
- </ul> 
-</div> 
-<div class="paragraph"> 
- <p>The application(s) under test are <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> applications, which make use of <a href="http://projects.spring.io/spring-data-jpa/" target="_blank" rel="noopener">Spring Data JPA</a> for the presistence layer. Below is an example of one of the repositories:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">@Repository
+    <p><div class="paragraph">
+<p>One of the applications that I have been working on recently has a lot of complex SQL queries that cannot be tested very well with traditional unit tests.  To fill this gap, we
+decided to write a functional test suite that would perform the following steps:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Persist a bunch of data to the table(s) that are used by the query under test to an actual database instance.</p>
+</li>
+<li>
+<p>Execute the query under test against an actual database instance.</p>
+</li>
+<li>
+<p>Verify the expected results.</p>
+</li>
+<li>
+<p>Clean down the table(s) used in the test to avoid pollution against other tests.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The application(s) under test are <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> applications, which make use of <a href="http://projects.spring.io/spring-data-jpa/" target="_blank" rel="noopener">Spring Data JPA</a> for the presistence layer.  Below is an example of one of the repositories:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">@Repository
 public interface BookRepository extends JpaRepository&lt;Book, Long&gt; {
 
     List&lt;Book&gt; findByIsbn(final String isbn);
 
-}</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>Writing a functional test for just such a repository is pretty easy using <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a> and its built-in <a href="https://code.google.com/p/spock/wiki/SpringExtension" target="_blank" rel="noopener">Spring extension</a>:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">@ActiveProfiles('test')
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Writing a functional test for just such a repository is pretty easy using <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a> and its built-in <a href="https://code.google.com/p/spock/wiki/SpringExtension" target="_blank" rel="noopener">Spring extension</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="groovy">@ActiveProfiles('test')
 @ContextConfiguration(classes=[PersistenceConfiguration], loader=SpringApplicationContextLoader)
 class BookRepositoryFunctionalSpec extends Specification {
 
@@ -158,21 +168,34 @@ class BookRepositoryFunctionalSpec extends Specification {
         then:
             books != null
             books.size() == 0
-    }</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>The example <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a> specification above uses the <code>ActiveProfiles</code> and <code>ContextCongifuration</code> annotations to load the Spring configuration for use by the test. This configuration contains all of the beans required by <a href="http://projects.spring.io/spring-data-jpa/" target="_blank" rel="noopener">Spring Data JPA</a> to connect to the database (data source, entity manager, etc). With the Spring configuration added to the test, we can now make use of Spring techniques, such as the auto-wiring of dependencies into the specification. In the example above, we have auto-wired in the <code>BookRepository</code> that defines the query that we want to test. The next thing to notice is that the test uses the <code>deleteAll</code> method of the repository instance to remove any data in the table mapped by the <code>Book</code> entity after each test in the specification. Finally, we have the test itself, which performs the following steps:</p> 
-</div> 
-<div class="ulist"> 
- <ul> 
-  <li> <p>Create a couple of <code>Book</code> entities and persist them to the mapped table using the repository.</p> </li> 
-  <li> <p>Execute the finder method from the repository and validate the correct results are found.</p> </li> 
-  <li> <p>Execute the finder method again, this time with input that should not produce a result to validate what is returned in that scenario.</p> </li> 
- </ul> 
-</div> 
-<div class="paragraph"> 
- <p>Note that this could easily be broken up into two tests or refactored to use <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a>'s <code>@Unroll</code> annotation. Now that I was armed with a way to build out functional tests against the actual database using <a href="http://projects.spring.io/spring-data-jpa/" target="_blank" rel="noopener">Spring Data JPA</a> and <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a>, I needed a way to execute the tests. My first thought was to use <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to run the tests. However, due to a limitation of our build infrastructure (our deployment server does not have access to our artifact repository), <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> would not be able to run the tests, as the build script would not have access to the dependencies it needs to execute! In the part two of this blog post, I will take a look at how I overcame this issue by executing the test suite inside of a <a href="https://www.docker.com/" target="_blank" rel="noopener">Docker</a> container using <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>.</p> 
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The example <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a> specification above uses the <code>ActiveProfiles</code> and <code>ContextCongifuration</code> annotations to load the Spring configuration for use by the test.  This configuration contains
+all of the beans required by <a href="http://projects.spring.io/spring-data-jpa/" target="_blank" rel="noopener">Spring Data JPA</a> to connect to the database (data source, entity manager, etc). With the Spring configuration added to the test, we can now make use of Spring
+techniques, such as the auto-wiring of dependencies into the specification.  In the example above, we have auto-wired in the <code>BookRepository</code> that defines the query that we want to test.
+The next thing to notice is that the test uses the <code>deleteAll</code> method of the repository instance to remove any data in the table mapped by the <code>Book</code> entity after each test in the
+specification.  Finally, we have the test itself, which performs the following steps:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a couple of <code>Book</code> entities and persist them to the mapped table using the repository.</p>
+</li>
+<li>
+<p>Execute the finder method from the repository and validate the correct results are found.</p>
+</li>
+<li>
+<p>Execute the finder method again, this time with input that should not produce a result to validate what is returned in that scenario.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Note that this could easily be broken up into two tests or refactored to use <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a>'s <code>@Unroll</code> annotation.  Now that I was armed with a way to build out functional tests against the actual database
+using <a href="http://projects.spring.io/spring-data-jpa/" target="_blank" rel="noopener">Spring Data JPA</a> and <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a>, I needed a way to execute the tests.  My first thought was to use <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to run the tests.  However, due to a limitation of our build infrastructure (our deployment
+server does not have access to our artifact repository), <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> would not be able to run the tests, as the build script would not have access to the dependencies it needs to execute!  In the part two of
+this blog post, I will take a look at how I overcame this issue by executing the test suite inside of a <a href="https://www.docker.com/" target="_blank" rel="noopener">Docker</a> container using <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>.</p>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/11/18/functional_tests_gradle_docker_part_i.html"></div>
@@ -211,7 +234,7 @@ class BookRepositoryFunctionalSpec extends Specification {
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.5</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -100,12 +101,16 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/10/07/spring_boot_jetty_thread_pool.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/10/07/spring_boot_jetty_thread_pool.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph"> 
- <p>In a <a href="http://www.jonathanpearlin.com/2014/09/30/spring_boot_jetty_jmx.html" target="_blank" rel="noopener">previous post</a>, I discussed how to use <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> as the servlet container in a <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> application over the default implementation (Apache Tomcat) and also how to enable <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a>'s registered MBeans via JMX. In addition to this configuration, you can also configure <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> so that it is not using the factory default settings for the servlet container. One setting that you typically want to control is the size of the thread pool used by <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> to service incoming requests. This is pretty easy to do with <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> by adding a <a href="http://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/embedded/jetty/JettyServerCustomizer.html" target="blank">JettyServerCustomizer</a> implementation to gain access to <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a>'s <code>Server</code> instance:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">@Bean
+    <p><div class="paragraph">
+<p>In a <a href="http://www.jonathanpearlin.com/2014/09/30/spring_boot_jetty_jmx.html" target="_blank" rel="noopener">previous post</a>, I discussed how to use <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> as the servlet container in a <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> application over the default implementation
+(Apache Tomcat) and also how to enable <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a>'s registered MBeans via JMX.  In addition to this configuration, you can also configure <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> so that it is not using the factory
+default settings for the servlet container.  One setting that you typically want to control is the size of the thread pool used by <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> to service incoming requests.  This is
+pretty easy to do with <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> by adding a <a href="http://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/embedded/jetty/JettyServerCustomizer.html" target="blank">JettyServerCustomizer</a> implementation
+to gain access to <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a>'s <code>Server</code> instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">@Bean
 public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(@Value("${server.port:8080}") final String port,
             @Value("${jetty.threadPool.maxThreads:200}") final String maxThreads,
             @Value("${jetty.threadPool.minThreads:8}") final String minThreads,
@@ -123,15 +128,16 @@ public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory
     });
 
     return factory;
-}</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>In the example above, values (with defaults) are read from the Spring configuration and used to set the thread pool managed by <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a>. In order to make this work, you must include the following dependencies with your application:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">ext {
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the example above, values (with defaults) are read from the Spring configuration and used to set the thread pool managed by <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a>.  In order
+to make this work, you must include the following dependencies with your application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="groovy">ext {
     jettyVersion = '9.0.3.v20130506'
 }
 
@@ -142,11 +148,12 @@ dependencies {
   compile "org.eclipse.jetty:jetty-util:$jettyVersion"
 
   ...
-}</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>This example can be extended to configure any bean registered with the <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> <code>Server</code> instance. To figure out what is available, connect to your running application using a JMX console and view the beans exposed by <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a>.</p> 
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example can be extended to configure any bean registered with the <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> <code>Server</code> instance.  To figure out what is available, connect to your running
+application using a JMX console and view the beans exposed by <a href="http://www.eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a>.</p>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/10/07/spring_boot_jetty_thread_pool.html"></div>
@@ -185,7 +192,7 @@ dependencies {
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.5</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

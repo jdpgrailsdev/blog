@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -100,43 +101,45 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/04/15/gradle_api_dependencies.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/04/15/gradle_api_dependencies.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph"> 
- <p>Recently, I have been working on porting the <a href="http://raml.org" target="_blank" rel="noopener">RAML</a> <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> plugin to a <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin and ran into a limitation with <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> and its API jars. An interesting difference between <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> and <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> is that <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> does not want you to rely on its API jars from a <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> repository (unlike <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a>, whose API jars are all stored in the central <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> repository). Instead, the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> team has built in some special dependency handlers that in effect treat the required <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> (and <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> dependencies, if need be) as "provided" dependencies:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="title">
-  build.gradle
- </div> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">...
+    <p><div class="paragraph">
+<p>Recently, I have been working on porting the <a href="http://raml.org" target="_blank" rel="noopener">RAML</a> <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> plugin to a <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin and ran into a limitation with <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> and its API jars.  An interesting difference between <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> and
+<a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> is that <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> does not want you to rely on its API jars from a <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> repository (unlike <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a>, whose API jars are all stored in the central <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> repository).  Instead, the
+<a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> team has built in some special dependency handlers that in effect treat the required <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> (and <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> dependencies, if need be) as "provided" dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="groovy">...
 dependencies {
     gradleApi()						<i class="conum" data-value="1"></i><b>(1)</b>
     localGroovy()					<i class="conum" data-value="2"></i><b>(2)</b>
     compile 'commmons-lang:commons-lang:2.6'
 }
-...</code></pre> 
- </div> 
-</div> 
-<div class="colist arabic"> 
- <table> 
-  <tbody>
-   <tr> 
-    <td><i class="conum" data-value="1"></i><b>1</b></td> 
-    <td>Tells <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to include the gradle-core dependency and its required dependencies. Normally used for plugin development.</td> 
-   </tr> 
-   <tr> 
-    <td><i class="conum" data-value="2"></i><b>2</b></td> 
-    <td>Tells <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to include the <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> dependency used by <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>, which at the time of writing is 1.8.6.</td> 
-   </tr> 
-  </tbody>
- </table> 
-</div> 
-<div class="paragraph"> 
- <p>What this means is that when building your <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin, <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> will use the jars that are part of the local <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> installation to resolve these dependencies, thus ensuring that you get the right versions of jars used by the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> API based on the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> version. It will <strong>NOT</strong> resolve these dependencies against any external repository. This is a nice improvement over <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a>, but it comes with one major limitation that can cause issues: there is no way to override and/or exclude any of the transitive dependencies brought in by the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>. This wouldn’t be that big of an issue, except for the fact the <code>gradleApi()</code> dependency has a bunch of transitive dependencies. Below is an example of what is include if both <code>gradleApi()</code> and <code>localGroovy()</code> are used:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-text" data-lang="text">~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/gradle-core-1.11.jar
+...</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Tells <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to include the gradle-core dependency and its required dependencies.  Normally used for plugin development.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Tells <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> to include the <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> dependency used by <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>, which at the time of writing is 1.8.6.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>What this means is that when building your <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin, <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> will use the jars that are part of the local <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> installation to resolve these dependencies, thus ensuring that you
+get the right versions of jars used by the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> API based on the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> version.  It will <strong>NOT</strong> resolve these dependencies against any external repository.  This is a nice improvement
+over <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a>, but it comes with one major limitation that can cause issues:  there is no way to override and/or exclude any of the transitive dependencies brought in by the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>.  This
+wouldn&#8217;t be that big of an issue, except for the fact the <code>gradleApi()</code> dependency has a bunch of transitive dependencies.  Below is an example of what is include if both <code>gradleApi()</code> and
+<code>localGroovy()</code> are used:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="text">~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/gradle-core-1.11.jar
 ~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/groovy-all-1.8.6.jar
 ~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/asm-all-5.0_BETA.jar
 ~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/ant-1.9.2.jar
@@ -277,25 +280,30 @@ dependencies {
 ~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-jacoco-1.11.jar
 ~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-build-init-1.11.jar
 ~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-language-jvm-1.11.jar
-~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-language-base-1.11.jar</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>If you build a plugin and use it in another <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> project, these dependencies do not appear to override and/or interfere with any dependencies of that project. Where this becomes an issues is with the "test" scope of the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin project itself. I first noticed an issue when attempting to use the <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> 2.0 version of <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a> to write tests for my plugin. Each time I attempted to build the project (and therefore run the tests), <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a> would complain that <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> 1.8.6 was not compatible:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-text" data-lang="text">GroovyVersionException: The Spock compiler plugin cannot execute because Spock 0.7.0-groovy-2.0 is not compatible with Groovy 1.8.6. For more information, see http://versioninfo.spockframework.org
+~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/gradle-language-base-1.11.jar</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you build a plugin and use it in another <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> project, these dependencies do not appear to override and/or interfere with any dependencies of that project.  Where
+this becomes an issues is with the "test" scope of the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin project itself.  I first noticed an issue when attempting to use the <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> 2.0 version of <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a>
+to write tests for my plugin.  Each time I attempted to build the project (and therefore run the tests), <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a> would complain that <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> 1.8.6 was not compatible:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="text">GroovyVersionException: The Spock compiler plugin cannot execute because Spock 0.7.0-groovy-2.0 is not compatible with Groovy 1.8.6. For more information, see http://versioninfo.spockframework.org
 Spock location: file:~/.gradle/caches/artifacts-23/filestore/org.spockframework/spock-core/0.7-groovy-2.0/jar/4de0b428de0c14b6eb6375d8174f71848cbfc1d7/spock-core-0.7-groovy-2.0.jar
-Groovy location: file:~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/groovy-all-1.8.6.jar</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>This seemed odd, as I was explicitly including version 2.2.1 of <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> in my build.gradle script. After a little digging on the internets, I discovered that <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> depends on <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> 1.8.6 and by using the <code>localGroovy()</code> or <code>gradleApi()</code> dependencies, there is no way to replace/override this. Furthermore, its probably not a good idea to do so, as <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> itself is partially written in <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a>. Luckily, <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a> supports both <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> 1.8.x and 2.x, so I simply changed my <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a> dependency to be compatible with <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> 1.8.6. I thought that I was out of the woods, but on my next attempt to run the tests, I ran into another issue. The tests failed, complaining about a missing method exception:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-text" data-lang="text">org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':raml-generate'.
+Groovy location: file:~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/groovy-all-1.8.6.jar</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This seemed odd, as I was explicitly including version 2.2.1 of <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> in my build.gradle script.  After a little digging on the internets, I discovered that <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> depends on
+<a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> 1.8.6 and by using the <code>localGroovy()</code> or <code>gradleApi()</code> dependencies, there is no way to replace/override this.  Furthermore, its probably not a good idea to do so, as
+<a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> itself is partially written in <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a>.  Luckily, <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a> supports both <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a> 1.8.x and 2.x, so I simply changed my <a href="https://code.google.com/p/spock/" target="_blank" rel="noopener">Spock</a> dependency to be compatible with <a href="http://groovy.codehaus.org" target="_blank" rel="noopener">Groovy</a>
+1.8.6.  I thought that I was out of the woods, but on my next attempt to run the tests, I ran into another issue.  The tests failed, complaining about a missing method exception:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="text">org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':raml-generate'.
     at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeActions(ExecuteActionsTaskExecuter.java:69)
     at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:46)
     at org.gradle.api.internal.tasks.execution.PostExecutionAnalysisTaskExecuter.execute(PostExecutionAnalysisTaskExecuter.java:35)
@@ -327,19 +335,25 @@ Caused by: java.lang.NoSuchMethodError: org.yaml.snakeyaml.nodes.MappingNode.isM
     at org.gradle.api.internal.AbstractTask$TaskActionWrapper.execute(AbstractTask.java:516)
     at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeAction(ExecuteActionsTaskExecuter.java:80)
     at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeActions(ExecuteActionsTaskExecuter.java:61)
-    ... 11 more</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>Well, that’s odd. The <a href="http://raml.org" target="_blank" rel="noopener">RAML</a> libraries include <code>org.yaml:snakeyaml:1.13</code> as a transitive dependency, which includes the proper version of <code>MappingNode</code>. Furthermore, I was able to test my plugin in a sample application and it works, so I figured something must be up with the "test" scope classpath in the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin project. If we recall the list of dependencies above (which I got by printing out the contents of the <code>configurations.testCompile</code> configuration in my build.gradle script), you can see that there is a reference to the <code>snakeyaml</code> dependency:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-text" data-lang="text">~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/snakeyaml-1.6.jar</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>Somehow, this dependency is winning out over the transitively included dependency from the <a href="http://raml.org" target="_blank" rel="noopener">RAML</a> dependency, eventhough when printing out the resloved dependency tree via the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> <code>dependencies</code> task, it shows only version 1.13. Because there is no way (at least that I have found so far) to exclude the dependencies that are brought in by the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> API, this means that if you have a <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin project that uses any of the dependencies that are also used by the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> API, you are effectively stuck at the versions of those dependencies that match what <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> currently depends on. I have brought this issue up on the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> forum and I noticed that a few other people have asked for a feature to allow for excluding dependencies from the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> API. I will keep you posted on this issue and if I get an answer and/or resolution.</p> 
+    ... 11 more</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Well, that&#8217;s odd.  The <a href="http://raml.org" target="_blank" rel="noopener">RAML</a> libraries include <code>org.yaml:snakeyaml:1.13</code> as a transitive dependency, which includes the proper version of <code>MappingNode</code>.  Furthermore, I was able to test my
+plugin in a sample application and it works, so I figured something must be up with the "test" scope classpath in the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin project.  If we recall the list of dependencies above
+(which I got by printing out the contents of the <code>configurations.testCompile</code> configuration in my build.gradle script), you can see that there is a reference to the <code>snakeyaml</code> dependency:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="text">~/.gradle/wrapper/dists/gradle-1.11-bin/4h5v8877arc3jhuqbm3osbr7o7/gradle-1.11/lib/plugins/snakeyaml-1.6.jar</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Somehow, this dependency is winning out over the transitively included dependency from the <a href="http://raml.org" target="_blank" rel="noopener">RAML</a> dependency, eventhough when printing out the resloved dependency tree via the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a>
+<code>dependencies</code> task, it shows only version 1.13.  Because there is no way (at least that I have found so far) to exclude the dependencies that are brought in by the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> API, this means
+that if you have a <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> plugin project that uses any of the dependencies that are also used by the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> API, you are effectively stuck at the versions of those dependencies that match
+what <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> currently depends on.  I have brought this issue up on the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> forum and I noticed that a few other people have asked for a feature to allow for excluding dependencies from
+the <a href="http://gradle.org" target="_blank" rel="noopener">Gradle</a> API.  I will keep you posted on this issue and if I get an answer and/or resolution.</p>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/04/15/gradle_api_dependencies.html"></div>
@@ -378,7 +392,7 @@ Caused by: java.lang.NoSuchMethodError: org.yaml.snakeyaml.nodes.MappingNode.isM
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.5</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -100,20 +101,24 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2018/03/29/gradle_plugin_include_itself.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://www.jonathanpearlin.com/2018/03/29/gradle_plugin_include_itself.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph"> 
- <p>The plugin feature of <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> makes it very easy to codify functionality for re-use between different projects. I personally like to use this functionality to provide common build and deploy functionality to many of my projects. Recently, I found myself creating a plugin that will generate a <a href="https://daringfireball.net/projects/markdown/" target="_blank" rel="noopener">Markdown</a> file containing all of the changes committed to <a href="https://git-scm.com/" target="_blank" rel="noopener">Git</a>, organized by release. When I finished creating the plugin, I realized that I also wanted to use the plugin in the plugin project itself so that I could keep a log of changes to the plugin (so meta!). However, releasing the plugin and including it as a dependency so it could be applied to itself seemed like a bad idea: it would forever be one release behind, assuming that I remembered to update the dependency version each time. That obviously is not a very maintainable solution. The answer? Apply the plugin to itself programmatically by taking advantage of some <a href="http://groovy-lang.org/" target="_blank" rel="noopener">Groovy</a> magic:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">// Apply the changelog plugin to itself!
+    <p><div class="paragraph">
+<p>The plugin feature of <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> makes it very easy to codify functionality for re-use between different projects.  I personally like to use this functionality to provide common build and deploy
+functionality to many of my projects.  Recently, I found myself creating a plugin that will generate a <a href="https://daringfireball.net/projects/markdown/" target="_blank" rel="noopener">Markdown</a> file containing all of the changes committed to <a href="https://git-scm.com/" target="_blank" rel="noopener">Git</a>, organized by release.
+When I finished creating the plugin, I realized that I also wanted to use the plugin in the plugin project itself so that I could keep a log of changes to the plugin (so meta!).  However, releasing the plugin and including it as a dependency so it could be applied to itself seemed like a bad idea:  it would forever be one release behind, assuming that I remembered to update the
+dependency version each time.  That obviously is not a very maintainable solution.  The answer?  Apply the plugin to itself programmatically by taking advantage of some <a href="http://groovy-lang.org/" target="_blank" rel="noopener">Groovy</a> magic:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="groovy">// Apply the changelog plugin to itself!
 def classpath = [file('src/main/groovy').absolutePath, file('src/main/resources').absolutePath] as String[]
 def pluginDescriptor = new Properties()
 pluginDescriptor.load(new InputStreamReader(new FileInputStream(file('src/main/resources/META-INF/gradle-plugins/changelog.properties').absolutePath)))
-apply plugin: new GroovyScriptEngine(classpath, this.getClass().getClassLoader()).loadScriptByName("${pluginDescriptor.getProperty('implementation-class').replaceAll('\\.', '/')}.groovy")</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>So, what is this code snippet doing exactly? The first line ensures that the source folders of the plugin project are part of the classpath that will be used to find and load the plugin. The second line simply creates a new Java <code>Properties</code> object, which will be used to hold the plugin’s descriptor file. The third line loads the <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> plugin descriptor file so that we can determine the main class of the plugin. Finally, the last line uses the <a href="http://groovy-lang.org/" target="_blank" rel="noopener">Groovy</a> <code>GroovyScriptEngine</code> class to load the class referenced the plugin descriptor so that it can be applied by <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> as a plugin. After placing this code in the plugin’s <code>build.gradle</code> file, we are now assured that the latest source in the plugin is applied to the plugin itself so that it can be used to generate the changelog for that project.</p> 
+apply plugin: new GroovyScriptEngine(classpath, this.getClass().getClassLoader()).loadScriptByName("${pluginDescriptor.getProperty('implementation-class').replaceAll('\\.', '/')}.groovy")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So, what is this code snippet doing exactly?  The first line ensures that the source folders of the plugin project are part of the classpath that will be used to find and load the plugin.  The
+second line simply creates a new Java <code>Properties</code> object, which will be used to hold the plugin&#8217;s descriptor file.  The third line loads the <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> plugin descriptor file so that we can determine the main class of the plugin.  Finally, the last line uses the <a href="http://groovy-lang.org/" target="_blank" rel="noopener">Groovy</a> <code>GroovyScriptEngine</code> class to load the class referenced the plugin descriptor so that it can be applied by <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> as a plugin.  After placing this code in the plugin&#8217;s <code>build.gradle</code> file, we are now assured that the latest source in the plugin is applied to the plugin itself so that it can be used to generate the changelog for that project.</p>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2018/03/29/gradle_plugin_include_itself.html"></div>
@@ -152,7 +157,7 @@ apply plugin: new GroovyScriptEngine(classpath, this.getClass().getClassLoader()
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.5</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

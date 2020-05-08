@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -100,34 +101,44 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2015/01/20/spring_transactions_rollback.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://www.jonathanpearlin.com/2015/01/20/spring_transactions_rollback.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph"> 
- <p>By default, no rollback handling rules are defined if you simply add <code>@Transactional</code> to your method. In order for the rollback to actually be executed upon failure, you must define one or more exceptions that you want to trigger a rollback via the <code>rollbackFor</code> or <code>rollbackForClassName</code> attributes of the annotation:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">@Transactional(rollbackForClassName={"Exception"})
+    <p><div class="paragraph">
+<p>By default, no rollback handling rules are defined if you simply add <code>@Transactional</code> to your method.  In order for the rollback to actually be executed upon failure,
+you must define one or more exceptions that you want to trigger a rollback via the <code>rollbackFor</code> or <code>rollbackForClassName</code> attributes of the annotation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">@Transactional(rollbackForClassName={"Exception"})
 public void save(final Book book) {
     Author author = new Author(book.getAuthorName());
     authorRepository.saveAndFlush(author);
     bookRepository.saveAndFlush(book);
-}</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>In the example above, the <code>@Transactional</code> annotation makes use of the <code>rollbackForClassName</code> attribute value to force a database rollback if any exception of type <code>java.lang.Exception</code> is thrown by the method (e.g. if any exception happens, roll both save operations back). The <code>rollbackForClassName</code> attribute actually provides a little more flexibility than the <code>rollbackFor</code> attribute value. From the <code>@Transactional</code> JavaDoc:</p> 
-</div> 
-<div class="quoteblock"> 
- <blockquote> 
-  <div class="paragraph"> 
-   <p>Consider carefully how specific the pattern is, and whether to include package information (which isn’t mandatory). For example, "Exception" will match nearly anything, and will probably hide other rules. "java.lang.Exception" would be correct if "Exception" was meant to define a rule for all checked exceptions. With more unusual java.lang.Exception names such as "BaseBusinessException" there is no need to use a FQN.</p> 
-  </div> 
- </blockquote> 
- <div class="attribution">
-   — org.springframework.transaction.annotation.Transactional#rollbackForClassName() JavaDoc 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>As you can see, it gives you the ability to provide rules to match certain sub-strings of exception types to better control your rollback logic.</p> 
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the example above, the <code>@Transactional</code> annotation makes use of the <code>rollbackForClassName</code> attribute value to force
+a database rollback if any exception of type <code>java.lang.Exception</code> is thrown by the method (e.g. if any exception happens,
+roll both save operations back).  The <code>rollbackForClassName</code> attribute actually provides a little more flexibility than the
+<code>rollbackFor</code> attribute value.  From the <code>@Transactional</code> JavaDoc:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Consider carefully how specific the pattern is, and whether
+to include package information (which isn&#8217;t mandatory). For example,
+"Exception" will match nearly anything, and will probably hide other rules.
+"java.lang.Exception" would be correct if "Exception" was meant to define
+a rule for all checked exceptions. With more unusual java.lang.Exception
+names such as "BaseBusinessException" there is no need to use a FQN.</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; org.springframework.transaction.annotation.Transactional#rollbackForClassName() JavaDoc
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see, it gives you the ability to provide rules to match certain sub-strings of exception
+types to better control your rollback logic.</p>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2015/01/20/spring_transactions_rollback.html"></div>
@@ -166,7 +177,7 @@ public void save(final Book book) {
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.5</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

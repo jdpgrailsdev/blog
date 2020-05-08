@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -100,42 +101,66 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2014/04/03/maven_java8_javadoc.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://www.jonathanpearlin.com/2014/04/03/maven_java8_javadoc.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph"> 
- <p>On March 18th, Oracle officially released <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a>. Eager to start using some of the new features (in a non-beta release), I quickly downloaded and installed the JDK on my laptop. I switched my system to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a> by default and set upon compiling one of my projects. To my suprise, the build failed with a bunch of errors that looked like this:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code>[ERROR] Failed to execute goal org.apache.maven.plugins:maven-javadoc-plugin:2.8.1:jar (default) on project ddc-metrics-annotations: MavenReportException: Error while creating archive:
-[ERROR] Exit code: 1 - /Projects/libraries/test-library/src/main/java/com/test/Tester.java:30: warning: no @return</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>It turns out that <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a> includes a much more strict set of rules for its doclint. According to <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html" target="_blank" rel="noopener">Steven Colebourne</a>, the <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a> doclint by default enforces the following rules when processing JavaDoc comments:</p> 
-</div> 
-<div class="ulist"> 
- <ul> 
-  <li> <p>No self-closed HTML tags, such as &lt;br /&gt; or &lt;a id="x" /&gt;</p> </li> 
-  <li> <p>No unclosed HTML tags, such as &lt;ul&gt; without matching &lt;/ul&gt;</p> </li> 
-  <li> <p>No invalid HTML end tags, such as &lt;/br&gt;</p> </li> 
-  <li> <p>No invalid HTML attributes, based on doclint’s interpretation of W3C HTML 4.01</p> </li> 
-  <li> <p>No duplicate HTML id attribute</p> </li> 
-  <li> <p>No empty HTML href attribute</p> </li> 
-  <li> <p>No incorrectly nested headers, such as class documentation must have &lt;h3&gt;, not &lt;h4&gt;</p> </li> 
-  <li> <p>No invalid HTML tags, such as List&lt;String&gt; (where you forgot to escape using &lt;)</p> </li> 
-  <li> <p>No broken @link references</p> </li> 
-  <li> <p>No broken @param references, they must match the actual parameter name</p> </li> 
-  <li> <p>No broken @throws references, the first word must be a class name</p> </li> 
- </ul> 
-</div> 
-<div class="paragraph"> 
- <p>This is fine if you are starting with a green field project, but if you are like me and have to switch between new and legacy code bases, it may not be possible to correct all of these issues in order to get <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank" rel="noopener">Maven JavaDoc plugin</a> generated using <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a>. Per <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html" target="_blank" rel="noopener">Steven Colebourne’s blog</a>, the solution is to include the <code>-Xdoclint:none</code> JVM argument in the configuration of the <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank" rel="noopener">Maven JavaDoc plugin</a>:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="title">
-  pom.xml
- </div> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-xml" data-lang="xml">...
+    <p><div class="paragraph">
+<p>On March 18th, Oracle officially released <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a>.  Eager to start using some of the new features (in a non-beta release), I quickly downloaded and installed the JDK on my laptop.  I switched my
+system to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a> by default and set upon compiling one of my projects.  To my suprise, the build failed with a bunch of errors that looked like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>[ERROR] Failed to execute goal org.apache.maven.plugins:maven-javadoc-plugin:2.8.1:jar (default) on project ddc-metrics-annotations: MavenReportException: Error while creating archive:
+[ERROR] Exit code: 1 - /Projects/libraries/test-library/src/main/java/com/test/Tester.java:30: warning: no @return</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It turns out that <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a> includes a much more strict set of rules for its doclint.  According to  <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html" target="_blank" rel="noopener">Steven Colebourne</a>, the
+<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a> doclint by default enforces the following rules when processing JavaDoc comments:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>No self-closed HTML tags, such as &lt;br /&gt; or &lt;a id="x" /&gt;</p>
+</li>
+<li>
+<p>No unclosed HTML tags, such as &lt;ul&gt; without matching &lt;/ul&gt;</p>
+</li>
+<li>
+<p>No invalid HTML end tags, such as &lt;/br&gt;</p>
+</li>
+<li>
+<p>No invalid HTML attributes, based on doclint&#8217;s interpretation of W3C HTML 4.01</p>
+</li>
+<li>
+<p>No duplicate HTML id attribute</p>
+</li>
+<li>
+<p>No empty HTML href attribute</p>
+</li>
+<li>
+<p>No incorrectly nested headers, such as class documentation must have &lt;h3&gt;, not &lt;h4&gt;</p>
+</li>
+<li>
+<p>No invalid HTML tags, such as List&lt;String&gt; (where you forgot to escape using &lt;)</p>
+</li>
+<li>
+<p>No broken @link references</p>
+</li>
+<li>
+<p>No broken @param references, they must match the actual parameter name</p>
+</li>
+<li>
+<p>No broken @throws references, the first word must be a class name</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This is fine if you are starting with a green field project, but if you are like me and have to switch between new and legacy code bases, it may not be possible to correct all of these
+issues in order to get <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank" rel="noopener">Maven JavaDoc plugin</a> generated using <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a>.  Per <a href="http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html" target="_blank" rel="noopener">Steven Colebourne&#8217;s blog</a>, the solution is to
+include the <code>-Xdoclint:none</code> JVM argument in the configuration of the <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank" rel="noopener">Maven JavaDoc plugin</a>:</p>
+</div>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="xml">...
 &lt;plugin&gt;
     &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
     &lt;artifactId&gt;maven-javadoc-plugin&lt;/artifactId&gt;
@@ -152,18 +177,19 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
         &lt;/execution&gt;
     &lt;/executions&gt;
 &lt;/plugin&gt;
-...</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>This works great when building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a>. However, if you switch back to Java 7 and attempt to build with the <code>-Xdoclint:none</code> JVM argument, the build will fail, as Java 7 does not recognize that JVM argument. What can we do to support JavaDoc generation via <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> for both Java 7 and Java 8 on a legacy code base? Use <a href="http://maven.apache.org/guides/introduction/introduction-to-profiles.html" target="_blank" rel="noopener">Maven profiles</a>! Instead of modifying the existing <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank" rel="noopener">Maven JavaDoc plugin</a> declaration in our <code>pom.xml</code> file, let’s instead add a new profile that only activates when we are building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a>:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="title">
-  pom.xml
- </div> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-xml" data-lang="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This works great when building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a>.  However, if you switch back to Java 7 and attempt to build with the <code>-Xdoclint:none</code> JVM argument, the build will fail, as Java 7 does not
+recognize that JVM argument.  What can we do to support JavaDoc generation via <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> for both Java 7 and Java 8 on a legacy code base?  Use
+<a href="http://maven.apache.org/guides/introduction/introduction-to-profiles.html" target="_blank" rel="noopener">Maven profiles</a>!  Instead of modifying the existing <a href="http://maven.apache.org/plugins/maven-javadoc-plugin/" target="_blank" rel="noopener">Maven JavaDoc plugin</a> declaration in our <code>pom.xml</code> file, let&#8217;s instead
+add a new profile that only activates when we are building with <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a>:</p>
+</div>
+<div class="listingblock">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
@@ -218,21 +244,21 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
             &lt;/plugins&gt;
         &lt;/build&gt;
     &lt;/profile&gt;
-&lt;/project&gt;</code></pre> 
- </div> 
-</div> 
-<div class="colist arabic"> 
- <table> 
-  <tbody>
-   <tr> 
-    <td><i class="conum" data-value="1"></i><b>1</b></td> 
-    <td>Will activate this profile if the JRE that is executing the <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> build is version 1.8 (<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a>).</td> 
-   </tr> 
-  </tbody>
- </table> 
-</div> 
-<div class="paragraph"> 
- <p>We can now safely build our project with either Java 7 or <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a> without having it fail due to either the more strict doclint rules in <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a> or the fact that Java 7 does not recognize the JVM argument. I’m sure that this is not the last of these issues that will come up with regards to changes between previous versions of Java and <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a>. Luckily, we should be able to apply the same profile trick for any differences until such a time that all the different code bases that you support are converted to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a>.</p> 
+&lt;/project&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Will activate this profile if the JRE that is executing the <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> build is version 1.8 (<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a>).</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We can now safely build our project with either Java 7 or <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a> without having it fail due to either the more strict doclint rules in <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a> or the fact that Java 7 does not recognize
+the JVM argument.  I&#8217;m sure that this is not the last of these issues that will come up with regards to changes between previous versions of Java and <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a>.  Luckily, we should be able
+to apply the same profile trick for any differences until such a time that all the different code bases that you support are converted to use <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java 8</a>.</p>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2014/04/03/maven_java8_javadoc.html"></div>
@@ -271,7 +297,7 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.5</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 

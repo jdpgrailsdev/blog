@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -100,12 +101,19 @@ window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){va
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2015/03/10/spring_boot_jetty_multi_port.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://www.jonathanpearlin.com/2015/03/10/spring_boot_jetty_multi_port.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
-    <p><div class="paragraph"> 
- <p>The <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html#howto-configure-jetty" target="_blank" rel="noopener">documentation</a> and <a href="https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-jetty" target="_blank" rel="noopener">sample applications</a> contain good information and examples of how to use <a href="http://eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> in a <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> application instead of the default embedded Apache Tomcat server. However, the documentation and examples do not really address how to customize <a href="http://eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> as in depth as the Tomcat examples. Recently, I found the need to make a <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> application using <a href="http://eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> listen on multiple ports for incoming HTTP traffic. While this is not necessarily a normal use case, it does come up often, especially when the need to listen for both HTTP and HTTPS traffic is a requirement. In a <a href="http://www.jonathanpearlin.com/2014/10/07/spring_boot_jetty_thread_pool.html" target="_blank" rel="noopener">previous post</a>, I showed how to customize the embedded <a href="http://eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> server in order to change the size of the thread pool used for incoming connections. Just like the approach outlined in that post, the way to configure the embedded <a href="http://eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> server in your <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> application to listen to multiple ports is very similar:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-java" data-lang="java">@Bean
+    <p><div class="paragraph">
+<p>The <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html#howto-configure-jetty" target="_blank" rel="noopener">documentation</a> and
+<a href="https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-jetty" target="_blank" rel="noopener">sample applications</a> contain good information and examples
+of how to use <a href="http://eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> in a <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> application instead of the default embedded Apache Tomcat server.  However, the documentation and examples do not really address how to
+customize <a href="http://eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> as in depth as the Tomcat examples.  Recently, I found the need to make a <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> application using <a href="http://eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> listen on multiple ports for incoming HTTP traffic.
+While this is not necessarily a normal use case, it does come up often, especially when the need to listen for both HTTP and HTTPS traffic is a requirement.  In a
+<a href="http://www.jonathanpearlin.com/2014/10/07/spring_boot_jetty_thread_pool.html" target="_blank" rel="noopener">previous post</a>, I showed how to customize the embedded <a href="http://eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> server in order to
+change the size of the thread pool used for incoming connections.  Just like the approach outlined in that post, the way to configure the embedded <a href="http://eclipse.org/jetty/" target="_blank" rel="noopener">Jetty</a> server in your <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a>
+application to listen to multiple ports is very similar:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">@Bean
 public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(
         @Value("${server.port:8080}") final String mainPort,
         @Value("#{'${server.secondary.ports}'.split(',')}") final List&lt;String&gt; secondaryPorts) {
@@ -127,32 +135,36 @@ public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory
         }
     });
     return factory;
-}</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>The example above uses the <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> provided <code>JettyServerCustomizer</code> to register additional <code>NetworkTrafficServerConnector</code> instances for each secondary port provided in the application’s configuration. Additionally, the <code>server.port</code> <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> property is still used for the main application port and is passed to the <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> <code>JettyEmbeddedServletContainerFactory</code>, just as it would be if you simply included the appropriate starter library and set the property, per the documentation. Finally, the application configuration contains the following configuration to make it all work:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code class="language-yaml" data-lang="yaml">server:
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The example above uses the <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> provided <code>JettyServerCustomizer</code> to register additional <code>NetworkTrafficServerConnector</code> instances for each
+secondary port provided in the application&#8217;s configuration.  Additionally, the <code>server.port</code> <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> property is still used for the
+main application port and is passed to the <a href="http://projects.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot</a> <code>JettyEmbeddedServletContainerFactory</code>, just as it would be if you simply included
+the appropriate starter library and set the property, per the documentation.  Finally, the application configuration contains the following configuration
+to make it all work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="yaml">server:
   port: "8000"
   secondary:
-    ports: "8082,8083,8084"</code></pre> 
- </div> 
-</div> 
-<div class="paragraph"> 
- <p>When the application starts up, you can confirm that it is indeed listening on the multiple ports by looking for the following in the output:</p> 
-</div> 
-<div class="listingblock"> 
- <div class="content"> 
-  <pre class="prettyprint highlight"><code>2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.eclipse.jetty.server.ServerConnector   : Started ServerConnector@121ee28d{HTTP/1.1}{0.0.0.0:8080}
+    ports: "8082,8083,8084"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the application starts up, you can confirm that it is indeed listening on the multiple ports by looking for the following in the output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.eclipse.jetty.server.ServerConnector   : Started ServerConnector@121ee28d{HTTP/1.1}{0.0.0.0:8080}
 2015-03-09 15:13:35.483  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@36d64b9{HTTP/1.1}{0.0.0.0:8082}
 2015-03-09 15:13:35.487  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@e51235{HTTP/1.1}{0.0.0.0:8083}
 2015-03-09 15:13:35.488  INFO 1416 --- [           main] o.e.j.s.NetworkTrafficServerConnector    : Started NetworkTrafficServerConnector@3f0e5608{HTTP/1.1}{0.0.0.0:8084}
 2015-03-09 15:13:35.489  INFO 1416 --- [           main] .s.b.c.e.j.JettyEmbeddedServletContainer : Jetty started on port(s) 8080 (http/1.1), 8082 (http/1.1), 8083 (http/1.1), 8084 (http/1.1)
-2015-03-09 15:13:35.491  INFO 1416 --- [           main] com.test.Application                     : Started Application in 5.346 seconds (JVM running for 12.321)</code></pre> 
- </div> 
+2015-03-09 15:13:35.491  INFO 1416 --- [           main] com.test.Application                     : Started Application in 5.346 seconds (JVM running for 12.321)</code></pre>
+</div>
 </div></p>
 
     <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2015/03/10/spring_boot_jetty_multi_port.html"></div>
@@ -191,7 +203,7 @@ public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.0</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2014 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake v2.6.5</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 
