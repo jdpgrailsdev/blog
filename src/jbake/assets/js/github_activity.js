@@ -19,7 +19,7 @@ String.prototype.capitalize = function() {
 
 // Load the GitHub activity widget on the document ready event.
 $(document).ready(function() {
-    $.get("https://api.github.com/users/jdpgrailsdev/events", function(data) {
+    $.get("https://cors-anywhere.herokuapp.com/https://api.github.com/users/jdpgrailsdev/events", function(data) {
         // Remove the "Loading..." place holder.
         $('#wrap > #activity > .panel > .panel-body').remove();
 
