@@ -3,7 +3,6 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
-        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.github.com https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com https://fonts.googleapis.com http://fonts.googleapis.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
