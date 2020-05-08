@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com http://db.onlinewebfonts.com https://db.onlinewebfonts.com https://fonts.googleapis.com http://fonts.googleapis.com https://maxcdn.bootstrapcdn.com http://maxcdn.bootstrapcdn.com https://c.disquscdn.com 'unsafe-inline'; script-src script-src-elm 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js-agent.newrelic.com https://bam.nr-data.net https://disqus.com https://c.disquscdn.com https://api.github.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
