@@ -20,7 +20,7 @@
                 <div class="fb-like" data-href="http://jdpgrailsdev.github.io/${post.uri}" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
                    <p>${post.body}</p>
-                <p><a href="/blog${post.uri}#disqus_thread">Comments</a></p>
+                <p><a href="${post.uri}#disqus_thread">Comments</a></p>
        </#if>
 </#list>
 

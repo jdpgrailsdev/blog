@@ -14,7 +14,7 @@
 
     <p>${content.body}</p>
 
-    <div class="g-plusone" data-size="medium" data-href="${config.site_host}blog${content.uri}"></div>
+    <div class="g-plusone" data-size="medium" data-href="${config.site_host}${content.uri}"></div>
     <script type="IN/Share" data-url="${config.site_host}${content.uri}" data-counter="right"></script>
     <div class="fb-like" data-href="${config.site_host}${content.uri}" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
