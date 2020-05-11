@@ -121,7 +121,7 @@ apply plugin: new GroovyScriptEngine(classpath, this.getClass().getClassLoader()
 second line simply creates a new Java <code>Properties</code> object, which will be used to hold the plugin&#8217;s descriptor file.  The third line loads the <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> plugin descriptor file so that we can determine the main class of the plugin.  Finally, the last line uses the <a href="http://groovy-lang.org/" target="_blank" rel="noopener">Groovy</a> <code>GroovyScriptEngine</code> class to load the class referenced the plugin descriptor so that it can be applied by <a href="https://gradle.org/" target="_blank" rel="noopener">Gradle</a> as a plugin.  After placing this code in the plugin&#8217;s <code>build.gradle</code> file, we are now assured that the latest source in the plugin is applied to the plugin itself so that it can be used to generate the changelog for that project.</p>
 </div></p>
 
-    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/blog2018/03/29/gradle_plugin_include_itself.html"></div>
+    <div class="g-plusone" data-size="medium" data-href="http://www.jonathanpearlin.com/2018/03/29/gradle_plugin_include_itself.html"></div>
     <script type="IN/Share" data-url="http://www.jonathanpearlin.com/2018/03/29/gradle_plugin_include_itself.html" data-counter="right"></script>
     <div class="fb-like" data-href="http://www.jonathanpearlin.com/2018/03/29/gradle_plugin_include_itself.html" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
