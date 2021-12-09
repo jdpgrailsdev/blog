@@ -6,8 +6,8 @@
         <atom:link href="http://www.jonathanpearlin.com//feed.xml" rel="self" type="application/rss+xml" />
         <description>Jonathan Pearlin's Blog</description>
         <language>en-us</language>
-        <pubDate>Thu, 9 Dec 2021 09:59:16 -0500</pubDate>
-        <lastBuildDate>Thu, 9 Dec 2021 09:59:16 -0500</lastBuildDate>
+        <pubDate>Thu, 9 Dec 2021 17:37:13 +0000</pubDate>
+        <lastBuildDate>Thu, 9 Dec 2021 17:37:13 +0000</lastBuildDate>
         <image>
             <url>http://www.jonathanpearlin.com//img/robot_devil.png</url>
             <title>Jonathan Pearlin's Blog</title>
@@ -16,7 +16,7 @@
         <item>
             <title>Using Rolling Deployments to Limit Service Disruptions</title>
             <link>http://www.jonathanpearlin.com/2018/04/02/blog_post.html</link>
-            <pubDate>Mon, 2 Apr 2018 00:00:00 -0400</pubDate>
+            <pubDate>Mon, 2 Apr 2018 00:00:00 +0000</pubDate>
             <guid isPermaLink="false">2018/04/02/blog_post.html</guid>
             <description>
                     &lt;div class=&quot;paragraph&quot;&gt;
@@ -27,7 +27,7 @@
         <item>
             <title>A Gradle Plugin That Applies Itself</title>
             <link>http://www.jonathanpearlin.com/2018/03/29/gradle_plugin_include_itself.html</link>
-            <pubDate>Thu, 29 Mar 2018 00:00:00 -0400</pubDate>
+            <pubDate>Thu, 29 Mar 2018 00:00:00 +0000</pubDate>
             <guid isPermaLink="false">2018/03/29/gradle_plugin_include_itself.html</guid>
             <description>
                     &lt;div class=&quot;paragraph&quot;&gt;
@@ -54,7 +54,7 @@ second line simply creates a new Java &lt;code&gt;Properties&lt;/code&gt; object
         <item>
             <title>Choosing an Application Framework for Microservices</title>
             <link>http://www.jonathanpearlin.com/2017/08/08/blog_post.html</link>
-            <pubDate>Tue, 8 Aug 2017 00:00:00 -0400</pubDate>
+            <pubDate>Tue, 8 Aug 2017 00:00:00 +0000</pubDate>
             <guid isPermaLink="false">2017/08/08/blog_post.html</guid>
             <description>
                     &lt;div class=&quot;paragraph&quot;&gt;
@@ -65,7 +65,7 @@ second line simply creates a new Java &lt;code&gt;Properties&lt;/code&gt; object
         <item>
             <title>The Peculiar Case of the Kafka ConsumerIterator</title>
             <link>http://www.jonathanpearlin.com/2016/12/20/kafka_iterator.html</link>
-            <pubDate>Tue, 20 Dec 2016 00:00:00 -0500</pubDate>
+            <pubDate>Tue, 20 Dec 2016 00:00:00 +0000</pubDate>
             <guid isPermaLink="false">2016/12/20/kafka_iterator.html</guid>
             <description>
                     &lt;div class=&quot;paragraph&quot;&gt;
@@ -132,7 +132,7 @@ on the execution of your code.&lt;/p&gt;
         <item>
             <title>Testing a custom Gradle plugin with Gradle Test Kit</title>
             <link>http://www.jonathanpearlin.com/2016/03/29/gradle_test_kit.html</link>
-            <pubDate>Tue, 29 Mar 2016 00:00:00 -0400</pubDate>
+            <pubDate>Tue, 29 Mar 2016 00:00:00 +0000</pubDate>
             <guid isPermaLink="false">2016/03/29/gradle_test_kit.html</guid>
             <description>
                     &lt;div id=&quot;preamble&quot;&gt;
