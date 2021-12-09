@@ -1,8 +1,8 @@
 plugins {
     id 'java'
     id 'war'
-    id 'org.jbake.site' version '5.2.0'
-    id 'org.gretty' version '3.0.3'
+    id 'org.jbake.site' version '5.5.0'
+    id 'org.gretty' version '4.0.0'
     id 'org.ajoberstar.git-publish' version '3.0.0'
 }
 
@@ -28,17 +28,17 @@ gitPublish {
 }
 
 gretty {
+    inplaceMode = 'soft'
     httpPort = 8820
     contextPath = '/'
-    servletContainer = 'jetty9'
 }
 
 jbake {
     clearCache = true
-    asciidoctorjVersion = '2.4.2'
-    freemarkerVersion = '2.3.30'
+    asciidoctorjVersion = '2.5.2'
+    freemarkerVersion = '2.3.31'
     pegdownVersion = '1.6.0'
-    version = '2.6.5'
+    version = '2.6.7'
 }
 
 repositories {
@@ -55,10 +55,11 @@ task copyContent(type: Copy) {
 task publish {}
 
 project.tasks.build.dependsOn([project.tasks.bake])
+project.tasks.copyContent.dependsOn([project.tasks.bake])
 project.tasks.publish.dependsOn([project.tasks.build, project.tasks.gitPublishPush])
 project.tasks.gitPublishPush.outputs.upToDateWhen { false }
 
 afterEvaluate { project ->
     // Re-generate content using JBake before launching the local Jetty server.
-    project.tasks.jettyRun.dependsOn([project.tasks.bake, project.tasks.copyContent])
+    project.tasks.jettyRun.dependsOn([project.tasks.copyContent])
 }
