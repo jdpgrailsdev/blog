@@ -57,6 +57,7 @@ task publish {}
 project.tasks.build.dependsOn([project.tasks.bake])
 project.tasks.copyContent.dependsOn([project.tasks.bake])
 project.tasks.publish.dependsOn([project.tasks.build, project.tasks.gitPublishPush])
+project.tasks.gitPublishCopy.dependsOn([project.tasks.bake])
 project.tasks.gitPublishPush.outputs.upToDateWhen { false }
 
 afterEvaluate { project ->
