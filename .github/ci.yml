@@ -1,0 +1,54 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v2.3.0
+        with:      
+          java-version: 17
+          distribution: temurin
+          
+      - name: Build
+        run: ./gradlew clean build
+        
+      - name: Tag Release
+        uses: mathieudutour/github-tag-action@v5.1
+        id: tag_version
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }} 
+        
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: ${{ steps.tag_version.outputs.changelog }}
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2        
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v2.3.0
+        with:      
+          java-version: 17
+          distribution: temurin
+
+      - name: Deploy
+        env:
+          GRGIT_USER: ${{ secrets.WEB_API_KEY }}
+        run: ./gradlew clean build publish
