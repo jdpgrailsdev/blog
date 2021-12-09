@@ -1,11 +1,12 @@
 = Résumé
 Jonathan Pearlin
-2014-04-10
+2021-12-09
 :jbake-type: page
 :jbake-status: published
 :source-highlighter: prettify
 :linkattrs:
 :id: résumé
+:aws: https://aws.amazon.com/[Amazon Web Services, window="_blank"]
 :boston_college: http://www.bc.edu/[Boston College, window="_blank"]
 :dealer: http://www.dealer.com[Dealer.com, window="_blank"]
 :docker: https://www.docker.com/[Docker, window="_blank"]
@@ -14,9 +15,12 @@ Jonathan Pearlin
 :gradle: http://www.gradle.org/[Gradle, window="_blank"]
 :grails: http://grails.org[Grails, window="_blank"]
 :groovy: http://groovy.codehaus.org[Groovy, window="_blank"]
+:intellij: https://www.jetbrains.com/idea/[IntelliJ IDEA, window="_blank"]
+:java: https://adoptium.net/[Java, window="_blank"]
 :jenkins: http://jenkins-ci.org/[Jenkins, window="_blank"]
+:jetty: https://www.eclipse.org/jetty/[Jetty, window="_blank"]
 :junit: http://junit.org/[JUnit, window="_blank"]
-:kafka: http://kafka.apache.org/[Kafka, window="_blank"]
+:kafka: http://kafka.apache.org/[Apache Kafka, window="_blank"]
 :maven: http://maven.apache.org[Maven, window="_blank"]
 :memcached: https://memcached.org/[Memcached, window="_blank"]
 :mongo: http://www.mongodb.org[MongoDB, window="_blank"]
@@ -24,7 +28,10 @@ Jonathan Pearlin
 :new_relic: http://newrelic.com/[New Relic, window="_blank"]
 :phi_beta_kappa: http://pbk.org[Phi Beta Kappa, window="_blank"]
 :postgresql:  http://www.postgresql.org/[PostgreSQL, window="_blank"]
+:python: https://www.python.org/[Python, window="_blank"]
 :rabbit: http://www.rabbitmq.com[RabbitMQ, window="_blank"]
+:react: https://reactjs.org[React, window="_blank"]
+:reactor: https://projectreactor.io/[Reactor, window="_blank"]
 :red_sox: http://boston.redsox.mlb.com/index.jsp?c_id=bos[The Boston Red Sox, window="_blank"]
 :rest: http://en.wikipedia.org/wiki/Representational_state_transfer[REST, window="_blank"]
 :sparta: http://www.sparta.com["Sparta, Inc.", window="_blank"]
@@ -34,10 +41,11 @@ Jonathan Pearlin
 :staples: http://www.staples.com["Staples, Inc.", window="_blank"]
 :thrift: https://thrift.apache.org/[Thrift, window="_blank"]
 :tomcat: http://tomcat.apache.org/[Apache Tomcat, window="_blank"]
+:wiremock: http://wiremock.org/[Wiremock, window="_blank"]
 :zookeeper: http://zookeeper.apache.org/[Apache ZooKeeper, window="_blank"]
 :icons: font
 :toc:
-:toc-placement: preambe
+:toc-placement: preamble
 
 toc::[]
 
@@ -53,15 +61,15 @@ with others.
 [width="50%", float="left", cols="^m,^m,^m", frame="topbot", options="header"]
 |=======
 3+<|Current
-|Java |{groovy} |{springboot} |{spring} |{maven} |{memcached}
-|{git} |{spock} |{gradle} |{zookeeper} |{docker} |{thrift}
-|{kafka} |{postgresql} |{junit} |{eclipse} |{rest}
-|{jenkins} |HTML |CSS |JavaScript |{mysql} |SCRUM
+|{java} |{docker} |{kafka}  |{springboot} |{spring} |{gradle} |{git} |{memcached}
+|{git} |{groovy} |{spock} |{thrift} |{aws} |{postgresql} |{junit} 4/5 |{rest} |{jetty}
+|{reactor} |{wiremock} |{jenkins} |HTML |CSS |{React} |{python} |Agile/SCRUM |{intellij}
 |=======
 
 [width="50%", cols="^m,^m,^m", frame="topbot", options="header"]
 |=======
 3+<|Previous
+|{eclipse} |{maven} |{mysql} |{zookeeper}
 |{grails} |{rabbit} |{tomcat} |{mongo} |C |C++ |JSP
 |Java Servlets |Hibernate |OpenLDAP |Ant |Glassfish
 |IBM WebSphere | Subversion |CVS |StarTeam |JMS
@@ -70,9 +78,17 @@ with others.
 
 == Experience
 
-[big]*{new_relic} - https://goo.gl/maps/xorI1["Portland, OR", window="_blank"] / https://www.google.com/maps/place/Massachusetts/@42.0594403,-72.8422666["Remote (Massachussets)", window="_blank"]* +
-*__Lead Software Engineer__* +
+[big]*{new_relic} - https://goo.gl/maps/xorI1["Portland, OR", window="_blank"] / https://www.google.com/maps/place/Massachusetts/@42.0594403,-72.8422666["Remote (Massachusetts)", window="_blank"]* +
+*__Principal Software Engineer__* +
 June 2014 - Present
+
+* Design, implement and maintain multiple versions of a near-real time streaming evaluation pipeline.
+* Improve developer productivity and quality through various initiatives, such as common tooling, dependency management and project templates.
+* Built and maintain numerous {gradle} plugins to reduce code/configuration duplication and provide consistent static analysis.
+* Analyze and quantify impact of external changes in order to provide team members with an outline of required work to implement.
+* Provide code reviews, analysis and consultation for members of product development teams with engineering, including mentoring of junior staff.
+* Work across teams to design and implement cross-cutting features and identify/implement architectural changes.
+* Perform multiple environment migrations to move code execution from static services to an internal cloud and the public cloud.
 
 [big]*{dealer} - https://www.google.com/maps/place/Dealer.Com/@44.4662738,-73.2141733,18z/data=!3m1!4b1!4m2!3m1!1s0x4cca7baab44f0923:0x24999beb5fd91ff1["Burlington, VT", window="_blank"]* +
 *__Technical Lead - Frameworks__* +
