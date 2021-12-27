@@ -4,7 +4,7 @@
 
         <div id="footer">
               <div class="container">
-                <p class="muted credit">&copy; 2021 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake ${version}</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
+                <p class="muted credit">&copy; 2022 | Mixed with <a href="http://getbootstrap.com/">Bootstrap v3.1.1</a> | Baked with <a href="http://jbake.org">JBake ${version}</a> | Comments powered by <a href="http://disqus.com">Disqus</a></p>
               </div>
         </div>
 
