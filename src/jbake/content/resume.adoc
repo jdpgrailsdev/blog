@@ -1,6 +1,6 @@
 = Résumé
 Jonathan Pearlin
-2021-12-09
+2022-01-05
 :jbake-type: page
 :jbake-status: published
 :source-highlighter: prettify
