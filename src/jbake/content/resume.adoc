@@ -51,7 +51,7 @@ toc::[]
 
 == Headline
 
-Software developer who is not afraid to tackle any challenge. My current focus is on building and supporting robust, scalable web-based applications that run on the JVM, evangelism of technology
+Software developer who is not afraid to tackle any challenge. My current focus is on building and supporting robust, scalable stream processing applications that run on the JVM, evangelism of technology
 and mentoring.  I am always open to expanding my knowledge of new technologies, techniques and tricks.  I believe in  writing unit tests, running performance tests and finding  creative ways to
 make sure that the http://www.youtube.com/watch?v=KME46w6jU74["flowers are still standing", window="_blank"] when performing architecture refactors. I enjoy contributing to open source projects and collaborating
 with others.
@@ -62,7 +62,7 @@ with others.
 |=======
 3+<|Current
 |{java} |{docker} |{kafka}  |{springboot} |{spring} |{gradle} |{git} |{memcached}
-|{git} |{groovy} |{spock} |{thrift} |{aws} |{postgresql} |{junit} 4/5 |{rest} |{jetty}
+|{groovy} |{spock} |{thrift} |{aws} |{postgresql} |{junit} 4/5 |{rest} |{jetty}
 |{reactor} |{wiremock} |{jenkins} |HTML |CSS |{React} |{python} |Agile/SCRUM |{intellij}
 |=======
 
