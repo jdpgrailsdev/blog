@@ -139,7 +139,7 @@ May 2002 – September 2002
 *GPA*: 3.87/4.0 +
 *Major:* http://www.bc.edu/schools/cas/cs/[Computer Science, window="_blank"] +
 *Minor:* http://www.bc.edu/content/bc/schools/cas/history.html[History, window="_blank"] +
-*Distinctions:* Dean’s List 8 Semesters, {phi_beta_kappa} Honor Society, http://www.nscs.org/[National Society of Collegiate Scholars, window="_blank"], http://www.bc.edu/content/bc/schools/cas/services/students/awards.html#soph%20scholar[Sophmore Scholar of the College, window="_blank"] +
+*Distinctions:* Dean’s List 8 Semesters, {phi_beta_kappa} Honor Society, http://www.nscs.org/[National Society of Collegiate Scholars, window="_blank"], http://www.bc.edu/content/bc/schools/cas/services/students/awards.html#soph%20scholar[Sophomore Scholar of the College, window="_blank"] +
 
 == Presentations & Papers
 
@@ -149,6 +149,6 @@ May 2002 – September 2002
 
 == Open Source Contributions
 
-* http://github.com/grails[Grails, window="_blank"]
+* https://www.github.com/grails[Grails, window="_blank"]
 * http://relation.to/Bloggers/The72HerosOfAS7[JBoss Application Server 7, window="_blank"]
-* http://github.com/jdpgrailsdev[Personal GitHub Account, window="_blank"]
+* https://www.github.com/jdpgrailsdev[Personal GitHub Account, window="_blank"]
