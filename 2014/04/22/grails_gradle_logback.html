@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>The Flowers Are Still Standing</title>
-        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com http://db.onlinewebfonts.com https://db.onlinewebfonts.com https://fonts.googleapis.com http://fonts.googleapis.com https://maxcdn.bootstrapcdn.com http://maxcdn.bootstrapcdn.com https://c.disquscdn.com http://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'unsafe-inline'; script-src script-src-elm 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js-agent.newrelic.com https://bam.nr-data.net http://jdpearlin.disqus.com https://disqus.com https://c.disquscdn.com https://api.github.com https://apis.google.com https://connect.facebook.net http://platform.linkedin.com https://code.jquery.com http://netdna.bootstrapcdn.com https://cdn.rawgit.com; upgrade-insecure-requests" />
+        <meta http-equiv="Content-Security-Policy" content="default-src *; img-src * 'self' data: https:; style-src 'self' https://netdna.bootstrapcdn.com http://netdna.bootstrapcdn.com http://db.onlinewebfonts.com https://db.onlinewebfonts.com https://fonts.googleapis.com http://fonts.googleapis.com https://maxcdn.bootstrapcdn.com http://maxcdn.bootstrapcdn.com https://c.disquscdn.com http://cdnjs.cloudflare.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://html2canvas.hertzen.com 'unsafe-inline'; script-src script-src-elm 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js-agent.newrelic.com https://bam.nr-data.net http://jdpearlin.disqus.com https://disqus.com https://c.disquscdn.com https://api.github.com https://apis.google.com https://connect.facebook.net http://platform.linkedin.com https://code.jquery.com http://netdna.bootstrapcdn.com https://cdn.rawgit.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://html2canvas.hertzen.com; upgrade-insecure-requests" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
         <meta name="author" content="Jonathan Pearlin" />
@@ -302,5 +302,32 @@ via the <code>bootstrap</code> scope (an interesting side note here is that now 
           ga('send', 'pageview');
         </script>
         <script id="dsq-count-scr" src="//jdpearlin.disqus.com/count.js" async></script>
+
+        <!-- Following scripts are required for PDF generation -->
+        <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js"></script>
+        <script type="text/javascript">
+            function downloadResume() {
+                window.html2canvas = html2canvas;
+                var pdf = new jspdf.jsPDF({
+                        orientation: 'p',
+                        unit: 'px',
+                        hotfixes: ["scale_text", "px_scaling"],
+                        format: 'a4'
+                });
+                var resume = $('.container')[1];
+                resume.style.fontFeatureSettings = '"liga" 0';
+                resume.style.fontVariantLigatures = 'none';
+                pdf.html(resume, {
+                    autoPaging: 'text',
+                    callback: function(doc) {
+                        doc.save("resume-jonathan-pearlin.pdf");
+                    },
+                    margin: [75, 10, 75, 10],
+                    x: 10,
+                    y: 10
+                })
+            }
+        </script>
     </body>
 </html>
