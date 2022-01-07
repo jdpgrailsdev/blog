@@ -55,5 +55,32 @@
           ga('send', 'pageview');
         </script>
         <script id="dsq-count-scr" src="//jdpearlin.disqus.com/count.js" async></script>
+
+        <!-- Following scripts are required for PDF generation -->
+        <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js"></script>
+        <script type="text/javascript">
+            function downloadResume() {
+                window.html2canvas = html2canvas;
+                var pdf = new jspdf.jsPDF({
+                        orientation: 'p',
+                        unit: 'px',
+                        hotfixes: ["scale_text", "px_scaling"],
+                        format: 'a4'
+                });
+                var resume = $('.container')[1];
+                resume.style.fontFeatureSettings = '"liga" 0';
+                resume.style.fontVariantLigatures = 'none';
+                pdf.html(resume, {
+                    autoPaging: 'text',
+                    callback: function(doc) {
+                        doc.save("resume-jonathan-pearlin.pdf");
+                    },
+                    margin: [75, 10, 75, 10],
+                    x: 10,
+                    y: 10
+                })
+            }
+        </script>
     </body>
 </html>

@@ -1,131 +1,154 @@
-= Résumé
+= Jonathan D. Pearlin
 Jonathan Pearlin
-2022-01-05
+2022-01-07
 :jbake-type: page
 :jbake-status: published
 :source-highlighter: prettify
 :linkattrs:
 :id: résumé
-:aws: https://aws.amazon.com/[Amazon Web Services, window="_blank"]
-:boston_college: http://www.bc.edu/[Boston College, window="_blank"]
-:dealer: http://www.dealer.com[Dealer.com, window="_blank"]
-:docker: https://www.docker.com/[Docker, window="_blank"]
-:eclipse: http://eclipse.org/[Eclipse, window="_blank"]
-:git: http://git-scm.com/[Git, window="_blank"]
-:gradle: http://www.gradle.org/[Gradle, window="_blank"]
-:grails: http://grails.org[Grails, window="_blank"]
-:groovy: http://groovy.codehaus.org[Groovy, window="_blank"]
-:intellij: https://www.jetbrains.com/idea/[IntelliJ IDEA, window="_blank"]
-:java: https://adoptium.net/[Java, window="_blank"]
-:jenkins: http://jenkins-ci.org/[Jenkins, window="_blank"]
-:jetty: https://www.eclipse.org/jetty/[Jetty, window="_blank"]
-:junit: http://junit.org/[JUnit, window="_blank"]
-:kafka: http://kafka.apache.org/[Apache Kafka, window="_blank"]
-:maven: http://maven.apache.org[Maven, window="_blank"]
-:memcached: https://memcached.org/[Memcached, window="_blank"]
-:mongo: http://www.mongodb.org[MongoDB, window="_blank"]
-:mysql: http://www.mysql.com/[MySQL, window="_blank"]
-:new_relic: http://newrelic.com/[New Relic, window="_blank"]
-:phi_beta_kappa: http://pbk.org[Phi Beta Kappa, window="_blank"]
-:postgresql:  http://www.postgresql.org/[PostgreSQL, window="_blank"]
-:python: https://www.python.org/[Python, window="_blank"]
-:rabbit: http://www.rabbitmq.com[RabbitMQ, window="_blank"]
-:react: https://reactjs.org[React, window="_blank"]
-:reactor: https://projectreactor.io/[Reactor, window="_blank"]
-:red_sox: http://boston.redsox.mlb.com/index.jsp?c_id=bos[The Boston Red Sox, window="_blank"]
-:rest: http://en.wikipedia.org/wiki/Representational_state_transfer[REST, window="_blank"]
-:sparta: http://www.sparta.com["Sparta, Inc.", window="_blank"]
-:spock: https://code.google.com/p/spock/[Spock, window="_blank"]
-:spring: http://spring.io[Spring, window="_blank"]
-:springboot: https://projects.spring.io/spring-boot/[Spring Boot, window="_blank"]
-:staples: http://www.staples.com["Staples, Inc.", window="_blank"]
-:thrift: https://thrift.apache.org/[Thrift, window="_blank"]
-:tomcat: http://tomcat.apache.org/[Apache Tomcat, window="_blank"]
-:wiremock: http://wiremock.org/[Wiremock, window="_blank"]
-:zookeeper: http://zookeeper.apache.org/[Apache ZooKeeper, window="_blank"]
 :icons: font
-:toc:
-:toc-placement: preamble
 
-toc::[]
+++++
+<a data-html2canvas-ignore="true" href="javascript:downloadResume()"><img src="/img/pdf_32.png" /></a>
+++++
+
+[#resume]
 
 == Headline
 
-Software developer who is not afraid to tackle any challenge. My current focus is on building and supporting robust, scalable stream processing applications that run on the JVM, evangelism of technology
-and mentoring.  I am always open to expanding my knowledge of new technologies, techniques and tricks.  I believe in  writing unit tests, running performance tests and finding  creative ways to
-make sure that the http://www.youtube.com/watch?v=KME46w6jU74["flowers are still standing", window="_blank"] when performing architecture refactors. I enjoy contributing to open source projects and collaborating
-with others.
+Software developer who is not afraid to tackle any challenge. My current focus +
+is on building and supporting robust, scalable stream processing applications that +
+run on the JVM, evangelism of technology and mentoring.  I am always open to expanding +
+my knowledge of new technologies, techniques and tricks.  I believe in  writing unit +
+tests, running performance tests and finding creative ways to make sure that that +
+reliability is front of mind when performing architecture refactors. I enjoy +
+contributing to open source projects and collaborating with others.
 
 == Skills
-
-[width="50%", float="left", cols="^m,^m,^m", frame="topbot", options="header"]
+[width="50%", frame="topbot", options="header"]
 |=======
 3+<|Current
-|{java} |{docker} |{kafka}  |{springboot} |{spring} |{gradle} |{git} |{memcached}
-|{groovy} |{spock} |{thrift} |{aws} |{postgresql} |{junit} 4/5 |{rest} |{jetty}
-|{reactor} |{wiremock} |{jenkins} |HTML |CSS |{React} |{python} |Agile/SCRUM |{intellij}
+|Java |Docker |Kafka
+|Spring Boot |Spring |Gradle
+|Git |Memcached |Groovy
+|Spock |Thrift |AWS
+|PostgreSQL |JUnit 4 / 5 |Rest
+|Jetty |Spring Reactor |WireMock
+|Jenkins |HTML |CSS
+|ReactJS |Python |Agile / SCRUM
+|IntelliJ IDEA | |
 |=======
 
-[width="50%", cols="^m,^m,^m", frame="topbot", options="header"]
+{zwsp} +
+
+[width="50%", frame="topbot", options="header"]
 |=======
 3+<|Previous
-|{eclipse} |{maven} |{mysql} |{zookeeper}
-|{grails} |{rabbit} |{tomcat} |{mongo} |C |C++ |JSP
-|Java Servlets |Hibernate |OpenLDAP |Ant |Glassfish
-|IBM WebSphere | Subversion |CVS |StarTeam |JMS
-|Microsoft SQL Server |VisualBasic |EJB 2/3 |JCA | ASP |AS/400
+|Eclipse |Maven |MySQL
+|Apache ZooKeeper |Grails |RabbitMQ
+|Apache Tomcat |MongoDB |C
+|C++ |JSP |Java Servlets
+|Hibernate |OpenLDAP |Ant
+|Glassfish |IBM WebSphere | Subversion
+|CVS |StarTeam |JMS
+|Microsoft SQL Server |VisualBasic |EJB 2 / 3
+|JCA | ASP |AS / 400
 |=======
 
 == Experience
 
-[big]*{new_relic} - https://goo.gl/maps/xorI1["Portland, OR", window="_blank"] / https://www.google.com/maps/place/Massachusetts/@42.0594403,-72.8422666["Remote (Massachusetts)", window="_blank"]* +
-*__Principal Software Engineer__* +
+==== New Relic - Portland, OR / Remote (Massachusetts)
+===== Principal Software Engineer =====
 June 2014 - Present
 
-* Design, implement and maintain multiple versions of a near-real time streaming evaluation pipeline.
-* Improve developer productivity and quality through various initiatives, such as common tooling, dependency management and project templates.
-* Built and maintain numerous {gradle} plugins to reduce code/configuration duplication and provide consistent static analysis.
-* Analyze and quantify impact of external changes in order to provide team members with an outline of required work to implement.
-* Provide code reviews, analysis and consultation for members of product development teams with engineering, including mentoring of junior staff.
-* Work across teams to design and implement cross-cutting features and identify/implement architectural changes.
-* Perform multiple environment migrations to move code execution from static services to an internal cloud and the public cloud.
+* Design, implement and maintain multiple versions of a near-real time +
+streaming evaluation pipeline.
+* Improve developer productivity and quality through various initiatives, +
+such as common tooling, dependency management and project templates.
+* Built and maintain numerous Gradle plugins to reduce code / configuration +
+duplication and provide consistent static analysis.
+* Analyze and quantify impact of external changes in order to provide team +
+members with an outline of required work to implement.
+* Provide code reviews, analysis and consultation for members of product +
+development teams with engineering, including mentoring of junior staff.
+* Work across teams to design and implement cross-cutting features and +
+identify / implement architectural changes.
+* Perform multiple environment migrations to move code execution from static +
+services to an internal cloud and the public cloud.
 
-[big]*{dealer} - https://www.google.com/maps/place/Dealer.Com/@44.4662738,-73.2141733,18z/data=!3m1!4b1!4m2!3m1!1s0x4cca7baab44f0923:0x24999beb5fd91ff1["Burlington, VT", window="_blank"]* +
-*__Technical Lead - Frameworks__* +
+==== Dealer.com - Burlington, VT
+===== Technical Lead - Frameworks =====
 July 2011 – June 2014
 
-* Responsible for design and implementation of cross-cutting, framework level software for use in {dealer}’s http://en.wikipedia.org/wiki/Software_as_a_service[SaaS, window="_blank"] architecture. Projects include metrics reporting and gathering framework, centralized configuration system utilizing {zookeeper} and upgrades and upkeep of {grails}-based software suite.
-* Provide code reviews, analysis and consultation for members of product development teams with engineering, including mentoring of junior staff.
-* Evangelize technologies within engineering, such as the adoption of {grails}, {groovy}, {maven}, {rabbit}, {mongo}, {spring} and other technologies.
+* Responsible for design and implementation of cross-cutting, framework level +
+software for use in Dealer.com’s architecture. Projects include metrics +
+reporting and gathering framework, centralized configuration system utilizing +
+Apache ZooKeeper and upgrades and upkeep of Grails-based software suite.
+* Provide code reviews, analysis and consultation for members of product +
+development teams with engineering, including mentoring of junior staff.
+* Evangelize technologies within engineering, such as the adoption of Grails, +
+Groovy, Maven, RabbitMQ, MongoDB, Spring and other technologies.
 * Contribute internal blog posts and presentations on topics relevant to engineering.
 
-[big]*{sparta} - https://www.google.com/maps/place/Sparta+Inc/@38.8425392,-77.4384984,17z/data=!3m1!4b1!4m2!3m1!1s0x89b644f0d5d63dc1:0x9df660f04a591cfd["Centreville, VA", window="_blank"]* +
-*__Technical Director – Visualization and Analysis Division__* +
+==== Sparta, Inc. - Centreville, VA
+===== Technical Director – Visualization and Analysis Division =====
 March 2006 – July 2011
 
-* Responsible for division-wide technical direction, including system design, prototyping, requirement gathering, tracking development, and setting and enforcing development policies and procedures.
-* Acted as technical lead/lead developer for various next generation data analysis applications using technologies such as {grails}, {groovy}, J2EE/Web 2.0 technologies (including AJAX, JSP/Servlets and JMS), OpenLDAP, HTML, CSS, JavaScript, MySQL 5.1 and Hibernate.
+* Responsible for division-wide technical direction, including system design, +
+prototyping, requirement gathering, tracking development, and setting and +
+enforcing development policies and procedures.
+* Acted as technical lead / lead developer for various next generation data +
+analysis applications using technologies such as Grails, Groovy, +
+Java 2 Platform Enterprise Edition / Web 2.0 technologies including +
+AJAX, JSP / Servlets and JMS, OpenLDAP, HTML, CSS, JavaScript, +
+MySQL 5.1 and Hibernate.
 * Managed team of developers, including facilitating daily SCRUM meetings.
-* Instrumental in adoption and integration of new technologies/tools within the division, such as Hudson, {maven}, {grails}, {groovy}, and {spring}.
+* Instrumental in adoption and integration of new technologies / tools within +
+the division, such as Hudson, Maven, Grails, Groovy, and Spring.
 * Responsible for facilitating design and code reviews with peers.
 * Mentored junior developers to improve their design and programming skills.
 
-[big]*{staples} - https://www.google.com/maps/place/500+Staples+Dr/@42.2917388,-71.4893889,17z/data=!3m1!4b1!4m2!3m1!1s0x89e38a17ff986035:0x6796c2c3f2845735["Framingham, MA", window="_blank"]* +
-*__Senior Programmer Analyst - Retail Systems__* +
+==== Staples, Inc. - Framingham, MA
+===== Senior Programmer Analyst - Retail Systems =====
 July 2003 – March 2006
 
-* Developed and maintained backend J2EE (using JMS, CMP, Castor XML Marshalling Framework and web services) application hosted in WebSphere Application Server 5.1 that is responsible for processing POS transactions in XML from all US retail stores (1300+) and forwarding them to DB2 and an AS/400 system for further processing.
-* Translated complex business logic that is applied to POS transactions from Visual Basic into Java for inclusion in the POS transaction processing J2EE application. Also reconstructed the XML schema used to define all POS transactions.
-* Worked closely with AS/400 developers to integrate middle-tier J2EE applications and backend RPG/CL applications.
-* Developed internal J2EE applications (web applications using OpenLDAP, CMP, Hibernate 3, Quartz scheduler and Apache Struts) used by corporate associates to view POS data, transactions and render receipts.
-* Collaborated closely with business partners to define system requirements and technical specifications for new applications.
-* Developed Apache Ant scripts to checkout, build and deploy Enterprise Application Archive (EAR) files to WebSphere Application Server 5.1.
-* Extensive experience configuring resources in WebSphere Application Server 5.1 (including JDBC datasources, JMS resources, JCA adapters, LDAP configuration and mail providers).
-* Supported J2EE applications (hosted in WebSphere Application Server 5.1 on RedHat Linux Enterprise 3.0 and DB2 8.2 on AIX) and legacy applications written in Visual Basic, Visual C++ and ASP.
-* Executed performance testing of new applications using Apache JMeter, Mercury SiteScope and IBM Tivoli Performance Analyzer and other monitoring software.
+* Developed and maintained backend Java 2 Platform Enterprise +
+Edition application leveraging JMS, CMP, Castor XML +
+Marshalling Framework and web services hosted in +
+WebSphere Application Server 5.1 that is responsible +
+for processing point of sale transactions in XML from all US +
+retail stores (1300+) and forwarding them to DB2 and an +
+AS / 400 system for further processing.
+* Translated complex business logic that is applied to point +
+of sale transactions from Visual Basic into Java for inclusion +
+in the point of sale transaction processing Java 2 Platform +
+Enterprise Edition application.
+* Reconstructed the XML schema used to define all point of sale +
+transactions.
+* Worked closely with AS / 400 developers to integrate middle-tier +
+Java 2 Platform Enterprise Edition applications and backend +
+RPG / CL applications.
+* Developed internal Java 2 Platform Enterprise Edition web +
+applications to view point of sale data, transactions and +
+render receipts using OpenLDAP, CMP, Hibernate 3, Quartz +
+scheduler and Apache Struts.
+* Collaborated closely with business partners to define system requirements +
+and technical specifications for new applications.
+* Developed Apache Ant scripts to check out, build and deploy Enterprise +
+Application Archive files to WebSphere Application Server 5.1.
+* Extensive experience configuring resources in WebSphere Application +
+Server 5.1 including JDBC data sources, JMS resources, JCA adapters, +
+LDAP configuration and mail providers.
+* Supported Java 2 Platform Enterprise Edition applications hosted +
+in WebSphere Application Server 5.1 on RedHat Linux Enterprise +
+3.0 and DB2 8.2 on AIX and legacy applications written in Visual +
+Basic, Visual C++ and ASP.
+* Executed performance testing of new applications using Apache JMeter, +
+Mercury SiteScope and IBM Tivoli Performance Analyzer and other +
+monitoring software.
 
-[big]*{red_sox} - https://www.google.com/maps/place/Boston+Red+Sox/@42.3461357,-71.0982041,17z/data=!3m1!4b1!4m2!3m1!1s0x89e379f638628c4b:0x18da45f081a3b330["Boston, MA", window="_blank"]* +
-*__Information Technology Intern__* +
+==== The Boston Red Sox - Boston, MA
+===== Information Technology Intern =====
 May 2002 – September 2002
 
 * Developed an intranet site using ASP, VB, and MS SQL technology.
@@ -134,17 +157,20 @@ May 2002 – September 2002
 
 == Education
 
-[big]*{boston_college} - https://www.google.com/maps/place/Boston+College/@42.3385287,-71.1762762,16z/data=!3m1!4b1!4m2!3m1!1s0x89e3785da725d4c9:0xb68ae90a5b8eb6e["Chestnut Hill, MA", window="_blank"]* +
+=== Boston College - Chestnut Hill, MA
 *Degree:* Bachelor of Arts, __summa cum laude__, 2003 +
-*GPA*: 3.87/4.0 +
-*Major:* http://www.bc.edu/schools/cas/cs/[Computer Science, window="_blank"] +
-*Minor:* http://www.bc.edu/content/bc/schools/cas/history.html[History, window="_blank"] +
-*Distinctions:* Dean’s List 8 Semesters, {phi_beta_kappa} Honor Society, http://www.nscs.org/[National Society of Collegiate Scholars, window="_blank"], http://www.bc.edu/content/bc/schools/cas/services/students/awards.html#soph%20scholar[Sophomore Scholar of the College, window="_blank"] +
+*GPA*: 3.87 / 4.0 +
+*Major:* Computer Science +
+*Minor:* History +
+*Distinctions:* Dean’s List 8 Semesters, Phi Beta Kappa Honor Society, National +
+    Society of Collegiate Scholars, Sophomore Scholar of the College
 
 == Presentations & Papers
 
-* http://www.scs-europe.net/services/ess2003/PDF/METH04.pdf["Simulation of a Distributed Mutual Exclusion Algorithm Using Multicast Communication", window="_blank"] - http://www.scs-europe.net/services/ess2003/[15th European Simulation Symposium and Exhibition, window="_blank"], Delft, The Netherlands, October 26-29, 2003
-* https://rawgithub.com/jdpgrailsdev/vt-code-camp-2013-presentation/master/index.html#/start["Centralized Configuration Management with Apache ZooKeeper", window="_blank"] - http://vtcodecamp.org/2013/schedule[VT Code Camp, window="_blank"], Burlington, VT, September 21, 2013
+* http://www.scs-europe.net/services/ess2003/PDF/METH04.pdf["Simulation of a Distributed Mutual Exclusion Algorithm Using Multicast Communication", window="_blank"] - +
+http://www.scs-europe.net/services/ess2003/[15th European Simulation Symposium and Exhibition, window="_blank"], Delft, The Netherlands, October 26-29, 2003
+* https://rawgithub.com/jdpgrailsdev/vt-code-camp-2013-presentation/master/index.html#/start["Centralized Configuration Management with Apache ZooKeeper", window="_blank"] - +
+http://vtcodecamp.org/2013/schedule[VT Code Camp, window="_blank"], Burlington, VT, September 21, 2013
 * https://blog.newrelic.com/2017/05/18/alerts-microservices-environment-spring-boot/["How We Chose an Application Framework for New Relic Alerts", window="_blank"], May 18, 2017
 
 == Open Source Contributions
