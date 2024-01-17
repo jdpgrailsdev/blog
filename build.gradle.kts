@@ -1,13 +1,26 @@
 plugins {
     id("java")
     id("war")
-    id("org.jbake.site") version "5.5.0"
-    id("org.gretty") version "4.0.0"
-    id("org.ajoberstar.git-publish") version "3.0.0"
+    alias(libs.plugins.jbake.site)
+    alias(libs.plugins.gretty)
+    alias(libs.plugins.git.publish)
 }
 
-val javaVersion = JavaVersion.VERSION_17
-val outputDir = "${buildDir}/jbake"
+val javaVersion = JavaVersion.VERSION_21
+val outputDir = layout.buildDirectory.dir("jbake")
+
+configurations.all {
+    // Force dependency versions in order to work on Apple M1
+    resolutionStrategy.force(
+        "org.jruby:jruby:${libs.versions.jruby.get()}",
+        "net.java.dev.jna:jna:${libs.versions.jna.get()}",
+        "com.github.jnr:jnr-posix:${libs.versions.jnr.posix.get()}",
+        "com.github.jnr:jnr-constants:${libs.versions.jnr.constants.get()}",
+        "com.github.jnr:jffi:${libs.versions.jffi.get()}",
+        "commons-io:commons-io:${libs.versions.commons.io.get()}",
+        "org.jbake:jbake-core:${libs.versions.jbake.get()}",
+        "org.eclipse.jetty:jetty-server:${libs.versions.jetty.get()}")
+}
 
 gitPublish {
     repoUri.set("https://github.com/jdpgrailsdev/blog.git")
@@ -17,7 +30,7 @@ gitPublish {
         from(projectDir) {
             include("CNAME")
         }
-        from(file(outputDir)) {
+        from(outputDir.get()) {
             into(".")
         }
     }
@@ -38,21 +51,21 @@ java {
 
 jbake {
     clearCache = true
-    asciidoctorjVersion = "2.5.2"
-    freemarkerVersion = "2.3.31"
-    pegdownVersion = "1.6.0"
-    version = "2.6.7"
+    asciidoctorjVersion = libs.versions.asciidoctorj.get()
+    freemarkerVersion = libs.versions.freemarker.get()
+    pegdownVersion = libs.versions.pegdown.get()
+    version = libs.versions.jbake.get()
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
-    jcenter()
 }
 
 tasks.register<Copy>("copyContent") {
-    from(outputDir)
-    into("${buildDir}/inplaceWebapp")
+    from(outputDir.get())
+    include("*", "**")
+    into(layout.buildDirectory.dir("inplaceWebapp"))
 }
 
 tasks.register("publish") {}
