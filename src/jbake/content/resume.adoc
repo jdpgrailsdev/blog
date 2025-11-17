@@ -1,6 +1,6 @@
 = Jonathan D. Pearlin
 Jonathan Pearlin
-2022-01-07
+2025-11-17
 :jbake-type: page
 :jbake-status: published
 :source-highlighter: prettify
@@ -16,27 +16,24 @@ Jonathan Pearlin
 
 == Headline
 
-Software developer who is not afraid to tackle any challenge. My current focus +
-is on building and supporting robust, scalable stream processing applications that +
-run on the JVM, evangelism of technology and mentoring.  I am always open to expanding +
-my knowledge of new technologies, techniques and tricks.  I believe in  writing unit +
-tests, running performance tests and finding creative ways to make sure that that +
-reliability is front of mind when performing architecture refactors. I enjoy +
-contributing to open source projects and collaborating with others.
+Software developer who is not afraid to tackle any challenge. My current focus is on
+building and supporting robust, scalable distributed applications that run on the JVM,
+evangelism of technology and mentoring. I am always open to expanding my knowledge of new
+technologies, techniques and tricks. I believe in writing unit tests, running performance
+tests and finding creative ways to make sure that reliability is front of mind when performing
+architecture refactors. I enjoy contributing to open source projects and collaborating with others.
 
 == Skills
 [width="50%", frame="topbot", options="header"]
 |=======
 3+<|Current
-|Java |Docker |Kafka
-|Spring Boot |Spring |Gradle
-|Git |Memcached |Groovy
-|Spock |Thrift |AWS
-|PostgreSQL |JUnit 4 / 5 |Rest
-|Jetty |Spring Reactor |WireMock
-|Jenkins |HTML |CSS
-|ReactJS |Python |Agile / SCRUM
-|IntelliJ IDEA | |
+|Kotlin |Java |Docker
+|Kubernetes |Google Cloud |Amazon Web Services
+|Gradle |Git |Claude Code
+|Micronaut |Spring |Spring Boot
+|Reactive Streams|Junit 5/6 |RESTful APIs
+|PostgreSQL |MySQL |HTML/CSS
+|Intellij|GitHub CI/CD |
 |=======
 
 {zwsp} +
@@ -44,9 +41,12 @@ contributing to open source projects and collaborating with others.
 [width="50%", frame="topbot", options="header"]
 |=======
 3+<|Previous
+|Apache Kafka|Apache ZooKeeper |RabbitMQ
 |Eclipse |Maven |MySQL
-|Apache ZooKeeper |Grails |RabbitMQ
 |Apache Tomcat |MongoDB |C
+|Spock |Thrift |Groovy
+|Grails |Jetty |Wiremock
+|ReactJS |Python |TypeScript
 |C++ |JSP |Java Servlets
 |Hibernate |OpenLDAP |Ant
 |Glassfish |IBM WebSphere | Subversion
@@ -57,9 +57,25 @@ contributing to open source projects and collaborating with others.
 
 == Experience
 
+==== Airbyte - San Francisco, CA / Remote (Massachusetts)
+==== Staff Software Engineer ====
+February 2021 - November 2025
+
+* Championed the use of modern software design practices, such as dependency injection, +
+inversion of control, application frameworks, observability and DRY.
+* Improved the throughput performance of data movement through the Airbyte platform by 10x +
+by introducing a new architecture and more a performant message serialization framework.
+* Successfully delivered many cross-cutting implementations and refactors to the Airbyte platform, +
+such as the introduction of an application framework (Micronaut), observability (DataDog), improved +
+logging (Logback) and the conversion from Java to Kotlin.
+* Led a group of staff engineers to align projects and initiatives  across teams and to identify +
+technical debt projects with bi-weekly meetings
+* Started and lead a technical book club to foster a culture of group learning
+* Mentored junior engineers with one on one sessions to help grow their architecture skills and decision-making
+
 ==== New Relic - Portland, OR / Remote (Massachusetts)
 ===== Principal Software Engineer =====
-June 2014 - Present
+June 2014 - February 2021
 
 * Design, implement and maintain multiple versions of a near-real time +
 streaming evaluation pipeline.
