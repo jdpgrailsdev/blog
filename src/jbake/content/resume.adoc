@@ -59,7 +59,7 @@ architecture refactors. I enjoy contributing to open source projects and collabo
 
 ==== Airbyte - San Francisco, CA / Remote (Massachusetts)
 ==== Staff Software Engineer ====
-February 2021 - November 2025
+February 2022 - November 2025
 
 * Championed the use of modern software design practices, such as dependency injection, +
 inversion of control, application frameworks, observability and DRY.
@@ -75,7 +75,7 @@ technical debt projects with bi-weekly meetings
 
 ==== New Relic - Portland, OR / Remote (Massachusetts)
 ===== Principal Software Engineer =====
-June 2014 - February 2021
+June 2014 - February 2022
 
 * Design, implement and maintain multiple versions of a near-real time +
 streaming evaluation pipeline.
