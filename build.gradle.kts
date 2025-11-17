@@ -23,7 +23,7 @@ configurations.all {
 }
 
 gitPublish {
-    repoUri.set("https://github.com/jdpgrailsdev/blog.git")
+    repoUri.set("git@github.com:jdpgrailsdev/blog.git")
     branch.set("gh-pages")
 
     contents {
@@ -34,6 +34,7 @@ gitPublish {
             into(".")
         }
     }
+
 
     commitMessage.set("Updating site.")
 }
