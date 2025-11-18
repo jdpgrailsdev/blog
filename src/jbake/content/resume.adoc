@@ -63,6 +63,8 @@ February 2022 - November 2025
 
 * Championed the use of modern software design practices, such as dependency injection, +
 inversion of control, application frameworks, observability and DRY.
+*Led the re-architecture of Airbyte’s workflow launching subsystem to improve its reliability +
+and unlock the ability to launch workflows in different clusters
 * Improved the throughput performance of data movement through the Airbyte platform by 10x +
 by introducing a new architecture and more a performant message serialization framework.
 * Successfully delivered many cross-cutting implementations and refactors to the Airbyte platform, +
