@@ -50,9 +50,12 @@ jobs:
           distribution: temurin
           cache: gradle
 
+      - name: Set up Git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Deploy
         env:
-          GIT_AUTHOR_NAME: "github-actions[bot]"
-          GIT_AUTHOR_EMAIL: "github-actions[bot]@users.noreply.github.com"
           GRGIT_USER: ${{ secrets.WEB_API_KEY }}
         run: ./gradlew clean build publish
