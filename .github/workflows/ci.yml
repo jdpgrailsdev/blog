@@ -50,11 +50,6 @@ jobs:
           distribution: temurin
           cache: gradle
 
-      - name: Set up Git user
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
       - name: Deploy
         env:
           GRGIT_USER: ${{ secrets.GITHUB_TOKEN }}
