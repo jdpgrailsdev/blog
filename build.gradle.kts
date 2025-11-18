@@ -23,7 +23,7 @@ configurations.all {
 }
 
 gitPublish {
-    repoUri.set("git@github.com:jdpgrailsdev/blog.git")
+    repoUri.set("https://github.com/jdpgrailsdev/blog.git")
     branch.set("gh-pages")
 
     contents {
