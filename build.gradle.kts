@@ -35,7 +35,7 @@ gitPublish {
         }
     }
 
-
+    username.set(System.getenv("GRGIT_USER"))
     commitMessage.set("Updating site.")
 }
 

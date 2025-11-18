@@ -17,6 +17,6 @@ pegdown = "1.6.0"
 
 
 [plugins]
-git-publish = { id = "org.ajoberstar.git-publish", version = "4.2.2" }
+git-publish = { id = "org.ajoberstar.git-publish", version = "5.1.2" }
 gretty = { id = "org.gretty", version = "4.1.2" }
 jbake-site =  { id = "org.jbake.site", version = "5.5.0" }
