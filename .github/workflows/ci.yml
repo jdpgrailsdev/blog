@@ -57,5 +57,5 @@ jobs:
 
       - name: Deploy
         env:
-          : ${{ secrets.GITHUB_TOKEN }}
+          GRGIT_USER: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew clean build publish
