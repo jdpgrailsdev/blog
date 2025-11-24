@@ -2,7 +2,7 @@
 
 Personal blog of interesting technical achievements.
 
-The blog is hosted at [http://www.jonathanpearlin.com](http://www.jonathanpearlin.com).
+The blog is hosted at [https://www.jonathanpearlin.com](https://www.jonathanpearlin.com).
 
 ## Build and Deploy
 
