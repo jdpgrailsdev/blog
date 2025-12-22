@@ -26,4 +26,4 @@ The blog is hosted at [https://www.jonathanpearlin.com](https://www.jonathanpear
 
 ## License
 
-Copyright 2011-2025.  Release under the [Apache 2.0 license](LICENSE).
+Copyright 2011-2026.  Release under the [Apache 2.0 license](LICENSE).
