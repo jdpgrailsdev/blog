@@ -1,6 +1,6 @@
 = Jonathan D. Pearlin
 Jonathan Pearlin
-2025-11-17
+2026-05-06
 :jbake-type: page
 :jbake-status: published
 :source-highlighter: prettify
@@ -57,8 +57,18 @@ architecture refactors. I enjoy contributing to open source projects and collabo
 
 == Experience
 
-==== Airbyte - San Francisco, CA / Remote (Massachusetts)
-==== Staff Software Engineer ====
+==== Gradle - Remote (Massachusetts) ====
+===== Principal Software Engineer =====
+January 2026 - Present
+
+* Championed the use of observability to improve application performance
+* Helped with transition to a more agile, value stream focused development lifecycle
+* Collaborated closely with team lead to help drive technical proposals and
+implementations
+* Designed and implemented features that improved Gradle’s remote cache offering
+
+==== Airbyte - San Francisco, CA / Remote (Massachusetts) ====
+===== Staff Software Engineer =====
 February 2022 - November 2025
 
 * Championed the use of modern software design practices, such as dependency injection, +
@@ -75,7 +85,7 @@ technical debt projects with bi-weekly meetings
 * Started and lead a technical book club to foster a culture of group learning
 * Mentored junior engineers with one on one sessions to help grow their architecture skills and decision-making
 
-==== New Relic - Portland, OR / Remote (Massachusetts)
+==== New Relic - Portland, OR / Remote (Massachusetts) ====
 ===== Principal Software Engineer =====
 June 2014 - February 2022
 
@@ -94,7 +104,7 @@ identify / implement architectural changes.
 * Perform multiple environment migrations to move code execution from static +
 services to an internal cloud and the public cloud.
 
-==== Dealer.com - Burlington, VT
+==== Dealer.com - Burlington, VT ====
 ===== Technical Lead - Frameworks =====
 July 2011 – June 2014
 
@@ -108,7 +118,7 @@ development teams with engineering, including mentoring of junior staff.
 Groovy, Maven, RabbitMQ, MongoDB, Spring and other technologies.
 * Contribute internal blog posts and presentations on topics relevant to engineering.
 
-==== Sparta, Inc. - Centreville, VA
+==== Sparta, Inc. - Centreville, VA ====
 ===== Technical Director – Visualization and Analysis Division =====
 March 2006 – July 2011
 
@@ -126,7 +136,7 @@ the division, such as Hudson, Maven, Grails, Groovy, and Spring.
 * Responsible for facilitating design and code reviews with peers.
 * Mentored junior developers to improve their design and programming skills.
 
-==== Staples, Inc. - Framingham, MA
+==== Staples, Inc. - Framingham, MA ====
 ===== Senior Programmer Analyst - Retail Systems =====
 July 2003 – March 2006
 
@@ -165,7 +175,7 @@ Basic, Visual C++ and ASP.
 Mercury SiteScope and IBM Tivoli Performance Analyzer and other +
 monitoring software.
 
-==== The Boston Red Sox - Boston, MA
+==== The Boston Red Sox - Boston, MA ====
 ===== Information Technology Intern =====
 May 2002 – September 2002
 
@@ -193,6 +203,7 @@ http://vtcodecamp.org/2013/schedule[VT Code Camp, window="_blank"], Burlington, 
 
 == Open Source Contributions
 
+* https://www.github.com/airbytehq[Airbyte, window="_blank"]
 * https://www.github.com/grails[Grails, window="_blank"]
 * http://relation.to/Bloggers/The72HerosOfAS7[JBoss Application Server 7, window="_blank"]
 * https://www.github.com/jdpgrailsdev[Personal GitHub Account, window="_blank"]
